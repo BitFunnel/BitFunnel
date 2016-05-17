@@ -80,6 +80,19 @@ macro(COMBINE_FILE_LISTS)
     endif (BITFUNNEL_PLATFORM_WINDOWS)
 endmacro()
 
+###############################################################################
+
+set(WINDOWS_PUBLIC_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
+)
+
+COMBINE_FILE_LISTS()
+
+# Public header files
+source_group("BitFunnel" FILES ${PUBLIC_HFILES})
+add_custom_target(inc SOURCES ${PUBLIC_HFILES})
+set_property(TARGET inc PROPERTY FOLDER "")
+
 #
 # Local package include directories.
 #
