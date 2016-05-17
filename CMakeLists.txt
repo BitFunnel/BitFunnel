@@ -83,11 +83,12 @@ endmacro()
 #
 # Local package include directories.
 #
-include_directories(src/Common/CsvTsv/inc)
+include_directories(inc src/Common/CmdLineParser/inc src/Common/CsvTsv/inc)
 
 #
 # Libraries and executables.
 #
+add_subdirectory(src/Common/CmdLineParser)
 add_subdirectory(src/Common/CsvTsv)
 
 add_custom_target(TOPLEVEL SOURCES
@@ -101,5 +102,6 @@ add_custom_target(TOPLEVEL SOURCES
 )
 
 enable_testing()
+add_test(NAME CmdLineParserUnitTest COMMAND CmdLineParserUnitTest)
 add_test(NAME CsvTsvUnitTest COMMAND CsvTsvUnitTest)
 

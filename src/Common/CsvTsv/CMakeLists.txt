@@ -1,8 +1,5 @@
 # BitFunnel/CsvTsv
 
-include_directories(${CMAKE_SOURCE_DIR}/CsvTsv/inc)
-include_directories(${CMAKE_SOURCE_DIR}/TestFramework/inc)
-
 add_subdirectory(src)
 add_subdirectory(UnitTest)
 
