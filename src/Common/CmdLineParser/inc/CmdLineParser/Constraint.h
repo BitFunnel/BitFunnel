@@ -27,6 +27,7 @@
 
 #include "BitFunnel/NonCopyable.h"    // CoexistenceConstraint inherits from noncopyable.
 
+
 namespace CmdLine
 {
     class IConstraint;

@@ -24,6 +24,7 @@
 
 #include "AnswerResponseUnitTestBase.h"
 
+
 namespace CmdLine
 {
     class CmdLineParser;

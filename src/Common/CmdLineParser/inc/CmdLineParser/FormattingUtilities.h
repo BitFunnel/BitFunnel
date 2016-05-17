@@ -24,6 +24,7 @@
 
 #include <ostream>
 
+
 namespace CmdLine
 {
     class FormattingUtilities
