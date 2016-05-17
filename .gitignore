@@ -1,0 +1,24 @@
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Other
+.DS_Store
+build/
+build-*/
+Debug/
+Release/
+ipch
+*.obj
+*.opensdf
+*.sdf
+*.suo
+*.user
+*.db
+
