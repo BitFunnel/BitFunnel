@@ -22,19 +22,40 @@
 
 #pragma once
 
+#include "BitFunnel/NonCopyable.h"    // LockGuard inherits from NonCopyable.
+
+
 namespace BitFunnel
 {
+    class Mutex;
+
     //*************************************************************************
     //
-    // Class ITaskProcessor
+    // LockGuard is an RAII helper class that locks a mutex on construction and
+    // unlocks the mutex on destruction. LockGuard is designed to be used to
+    // take a lock for the remainder of a C++ block scope.
+    // There are two flavors of the LockGuard
+    // 1. With infinite timeout - LockGuard will block on trying to acquire a 
+    //    lock and won't exit until it has been taken.
+    // 2. Throwing LockGuard - tries to acquire a lock without waiting and 
+    //    throws if the lock could not be acquired.
     //
     //*************************************************************************
-    class ITaskProcessor
+    class LockGuard : NonCopyable
     {
     public:
-        virtual ~ITaskProcessor() {}
+        // Construct a LockGuard that immediately locks the Mutex parameter.
+        // If throwIfNotImmediatelyAcquired = false, this will block until the
+        // lock has been acquired.
+        // If throwIfNotImmediatelyAcquired = true and the Mutex is not 
+        // immediately acquired, this function throws.
+        explicit LockGuard(Mutex& lock, 
+                           bool throwIfNotImmediatelyAcquired = false);
 
-        virtual void ProcessTask(size_t taskId) = 0;
-        virtual void Finished() = 0;
+        // Unlocks the mutex and destroys the LockGuard.
+        ~LockGuard();
+
+    private:
+        Mutex& m_mutex;
     };
 }

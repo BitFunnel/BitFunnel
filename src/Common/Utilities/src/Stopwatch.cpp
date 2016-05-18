@@ -20,29 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
-
-#include "BitFunnel/NonCopyable.h"
+#include "Stopwatch.h"
 
 
 namespace BitFunnel
 {
-    class IThreadBase : NonCopyable
+    Stopwatch::Stopwatch()
+    {   
+        // Note: QueryPerformanceFrequency/Counter calls cannot fail since WindowsXP.
+        QueryPerformanceFrequency(&m_frequency);
+        Reset();
+    }
+
+
+    void Stopwatch::Reset()
     {
-    public:
-        virtual ~IThreadBase() {};
-
-        virtual void EntryPoint() = 0;
-    };
+        QueryPerformanceCounter(&m_start);
+    }
 
 
-    class IThreadManager
+    double Stopwatch::ElapsedTime() const
     {
-    public:
-        virtual ~IThreadManager() {};
+        LARGE_INTEGER end;
+        QueryPerformanceCounter(&end);
 
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
-    };
+        return ComputeElapsedTime(m_start, end, m_frequency);
+    }
+
+
+    double Stopwatch::ComputeElapsedTime(LARGE_INTEGER begin, LARGE_INTEGER end, LARGE_INTEGER frequency)
+    {
+        return (double)(end.QuadPart - begin.QuadPart) / (double)frequency.QuadPart;
+    }
 }

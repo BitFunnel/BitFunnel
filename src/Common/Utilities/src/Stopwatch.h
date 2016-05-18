@@ -22,27 +22,33 @@
 
 #pragma once
 
-#include "BitFunnel/NonCopyable.h"
-
+#include <Windows.h>        // For LARGE_INTEGER
 
 namespace BitFunnel
 {
-    class IThreadBase : NonCopyable
+    class Stopwatch
     {
     public:
-        virtual ~IThreadBase() {};
+        // Constructs Stopwatch() and records the start time.
+        Stopwatch();
 
-        virtual void EntryPoint() = 0;
-    };
+        // Resets the start time to the current time.
+        void Reset();
 
+        // Returns the elapsed time in seconds since the Stopwatch
+        // was constructed or Reset() was last called.
+        double ElapsedTime() const;
 
-    class IThreadManager
-    {
-    public:
-        virtual ~IThreadManager() {};
+    private:
+        // Given a start time, end time, and timer frequency, compute and return
+        // the elapsed time in seconds.
+        static double ComputeElapsedTime(LARGE_INTEGER begin, LARGE_INTEGER end, LARGE_INTEGER frequency);
 
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
+        // Timer frequency in ticks per second.
+        LARGE_INTEGER m_frequency;
+
+        // Time Stopwatch was last reset (expressed as a tick count).
+        LARGE_INTEGER m_start;
     };
 }
+

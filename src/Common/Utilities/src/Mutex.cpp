@@ -20,29 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
-
-#include "BitFunnel/NonCopyable.h"
+#include "Mutex.h"
 
 
 namespace BitFunnel
 {
-    class IThreadBase : NonCopyable
+    Mutex::Mutex()
     {
-    public:
-        virtual ~IThreadBase() {};
-
-        virtual void EntryPoint() = 0;
-    };
+        InitializeCriticalSection(&m_criticalSection);
+    }
 
 
-    class IThreadManager
+    Mutex::Mutex(unsigned __int32 spinCount)
     {
-    public:
-        virtual ~IThreadManager() {};
+        InitializeCriticalSectionAndSpinCount(&m_criticalSection, spinCount);
+    }
 
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
-    };
+
+    Mutex::Mutex(unsigned __int32 spinCount, unsigned __int32 flags)
+    {
+        InitializeCriticalSectionEx(&m_criticalSection, spinCount, flags);
+    }
+
+
+    Mutex::~Mutex()
+    {
+        DeleteCriticalSection(&m_criticalSection);
+    }
+
+
+    void Mutex::Lock()
+    {
+        EnterCriticalSection(&m_criticalSection);
+    }
+
+
+    bool Mutex::TryLock()
+    {
+        return !!TryEnterCriticalSection(&m_criticalSection);
+    }
+
+
+    void Mutex::Unlock()
+    {
+        LeaveCriticalSection(&m_criticalSection);
+    }
 }

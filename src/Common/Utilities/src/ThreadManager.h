@@ -22,27 +22,31 @@
 
 #pragma once
 
-#include "BitFunnel/NonCopyable.h"
+#include <vector>                              // Member variable.
+#include <Windows.h>                           // For HANDLE
+
+#include "BitFunnel/Utilities/IThreadManager.h"          // Inherits from IThreadManager.
+#include "BitFunnel/NonCopyable.h"             // Inherits from NonCopyable.
 
 
 namespace BitFunnel
 {
-    class IThreadBase : NonCopyable
+    class ThreadManager : public IThreadManager, NonCopyable
     {
     public:
-        virtual ~IThreadBase() {};
+        // Starts one thread for each IThreadBase* in threads. Returns true if succesful.
+        ThreadManager(const std::vector<IThreadBase*>& threads);
 
-        virtual void EntryPoint() = 0;
-    };
-
-
-    class IThreadManager
-    {
-    public:
-        virtual ~IThreadManager() {};
+        ~ThreadManager();
 
         // Waits a specified amount of time for threads to exit. Returns true if all threads
         // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
+        bool WaitForThreads(int timeoutInMs);
+
+    private:
+        static void ThreadEntryPoint(void* data);
+
+        const std::vector<IThreadBase*>& m_threads;
+        std::vector<HANDLE> m_handles;
     };
 }

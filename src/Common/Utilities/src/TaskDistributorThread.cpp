@@ -20,29 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
-
-#include "BitFunnel/NonCopyable.h"
+#include "BitFunnel/Utilities/ITaskProcessor.h"
+#include "TaskDistributor.h"
+#include "TaskDistributorThread.h"
 
 
 namespace BitFunnel
 {
-    class IThreadBase : NonCopyable
+    TaskDistributorThread::TaskDistributorThread(TaskDistributor& distributor, ITaskProcessor& processor)
+        : m_distributor(distributor),
+          m_processor(processor)
     {
-    public:
-        virtual ~IThreadBase() {};
+    }
 
-        virtual void EntryPoint() = 0;
-    };
-
-
-    class IThreadManager
+    void TaskDistributorThread::EntryPoint()
     {
-    public:
-        virtual ~IThreadManager() {};
-
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
-    };
+        size_t taskId = 0;
+        while (m_distributor.TryAllocateTask(taskId))
+        {
+            m_processor.ProcessTask(taskId);
+        }
+        m_processor.Finished();
+    }
 }

@@ -20,29 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include <stdexcept>
 
-#include "BitFunnel/NonCopyable.h"
+#include "LockGuard.h"
+#include "Mutex.h"
 
 
 namespace BitFunnel
 {
-    class IThreadBase : NonCopyable
+    LockGuard::LockGuard(Mutex& mutex, bool throwIfNotImmediatelyAcquired)
+        : m_mutex(mutex)
     {
-    public:
-        virtual ~IThreadBase() {};
+        if (throwIfNotImmediatelyAcquired)
+        {
+            const bool hasAcquiredLock = m_mutex.TryLock();
 
-        virtual void EntryPoint() = 0;
-    };
+            if (!hasAcquiredLock)
+            {
+                throw std::exception("Lock could not be acquired");
+            }
+        }
+        else
+        {
+            m_mutex.Lock();
+        }
+    }
 
 
-    class IThreadManager
+    LockGuard::~LockGuard()
     {
-    public:
-        virtual ~IThreadManager() {};
-
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
-    };
+        m_mutex.Unlock();
+    }
 }

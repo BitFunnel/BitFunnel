@@ -22,13 +22,23 @@
 
 #pragma once
 
+#include <vector>
+
+#include "BitFunnel/Utilities/ITaskDistributor.h"  // Inherits from ITaskDistributor.
+#include "BitFunnel/NonCopyable.h"                 // Inherits from NonCopyable.
+#include "Mutex.h"                                 // Embeds Mutex.
+
 
 namespace BitFunnel
 {
+    class ITaskProcessor;
+    class IThreadBase;
+    class TaskCoordinatorThread;
+    class ThreadManager;
+
     //*************************************************************************
     //
-    // ITaskDistributor is an abstract base class or interface for objects that
-    // assign tasks to threads.
+    // Class TaskDistributor
     //
     // Uses multiple threads to dispatch numbered tasks to a vector of objects
     // that derive from ITaskProcessor.
@@ -43,19 +53,32 @@ namespace BitFunnel
     // work associated with a particular task id is up to the ITaskProcessor.
     //
     //*************************************************************************
-    class ITaskDistributor
+    class TaskDistributor : public ITaskDistributor, NonCopyable
     {
     public:
-        virtual ~ITaskDistributor() {};
+        TaskDistributor(const std::vector<ITaskProcessor*>& processors,
+                        size_t taskCount);
+
+        ~TaskDistributor();
 
         // TaskDistributorThreads call TryAllocateTask() to get their next task
         // assignment. If there is work remaining, taskId will be set to the id
         // of the assigned task and the method will return true. If there are
         // no tasks remaining, the method will return false.
-        virtual bool TryAllocateTask(size_t& taskId) = 0;
+        bool TryAllocateTask(size_t& taskId);
 
         // Waits a specified amount of time for tasks to complete. Returns true if all threads
         // exited successfully before the timeout period expired.
-        virtual bool WaitForCompletion(int timeoutInMs) = 0;
+        bool WaitForCompletion(int timeoutInMs);
+
+    private:
+        const std::vector<ITaskProcessor*>& m_processors;
+        size_t m_taskCount;
+        size_t m_nextTaskId;
+
+        std::vector<IThreadBase*> m_threads;
+        ThreadManager* m_threadManager;
+
+        Mutex m_lock;
     };
 }
