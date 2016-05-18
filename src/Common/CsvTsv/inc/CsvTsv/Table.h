@@ -750,10 +750,12 @@ namespace CsvTsv
     {
         bool success = false;
 
-        if (m_cursor + 1 < m_data.size())
+        // This cast should be safe because m_cursor
+        // should be >= 1.
+        if (static_cast<size_t>(m_cursor + 1) < m_data.size())
         {
             ++m_cursor;
-            SetValue(m_data[m_cursor]);
+            this->SetValue(m_data[m_cursor]);
             success = true;
         }
 

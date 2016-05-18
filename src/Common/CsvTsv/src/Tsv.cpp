@@ -117,13 +117,10 @@ namespace CsvTsv
 
     void TsvTableFormatter::WriteEscapedValue(const char* value)
     {
-        const char* x;
-        x = strchr(value, m_fieldDelimiter);
-        x = strchr(value, m_quoteChar);
-        x = strchr(value, '\n');
-        x = strchr(value, '\r');
-        // TODO: what is the intent of this code? mhop?
-        throw std::runtime_error("TSV format does not allow TAB and newline characters in fields.");
+        // TODO: consider if we need this at all.
+        // This was previously implemented totally incorrectly and it seems that no one noticed?
+        asm volatile("" :: "m" (value)); // Cross-compiler warning removal.
+        throw std::runtime_error("WriteEscapedValue not implemented.");
     }
 
 }

@@ -23,6 +23,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <stdio.h>
+
 #include "CsvTsv/Csv.h"
 #include "CsvTsv/Tsv.h"
 #include "gtest/gtest.h"
@@ -183,7 +185,7 @@ namespace CsvTsv
             v4.push_back(i);
             v5.push_back(i);
             char buffer[64];
-            _itoa_s(i, buffer, 10);
+            sprintf(buffer, "%d", i);
             v6.push_back(std::string(buffer));
             v7.push_back((i % 2) == 0);
         }
@@ -234,7 +236,7 @@ namespace CsvTsv
             success &= Expect<double>(i, v5[i]);
 
             char buffer[64];
-            _itoa_s(i, buffer, 10);
+            sprintf(buffer, "%d", i);
             if (strcmp(v6[i].c_str(), buffer) != 0)
             {
                 std::cout << "Value mismatch." << std::endl;
@@ -281,7 +283,7 @@ namespace CsvTsv
 
     TEST(CsvTsv, GeneralComments)
     {
-        char *inputText = 
+        std::string inputString =
             "#comment1\n"
             "#comment2\n"
             "C1\n"
@@ -293,7 +295,6 @@ namespace CsvTsv
             "3\n"
             "#comment5\n";
 
-        std::string inputString(inputText);
         std::stringstream inputStream(inputString);
 
         InputColumn<int> c1("C1", "Integer column");
@@ -343,10 +344,10 @@ namespace CsvTsv
         reader.ReadPrologue();
 
         reader.ReadDataRow();
-        ASSERT_EQ(c1.GetValue(), 0x001002F011F5);
+        ASSERT_EQ(c1.GetValue(), 0x001002F011F5ull);
 
         reader.ReadDataRow();
-        ASSERT_EQ(c1.GetValue(), 0x0011FFB81230);
+        ASSERT_EQ(c1.GetValue(), 0x0011FFB81230ull);
     }
 
 
@@ -429,7 +430,7 @@ namespace CsvTsv
             ++rowCount;
         }
 
-        ASSERT_EQ(rowCount, 10);
+        ASSERT_EQ(rowCount, 10u);
     }
 
 
