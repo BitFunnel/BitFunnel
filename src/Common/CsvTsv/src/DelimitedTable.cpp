@@ -200,12 +200,12 @@ namespace CsvTsv
     DelimitedTableFormatter::DelimitedTableFormatter(std::ostream& out,
                                                      char fieldDelimiter,
                                                      char quoteChar)
-        : m_out(&out),
-          m_fieldDelimiter(fieldDelimiter),
+        : m_fieldDelimiter(fieldDelimiter),
           m_quoteChar(quoteChar),
+          m_hexMode(false),
+          m_out(&out),
           m_currentField(0),
-          m_currentRow(0),
-          m_hexMode(false)
+          m_currentRow(0)
     {
     }
 

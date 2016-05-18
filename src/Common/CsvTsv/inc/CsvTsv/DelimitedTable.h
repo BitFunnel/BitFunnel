@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <string.h>
+
 #include <istream>
 #include <ostream>
 

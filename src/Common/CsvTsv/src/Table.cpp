@@ -20,10 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
+#include <string.h> // For strdup. TODO: don't use strdup.
+
 #include <sstream>
 
 #include "CsvTsv/ParseError.h"
 #include "CsvTsv/Table.h"
+
+#ifndef BITFUNNEL_PLATFORM_WINDOWS
+#define _strdup strdup
+#endif
 
 
 namespace CsvTsv
@@ -63,30 +70,35 @@ namespace CsvTsv
     // TypedColumn<T>
     //
     //*************************************************************************
+    template <>
     void TypedColumn<int>::SetHexMode(bool hexMode)
     {
         m_hexMode = hexMode;
     }
 
 
+    template <>
     void TypedColumn<unsigned int>::SetHexMode(bool hexMode)
     {
         m_hexMode = hexMode;
     }
 
 
+    template <>
     void TypedColumn<long long>::SetHexMode(bool hexMode)
     {
         m_hexMode = hexMode;
     }
 
 
+    template <>
     void TypedColumn<unsigned long long>::SetHexMode(bool hexMode)
     {
         m_hexMode = hexMode;
     }
 
 
+    template <>
     void TypedColumn<std::string>::Read(IFieldParser& parser)
     {
         if (!parser.TryReadField(m_value))
@@ -110,6 +122,7 @@ namespace CsvTsv
     }
 
 
+    template <>
     void TypedColumn<int>::Read(IFieldParser& parser)
     {
         std::string s;
@@ -155,6 +168,7 @@ namespace CsvTsv
     }
 
 
+    template <>
     void TypedColumn<unsigned int>::Read(IFieldParser& parser)
     {
         std::string s;
@@ -198,6 +212,7 @@ namespace CsvTsv
     }
 
 
+    template <>
     void TypedColumn<long long int>::Read(IFieldParser& parser)
     {
         std::string s;
@@ -243,6 +258,7 @@ namespace CsvTsv
     }
 
 
+    template <>
     void TypedColumn<unsigned long long int>::Read(IFieldParser& parser)
     {
         std::string s;
@@ -286,6 +302,7 @@ namespace CsvTsv
     }
 
 
+    template <>
     void TypedColumn<double>::Read(IFieldParser& parser)
     {
         std::string s;
@@ -315,6 +332,7 @@ namespace CsvTsv
     }
 
 
+    template <>
     void TypedColumn<bool>::Read(IFieldParser& parser)
     {
         std::string s;

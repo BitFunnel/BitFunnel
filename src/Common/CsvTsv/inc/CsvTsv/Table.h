@@ -28,7 +28,9 @@
 
 // C4505 must be enabled for the entire header file and everything that comes 
 // after because the compiler generates C4505 after parsing all files.
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
 #pragma warning(disable:4505)
+#endif // BITFUNNEL_PLATFORM_WINDOWS
 
 
 namespace CsvTsv
@@ -420,8 +422,10 @@ namespace CsvTsv
     // TypedVectorColumn<T>
     //
     //*************************************************************************
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
 #pragma warning(push)
 #pragma warning(disable:4250)
+#endif // BITFUNNEL_PLATFORM_WINDOWS
     template <class T>
     class TypedVectorColumn : public TypedColumn<T>, public VectorColumnBase
     {
@@ -448,7 +452,9 @@ namespace CsvTsv
         int m_cursor;
         std::vector<T>& m_data;
     };
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
 #pragma warning(pop)
+#endif // BITFUNNEL_PLATFORM_WINDOWS
 
 
     //*************************************************************************
@@ -456,8 +462,10 @@ namespace CsvTsv
     // InputVectorColumn<T>
     //
     //*************************************************************************
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
 #pragma warning(push)
 #pragma warning(disable:4250)
+#endif // BITFUNNEL_PLATFORM_WINDOWS
     template <class T>
     class InputVectorColumn : public TypedVectorColumn<T>
     {
@@ -470,7 +478,9 @@ namespace CsvTsv
         bool IsInputColumn() const;
         bool IsOutputColumn() const;
     };
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
 #pragma warning(pop)
+#endif // BITFUNNEL_PLATFORM_WINDOWS
 
 
     //*************************************************************************
@@ -478,8 +488,10 @@ namespace CsvTsv
     // OutputVectorColumn<T>
     //
     //*************************************************************************
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
 #pragma warning(push)
 #pragma warning(disable:4250)
+#endif // BITFUNNEL_PLATFORM_WINDOWS
     template <class T>
     class OutputVectorColumn : public TypedVectorColumn<T>
     {
@@ -492,7 +504,9 @@ namespace CsvTsv
         bool IsInputColumn() const;
         bool IsOutputColumn() const;
     };
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
 #pragma warning(pop)
+#endif // BITFUNNEL_PLATFORM_WINDOWS
 
 
     //*************************************************************************
@@ -691,7 +705,7 @@ namespace CsvTsv
     TypedVectorColumn<T>::TypedVectorColumn(const char* name,
                                             const char* helpMessage,
                                             std::vector<T>& data)
-        : TypedColumn(name, helpMessage),
+        : TypedColumn<T>(name, helpMessage),
           m_data(data)
     {
         ResetWriteCursor();
@@ -703,7 +717,7 @@ namespace CsvTsv
                                             const char* helpMessage,
                                             T initialValue,
                                             std::vector<T>& data)
-        : TypedColumn(name, helpMessage, initialValue),
+        : TypedColumn<T>(name, helpMessage, initialValue),
           m_data(data)
     {
         ResetWriteCursor();
@@ -720,7 +734,7 @@ namespace CsvTsv
     template <class T>
     void TypedVectorColumn<T>::PushBack()
     {
-        m_data.push_back(GetValue());
+        m_data.push_back(this->GetValue());
     }
 
 

@@ -122,6 +122,8 @@ namespace CsvTsv
         x = strchr(value, m_quoteChar);
         x = strchr(value, '\n');
         x = strchr(value, '\r');
+        // TODO: what is the intent of this code? mhop?
         throw std::runtime_error("TSV format does not allow TAB and newline characters in fields.");
     }
+
 }

@@ -22,6 +22,7 @@
 
 #include "CsvTsv/Csv.h"
 
+#include <cstring>
 
 namespace CsvTsv
 {
@@ -258,7 +259,7 @@ namespace CsvTsv
                 throw std::runtime_error("Quoted CSV fields cannot contain newline characters.");
             }
 
-            *value++;
+            value++;
         }
 
         // Emit trailing quote.
