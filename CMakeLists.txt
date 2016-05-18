@@ -83,7 +83,11 @@ endmacro()
 ###############################################################################
 
 set(WINDOWS_PUBLIC_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IInterface.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskDistributor.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskProcessor.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IThreadManager.h
 )
 
 COMBINE_FILE_LISTS()
