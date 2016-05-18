@@ -12,6 +12,11 @@ set(WINDOWS_CPPFILES
 )
 
 set(POSIX_CPPFILES
+    Csv.cpp
+    DelimitedTable.cpp
+    ParseError.cpp
+    Table.cpp
+    Tsv.cpp
 )
 
 set(PRIVATE_HFILES

@@ -9,6 +9,8 @@ set(WINDOWS_CPPFILES
 )
 
 set(POSIX_CPPFILES
+    DelimitedTableUnitTest.cpp
+    ReadWriteSingleColumnUnitTest.cpp
 )
 
 set(PRIVATE_HFILES
