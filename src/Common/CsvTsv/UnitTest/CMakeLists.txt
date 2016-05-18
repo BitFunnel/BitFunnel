@@ -1,16 +1,14 @@
 # BitFunnel/src/Common/CsvTsv/UnitTest
 
 set(CPPFILES
+    DelimitedTableUnitTest.cpp
+    ReadWriteSingleColumnUnitTest.cpp
 )
 
 set(WINDOWS_CPPFILES
-    DelimitedTableUnitTest.cpp
-    ReadWriteSingleColumnUnitTest.cpp
 )
 
 set(POSIX_CPPFILES
-    DelimitedTableUnitTest.cpp
-    ReadWriteSingleColumnUnitTest.cpp
 )
 
 set(PRIVATE_HFILES

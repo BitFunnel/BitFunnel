@@ -1,22 +1,17 @@
 # BitFunnel/src/Common/CsvTsv/src
 
 set(CPPFILES
+    Csv.cpp
+    DelimitedTable.cpp
+    ParseError.cpp
+    Table.cpp
+    Tsv.cpp
 )
 
 set(WINDOWS_CPPFILES
-    Csv.cpp
-    DelimitedTable.cpp
-    ParseError.cpp
-    Table.cpp
-    Tsv.cpp
 )
 
 set(POSIX_CPPFILES
-    Csv.cpp
-    DelimitedTable.cpp
-    ParseError.cpp
-    Table.cpp
-    Tsv.cpp
 )
 
 set(PRIVATE_HFILES
