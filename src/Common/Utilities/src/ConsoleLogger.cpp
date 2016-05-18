@@ -20,35 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include <cstdlib>
+#include <iostream>
 
-#include "BitFunnel/NonCopyable.h"
+#include "LoggerInterfaces\ConsoleLogger.h"
+#include "LoggerInterfaces\LogLevel.h"
 
 
-namespace BitFunnel
+namespace Logging
 {
-    class IThreadBase : NonCopyable
+    void ConsoleLogger::Write(char const * filename,
+                              char const * /*function*/,
+                              unsigned lineNumber,
+                              LogLevel level,
+                              char const * title,
+                              char const * message)
     {
-    public:
-        virtual ~IThreadBase() {};
-
-        virtual void EntryPoint() = 0;
-    };
+        std::cout << filename << "(" << lineNumber << ") - [" << title << "] " << LogLevelToString(level);
+        std::cout << ": " << message << std::endl;
+    }
 
 
-    class IThreadManager
+    void ConsoleLogger::Abort()
     {
-    public:
-        virtual ~IThreadManager() {};
-
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
-    };
-
-
-    namespace Factories
-    {
-        IThreadManager* CreateThreadManager(const std::vector<IThreadBase*>& threads);
+        abort();
     }
 }

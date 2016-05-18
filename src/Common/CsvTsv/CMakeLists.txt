@@ -1,4 +1,4 @@
-# BitFunnel/CsvTsv
+# BitFunnel/src/Common/CsvTsv
 
 if (BITFUNNEL_PLATFORM_WINDOWS)
     add_subdirectory(src)

@@ -22,33 +22,26 @@
 
 #pragma once
 
-#include "BitFunnel/NonCopyable.h"
+#include "LoggerInterfaces\ILogger.h"
 
 
-namespace BitFunnel
+namespace Logging
 {
-    class IThreadBase : NonCopyable
+    //*************************************************************************
+    //
+    // An ILogger that writes to the console.
+    //
+    //*************************************************************************
+    class ConsoleLogger : public ILogger
     {
     public:
-        virtual ~IThreadBase() {};
+        void Write(char const * filename,
+                   char const * function,
+                   unsigned lineNumber,
+                   LogLevel level,
+                   char const * title,
+                   char const * message);
 
-        virtual void EntryPoint() = 0;
+        void Abort();
     };
-
-
-    class IThreadManager
-    {
-    public:
-        virtual ~IThreadManager() {};
-
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
-    };
-
-
-    namespace Factories
-    {
-        IThreadManager* CreateThreadManager(const std::vector<IThreadBase*>& threads);
-    }
 }

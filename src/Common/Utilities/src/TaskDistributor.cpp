@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "BitFunnel/Factories.h"
-#include "BitFunnel/ITaskProcessor.h"
+//#include "BitFunnel/Factories.h"
+#include "BitFunnel/Utilities/ITaskProcessor.h"
 #include "LockGuard.h"
 #include "TaskDistributor.h"
 #include "TaskDistributorThread.h"
@@ -30,11 +30,11 @@
 
 namespace BitFunnel
 {
-    ITaskDistributor* Factories::CreateTaskDistributor(const std::vector<ITaskProcessor*>& processors,
-                                                       size_t taskCount)
-    {
-        return new TaskDistributor(processors, taskCount);
-    }
+    //ITaskDistributor* Factories::CreateTaskDistributor(const std::vector<ITaskProcessor*>& processors,
+    //                                                   size_t taskCount)
+    //{
+    //    return new TaskDistributor(processors, taskCount);
+    //}
 
 
     TaskDistributor::TaskDistributor(const std::vector<ITaskProcessor*>& processors, size_t taskCount)

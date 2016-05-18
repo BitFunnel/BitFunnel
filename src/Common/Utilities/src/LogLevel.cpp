@@ -20,35 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "LoggerInterfaces\Logging.h"
+#include "LoggerInterfaces\LogLevel.h"
 
-#include "BitFunnel/NonCopyable.h"
 
-
-namespace BitFunnel
+namespace Logging
 {
-    class IThreadBase : NonCopyable
-    {
-    public:
-        virtual ~IThreadBase() {};
-
-        virtual void EntryPoint() = 0;
+    static char const * const c_logLevelNames[] = {
+        "Debug",
+        "Info",
+        "Status",
+        "Warning",
+        "Error",
+        "Assert"
     };
 
 
-    class IThreadManager
+    char const * LogLevelToString(LogLevel level)
     {
-    public:
-        virtual ~IThreadManager() {};
-
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
-    };
-
-
-    namespace Factories
-    {
-        IThreadManager* CreateThreadManager(const std::vector<IThreadBase*>& threads);
+        LogAssertB(level <= Assert);
+        return c_logLevelNames[level];
     }
 }

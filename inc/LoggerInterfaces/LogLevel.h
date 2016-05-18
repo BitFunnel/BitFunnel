@@ -22,33 +22,22 @@
 
 #pragma once
 
-#include "BitFunnel/NonCopyable.h"
 
-
-namespace BitFunnel
+namespace Logging
 {
-    class IThreadBase : NonCopyable
+    // The severity of a logging message
+    enum LogLevel
     {
-    public:
-        virtual ~IThreadBase() {};
-
-        virtual void EntryPoint() = 0;
+        Debug,
+        Info,
+        Status,
+        Warning,
+        Error,
+        Assert
     };
 
-
-    class IThreadManager
-    {
-    public:
-        virtual ~IThreadManager() {};
-
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
-    };
-
-
-    namespace Factories
-    {
-        IThreadManager* CreateThreadManager(const std::vector<IThreadBase*>& threads);
-    }
+    // Returns the textual representation of a LogLevel. The return
+    // string is owned by LogLevelToString and should not be deleted by the
+    // caller.
+    char const * LogLevelToString(LogLevel level);
 }

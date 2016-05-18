@@ -20,35 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include <cstdlib>
 
-#include "BitFunnel/NonCopyable.h"
+#include "NullLogger.h"
 
 
-namespace BitFunnel
+namespace Logging
 {
-    class IThreadBase : NonCopyable
+    void NullLogger::Write(char const * /*filename*/,
+                           char const * /*function*/,
+                           unsigned /*lineNumber*/,
+                           LogLevel /*level*/,
+                           char const * /*title*/,
+                           char const * /*message*/)
     {
-    public:
-        virtual ~IThreadBase() {};
-
-        virtual void EntryPoint() = 0;
-    };
+    }
 
 
-    class IThreadManager
+    void NullLogger::Abort()
     {
-    public:
-        virtual ~IThreadManager() {};
-
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
-    };
-
-
-    namespace Factories
-    {
-        IThreadManager* CreateThreadManager(const std::vector<IThreadBase*>& threads);
+        abort();
     }
 }

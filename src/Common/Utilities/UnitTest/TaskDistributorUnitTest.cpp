@@ -24,10 +24,10 @@
 #include <vector>
 #include <Windows.h>
 
-#include "BitFunnel/ITaskProcessor.h"
-#include "BitFunnel/ThreadsafeCounter.h"
+#include "BitFunnel/Utilities/ITaskProcessor.h"
+#include "ThreadsafeCounter.h"
 #include "TaskDistributor.h"
-#include "TestFramework/Compatability.h"
+#include "gtest/gtest.h"
 
 
 namespace BitFunnel
@@ -61,7 +61,7 @@ namespace BitFunnel
         // TaskDistributorUnitTest
         //
         //*************************************************************************
-        TEST_CASE(TaskDistributorUnitTest, Comprehensive)
+        TEST(TaskDistributorUnitTest, Comprehensive)
         {
             RunTest1(100000, 0);
             RunTest1(1000, 20);
@@ -90,15 +90,15 @@ namespace BitFunnel
             }
 
             TaskDistributor distributor(processors, taskCount);
-            TestAssert(distributor.WaitForCompletion(INFINITE));
+            ASSERT_TRUE(distributor.WaitForCompletion(INFINITE));
 
             // Verify that ITaskProcessor::Finished() was called one time for each thread.
-            TestAssert(activeThreadCount.ThreadsafeGetValue() == 0);
+            ASSERT_EQ(activeThreadCount.ThreadsafeGetValue(), 0);
 
             // Verify results that each task was done exactly once.
             for (unsigned i = 0; i < taskCount; ++i)
             {
-                TestAssert(tasks[i].ThreadsafeGetValue() == 1);
+                ASSERT_EQ(tasks[i].ThreadsafeGetValue(), 1);
             }
 
             // Cleanup processors vector.
@@ -115,11 +115,11 @@ namespace BitFunnel
         //
         //*************************************************************************
         TaskProcessor::TaskProcessor(std::vector<ThreadsafeCounter64>& tasks,
-            int maxSleepInMS,
-            ThreadsafeCounter64& activeThreadCount)
+                                     int maxSleepInMS,
+                                     ThreadsafeCounter64& activeThreadCount)
             : m_activeThreadCount(activeThreadCount),
-            m_callCount(0),
-            m_tasks(tasks)
+              m_callCount(0),
+              m_tasks(tasks)
         {
             if (maxSleepInMS > 0)
             {

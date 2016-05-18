@@ -58,4 +58,12 @@ namespace BitFunnel
         // exited successfully before the timeout period expired.
         virtual bool WaitForCompletion(int timeoutInMs) = 0;
     };
+
+
+    namespace Factories
+    {
+        ITaskDistributor* 
+            CreateTaskDistributor(const std::vector<ITaskProcessor*>& processors,
+                                  size_t taskCount);
+    }
 }

@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "BitFunnel/ThreadsafeCounter.h"
+#include "ThreadsafeCounter.h"
 #include "BlockingQueue.h"
 #include "ThreadManager.h"
-#include "TestFramework/Compatability.h"
+#include "gtest/gtest.h"
 
 
 namespace BitFunnel
@@ -59,7 +59,7 @@ namespace BitFunnel
 
 
         //*********************************************************************
-        TEST_CASE(BlockingQueueUnitTest, Comprehensive)
+        TEST(BlockingQueueUnitTest, Comprehensive)
         {
             RunTest1(100, 10, 1000, 10);         // Lots of readers and writers.
             RunTest1(100, 10, 869, 3);           // Reader:Writer ratio not integer.
@@ -145,8 +145,8 @@ namespace BitFunnel
                 }
             }
 
-            TestAssert(totalItemsProduced == totalItemsConsumed);
-            TestAssert(totalItemsProduced == totalItems);
+            ASSERT_EQ(totalItemsProduced, totalItemsConsumed);
+            ASSERT_EQ(totalItemsProduced, totalItems);
 
             for (int i = 0 ; i < threads.size(); ++i)
             {
@@ -180,12 +180,12 @@ namespace BitFunnel
             {
                 if (m_isProducer)
                 {
-                    TestAssert(m_queue.TryEnqueue(i, INFINITE));
+                    ASSERT_TRUE(m_queue.TryEnqueue(i, INFINITE));
                 }
                 else
                 {
                     unsigned __int64 value;
-                    TestAssert(m_queue.TryDequeue(value, INFINITE));
+                    ASSERT_TRUE(m_queue.TryDequeue(value, INFINITE));
                 }
                 ++m_itemsProcessed;
                 // No sleeps because we're trying to maximize the chance of threads
