@@ -88,6 +88,10 @@ set(WINDOWS_PUBLIC_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskDistributor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskProcessor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IThreadManager.h
+  ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/ConsoleLogger.h
+  ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/ILogger.h
+  ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/Logging.h
+  ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/LogLevel.h
 )
 
 COMBINE_FILE_LISTS()
@@ -107,6 +111,7 @@ include_directories(inc src/Common/CmdLineParser/inc src/Common/CsvTsv/inc)
 #
 add_subdirectory(src/Common/CmdLineParser)
 add_subdirectory(src/Common/CsvTsv)
+add_subdirectory(src/Common/Utilities)
 
 add_custom_target(TOPLEVEL SOURCES
 #  CMakeLists-googletest.txt.in
