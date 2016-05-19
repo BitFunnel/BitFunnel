@@ -305,7 +305,7 @@ namespace CmdLine
                                             const char* description,
                                             std::unique_ptr<IValidator<T>> validator)
         : ParameterBase(name, description),
-          m_validator(validator)
+          m_validator(std::move(validator))
     {
     }
 
@@ -416,7 +416,7 @@ namespace CmdLine
                                             std::unique_ptr<IValidator<T>> validator)
         : ParameterBase(name, description),
           m_hasDefaultValue(false),
-          m_validator(validator)
+          m_validator(std::move(validator))
     {
     }
 

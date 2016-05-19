@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 
     if (!parser.TryParse(std::cout, argc, argv))
     {
-        parser.Usage(std::cout);
+        parser.Usage(std::cout, argv[0]); // TODO: figure out correct dummy to pass in.
     }
     else
     {
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
         g_createBaseline = createBaseline;
 
         int dummyArgc = 1;
-        char* dummyArgv[] = { "main" };
+        char* dummyArgv[] = { (char*)"main" };
 
         ::testing::InitGoogleTest(&dummyArgc, dummyArgv);
         success = RUN_ALL_TESTS();
