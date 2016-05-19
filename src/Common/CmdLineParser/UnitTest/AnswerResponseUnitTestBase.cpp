@@ -23,9 +23,14 @@
 #include <iostream>
 #include <ostream>
 
+#include <string.h> // For strdup
+
 #include "AnswerResponseUnitTestBase.h"
 #include "gtest/gtest.h"
 
+#ifndef BITFUNNEL_PLATFORM_WINDOWS
+#define _strdup strdup
+#endif
 
 namespace CmdLine
 {

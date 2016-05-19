@@ -176,7 +176,7 @@ namespace CmdLine
     {
     public:
         RequiredParameter(const char* name, const char* description, 
-                          std::unique_ptr<IValidator<T>> validator = std::auto_ptr<IValidator<T>>(NULL));
+                          std::unique_ptr<IValidator<T>> validator = nullptr);
         ~RequiredParameter();
 
         // Local methods
@@ -219,11 +219,11 @@ namespace CmdLine
     public:
         OptionalParameter(const char* name,
                           const char* description,
-                          std::unique_ptr<IValidator<T>> validator = std::auto_ptr<IValidator<T>>(NULL));
+                          std::unique_ptr<IValidator<T>> validator = nullptr);
         OptionalParameter(const char* name,
                           const char* description,
                           const T& defaultValue,
-                          std::unique_ptr<IValidator<T>> validator = std::auto_ptr<IValidator<T>>(NULL));
+                          std::unique_ptr<IValidator<T>> validator = nullptr);
 
         // Local methods
         T GetValue() const;
@@ -403,9 +403,10 @@ namespace CmdLine
                                             std::unique_ptr<IValidator<T>> validator)
         : ParameterBase(name, description),
           m_value(defaultValue),
-          m_validator(validator),
           m_hasDefaultValue(true),
-          m_defaultValue(defaultValue)
+          m_defaultValue(defaultValue),
+          m_validator(std::move(validator))
+
     {
     }
 

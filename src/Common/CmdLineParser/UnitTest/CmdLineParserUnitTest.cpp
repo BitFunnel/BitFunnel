@@ -24,8 +24,11 @@
 #include <sstream>
 #include <vector>
 
+#include <string.h> // For strncpy
+
 #include "CmdLineParserUnitTest.h"
 #include "CmdLineParser/CmdLineParser.h"
+
 
 namespace CmdLine
 {
@@ -226,7 +229,7 @@ namespace CmdLine
 
                 // Copy the argument and store in argv array.
                 char *arg = new char[tail - head + 1];
-                strncpy_s(arg, tail - head + 1, head, tail - head);
+                strncpy(arg, head, tail - head);
                 arg[tail - head] = 0;
                 args.push_back(arg);
             }
