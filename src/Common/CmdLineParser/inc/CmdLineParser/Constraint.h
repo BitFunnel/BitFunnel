@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <memory>           // For std::auto_ptr
+#include <memory>           // For std::unique_ptr
 #include <ostream>
 
 #include "BitFunnel/NonCopyable.h"    // CoexistenceConstraint inherits from noncopyable.
@@ -73,6 +73,6 @@ namespace CmdLine
     };
 
 
-    std::auto_ptr<IConstraint> MutuallyExclusive(const IOptionalParameter& a, const IOptionalParameter& b);
-    std::auto_ptr<IConstraint> MutuallyRequired(const IOptionalParameter& a, const IOptionalParameter& b);
+    std::unique_ptr<IConstraint> MutuallyExclusive(const IOptionalParameter& a, const IOptionalParameter& b);
+    std::unique_ptr<IConstraint> MutuallyRequired(const IOptionalParameter& a, const IOptionalParameter& b);
 }

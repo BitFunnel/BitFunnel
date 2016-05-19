@@ -59,7 +59,7 @@ namespace CmdLine
 
         void AddParameter(IRequiredParameter& parameter);
         void AddParameter(IOptionalParameter& parameter);
-        void AddConstraint(std::auto_ptr<IConstraint> constraint);
+        void AddConstraint(std::unique_ptr<IConstraint> constraint);
 
         bool TryParse(std::ostream& error, unsigned argc, char const* const* argv);
         void Usage(std::ostream& out, char const* argv) const;

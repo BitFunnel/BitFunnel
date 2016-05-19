@@ -92,9 +92,9 @@ namespace CmdLine
 
 
 #define DEFINE_COEXISTENCE_CONSTRAINT(TYPE)\
-    std::auto_ptr<IConstraint> ##TYPE##(const IOptionalParameter& a, const IOptionalParameter& b)\
+    std::unique_ptr<IConstraint> TYPE(const IOptionalParameter& a, const IOptionalParameter& b)\
     {\
-        return std::auto_ptr<IConstraint>(new CoexistenceConstraint(CoexistenceConstraint::TYPE, a, b));\
+        return std::unique_ptr<IConstraint>(new CoexistenceConstraint(CoexistenceConstraint::TYPE, a, b));\
     }
 
     DEFINE_COEXISTENCE_CONSTRAINT(MutuallyExclusive)

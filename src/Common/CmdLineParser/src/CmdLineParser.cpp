@@ -87,9 +87,9 @@ namespace CmdLine
     }
 
 
-    void CmdLineParser::AddConstraint(std::auto_ptr<IConstraint> constraint)
+    void CmdLineParser::AddConstraint(std::unique_ptr<IConstraint> constraint)
     {
-        // Release the auto_ptr since its internal pointer will now be stored 
+        // Release the unique_ptr since its internal pointer will now be stored 
         // in an std::vector<> and released in ArgumentParser::~ArgumentParser().
         m_constraints.push_back(constraint.release());
     }

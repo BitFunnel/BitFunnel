@@ -36,9 +36,10 @@ namespace CmdLine
     //
     //*************************************************************************
     ParameterBase::ParameterBase(const char* name, const char* description)
-        : m_name(name),
-          m_description(description),
-          m_isActivated(false)
+        : m_isActivated(false),
+          m_name(name),
+          m_description(description)
+
     {
         if (name == NULL)
         {

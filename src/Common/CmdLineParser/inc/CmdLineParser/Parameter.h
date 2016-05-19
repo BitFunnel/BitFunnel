@@ -176,7 +176,7 @@ namespace CmdLine
     {
     public:
         RequiredParameter(const char* name, const char* description, 
-                          std::auto_ptr<IValidator<T>> validator = std::auto_ptr<IValidator<T>>(NULL));
+                          std::unique_ptr<IValidator<T>> validator = std::auto_ptr<IValidator<T>>(NULL));
         ~RequiredParameter();
 
         // Local methods
@@ -190,7 +190,7 @@ namespace CmdLine
 
     private:
         T m_value;
-        std::auto_ptr<IValidator<T>> m_validator;
+        std::unique_ptr<IValidator<T>> m_validator;
     };
 
     //*************************************************************************
@@ -219,11 +219,11 @@ namespace CmdLine
     public:
         OptionalParameter(const char* name,
                           const char* description,
-                          std::auto_ptr<IValidator<T>> validator = std::auto_ptr<IValidator<T>>(NULL));
+                          std::unique_ptr<IValidator<T>> validator = std::auto_ptr<IValidator<T>>(NULL));
         OptionalParameter(const char* name,
                           const char* description,
                           const T& defaultValue,
-                          std::auto_ptr<IValidator<T>> validator = std::auto_ptr<IValidator<T>>(NULL));
+                          std::unique_ptr<IValidator<T>> validator = std::auto_ptr<IValidator<T>>(NULL));
 
         // Local methods
         T GetValue() const;
@@ -231,7 +231,7 @@ namespace CmdLine
 
         T GetDefaultValue() const;
 
-        virtual std::auto_ptr<IConstraint> Requires(const IOptionalParameter& p) const;
+        virtual std::unique_ptr<IConstraint> Requires(const IOptionalParameter& p) const;
 
         // IParameter methods
         bool TryParse(std::ostream& error, unsigned& currentArg, unsigned argc, char const* const* argv);
@@ -252,7 +252,7 @@ namespace CmdLine
         bool m_hasDefaultValue;
         T m_defaultValue;
 
-        std::auto_ptr<IValidator<T>> m_validator;
+        std::unique_ptr<IValidator<T>> m_validator;
     };
 
     //*************************************************************************
@@ -303,7 +303,7 @@ namespace CmdLine
     template <class T>
     RequiredParameter<T>::RequiredParameter(const char* name,
                                             const char* description,
-                                            std::auto_ptr<IValidator<T>> validator)
+                                            std::unique_ptr<IValidator<T>> validator)
         : ParameterBase(name, description),
           m_validator(validator)
     {
@@ -400,19 +400,19 @@ namespace CmdLine
     OptionalParameter<T>::OptionalParameter(const char* name,
                                             const char* description,
                                             const T& defaultValue, 
-                                            std::auto_ptr<IValidator<T>> validator)
+                                            std::unique_ptr<IValidator<T>> validator)
         : ParameterBase(name, description),
-          m_hasDefaultValue(true),
-          m_defaultValue(defaultValue),
           m_value(defaultValue),
-          m_validator(validator)
+          m_validator(validator),
+          m_hasDefaultValue(true),
+          m_defaultValue(defaultValue)
     {
     }
 
     template <class T>
     OptionalParameter<T>::OptionalParameter(const char* name,
                                             const char* description,
-                                            std::auto_ptr<IValidator<T>> validator)
+                                            std::unique_ptr<IValidator<T>> validator)
         : ParameterBase(name, description),
           m_hasDefaultValue(false),
           m_validator(validator)
@@ -456,9 +456,9 @@ namespace CmdLine
     }
 
     template <class T>
-    std::auto_ptr<IConstraint> OptionalParameter<T>::Requires(const IOptionalParameter& p) const
+    std::unique_ptr<IConstraint> OptionalParameter<T>::Requires(const IOptionalParameter& p) const
     {
-        return std::auto_ptr<IConstraint>(new CoexistenceConstraint(CoexistenceConstraint::Implies, *this, p));
+        return std::unique_ptr<IConstraint>(new CoexistenceConstraint(CoexistenceConstraint::Implies, *this, p));
     }
 
     template <class T>

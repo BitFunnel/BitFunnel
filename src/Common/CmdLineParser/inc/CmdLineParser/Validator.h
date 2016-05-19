@@ -64,7 +64,7 @@ namespace CmdLine
 
 #define DECLARE_COMPARISON_VALIDATOR(TYPE)\
     template <class T>\
-    std::auto_ptr<IValidator<T>> TYPE(const T& value);
+    std::unique_ptr<IValidator<T>> TYPE(const T& value);
 
     DECLARE_COMPARISON_VALIDATOR(LessThan);
     DECLARE_COMPARISON_VALIDATOR(LessThanOrEqual);
@@ -86,18 +86,18 @@ namespace CmdLine
     class PairValidator : public IValidator<T>
     {
     public:
-        PairValidator(std::auto_ptr<IValidator<T>> first, std::auto_ptr<IValidator<T>> second);
+        PairValidator(std::unique_ptr<IValidator<T>> first, std::auto_ptr<IValidator<T>> second);
 
         bool IsValid(const T& value) const;
         void Description(std::ostream& out) const;
 
     private:
-        std::auto_ptr<IValidator<T>> m_first;
-        std::auto_ptr<IValidator<T>> m_second;
+        std::unique_ptr<IValidator<T>> m_first;
+        std::unique_ptr<IValidator<T>> m_second;
     };
 
     template <class T>
-    std::auto_ptr<IValidator<T>> Range(std::auto_ptr<IValidator<T>> first, std::auto_ptr<IValidator<T>> second);
+    std::unique_ptr<IValidator<T>> Range(std::auto_ptr<IValidator<T>> first, std::auto_ptr<IValidator<T>> second);
 
     //*************************************************************************
     //
@@ -121,22 +121,22 @@ namespace CmdLine
     };
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const T& a);
+    std::unique_ptr<IValidator<T>> From(const T& a);
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const T& a, const T& b);
+    std::unique_ptr<IValidator<T>> From(const T& a, const T& b);
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const T& a, const T& b, const T& c);
+    std::unique_ptr<IValidator<T>> From(const T& a, const T& b, const T& c);
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const T& a, const T& b, const T& c, const T& d);
+    std::unique_ptr<IValidator<T>> From(const T& a, const T& b, const T& c, const T& d);
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const T& a, const T& b, const T& c, const T& d, const T& e);
+    std::unique_ptr<IValidator<T>> From(const T& a, const T& b, const T& c, const T& d, const T& e);
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const std::vector<T>& values);
+    std::unique_ptr<IValidator<T>> From(const std::vector<T>& values);
 
 
     //*************************************************************************
@@ -214,9 +214,9 @@ namespace CmdLine
 
 #define DEFINE_COMPARISON_VALIDATOR(TYPE)\
     template <class T>\
-    std::auto_ptr<IValidator<T>> TYPE(const T& value)\
+    std::unique_ptr<IValidator<T>> TYPE(const T& value)\
     {\
-    return std::auto_ptr<IValidator<T>>(new ComparisonValidator<T>(ComparisonValidator<T>::TYPE, value));\
+    return std::unique_ptr<IValidator<T>>(new ComparisonValidator<T>(ComparisonValidator<T>::TYPE, value));\
     }
 
     DEFINE_COMPARISON_VALIDATOR(LessThan);
@@ -234,7 +234,7 @@ namespace CmdLine
     //
     //*************************************************************************
     template <class T>
-    PairValidator<T>::PairValidator(std::auto_ptr<IValidator<T>> first, std::auto_ptr<IValidator<T>> second)
+    PairValidator<T>::PairValidator(std::unique_ptr<IValidator<T>> first, std::auto_ptr<IValidator<T>> second)
         : m_first(first),
           m_second(second)
     {
@@ -255,9 +255,9 @@ namespace CmdLine
     }
 
     template <class T>
-    std::auto_ptr<IValidator<T>> Range(std::auto_ptr<IValidator<T>> first, std::auto_ptr<IValidator<T>> second)
+    std::unique_ptr<IValidator<T>> Range(std::auto_ptr<IValidator<T>> first, std::auto_ptr<IValidator<T>> second)
     {
-        return std::auto_ptr<IValidator<T>>(new PairValidator<T>(first, second));
+        return std::unique_ptr<IValidator<T>>(new PairValidator<T>(first, second));
     }
 
     //*************************************************************************
@@ -313,45 +313,45 @@ namespace CmdLine
     }
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const T& a)
+    std::unique_ptr<IValidator<T>> From(const T& a)
     {
         SetValidator<T>* validator = new SetValidator<T>();
         validator->RegisterField(a);
-        return std::auto_ptr<IValidator<T>>(validator);
+        return std::unique_ptr<IValidator<T>>(validator);
     }
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const T& a, const T& b)
+    std::unique_ptr<IValidator<T>> From(const T& a, const T& b)
     {
         SetValidator<T>* validator = new SetValidator<T>();
         validator->RegisterField(a);
         validator->RegisterField(b);
-        return std::auto_ptr<IValidator<T>>(validator);
+        return std::unique_ptr<IValidator<T>>(validator);
     }
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const T& a, const T& b, const T& c)
+    std::unique_ptr<IValidator<T>> From(const T& a, const T& b, const T& c)
     {
         SetValidator<T>* validator = new SetValidator<T>();
         validator->RegisterField(a);
         validator->RegisterField(b);
         validator->RegisterField(c);
-        return std::auto_ptr<IValidator<T>>(validator);
+        return std::unique_ptr<IValidator<T>>(validator);
     }
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const T& a, const T& b, const T& c, const T& d)
+    std::unique_ptr<IValidator<T>> From(const T& a, const T& b, const T& c, const T& d)
     {
         SetValidator<T>* validator = new SetValidator<T>();
         validator->RegisterField(a);
         validator->RegisterField(b);
         validator->RegisterField(c);
         validator->RegisterField(d);
-        return std::auto_ptr<IValidator<T>>(validator);
+        return std::unique_ptr<IValidator<T>>(validator);
     }
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const T& a, const T& b, const T& c, const T& d, const T& e)
+    std::unique_ptr<IValidator<T>> From(const T& a, const T& b, const T& c, const T& d, const T& e)
     {
         SetValidator<T>* validator = new SetValidator<T>();
         validator->RegisterField(a);
@@ -359,17 +359,17 @@ namespace CmdLine
         validator->RegisterField(c);
         validator->RegisterField(d);
         validator->RegisterField(e);
-        return std::auto_ptr<IValidator<T>>(validator);
+        return std::unique_ptr<IValidator<T>>(validator);
     }
 
     template <class T>
-    std::auto_ptr<IValidator<T>> From(const std::vector<T>& values)
+    std::unique_ptr<IValidator<T>> From(const std::vector<T>& values)
     {
         SetValidator<T>* validator = new SetValidator<T>();
         for (unsigned i = 0 ; i < values.size(); ++i)
         {
             validator->RegisterField(values[i]);
         }
-        return std::auto_ptr<IValidator<T>>(validator);
+        return std::unique_ptr<IValidator<T>>(validator);
     }
 }
