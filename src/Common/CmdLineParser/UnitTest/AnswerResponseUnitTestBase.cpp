@@ -93,7 +93,6 @@ namespace CmdLine
         else
         {
             bool result = ValidateResponse(expected, actualResponse);
-            ASSERT_TRUE(result);
             if (result)
             {
                 ++m_passedCount;
@@ -108,6 +107,7 @@ namespace CmdLine
                 m_out << actualResponse;
                 m_out << "\n--------------\n";
             }
+            ASSERT_TRUE(result);
         }
     }
 

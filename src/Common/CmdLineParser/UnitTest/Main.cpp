@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
         g_createBaseline = createBaseline;
 
         int dummyArgc = 1;
-        char* dummyArgv[] = { (char*)"main" };
+        char* dummyArgv[] = { (char*)"CmdLineParserUnitTest.exe"};
 
         ::testing::InitGoogleTest(&dummyArgc, dummyArgv);
         success = RUN_ALL_TESTS();
