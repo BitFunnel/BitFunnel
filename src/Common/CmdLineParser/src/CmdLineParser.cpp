@@ -23,8 +23,10 @@
 #include <algorithm>        // For std::min() or std::max()
 #include <sstream>
 #include <stdexcept>
-#include <stdlib.h>         // For _splitpath_s().
+
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
 #include <Windows.h>        // For GetModuleFileNameA().
+#endif
 
 #include "CmdLineParser/CmdLineParser.h"
 #include "CmdLineParser/FormattingUtilities.h"
@@ -208,7 +210,7 @@ namespace CmdLine
 
         if (m_help.IsActivated())
         {
-            Usage(error);
+            Usage(error, argv[0]);
 
             // Ensure that the presense of help disables all other parameters.
             success = false;
@@ -222,7 +224,7 @@ namespace CmdLine
     }
 
 
-    void CmdLineParser::Usage(std::ostream& out) const
+    void CmdLineParser::Usage(std::ostream& out, char const* argv0) const
     {
         out << m_name << std::endl;
 
@@ -235,17 +237,8 @@ namespace CmdLine
 
         out << "Usage: " << std::endl;
 
-        char path[1000];
-        GetModuleFileNameA(NULL, path, sizeof(path));
-
-        char drive[20];
-        char dir[1000];
-        char name[100];
-        char extension[100];
-        _splitpath_s(path, drive, dir, name, extension);
-
-        out << name << extension << " ";
-        unsigned indent = static_cast<unsigned>(strlen(name)) + static_cast<unsigned>(strlen(extension)) + 1;
+        out << argv0 << " ";
+        unsigned indent = static_cast<unsigned>(strlen(argv0)) + 1;
         for (unsigned i = 0; i < m_required.size(); ++i)
         {
             if (i > 0)

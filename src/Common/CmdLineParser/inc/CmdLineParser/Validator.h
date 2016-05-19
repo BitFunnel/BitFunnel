@@ -64,7 +64,7 @@ namespace CmdLine
 
 #define DECLARE_COMPARISON_VALIDATOR(TYPE)\
     template <class T>\
-    std::auto_ptr<IValidator<T>> ##TYPE##(const T& value);
+    std::auto_ptr<IValidator<T>> TYPE(const T& value);
 
     DECLARE_COMPARISON_VALIDATOR(LessThan);
     DECLARE_COMPARISON_VALIDATOR(LessThanOrEqual);
@@ -214,9 +214,9 @@ namespace CmdLine
 
 #define DEFINE_COMPARISON_VALIDATOR(TYPE)\
     template <class T>\
-    std::auto_ptr<IValidator<T>> TYPE##(const T& value)\
+    std::auto_ptr<IValidator<T>> TYPE(const T& value)\
     {\
-    return std::auto_ptr<IValidator<T>>(new ComparisonValidator<T>(ComparisonValidator<T>::##TYPE##, value));\
+    return std::auto_ptr<IValidator<T>>(new ComparisonValidator<T>(ComparisonValidator<T>::TYPE, value));\
     }
 
     DEFINE_COMPARISON_VALIDATOR(LessThan);

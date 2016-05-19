@@ -1,9 +1,6 @@
 # BitFunnel/src/Common/CmdLineParser/UnitTest
 
 set(CPPFILES
-)
-
-set(WINDOWS_CPPFILES
     AnswerResponseUnitTestBase.cpp
     AnswerResponseUnitTestBase.h
     CMakeLists.txt
@@ -11,6 +8,9 @@ set(WINDOWS_CPPFILES
     CmdLineParserUnitTest.cpp
     CmdLineParserUnitTest.h
     Main.cpp
+)
+
+set(WINDOWS_CPPFILES
 )
 
 set(POSIX_CPPFILES

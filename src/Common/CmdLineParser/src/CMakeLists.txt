@@ -1,13 +1,13 @@
 # BitFunnel/src/Common/CmdLineParser/src
 
 set(CPPFILES
-)
-
-set(WINDOWS_CPPFILES
     CmdLineParser.cpp
     Constraint.cpp
     FormattingUtilities.cpp
     Parameter.cpp
+)
+
+set(WINDOWS_CPPFILES
 )
 
 set(POSIX_CPPFILES

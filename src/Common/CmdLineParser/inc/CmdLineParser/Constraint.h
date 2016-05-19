@@ -72,11 +72,7 @@ namespace CmdLine
         const IOptionalParameter& m_parameter2;
     };
 
-#define DECLARE_COEXISTENCE_CONSTRAINT(TYPE)\
-    std::auto_ptr<IConstraint> ##TYPE##(const IOptionalParameter& a, const IOptionalParameter& b)
 
-    DECLARE_COEXISTENCE_CONSTRAINT(MutuallyExclusive);
-    DECLARE_COEXISTENCE_CONSTRAINT(MutuallyRequired);
-
-#undef DECLARE_COEXISTENCE_CONSTRAINT
+    std::auto_ptr<IConstraint> MutuallyExclusive(const IOptionalParameter& a, const IOptionalParameter& b);
+    std::auto_ptr<IConstraint> MutuallyRequired(const IOptionalParameter& a, const IOptionalParameter& b);
 }

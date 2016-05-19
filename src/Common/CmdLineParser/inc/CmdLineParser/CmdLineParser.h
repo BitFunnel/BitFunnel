@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <cstring>
 #include <ostream>
 #include <vector>
 
@@ -57,7 +58,7 @@ namespace CmdLine
         void AddConstraint(std::auto_ptr<IConstraint> constraint);
 
         bool TryParse(std::ostream& error, unsigned argc, char const* const* argv);
-        void Usage(std::ostream& out) const;
+        void Usage(std::ostream& out, char const* argv) const;
 
     private:
         // Attempts to parse an optional parameter starting at argv[currentArg].
