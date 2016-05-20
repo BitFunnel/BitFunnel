@@ -126,4 +126,5 @@ add_custom_target(TOPLEVEL SOURCES
 enable_testing()
 add_test(NAME CmdLineParserUnitTest COMMAND CmdLineParserUnitTest)
 add_test(NAME CsvTsvUnitTest COMMAND CsvTsvUnitTest)
+add_test(NAME UtilitiesUnitTest COMMAND UtilitiesUnitTest)
 
