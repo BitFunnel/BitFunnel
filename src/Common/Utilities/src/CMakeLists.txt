@@ -1,6 +1,7 @@
 # BitFunnel/src/Common/Utilities/src
 
 set(CPPFILES
+    MurmurHash2.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -9,7 +10,6 @@ set(WINDOWS_CPPFILES
     LockGuard.cpp
     Logging.cpp
     LogLevel.cpp
-    MurmurHash2.cpp
     Mutex.cpp
     NullLogger.cpp
     Stopwatch.cpp
@@ -23,12 +23,12 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    MurmurHash2.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
     BlockingQueue.h
     LockGuard.h
-    MurmurHash2.h
     Mutex.h
     Stopwatch.h
     TaskDistributor.h

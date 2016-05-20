@@ -2,7 +2,13 @@
 // MurmurHash2 was written by Austin Appleby, and is placed in the public
 // domain. The author hereby disclaims copyright to this source code.
 //
+
+#include <inttypes.h>
+#include <stddef.h>
+
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
 #include <sal.h>
+#endif
 
 
 namespace BitFunnel
@@ -14,16 +20,16 @@ namespace BitFunnel
     //*************************************************************************
 
     // 64-bit hash for 64-bit platforms
-    unsigned __int64 MurmurHash64A(const void *key, size_t len, unsigned seed)
+    uint64_t MurmurHash64A(const void *key, size_t len, unsigned seed)
     {
-        const unsigned __int64 m = 0xc6a4a7935bd1e995;
+        const uint64_t m = 0xc6a4a7935bd1e995;
         const int r = 47;
-        unsigned __int64 h = seed ^ (len * m);
-        const unsigned __int64 *data = (const unsigned __int64 *)key;
-        const unsigned __int64 *end = data + (len / 8);
+        uint64_t h = seed ^ (len * m);
+        const uint64_t *data = (const uint64_t *)key;
+        const uint64_t *end = data + (len / 8);
         while (data != end)
         {
-            unsigned __int64 k = *data++;
+            uint64_t k = *data++;
             k *= m;
             k ^= k >> r;
             k *= m;
@@ -34,19 +40,31 @@ namespace BitFunnel
 
         switch(len &7)
         {
-        case 7: h ^= unsigned __int64(data2[6]) << 48;
+        case 7: h ^= uint64_t(data2[6]) << 48;
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
             __fallthrough;
-        case 6: h ^= unsigned __int64(data2[5]) << 40;
+#endif
+        case 6: h ^= uint64_t(data2[5]) << 40;
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
             __fallthrough;
-        case 5: h ^= unsigned __int64(data2[4]) << 32;
+#endif
+        case 5: h ^= uint64_t(data2[4]) << 32;
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
             __fallthrough;
-        case 4: h ^= unsigned __int64(data2[3]) << 24;
+#endif
+        case 4: h ^= uint64_t(data2[3]) << 24;
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
             __fallthrough;
-        case 3: h ^= unsigned __int64(data2[2]) << 16;
+#endif
+        case 3: h ^= uint64_t(data2[2]) << 16;
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
             __fallthrough;
-        case 2: h ^= unsigned __int64(data2[1]) << 8;
+#endif
+        case 2: h ^= uint64_t(data2[1]) << 8;
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
             __fallthrough;
-        case 1: h ^= unsigned __int64(data2[0]);
+#endif
+        case 1: h ^= uint64_t(data2[0]);
             h *= m;
         }
         ;
@@ -64,19 +82,19 @@ namespace BitFunnel
     //*************************************************************************
     #define mmix(h,k) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
 
-    unsigned __int32 MurmurHash32A(const void * key, size_t len, unsigned seed)
+    uint32_t MurmurHash32A(const void * key, size_t len, unsigned seed)
     {
-	    const unsigned __int32 m = 0x5bd1e995;
+	    const uint32_t m = 0x5bd1e995;
 	    const int r = 24;
-	    unsigned __int32 l = static_cast<unsigned __int32>(len);
+	    uint32_t l = static_cast<uint32_t>(len);
 
 	    const unsigned char * data = (const unsigned char *)key;
 
-	    unsigned __int32 h = seed;
+	    uint32_t h = seed;
 
 	    while(len >= 4)
 	    {
-		    unsigned __int32 k = *(unsigned int*)data;
+		    uint32_t k = *(unsigned int*)data;
 
 		    mmix(h,k);
 
@@ -84,7 +102,7 @@ namespace BitFunnel
 		    len -= 4;
 	    }
 
-	    unsigned __int32 t = 0;
+	    uint32_t t = 0;
 
 	    switch(len)
 	    {

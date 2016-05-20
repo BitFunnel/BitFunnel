@@ -1,6 +1,7 @@
 # BitFunnel/src/Common/Utilities/UnitTest
 
 set(CPPFILES
+    MurmurHashUnitTest.cpp
 )
 
 set(WINDOWS_CPPFILES
