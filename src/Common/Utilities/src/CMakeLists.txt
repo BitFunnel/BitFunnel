@@ -2,6 +2,9 @@
 
 set(CPPFILES
     MurmurHash2.cpp
+    Mutex.cpp
+    ThreadSafeCounter.cpp
+    TaskDistributor.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -10,13 +13,10 @@ set(WINDOWS_CPPFILES
     LockGuard.cpp
     Logging.cpp
     LogLevel.cpp
-    Mutex.cpp
     NullLogger.cpp
     Stopwatch.cpp
-    TaskDistributor.cpp
     TaskDistributorThread.cpp
     ThreadManager.cpp
-    ThreadSafeCounter.cpp
 )
 
 set(POSIX_CPPFILES
@@ -24,17 +24,17 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     MurmurHash2.h
+    Mutex.h
+    TaskDistributor.h
+    ThreadsafeCounter.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
     BlockingQueue.h
     LockGuard.h
-    Mutex.h
     Stopwatch.h
-    TaskDistributor.h
     TaskDistributorThread.h
     ThreadManager.h
-    ThreadSafeCounter.h
 )
 
 set(POSIX_PRIVATE_HFILES

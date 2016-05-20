@@ -2,11 +2,11 @@
 
 set(CPPFILES
     MurmurHashUnitTest.cpp
+    TaskDistributorUnitTest.cpp
 )
 
 set(WINDOWS_CPPFILES
     BlockingQueueUnitTest.cpp
-    TaskDistributorUnitTest.cpp
 )
 
 set(POSIX_CPPFILES
