@@ -20,9 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <chrono>
+#include <thread>
 #include <ostream>
 #include <vector>
-#include <Windows.h>
 
 #include "BitFunnel/Utilities/ITaskProcessor.h"
 #include "ThreadsafeCounter.h"
@@ -51,7 +52,7 @@ namespace BitFunnel
         private:
             ThreadsafeCounter64& m_activeThreadCount;
             int m_callCount;
-            std::vector<int> m_randomWaits;
+            std::vector<std::chrono::milliseconds> m_randomWaits;
             std::vector<ThreadsafeCounter64>& m_tasks;
         };
 
@@ -72,8 +73,7 @@ namespace BitFunnel
         {
             const int threadCount = 10;
 
-            // The tasks vector will count the number of time each task is processed.
-            // Use __int64 to guarantee 8-byte alinement required by InterlockedIncrement.
+            // The tasks vector will count the number of times each task is processed.
             std::vector<ThreadsafeCounter64> tasks;
             for (unsigned i = 0; i < taskCount; ++i)
             {
@@ -127,7 +127,10 @@ namespace BitFunnel
                 // than one that calls rand() from multiple threads.
                 for (int i = 0; i < 100; ++i)
                 {
-                    m_randomWaits.push_back(rand() % maxSleepInMS);
+                    // TODO: rand() % foo is a really bad RNG.
+                    m_randomWaits.
+                        push_back(std::chrono::milliseconds
+                                  (and() % maxSleepInMS));
                 }
             }
         }
@@ -141,7 +144,7 @@ namespace BitFunnel
 
             if (m_randomWaits.size() > 0)
             {
-                Sleep(m_randomWaits[m_callCount % m_randomWaits.size()]);
+                std::this_thread::sleep_for(m_randomWaits[m_callCount % m_randomWaits.size()]);
             }
         }
 

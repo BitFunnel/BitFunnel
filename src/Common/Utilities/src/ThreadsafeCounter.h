@@ -22,11 +22,23 @@
 
 #pragma once
 
+
+#include <atomic>
+
+#include <inttypes.h>
+#include <stddef.h>
+
+
+// TODO: remove this?
+// This used to use Windows specific primitives, but was replaced by
+// std::atomic.
+// This is being kept for now to make porting easier.
+
 namespace BitFunnel
 {
     //*************************************************************************
     //
-    // ThreadsafeCounter32 provides a unsigned __int32 variable that can be
+    // ThreadsafeCounter32 provides a uint32_t variable that can be
     // used as a counter accessed by multiple threads. All methods utilize full
     // memory barriers and the increment and decrement methods use the Windows
     // Interlocked functions.
@@ -52,50 +64,50 @@ namespace BitFunnel
         // WARNING: users of ThreadsafeCounter32 rely on the default
         // constructor behavior that initializes the counter to zero. The
         // main scenario is array initialization.
-        explicit ThreadsafeCounter32(unsigned __int32 initialValue = 0);
+        explicit ThreadsafeCounter32(uint32_t initialValue = 0);
 
         // Copy constructor with full memory barrier.
         ThreadsafeCounter32(const ThreadsafeCounter32& other);
 
         // Increments counter and returns the resulting value.
-        unsigned __int32 ThreadsafeIncrement();
+        uint32_t ThreadsafeIncrement();
 
         // Attempts to atomically increment the counter if its post-increment
         // value will not exceed a specified threshold value. If successful,
         // reference parameter value will contain the post-increment value and
         // the function will return true.
-        bool TryThreadsafeBoundedIncrement(unsigned __int32& value,
-                                           unsigned __int32 threshold);
+        bool TryThreadsafeBoundedIncrement(uint32_t& value,
+                                           uint32_t threshold);
 
         // Decrements counter and returns the resulting value.
-        unsigned __int32 ThreadsafeDecrement();
+        uint32_t ThreadsafeDecrement();
 
         // Adds an unsigned value and returns the result
-        unsigned __int32 ThreadsafeAdd(unsigned __int32 value);
+        uint32_t ThreadsafeAdd(uint32_t value);
 
         // Adds a signed value and returns the result
-        unsigned __int32 ThreadsafeAdd(__int32 value);
+        uint32_t ThreadsafeAdd(int32_t value);
 
         // Sets the counter to a specified value. Returns the previous value.
-        unsigned __int32 ThreadsafeSetValue(unsigned __int32 value);
+        uint32_t ThreadsafeSetValue(uint32_t value);
 
         // Returns the current counter value.
-        unsigned __int32 ThreadsafeGetValue() const;
+        uint32_t ThreadsafeGetValue() const;
 
         // Assignment operator uses ThreadsafeSetValue to enforce memory
         // barrier.
         ThreadsafeCounter32& operator=(const ThreadsafeCounter32& other);
 
     private:
-        // DESIGN NOTE: mutable allows ThreadSafeGetValue() to be a const
-        // method.
-        _declspec(align(4)) volatile mutable long m_value;
+        // TODO: mark mutable?
+        // TODO: mark aligned?
+        std::atomic<uint32_t> m_value;
     };
 
 
     //*************************************************************************
     //
-    // ThreadsafeCounter64 provides a unsigned __int64 variable that can be
+    // ThreadsafeCounter64 provides a uint64_t variable that can be
     // used as a counter accessed by multiple threads. All methods utilize full
     // memory barriers and the increment and decrement methods use the Windows
     // Interlocked functions.
@@ -121,44 +133,44 @@ namespace BitFunnel
         // WARNING: users of ThreadsafeCounter32 rely on the default
         // constructor behavior that initializes the counter to zero. The
         // main scenario is array initialization.
-        explicit ThreadsafeCounter64(unsigned __int64 initialValue = 0);
+        explicit ThreadsafeCounter64(uint64_t initialValue = 0);
 
         // Copy constructor with full memory barrier.
         ThreadsafeCounter64(const ThreadsafeCounter64& other);
 
         // Increments counter and returns the resulting value.
-        unsigned __int64 ThreadsafeIncrement();
+        uint64_t ThreadsafeIncrement();
 
         // Attempts to atomically increment the counter if its post-increment
         // value will not exceed a specified threshold value. If successful,
         // reference parameter value will contain the post-increment value and
         // the function will return true.
-        bool TryThreadsafeBoundedIncrement(unsigned __int64& value,
-                                           unsigned __int64 threshold);
+        bool TryThreadsafeBoundedIncrement(uint64_t& value,
+                                           uint64_t threshold);
 
 
         // Decrements counter and returns the resulting value.
-        unsigned __int64 ThreadsafeDecrement();
+        uint64_t ThreadsafeDecrement();
 
         // Adds an unsigned value and returns the result
-        unsigned __int64 ThreadsafeAdd(unsigned __int64 value);
+        uint64_t ThreadsafeAdd(uint64_t value);
 
         // Adds a signed value and returns the result
-        unsigned __int64 ThreadsafeAdd(__int64 value);
+        uint64_t ThreadsafeAdd(int64_t value);
 
         // Sets the counter to a specified value. Returns the previous value.
-        unsigned __int64 ThreadsafeSetValue(unsigned __int64 value);
+        uint64_t ThreadsafeSetValue(uint64_t value);
 
         // Returns the current counter value.
-        unsigned __int64 ThreadsafeGetValue() const;
+        uint64_t ThreadsafeGetValue() const;
 
         // Assignment operator uses ThreadsafeSetValue to enforce memory
         // barrier.
         ThreadsafeCounter64& operator=(const ThreadsafeCounter64& other);
 
     private:
-        // DESIGN NOTE: mutable allows ThreadSafeGetValue() to be a const
-        // method.
-        _declspec(align(8)) volatile mutable __int64 m_value;
+        // TODO: mark mutable?
+        // TODO: mark aligned?
+        std::atomic<uint64_t> m_value;
     };
 }

@@ -25,44 +25,26 @@
 
 namespace BitFunnel
 {
-    Mutex::Mutex()
-    {
-        InitializeCriticalSection(&m_criticalSection);
-    }
+    Mutex::Mutex() {}
 
 
-    Mutex::Mutex(unsigned __int32 spinCount)
-    {
-        InitializeCriticalSectionAndSpinCount(&m_criticalSection, spinCount);
-    }
-
-
-    Mutex::Mutex(unsigned __int32 spinCount, unsigned __int32 flags)
-    {
-        InitializeCriticalSectionEx(&m_criticalSection, spinCount, flags);
-    }
-
-
-    Mutex::~Mutex()
-    {
-        DeleteCriticalSection(&m_criticalSection);
-    }
+    Mutex::~Mutex() {}
 
 
     void Mutex::Lock()
     {
-        EnterCriticalSection(&m_criticalSection);
+        m_mutex.lock();
     }
 
 
     bool Mutex::TryLock()
     {
-        return !!TryEnterCriticalSection(&m_criticalSection);
+        return m_mutex.try_lock();
     }
 
 
     void Mutex::Unlock()
     {
-        LeaveCriticalSection(&m_criticalSection);
+        m_mutex.unlock();
     }
 }

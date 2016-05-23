@@ -3,7 +3,7 @@
 set(CPPFILES
     MurmurHash2.cpp
     Mutex.cpp
-    ThreadSafeCounter.cpp
+    ThreadsafeCounter.cpp
     TaskDistributor.cpp
 )
 
