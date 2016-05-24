@@ -22,8 +22,8 @@
 
 #include <iostream>
 #include <sstream>
-
 #include <stdio.h>
+
 
 #include "CsvTsv/Csv.h"
 #include "CsvTsv/Tsv.h"
@@ -184,9 +184,9 @@ namespace CsvTsv
             v3.push_back(i);
             v4.push_back(i);
             v5.push_back(i);
-            char buffer[64];
-            sprintf(buffer, "%d", i);
-            v6.push_back(std::string(buffer));
+            std::ostringstream buffer;
+            buffer << i;
+            v6.push_back(buffer.str());
             v7.push_back((i % 2) == 0);
         }
 
@@ -235,9 +235,9 @@ namespace CsvTsv
             success &= Expect<unsigned long long>(i, v4[i]);
             success &= Expect<double>(i, v5[i]);
 
-            char buffer[64];
-            sprintf(buffer, "%d", i);
-            if (strcmp(v6[i].c_str(), buffer) != 0)
+            std::ostringstream buffer;
+            buffer << i;
+            if (v6[i] != buffer.str())
             {
                 std::cout << "Value mismatch." << std::endl;
                 success = false;
