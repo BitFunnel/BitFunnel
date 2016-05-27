@@ -78,6 +78,6 @@ namespace BitFunnel
         std::vector<IThreadBase*> m_threads;
         ThreadManager* m_threadManager;
 
-        Mutex m_lock;
+        std::mutex m_lock;
     };
 }

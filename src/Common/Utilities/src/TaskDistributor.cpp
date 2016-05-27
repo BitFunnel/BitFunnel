@@ -22,7 +22,6 @@
 
 //#include "BitFunnel/Factories.h"
 #include "BitFunnel/Utilities/ITaskProcessor.h"
-#include "LockGuard.h"
 #include "TaskDistributor.h"
 #include "TaskDistributorThread.h"
 #include "ThreadManager.h"
@@ -62,7 +61,7 @@ namespace BitFunnel
 
     bool TaskDistributor::TryAllocateTask(size_t& taskId)
     {
-        LockGuard lockGuard(m_lock);
+        std::lock_guard<std::mutex> lock(m_lock);
 
         if (m_nextTaskId < m_taskCount)
         {
