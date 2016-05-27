@@ -20,8 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
+#include <assert.h> // Temporary, until we have LogAssert.
+#include <stddef.h>
+
 //#include "BitFunnel/Factories.h"
-#include "LoggerInterfaces/Logging.h"
+//#include "LoggerInterfaces/Logging.h"
 #include "ThreadManager.h"
 
 
@@ -36,8 +40,10 @@ namespace BitFunnel
     ThreadManager::ThreadManager(const std::vector<IThreadBase*>& threads)
         : m_threads(threads)
     {
-        for (int i = 0 ; i < threads.size(); ++i)
+        for (size_t i = 0 ; i < threads.size(); ++i)
         {
+
+            /*
             // TODO: Consider _beginthreadex and _endthreadex instead of CreateThread. 
             // According to MSDN documentation for CreateThread,
             // a thread in an executable that calls the C run-time library (CRT)
@@ -55,37 +61,26 @@ namespace BitFunnel
                 0,              // Creation flags
                 &threadId);
 
-            LogAssertB(handle != nullptr, "Error: failed to start thread %d\n.", i);
+            // LogAssertB(andle != nullptr, "Error: failed to start thread %d\n.", i);
+            // TODO: port logging over.
+            */
 
-            m_handles.push_back(handle);
+            m_handles.push_back(std::thread(ThreadEntryPoint, threads[i]));
         }
     }
 
     ThreadManager::~ThreadManager()
     {
         // REVIEW: what should this do if threads are still running?
-        // TODO: Check for errors closing threads?
-        for (int i = 0 ; i < m_handles.size(); ++i)
-        {
-            int result = CloseHandle(m_handles[i]);
-            LogAssertB(result != 0, "Error closing thread handle.");
-        }
     }
 
-    bool ThreadManager::WaitForThreads()
+    void ThreadManager::WaitForThreads()
     {
-        bool success = true;
-
-        // TODO: REVIEW cast to (int)
-        DWORD result = WaitForMultipleObjects(static_cast<DWORD>(m_handles.size()), &(m_handles.front()) , true, timeoutInMs);
-
-        if (result != WAIT_OBJECT_0)
+        // TODO: does this make any sense?
+        for (auto& handle : m_handles)
         {
-            success = false;
-            LogAssertB(result == WAIT_TIMEOUT, "Error %d while waiting for worker thread exit.\n", GetLastError());
+            handle.join();
         }
-
-        return success;
     }
 
     void ThreadManager::ThreadEntryPoint(void* data)
