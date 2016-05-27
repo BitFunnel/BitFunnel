@@ -23,7 +23,6 @@
 #pragma once
 
 #include <vector>                              // Member variable.
-#include <Windows.h>                           // For HANDLE
 
 #include "BitFunnel/Utilities/IThreadManager.h"          // Inherits from IThreadManager.
 #include "BitFunnel/NonCopyable.h"             // Inherits from NonCopyable.
@@ -39,14 +38,11 @@ namespace BitFunnel
 
         ~ThreadManager();
 
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        bool WaitForThreads(int timeoutInMs);
+        void WaitForThreads();
 
     private:
         static void ThreadEntryPoint(void* data);
 
         const std::vector<IThreadBase*>& m_threads;
-        std::vector<HANDLE> m_handles;
     };
 }

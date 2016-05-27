@@ -90,15 +90,15 @@ namespace BitFunnel
             }
 
             TaskDistributor distributor(processors, taskCount);
-            ASSERT_TRUE(distributor.WaitForCompletion(INFINITE));
+            distributor.WaitForCompletion();
 
             // Verify that ITaskProcessor::Finished() was called one time for each thread.
-            ASSERT_EQ(activeThreadCount.ThreadsafeGetValue(), 0);
+            ASSERT_EQ(activeThreadCount.ThreadsafeGetValue(), 0u);
 
             // Verify results that each task was done exactly once.
             for (unsigned i = 0; i < taskCount; ++i)
             {
-                ASSERT_EQ(tasks[i].ThreadsafeGetValue(), 1);
+                ASSERT_EQ(tasks[i].ThreadsafeGetValue(), 1u);
             }
 
             // Cleanup processors vector.
@@ -130,7 +130,7 @@ namespace BitFunnel
                     // TODO: rand() % foo is a really bad RNG.
                     m_randomWaits.
                         push_back(std::chrono::milliseconds
-                                  (and() % maxSleepInMS));
+                                  (rand() % maxSleepInMS));
                 }
             }
         }

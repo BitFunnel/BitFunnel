@@ -56,7 +56,7 @@ namespace BitFunnel
 
         // Waits a specified amount of time for tasks to complete. Returns true if all threads
         // exited successfully before the timeout period expired.
-        virtual bool WaitForCompletion(int timeoutInMs) = 0;
+        virtual void WaitForCompletion() = 0;
     };
 
 

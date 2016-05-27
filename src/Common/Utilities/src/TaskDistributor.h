@@ -67,9 +67,8 @@ namespace BitFunnel
         // no tasks remaining, the method will return false.
         bool TryAllocateTask(size_t& taskId);
 
-        // Waits a specified amount of time for tasks to complete. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        bool WaitForCompletion(int timeoutInMs);
+        // Waits a specified amount of time for tasks to complete.
+        void WaitForCompletion();
 
     private:
         const std::vector<ITaskProcessor*>& m_processors;

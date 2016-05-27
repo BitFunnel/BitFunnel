@@ -41,9 +41,7 @@ namespace BitFunnel
     public:
         virtual ~IThreadManager() {};
 
-        // Waits a specified amount of time for threads to exit. Returns true if all threads
-        // exited successfully before the timeout period expired.
-        virtual bool WaitForThreads(int timeoutInMs) = 0;
+        virtual void WaitForThreads() = 0;
     };
 
 

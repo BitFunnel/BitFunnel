@@ -42,7 +42,7 @@ namespace BitFunnel
           m_taskCount(taskCount),
           m_nextTaskId(0)
     {
-        for (int i = 0 ; i < m_processors.size(); ++i)
+        for (size_t i = 0 ; i < m_processors.size(); ++i)
         {
             m_threads.push_back(new TaskDistributorThread(*this, *m_processors[i]));
         }
@@ -52,7 +52,7 @@ namespace BitFunnel
 
     TaskDistributor::~TaskDistributor()
     {
-        for (int i = 0 ; i < m_threads.size(); ++i)
+        for (size_t i = 0 ; i < m_threads.size(); ++i)
         {
             delete m_threads[i];
         }
@@ -76,8 +76,8 @@ namespace BitFunnel
     }
 
 
-    bool TaskDistributor::WaitForCompletion(int timeoutInMs)
+    void TaskDistributor::WaitForCompletion()
     {
-        return m_threadManager->WaitForThreads(timeoutInMs);
+        m_threadManager->WaitForThreads();
     }
 }

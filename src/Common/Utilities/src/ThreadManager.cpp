@@ -72,7 +72,7 @@ namespace BitFunnel
         }
     }
 
-    bool ThreadManager::WaitForThreads(int timeoutInMs)
+    bool ThreadManager::WaitForThreads()
     {
         bool success = true;
 
