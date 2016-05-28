@@ -83,7 +83,6 @@ namespace BitFunnel
 
     private:
         // TODO: mark mutable?
-        // TODO: mark aligned?
         std::atomic<uint32_t> m_value;
     };
 
