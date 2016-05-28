@@ -32,8 +32,7 @@ namespace BitFunnel
     // TODO: remove this entire class. This was originally a wrapper for
     // the Win32 CRITICAL_SECTION structure.
     // This is being kept in place as a temporary measure to make porting
-    // easier, but the std::mutex documentation states:
-    // std::mutex is usually not accessed directly: std::unique_lock and std::lock_guard are used to manage locking in an exception-safe manner. 
+    // easier, but I think we can just use std::mutex directly.
     class Mutex : NonCopyable
     {
     public:
