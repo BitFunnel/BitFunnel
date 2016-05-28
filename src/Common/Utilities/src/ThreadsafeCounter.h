@@ -36,23 +36,6 @@
 
 namespace BitFunnel
 {
-    //*************************************************************************
-    //
-    // ThreadsafeCounter32 provides a uint32_t variable that can be
-    // used as a counter accessed by multiple threads. All methods utilize full
-    // memory barriers and the increment and decrement methods use the Windows
-    // Interlocked functions.
-    //
-    // The main purpose of ThreadsafeCounter32 is to isolate in a single class,
-    // all of the details of volatile, memory alignment, and memory barriers.
-    // This allows us to change the implementation as we get more knowledge of
-    // the implementation of barriers and if we move to a different processor
-    // architecture.
-    //
-    // ThreadsafeCounter32, ThreadsafeCounter64, and ThreadsafeFlag should
-    // eliminate the need for the volatile keyword elsewhere in our codebase.
-    //
-    //*************************************************************************
     class ThreadsafeCounter32
     {
     public:
@@ -105,23 +88,6 @@ namespace BitFunnel
     };
 
 
-    //*************************************************************************
-    //
-    // ThreadsafeCounter64 provides a uint64_t variable that can be
-    // used as a counter accessed by multiple threads. All methods utilize full
-    // memory barriers and the increment and decrement methods use the Windows
-    // Interlocked functions.
-    //
-    // The main purpose of ThreadsafeCounter64 is to isolate in a single class,
-    // all of the details of volatile, memory alignment, and memory barriers.
-    // This allows us to change the implementation as we get more knowledge of
-    // the implementation of barriers and if we move to a different processor
-    // architecture.
-    //
-    // ThreadsafeCounter32, ThreadsafeCounter64, and ThreadsafeFlag should
-    // eliminate the need for the volatile keyword elsewhere in our codebase.
-    //
-    //*************************************************************************
     class ThreadsafeCounter64
     {
     public:
@@ -170,7 +136,6 @@ namespace BitFunnel
 
     private:
         // TODO: mark mutable?
-        // TODO: mark aligned?
         std::atomic<uint64_t> m_value;
     };
 }
