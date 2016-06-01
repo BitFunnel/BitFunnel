@@ -23,6 +23,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    BlockingQueue.h
     MurmurHash2.h
     Mutex.h
     TaskDistributor.h
@@ -32,7 +33,6 @@ set(PRIVATE_HFILES
 )
 
 set(WINDOWS_PRIVATE_HFILES
-    BlockingQueue.h
     LockGuard.h
     Stopwatch.h
 )

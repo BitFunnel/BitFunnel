@@ -128,7 +128,7 @@ namespace BitFunnel
 
             // Start the threads and wait for them to complete.
             ThreadManager threadManager(threads);
-            threadManager.WaitForThreads(INFINITE);
+            threadManager.WaitForThreads();
 
             // Verify the results.
             unsigned __int64 totalItemsProduced = 0;

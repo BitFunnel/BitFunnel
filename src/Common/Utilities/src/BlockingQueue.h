@@ -23,10 +23,6 @@
 #pragma once
 
 #include <deque>
-#include <Windows.h>
-
-#include "LockGuard.h"      // Used in template method.
-#include "Mutex.h"          // BlockingQueue embeds Mutex.
 
 namespace BitFunnel
 {
@@ -118,7 +114,7 @@ namespace BitFunnel
 
     private:
         // Protects m_queue operations.
-        Mutex m_lock;
+        std::mutex m_lock;
 
         std::deque<T> m_queue;
     };
@@ -148,7 +144,7 @@ namespace BitFunnel
     {
         if (BlockingQueueBase::TryEnqueue(timeoutInMS))
         {
-            LockGuard lockGuard(m_lock);
+            std::lock_guard<std::mutex> lock(m_lock);
             m_queue.push_back(value);
             CompleteEnqueue();
             return true;
@@ -165,7 +161,7 @@ namespace BitFunnel
     {
         if (BlockingQueueBase::TryDequeue(timeoutInMS))
         {
-            LockGuard lockGuard(m_lock);
+            std::lock_guard<std::mutex> lock(m_lock);
             value = m_queue.front();
             m_queue.pop_front();
             CompleteDequeue();
