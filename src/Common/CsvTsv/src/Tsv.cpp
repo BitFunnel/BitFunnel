@@ -114,21 +114,20 @@ namespace CsvTsv
         WriteColumns(columns);
     }
 
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
-#pragma warning (push)
-#pragma warning (disable : 4100)
-#endif
+
+
     void TsvTableFormatter::WriteEscapedValue(const char* value)
     {
-        // TODO: consider if we need this at all.
-        // This was previously implemented totally incorrectly and it seems that no one noticed?
-#ifndef BITFUNNEL_PLATFORM_WINDOWS
-        asm volatile("" :: "m" (value)); // Cross-compiler warning removal.
-#endif
-        throw std::runtime_error("WriteEscapedValue not implemented.");
+        std::string escapee;
+        if (value != NULL)
+        {
+            escapee = std::string(value);
+        }
+        else
+        {
+            escapee = "";
+        }
+        throw std::runtime_error("WriteEscapedValue not implemented; failed to escape"
+                                 + escapee);
     }
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
-#pragma warning (pop)
-#endif
-
 }
