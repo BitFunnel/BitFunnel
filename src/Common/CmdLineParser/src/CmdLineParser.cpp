@@ -24,10 +24,6 @@
 #include <sstream>
 #include <stdexcept>
 
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
-#include <Windows.h>        // For GetModuleFileNameA().
-#endif
-
 #include "CmdLineParser/CmdLineParser.h"
 #include "CmdLineParser/FormattingUtilities.h"
 

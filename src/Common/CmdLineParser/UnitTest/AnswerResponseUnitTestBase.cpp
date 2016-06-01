@@ -28,8 +28,8 @@
 #include "AnswerResponseUnitTestBase.h"
 #include "gtest/gtest.h"
 
-#ifndef BITFUNNEL_PLATFORM_WINDOWS
-#define _strdup strdup
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
+#define strdup _strdup
 #endif
 
 namespace CmdLine
@@ -37,8 +37,8 @@ namespace CmdLine
     AnswerResponseUnitTestBase::AnswerResponseUnitTestBase(const char* namespaceName, const char* className, std::ostream& out, bool createBaseline, bool ignoreWhiteSpace)
         : m_out(out), m_createBaseline(createBaseline), m_ignoreWhiteSpace(ignoreWhiteSpace)
     {
-        m_namespace = _strdup(namespaceName);
-        m_className = _strdup(className);
+        m_namespace = strdup(namespaceName);
+        m_className = strdup(className);
     }
 
 
