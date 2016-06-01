@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <stddef.h>
+#include <stddef.h> // size_t used as a parameter.
 
 namespace BitFunnel
 {

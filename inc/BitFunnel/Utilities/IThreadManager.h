@@ -41,6 +41,7 @@ namespace BitFunnel
     public:
         virtual ~IThreadManager() {};
 
+        // Wait for all threads to exit.
         virtual void WaitForThreads() = 0;
     };
 

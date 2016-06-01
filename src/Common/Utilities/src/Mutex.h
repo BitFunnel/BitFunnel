@@ -36,12 +36,6 @@ namespace BitFunnel
     class Mutex : NonCopyable
     {
     public:
-        // Construct a mutex.
-        Mutex();
-
-        // Destroys the mutex.
-        ~Mutex();
-
         void Lock();
 
         bool TryLock();

@@ -25,12 +25,6 @@
 
 namespace BitFunnel
 {
-    Mutex::Mutex() {}
-
-
-    Mutex::~Mutex() {}
-
-
     void Mutex::Lock()
     {
         m_mutex.lock();

@@ -38,34 +38,10 @@ namespace BitFunnel
 
 
     ThreadManager::ThreadManager(const std::vector<IThreadBase*>& threads)
-        : m_threads(threads)
     {
         for (size_t i = 0 ; i < threads.size(); ++i)
         {
-
-            /*
-            // TODO: Consider _beginthreadex and _endthreadex instead of CreateThread. 
-            // According to MSDN documentation for CreateThread,
-            // a thread in an executable that calls the C run-time library (CRT)
-            // should use the _beginthreadex and _endthreadex functions for 
-            // thread management rather than CreateThread and ExitThread; this 
-            // requires the use of the multi-threaded version of the CRT. If a 
-            // thread created using CreateThread calls the CRT, the CRT may 
-            // terminate the process in low-memory conditions.
-            DWORD threadId;
-            HANDLE handle = CreateThread(
-                0,              // Security attributes
-                0,              // Stack size
-                (LPTHREAD_START_ROUTINE)ThreadEntryPoint,
-                threads[i],
-                0,              // Creation flags
-                &threadId);
-
-            // LogAssertB(andle != nullptr, "Error: failed to start thread %d\n.", i);
-            // TODO: port logging over.
-            */
-
-            m_handles.push_back(std::thread(ThreadEntryPoint, threads[i]));
+            m_threads.push_back(std::thread(ThreadEntryPoint, threads[i]));
         }
     }
 
@@ -76,10 +52,9 @@ namespace BitFunnel
 
     void ThreadManager::WaitForThreads()
     {
-        // TODO: does this make any sense?
-        for (auto& handle : m_handles)
+        for (auto& thread : m_threads)
         {
-            handle.join();
+            thread.join();
         }
     }
 

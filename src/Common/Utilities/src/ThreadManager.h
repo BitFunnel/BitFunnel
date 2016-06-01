@@ -39,12 +39,12 @@ namespace BitFunnel
 
         ~ThreadManager();
 
+        // Wait for all threads to finish.
         void WaitForThreads();
 
     private:
         static void ThreadEntryPoint(void* data);
 
-        const std::vector<IThreadBase*>& m_threads;
-        std::vector<std::thread> m_handles;
+        std::vector<std::thread> m_threads;
     };
 }

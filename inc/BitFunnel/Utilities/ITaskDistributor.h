@@ -54,8 +54,7 @@ namespace BitFunnel
         // no tasks remaining, the method will return false.
         virtual bool TryAllocateTask(size_t& taskId) = 0;
 
-        // Waits a specified amount of time for tasks to complete. Returns true if all threads
-        // exited successfully before the timeout period expired.
+        // Waits for all tasks to complete.
         virtual void WaitForCompletion() = 0;
     };
 

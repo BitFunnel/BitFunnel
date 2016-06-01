@@ -67,7 +67,7 @@ namespace BitFunnel
         // no tasks remaining, the method will return false.
         bool TryAllocateTask(size_t& taskId);
 
-        // Waits a specified amount of time for tasks to complete.
+        // Wait for all tasks to complete.
         void WaitForCompletion();
 
     private:
