@@ -6,8 +6,11 @@
 #include <inttypes.h>
 #include <stddef.h>
 
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
+#if defined(_MSC_VER)
 #include <sal.h>
+#define BITFUNNEL_FALLTHROUGH __fallthrough
+#elif defined(__clang__)
+#define BITFUNNEL_FALLTHROUGH [[clang::fallthrough]]
 #endif
 
 
@@ -41,29 +44,17 @@ namespace BitFunnel
         switch(len &7)
         {
         case 7: h ^= uint64_t(data2[6]) << 48;
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
-            __fallthrough;
-#endif
+            BITFUNNEL_FALLTHROUGH;
         case 6: h ^= uint64_t(data2[5]) << 40;
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
-            __fallthrough;
-#endif
+            BITFUNNEL_FALLTHROUGH;
         case 5: h ^= uint64_t(data2[4]) << 32;
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
-            __fallthrough;
-#endif
+            BITFUNNEL_FALLTHROUGH;
         case 4: h ^= uint64_t(data2[3]) << 24;
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
-            __fallthrough;
-#endif
+            BITFUNNEL_FALLTHROUGH;
         case 3: h ^= uint64_t(data2[2]) << 16;
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
-            __fallthrough;
-#endif
+            BITFUNNEL_FALLTHROUGH;
         case 2: h ^= uint64_t(data2[1]) << 8;
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
-            __fallthrough;
-#endif
+            BITFUNNEL_FALLTHROUGH;
         case 1: h ^= uint64_t(data2[0]);
             h *= m;
         }
