@@ -11,6 +11,8 @@
 #define BITFUNNEL_FALLTHROUGH __fallthrough
 #elif defined(__clang__)
 #define BITFUNNEL_FALLTHROUGH [[clang::fallthrough]]
+#else
+#define BITFUNNEL_FALLTHROUGH
 #endif
 
 
