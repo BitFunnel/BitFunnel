@@ -22,7 +22,9 @@
 
 #pragma once
 
+#include <condition_variable> // for std::condition_variable
 #include <deque>
+#include <mutex>
 
 namespace BitFunnel
 {
@@ -79,9 +81,9 @@ namespace BitFunnel
         void CompleteEnqueue();
 
     private:
-        HANDLE m_shutdownEvent;
-        HANDLE m_enqueueSemaphore;
-        HANDLE m_dequeueSemaphore;
+        size_t m_capacity;
+        std::condition_variable m_enqueueCond;
+        std::condition_variable m_dequeueCond;
     };
 
     //*************************************************************************

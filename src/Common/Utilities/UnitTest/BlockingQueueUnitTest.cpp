@@ -25,6 +25,7 @@
 #include "ThreadManager.h"
 #include "gtest/gtest.h"
 
+#define INFINITE -1 // TODO: totally bogus.
 
 namespace BitFunnel
 {
@@ -33,22 +34,20 @@ namespace BitFunnel
         class ProducerConsumerThread : public IThreadBase
         {
         public:
-            ProducerConsumerThread(int id,
-                bool isProducer, 
-                unsigned __int64 itemCount,
-                BlockingQueue<unsigned __int64>& queue);
+            ProducerConsumerThread(bool isProducer,
+                uint64_t itemCount,
+                BlockingQueue<uint64_t>& queue);
 
             void EntryPoint();
 
             bool IsProducer() const;
-            unsigned __int64 GetItemsProcessed() const;
+            uint64_t GetItemsProcessed() const;
 
         private:
-            int m_id;
             bool m_isProducer;
-            unsigned __int64 m_itemCount;
-            unsigned __int64 m_itemsProcessed;
-            BlockingQueue<unsigned __int64>& m_queue;
+            uint64_t m_itemCount;
+            uint64_t m_itemsProcessed;
+            BlockingQueue<uint64_t>& m_queue;
         };
 
 
@@ -94,7 +93,7 @@ namespace BitFunnel
             unsigned itemsPerProducer,
             unsigned consumerCount)
         {
-            BlockingQueue<unsigned __int64> queue(queueLength);
+            BlockingQueue<uint64_t> queue(queueLength);
 
             std::vector<ProducerConsumerThread*> producerConsumers;
             std::vector<IThreadBase*> threads;
@@ -102,7 +101,7 @@ namespace BitFunnel
             // Create producer threads.
             for (unsigned i = 0 ; i < producerCount; ++i)
             {
-                producerConsumers.push_back(new ProducerConsumerThread(i, true, itemsPerProducer, queue));
+                producerConsumers.push_back(new ProducerConsumerThread(true, itemsPerProducer, queue));
                 threads.push_back(producerConsumers.back());
             }
             unsigned totalItems = itemsPerProducer * producerCount;
@@ -114,13 +113,13 @@ namespace BitFunnel
             {
                 if (i < consumerCount - 1)
                 {
-                    producerConsumers.push_back(new ProducerConsumerThread(i, false, itemsPerConsumer, queue));
+                    producerConsumers.push_back(new ProducerConsumerThread(false, itemsPerConsumer, queue));
                 }
                 else
                 {
                     // Last consumer gets all remaining items which may differ
                     // from itemsPerConsumer because of roundoff.
-                    producerConsumers.push_back(new ProducerConsumerThread(i, false, totalItems - consumerItems, queue));
+                    producerConsumers.push_back(new ProducerConsumerThread(false, totalItems - consumerItems, queue));
                 }
                 threads.push_back(producerConsumers.back());
                 consumerItems += itemsPerConsumer;
@@ -131,8 +130,8 @@ namespace BitFunnel
             threadManager.WaitForThreads();
 
             // Verify the results.
-            unsigned __int64 totalItemsProduced = 0;
-            unsigned __int64 totalItemsConsumed = 0;
+            uint64_t totalItemsProduced = 0;
+            uint64_t totalItemsConsumed = 0;
             for (unsigned i = 0 ; i < producerConsumers.size(); ++i)
             {
                 if (producerConsumers[i]->IsProducer())
@@ -148,7 +147,7 @@ namespace BitFunnel
             ASSERT_EQ(totalItemsProduced, totalItemsConsumed);
             ASSERT_EQ(totalItemsProduced, totalItems);
 
-            for (int i = 0 ; i < threads.size(); ++i)
+            for (size_t i = 0 ; i < threads.size(); ++i)
             {
                 delete threads[i];
             }
@@ -160,12 +159,10 @@ namespace BitFunnel
         // ProducerConsumerThread
         //
         //*********************************************************************
-        ProducerConsumerThread::ProducerConsumerThread(int id,
-            bool isProducer,
-            unsigned __int64 itemCount,
-            BlockingQueue<unsigned __int64>& queue)
-            : m_id(id),
-            m_isProducer(isProducer),
+        ProducerConsumerThread::ProducerConsumerThread(bool isProducer,
+            uint64_t itemCount,
+            BlockingQueue<uint64_t>& queue)
+            : m_isProducer(isProducer),
             m_itemCount(itemCount),
             m_itemsProcessed(0),
             m_queue(queue)
@@ -175,7 +172,7 @@ namespace BitFunnel
 
         void ProducerConsumerThread::EntryPoint()
         {
-            unsigned __int64 i = 0;
+            uint64_t i = 0;
             for ( ; i < m_itemCount; ++i)
             {
                 if (m_isProducer)
@@ -184,7 +181,7 @@ namespace BitFunnel
                 }
                 else
                 {
-                    unsigned __int64 value;
+                    uint64_t value;
                     ASSERT_TRUE(m_queue.TryDequeue(value, INFINITE));
                 }
                 ++m_itemsProcessed;
@@ -194,7 +191,7 @@ namespace BitFunnel
         }
 
 
-        unsigned __int64 ProducerConsumerThread::GetItemsProcessed() const
+        uint64_t ProducerConsumerThread::GetItemsProcessed() const
         {
             return m_itemsProcessed;
         }

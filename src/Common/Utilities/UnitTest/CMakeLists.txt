@@ -1,12 +1,12 @@
 # BitFunnel/src/Common/Utilities/UnitTest
 
 set(CPPFILES
+    BlockingQueueUnitTest.cpp
     MurmurHashUnitTest.cpp
     TaskDistributorUnitTest.cpp
 )
 
 set(WINDOWS_CPPFILES
-    BlockingQueueUnitTest.cpp
 )
 
 set(POSIX_CPPFILES

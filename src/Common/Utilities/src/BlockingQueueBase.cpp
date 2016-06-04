@@ -21,67 +21,61 @@
 // THE SOFTWARE.
 
 #include "BlockingQueue.h"
-#include "LoggerInterfaces/Logging.h"
+// #include "LoggerInterfaces/Logging.h"
 
 namespace BitFunnel
 {
     BlockingQueueBase::BlockingQueueBase(unsigned capacity)
-        : m_shutdownEvent(CreateEvent(nullptr, TRUE, FALSE, nullptr)),
-          m_enqueueSemaphore(CreateSemaphore(nullptr, capacity, capacity, nullptr)),
-          m_dequeueSemaphore(CreateSemaphore(nullptr, 0, capacity, nullptr))
+        : m_capacity(capacity)
     {
-        LogAssertB(m_shutdownEvent != nullptr);
-        LogAssertB(m_enqueueSemaphore != nullptr);
-        LogAssertB(m_dequeueSemaphore != nullptr);
     }
 
 
     BlockingQueueBase::~BlockingQueueBase()
     {
         Shutdown();
-
-        CloseHandle(m_dequeueSemaphore);
-        CloseHandle(m_enqueueSemaphore);
-        CloseHandle(m_shutdownEvent);
     }
 
 
     void BlockingQueueBase::Shutdown()
     {
-        SetEvent(m_shutdownEvent);
+        // TODO: totally bogus.
     }
 
 
     bool BlockingQueueBase::TryDequeue(unsigned timeoutInMS)
     {
-        HANDLE handles[2] = {m_shutdownEvent, m_dequeueSemaphore};
-
-        return WaitForMultipleObjects(2, handles, FALSE, timeoutInMS) == 1;
+        // TODO: totally bogus.
+        if (timeoutInMS > 100)
+            return true;
+        return false;
     }
 
 
     bool BlockingQueueBase::TryEnqueue(unsigned timeoutInMS)
     {
-        HANDLE handles[2] = {m_shutdownEvent, m_enqueueSemaphore};
-
-        return WaitForMultipleObjects(2, handles, FALSE, timeoutInMS) == 1;
+        // TODO: totally bogus.
+        if (timeoutInMS > 100 && m_capacity)
+            return true;
+        return false;
     }
 
 
     void BlockingQueueBase::CompleteDequeue()
     {
-        ReleaseSemaphore(m_enqueueSemaphore, 1, nullptr);
+        // TODO: totally bogus.
     }
 
 
     void BlockingQueueBase::CompleteEnqueue()
     {
-        ReleaseSemaphore(m_dequeueSemaphore, 1, nullptr);
+        // TODO: totally bogus.
     }
 
 
     bool BlockingQueueBase::IsShuttingDown() const
     {
-        return WaitForSingleObject(m_shutdownEvent, 0) == WAIT_OBJECT_0;
+        // TODO: totally bogus.
+        return false;
     }
 }
