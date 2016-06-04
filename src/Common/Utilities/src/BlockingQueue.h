@@ -30,71 +30,13 @@ namespace BitFunnel
 {
     //*************************************************************************
     //
-    // BlockingQueueBase
-    //
-    // Base class for queues that use semphores to track the amount of free
-    // and used slots.
-    //
-    // THREAD SAFETY: With the exception of the constructor and destructor,
-    // all methods are thread safe.
-    //
-    //*************************************************************************
-    class BlockingQueueBase
-    {
-    public:
-        BlockingQueueBase(unsigned capacity);
-        ~BlockingQueueBase();
-
-        // Shuts down the queue. Immediately returns control to all threads 
-        // suspended on TryDeque() and TryEnqueue().
-        void Shutdown();
-
-        // Returns true if the queue is in the process of shutting down.
-        bool IsShuttingDown() const;
-
-    protected:
-        // Waits up to timeoutInMS for an item to become available for dequeue.
-        // Returns true if an item becomes available for the calling thread.
-        // At this point, the item is reserved for the caller and the caller
-        // must process the item and then invoke CompleteDequeue(). Returns
-        // false if no item becomes available in the timeout period. Also
-        // returns false if the queue is shutting down.
-        bool TryDequeue(unsigned timeoutInMS);
-
-
-        // Waits up to timeoutInMS for space to become available for enqueue.
-        // Returns true if a space becomes available for the calling thread.
-        // At this point, the space is reserved for the caller and the caller
-        // must process use the space and then invoke CompleteEnqueue(). Returns
-        // false if no space becomes available in the timeout period. Also
-        // returns false if the queue is shutting down.
-        bool TryEnqueue(unsigned timeoutInMS);
-
-        // Companion to TryDequeue(). Must be called after TryDequeue()
-        // returns true. This method updates the dequeue semaphore which
-        // tracks the amount of free space in the queue.
-        void CompleteDequeue();
-
-        // Companion to TryEnqueue(). Must be called after TryEnqueue()
-        // returns true. This method updates the enqueue semaphore which
-        // tracks the number of items in the queue.
-        void CompleteEnqueue();
-
-    private:
-        size_t m_capacity;
-        std::condition_variable m_enqueueCond;
-        std::condition_variable m_dequeueCond;
-    };
-
-    //*************************************************************************
-    //
     // BlockingQueue<T> implements a threadsafe queue with a fixed capacity.
     // Attempts to dequeue when empty and enqueue when full will block the
     // caller.
     //
     //*************************************************************************
     template <typename T>
-    class BlockingQueue : public BlockingQueueBase
+    class BlockingQueue
     {
     public:
         // Construct a BlockingQueue with a specified capacity.
@@ -102,6 +44,8 @@ namespace BitFunnel
 
         // Destroys the BlockingQueue and its associated events and semaphores.
         ~BlockingQueue();
+
+        void Shutdown();
 
         // Returns true if item is successfully enqueued.
         // Returns false if the item cannot be enqueued (unsually because queue
@@ -115,8 +59,12 @@ namespace BitFunnel
         bool TryDequeue(T& value, unsigned timeoutInMS);
 
     private:
-        // Protects m_queue operations.
+        std::condition_variable m_enqueueCond;
+        std::condition_variable m_dequeueCond;
         std::mutex m_lock;
+
+        size_t m_capacity;
+        bool m_shutdown;
 
         std::deque<T> m_queue;
     };
@@ -129,7 +77,8 @@ namespace BitFunnel
     //*************************************************************************
     template <typename T>
     BlockingQueue<T>::BlockingQueue(unsigned capacity)
-        : BlockingQueueBase(capacity)
+        : m_capacity(capacity),
+          m_shutdown(false)
     {
     }
 
@@ -140,15 +89,33 @@ namespace BitFunnel
         Shutdown();
     }
 
+    template <typename T>
+    void BlockingQueue<T>::Shutdown()
+    {
+        {
+            std::lock_guard<std::mutex> lock(m_lock);
+            m_shutdown = true;
+        }
+        m_dequeueCond.notify_all();
+        m_enqueueCond.notify_all();
+    }
+
 
     template <typename T>
     bool BlockingQueue<T>::TryEnqueue(T value, unsigned timeoutInMS)
     {
-        if (BlockingQueueBase::TryEnqueue(timeoutInMS))
+        std::unique_lock<std::mutex> lock(m_lock);
+        if (m_enqueueCond.wait_for
+            (lock,
+             std::chrono::milliseconds(timeoutInMS),
+             [&]{ return m_queue.size() < m_capacity || m_shutdown; }))
         {
-            std::lock_guard<std::mutex> lock(m_lock);
+            if (m_shutdown)
+            {
+                return false;
+            }
             m_queue.push_back(value);
-            CompleteEnqueue();
+            m_dequeueCond.notify_one();
             return true;
         }
         else
@@ -161,12 +128,19 @@ namespace BitFunnel
     template <typename T>
     bool BlockingQueue<T>::TryDequeue(T& value, unsigned timeoutInMS)
     {
-        if (BlockingQueueBase::TryDequeue(timeoutInMS))
+        std::unique_lock<std::mutex> lock(m_lock);
+        if (m_dequeueCond.wait_for
+            (lock,
+             std::chrono::milliseconds(timeoutInMS),
+             [&]{ return !m_queue.empty() || m_shutdown; }))
         {
-            std::lock_guard<std::mutex> lock(m_lock);
+            if (m_shutdown)
+            {
+                return false;
+            }
             value = m_queue.front();
             m_queue.pop_front();
-            CompleteDequeue();
+            m_enqueueCond.notify_one();
             return true;
         }
         else

@@ -1,7 +1,6 @@
 # BitFunnel/src/Common/Utilities/src
 
 set(CPPFILES
-    BlockingQueueBase.cpp
     MurmurHash2.cpp
     Mutex.cpp
     TaskDistributor.cpp
