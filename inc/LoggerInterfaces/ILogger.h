@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "LoggerInterfaces\LogLevel.h"
+#include "LoggerInterfaces/LogLevel.h"
 
 
 namespace Logging

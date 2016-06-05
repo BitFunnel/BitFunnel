@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "LoggerInterfaces\Logging.h"
-#include "LoggerInterfaces\LogLevel.h"
+#include "LoggerInterfaces/Logging.h"
+#include "LoggerInterfaces/LogLevel.h"
 
 
 namespace Logging

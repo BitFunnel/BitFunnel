@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "LoggerInterfaces\LogLevel.h"
+#include "LoggerInterfaces/LogLevel.h"
 
 
 // Macro that logs a message. The macro gathers the source file name and the

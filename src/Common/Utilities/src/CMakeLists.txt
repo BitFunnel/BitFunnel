@@ -1,8 +1,12 @@
 # BitFunnel/src/Common/Utilities/src
 
 set(CPPFILES
+    ConsoleLogger.cpp
+    Logging.cpp
+    LogLevel.cpp
     MurmurHash2.cpp
     Mutex.cpp
+    NullLogger.cpp
     TaskDistributor.cpp
     TaskDistributorThread.cpp
     ThreadManager.cpp
@@ -10,10 +14,6 @@ set(CPPFILES
 )
 
 set(WINDOWS_CPPFILES
-    ConsoleLogger.cpp
-    Logging.cpp
-    LogLevel.cpp
-    NullLogger.cpp
     Stopwatch.cpp
 )
 

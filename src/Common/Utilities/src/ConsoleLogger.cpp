@@ -23,8 +23,8 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "LoggerInterfaces\ConsoleLogger.h"
-#include "LoggerInterfaces\LogLevel.h"
+#include "LoggerInterfaces/ConsoleLogger.h"
+#include "LoggerInterfaces/LogLevel.h"
 
 
 namespace Logging

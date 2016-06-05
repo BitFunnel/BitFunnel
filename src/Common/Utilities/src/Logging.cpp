@@ -23,8 +23,8 @@
 #include <sstream>
 #include <cstdarg>
 
-#include "LoggerInterfaces\ILogger.h"
-#include "LoggerInterfaces\Logging.h"
+#include "LoggerInterfaces/ILogger.h"
+#include "LoggerInterfaces/Logging.h"
 #include "NullLogger.h"
 
 
