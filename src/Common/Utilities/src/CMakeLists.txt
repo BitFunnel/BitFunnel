@@ -11,7 +11,6 @@ set(CPPFILES
 
 set(WINDOWS_CPPFILES
     ConsoleLogger.cpp
-    LockGuard.cpp
     Logging.cpp
     LogLevel.cpp
     NullLogger.cpp
@@ -32,7 +31,6 @@ set(PRIVATE_HFILES
 )
 
 set(WINDOWS_PRIVATE_HFILES
-    LockGuard.h
     Stopwatch.h
 )
 
