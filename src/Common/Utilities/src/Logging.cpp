@@ -20,21 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <sstream>
 #include <cstdarg>
+#include <cstring>
+#include <sstream>
 
 #include "LoggerInterfaces/ILogger.h"
 #include "LoggerInterfaces/Logging.h"
 #include "NullLogger.h"
 
+#ifdef _MSC_VER
+#define COUNT_OF _countof
+#else
+template <typename T, size_t N>
+char ( &_ArraySizeHelper( T (&array)[N] ))[N];
+#define COUNT_OF( array ) (sizeof( _ArraySizeHelper( array ) ))
+#endif
 
 namespace Logging
 {
     const unsigned c_messageBufferSize = 1024;
 
     // A marker to be placed at the end of the truncated log lines.
-    const char c_truncatedMessage[] = "[TEXT TRUNCATED]";
-    static_assert(c_messageBufferSize > _countof(c_truncatedMessage),
+    constexpr char c_truncatedMessage[] = "[TEXT TRUNCATED]";
+    static_assert(c_messageBufferSize > COUNT_OF(c_truncatedMessage),
                   "The message buffer is too short for truncation marker");
 
     static NullLogger g_nullLogger;
@@ -61,15 +69,20 @@ namespace Logging
 
         va_list arguments;
         va_start(arguments, format);
+#ifdef _MSC_VER
         const int result = vsnprintf_s(message, _TRUNCATE, format, arguments);
+#else
+        const int result = vsnprintf(&message[0], c_messageBufferSize, format, arguments);
+#endif
+
         va_end(arguments);
 
         // If truncation occurred, place the truncation marker at the end of the
-        // buffer. Note that _countof also counts the terminating '\0'.
+        // buffer. Note that COUNT_OF also counts the terminating '\0'.
         if (result == -1)
         {
-            const unsigned position = _countof(message) - _countof(c_truncatedMessage);
-            memcpy(&message[position], &c_truncatedMessage[0], _countof(c_truncatedMessage));
+            const unsigned position = COUNT_OF(message) - COUNT_OF(c_truncatedMessage);
+            memcpy(&message[position], &c_truncatedMessage[0], COUNT_OF(c_truncatedMessage));
         }
 
         g_logger->Write(filename, function, lineNumber, level, title, message);
@@ -100,7 +113,11 @@ namespace Logging
         va_list arguments;
         va_start(arguments, format);
 
+#ifdef _MSC_VER
         vsprintf_s(message, sizeof(message), format, arguments);
+#else
+        vsprintf(message, format, arguments);
+#endif
         va_end(arguments);
 
         std::stringstream sstream;
@@ -110,3 +127,5 @@ namespace Logging
         g_logger->Abort();
     }
 }
+
+#undef COUNT_OF

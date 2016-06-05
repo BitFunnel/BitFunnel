@@ -38,7 +38,7 @@ namespace Logging
 
     char const * LogLevelToString(LogLevel level)
     {
-        LogAssertB(level <= Assert);
+        LogAssertB(level <= Assert, "Non-existent level");
         return c_logLevelNames[level];
     }
 }
