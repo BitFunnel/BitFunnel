@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 
-#include <assert.h> // Temporary, until we have LogAssert.
 #include <stddef.h>
 
 //#include "BitFunnel/Factories.h"
