@@ -112,6 +112,7 @@ include_directories(inc src/Common/CmdLineParser/inc src/Common/CsvTsv/inc)
 add_subdirectory(src/Common/CmdLineParser)
 add_subdirectory(src/Common/CsvTsv)
 add_subdirectory(src/Common/Utilities)
+add_subdirectory(src/Index)
 
 add_custom_target(TOPLEVEL SOURCES
 #  CMakeLists-googletest.txt.in
