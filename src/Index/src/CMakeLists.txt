@@ -1,0 +1,26 @@
+# BitFunnel/src/Index/src
+
+set(CPPFILES
+)
+
+set(WINDOWS_CPPFILES
+    Placeholder.cpp
+)
+
+set(POSIX_CPPFILES
+)
+
+set(PRIVATE_HFILES
+)
+
+set(WINDOWS_PRIVATE_HFILES
+)
+
+set(POSIX_PRIVATE_HFILES
+)
+
+COMBINE_FILE_LISTS()
+
+add_library(Index ${CPPFILES} ${PRIVATE_HFILES} ${PUBLIC_HFILES})
+set_property(TARGET Index PROPERTY FOLDER "src/Index")
+set_property(TARGET Index PROPERTY PROJECT_LABEL "src")

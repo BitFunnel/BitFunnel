@@ -1,0 +1,6 @@
+namespace BitFunnel
+{
+    void Placeholder()
+    {
+    }
+}
