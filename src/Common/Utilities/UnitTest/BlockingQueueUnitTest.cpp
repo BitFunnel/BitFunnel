@@ -35,6 +35,7 @@ namespace BitFunnel
         {
         public:
             ProducerConsumerThread(bool isProducer,
+                bool shutdownOk,
                 uint64_t itemCount,
                 BlockingQueue<uint64_t>& queue);
 
@@ -45,6 +46,7 @@ namespace BitFunnel
 
         private:
             bool m_isProducer;
+            bool m_shutdownOk;
             uint64_t m_itemCount;
             uint64_t m_itemsProcessed;
             BlockingQueue<uint64_t>& m_queue;
@@ -52,21 +54,24 @@ namespace BitFunnel
 
 
         void RunTest1(unsigned queueLength,
-            unsigned producerCount,
-            unsigned itemsPerProducer,
-            unsigned consumerCount);
+                      unsigned producerCount,
+                      unsigned itemsPerProducer,
+                      unsigned consumerCount,
+                      bool shutdown);
 
 
         //*********************************************************************
         TEST(BlockingQueueUnitTest, Comprehensive)
         {
-            RunTest1(100, 10, 1000, 10);         // Lots of readers and writers.
-            RunTest1(100, 10, 869, 3);           // Reader:Writer ratio not integer.
-            RunTest1(100, 10, 867, 1);           // Many writers, one reader.
-            RunTest1(100, 2, 10000, 10);         // Few writers, many readers.
-            RunTest1(1, 2, 10000, 10);           // length-1 queue, many readers
-            RunTest1(1, 10, 1000, 1);            // length-1 queue, many writers
-            RunTest1(100000, 10, 1000, 10);      // Try a case where enqueue will never block.
+            RunTest1(100, 10, 1000, 10, false);         // Lots of readers and writers.
+            RunTest1(100, 10, 869, 3, false);           // Reader:Writer ratio not integer.
+            RunTest1(100, 10, 867, 1, false);           // Many writers, one reader.
+            RunTest1(100, 2, 10000, 10, false);         // Few writers, many readers.
+            RunTest1(1, 2, 10000, 10, false);           // length-1 queue, many readers
+            RunTest1(1, 10, 1000, 1, false);            // length-1 queue, many writers
+            RunTest1(100000, 10, 1000, 10, false);      // Try a case where enqueue will never block.
+            RunTest1(1, 1, 1000001, 1003, true);        // Shutdown before finished.
+            RunTest1(1, 1003, 1000, 1, true);           // Shutdown before finished.
         }
 
         //*********************************************************************
@@ -89,9 +94,10 @@ namespace BitFunnel
         //
         //*********************************************************************
         void RunTest1(unsigned queueLength,
-            unsigned producerCount,
-            unsigned itemsPerProducer,
-            unsigned consumerCount)
+                      unsigned producerCount,
+                      unsigned itemsPerProducer,
+                      unsigned consumerCount,
+                      bool shutdown)
         {
             BlockingQueue<uint64_t> queue(queueLength);
 
@@ -101,7 +107,7 @@ namespace BitFunnel
             // Create producer threads.
             for (unsigned i = 0 ; i < producerCount; ++i)
             {
-                producerConsumers.push_back(new ProducerConsumerThread(true, itemsPerProducer, queue));
+                producerConsumers.push_back(new ProducerConsumerThread(true, shutdown, itemsPerProducer, queue));
                 threads.push_back(producerConsumers.back());
             }
             unsigned totalItems = itemsPerProducer * producerCount;
@@ -113,13 +119,13 @@ namespace BitFunnel
             {
                 if (i < consumerCount - 1)
                 {
-                    producerConsumers.push_back(new ProducerConsumerThread(false, itemsPerConsumer, queue));
+                    producerConsumers.push_back(new ProducerConsumerThread(false, shutdown, itemsPerConsumer, queue));
                 }
                 else
                 {
                     // Last consumer gets all remaining items which may differ
                     // from itemsPerConsumer because of roundoff.
-                    producerConsumers.push_back(new ProducerConsumerThread(false, totalItems - consumerItems, queue));
+                    producerConsumers.push_back(new ProducerConsumerThread(false, shutdown, totalItems - consumerItems, queue));
                 }
                 threads.push_back(producerConsumers.back());
                 consumerItems += itemsPerConsumer;
@@ -127,6 +133,12 @@ namespace BitFunnel
 
             // Start the threads and wait for them to complete.
             ThreadManager threadManager(threads);
+            if (shutdown)
+            {
+                queue.Shutdown();
+                threadManager.WaitForThreads();
+                return;
+            }
             threadManager.WaitForThreads();
 
             // Verify the results.
@@ -160,9 +172,11 @@ namespace BitFunnel
         //
         //*********************************************************************
         ProducerConsumerThread::ProducerConsumerThread(bool isProducer,
+            bool shutdownOk,
             uint64_t itemCount,
             BlockingQueue<uint64_t>& queue)
             : m_isProducer(isProducer),
+            m_shutdownOk(shutdownOk),
             m_itemCount(itemCount),
             m_itemsProcessed(0),
             m_queue(queue)
@@ -175,14 +189,17 @@ namespace BitFunnel
             uint64_t i = 0;
             for ( ; i < m_itemCount; ++i)
             {
-                if (m_isProducer)
+                if (!m_shutdownOk)
                 {
-                    ASSERT_TRUE(m_queue.TryEnqueue(i, INFINITE));
-                }
-                else
-                {
-                    uint64_t value;
-                    ASSERT_TRUE(m_queue.TryDequeue(value, INFINITE));
+                    if (m_isProducer)
+                    {
+                        ASSERT_TRUE(m_queue.TryEnqueue(i, INFINITE));
+                    }
+                    else
+                    {
+                        uint64_t value;
+                        ASSERT_TRUE(m_queue.TryDequeue(value, INFINITE));
+                    }
                 }
                 ++m_itemsProcessed;
                 // No sleeps because we're trying to maximize the chance of threads
