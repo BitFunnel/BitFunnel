@@ -5,7 +5,6 @@ set(CPPFILES
     Logging.cpp
     LogLevel.cpp
     MurmurHash2.cpp
-    Mutex.cpp
     NullLogger.cpp
     TaskDistributor.cpp
     TaskDistributorThread.cpp
@@ -23,7 +22,6 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     BlockingQueue.h
     MurmurHash2.h
-    Mutex.h
     TaskDistributor.h
     TaskDistributorThread.h
     ThreadManager.h
