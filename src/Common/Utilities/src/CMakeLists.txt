@@ -20,7 +20,6 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
-    BlockingQueue.h
     MurmurHash2.h
     TaskDistributor.h
     TaskDistributorThread.h

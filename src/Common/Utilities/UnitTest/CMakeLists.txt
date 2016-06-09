@@ -1,7 +1,6 @@
 # BitFunnel/src/Common/Utilities/UnitTest
 
 set(CPPFILES
-    BlockingQueueUnitTest.cpp
     MurmurHashUnitTest.cpp
     TaskDistributorUnitTest.cpp
 )
