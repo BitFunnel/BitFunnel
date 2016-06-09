@@ -30,6 +30,14 @@
 #include "CmdLineParser/CmdLineParser.h"
 
 
+#ifdef _MSC_VER
+// Disable warning about strncpy. We should probably use c++
+// strings and get rid of this, but for now this warning is
+// disabled because strncpy_s isn't implemented across
+// platforms.
+#pragma warning(disable:4996)
+#endif // MSC_VER
+
 namespace CmdLine
 {
     CmdLineParserUnitTest::CmdLineParserUnitTest(bool createBaseline)
