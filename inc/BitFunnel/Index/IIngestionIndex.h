@@ -1,32 +1,37 @@
 #pragma once
 
-#include "BitFunnel/BitFunnelTypes.h"
-#include "BitFunnel/IFactSet.h"
 #include "BitFunnel/IInterface.h"
-#include "BitFunnel/DocumentHandle.h"
+#include "BitFunnel/Index/IFactSet.h"
+#include "BitFunnel/Index/DocumentHandle.h"
+
 
 namespace BitFunnel
 {
     class IDocument;
-    class IOfflinePerDocumentDataProvider;
-    class IOfflinePerDocumentDataIngester;
+
+    // BITFUNNELTYPES
+    // The documents in the BitFunnel index can be grouped into conceptual
+    // groups based on the need of the client. For example, a client can choose
+    // to group documents based on time stamp. Each group is assigned a GroupId
+    // which is a unique identifier for the group that the client can use to
+    // manage the index.
+    typedef unsigned __int64 GroupId;
+
 
     //*************************************************************************
     //
-    // IIndex is an abstract class or interface of classes that represents the 
-    // entire BitFunnel index as viewed by the document ingestion pipeline. 
-    // This interface is used by the host of the index to populate the index.
-    // Provides methods to add and remove documents, verify if a document 
+    // IIngester is an abstract class or interface of classes that
+    // represents the entire BitFunnel index as viewed by the document ingestion
+    // pipeline. This interface is used by the host of the index to populate the
+    // index. Provides methods to add and remove documents, verify if a document
     // exists in the index, and assert facts on documents in the index.
     //
-    // NOTE: caller must call shutdown before destorying the index.
+    // NOTE: caller must call Shutdown() before destroying the index.
     //
     // Thread safety: all methods are thread safe.
     //
-    // TODO: other naming ideas: IIngestionIndex.
-    //
     //*************************************************************************
-    class IIngestionIndex : public IInterface
+    class IIngester : public IInterface
     {
     public:
         // Adds a document to the index. Throws if there is no space to add the 
@@ -66,26 +71,17 @@ namespace BitFunnel
         // DESIGN NOTE: This method is not intended to be called directly from 
         // the host. Rather, it is called by the implementation of 
         // IDocument::Place(). The reason that IDocument::Place() does not take 
-        // a ddrCandidateCount is to decouple the IDocument interface from the 
+        // a postingCount is to decouple the IDocument interface from the 
         // criteria used to actually place documents in shards. If the criteria 
-        // should change int the future, say requiring a second parameter, the 
+        // should change in the future, say requiring a second parameter, the 
         // signature of IDocument::Place() will remain unchanged while its 
-        // implementation will call an IIndex::AllocateDocument() which now 
+        // implementation will call IIngester::AllocateDocument() which now 
         // takes one more parameter.
-        virtual DocumentHandle AllocateDocument(unsigned ddrCandidateCount) = 0;
+        virtual DocumentHandle AllocateDocument(unsigned postingCount) = 0;
 
         // Returns the size in bytes of the capacity of row tables in the 
         // entire ingestion index.
         virtual unsigned __int64 GetUsedCapacityInBytes() const = 0;
-
-        // Returns the OfflinePerDocumentDataProvider used to access the stored
-        // OfflinePerDocumentData.
-        virtual IOfflinePerDocumentDataProvider& GetOfflinePerDocumentDataProvider() = 0;
-
-        // Returns the OfflinePerDocumentDataIngester used to store the per-document
-        // information.
-        // DESIGN NOTE: If ingestion is disabled, the return value will be a nullptr.
-        virtual IOfflinePerDocumentDataIngester* GetOfflinePerDocumentDataIngester() = 0;
 
         // Shuts down the index and releases resources allocated to it.
         virtual void Shutdown() = 0;
@@ -103,23 +99,10 @@ namespace BitFunnel
         //    - All future addition operations are done in this new group.
         //    - The previous group is closed. A closed group cannot be reopened or
         //      modified.
-        virtual void OpenNewGroup(GroupId groupId) = 0;
-
-        // Registers an in-recovering group with the manager. If the group already
-        // exists, this is a no-op, otherwise, create the accumulator for the group.
-        // Note: The client is responsible for calling this function to create a group
-        // if the group was missed and going to be recovered. If the missed group
-        // is not created using this function, ingestion to this recovered group
-        // will be failed.
-        // DESIGN NOTE: The function is introduced temporarily only for in-Ram fixup
-        // where ingestion may happen on any unsealed accumulators, in 
-        // particularly during recovery. Once we have the final SSD version
-        // of fixup, this code should be deleted and by default, ingestion can
-        // only happen on current accumulator.
-        virtual void RegisterRecoveringGroup(GroupId groupId) = 0;
+        virtual void OpenGroup(GroupId groupId) = 0;
 
         // Closes the current group, if any.
-        virtual void CloseCurrentGroup() = 0;
+        virtual void CloseGroup() = 0;
 
         // Expires the group with the given id.
         virtual void ExpireGroup(GroupId groupId) = 0;

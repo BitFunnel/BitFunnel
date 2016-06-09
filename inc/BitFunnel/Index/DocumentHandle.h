@@ -1,13 +1,32 @@
 #pragma once
 
-#include "BitFunnel/BitFunnelTypes.h"       // DocId is a return type.
-#include "BitFunnel/IDocumentDataSchema.h"  // VariableSizeBlobId and FixedSizeBlobId are parameters.
-#include "BitFunnel/IFactSet.h"             // FactHandle is a parameter.
+#include "BitFunnel/Index/IDocumentDataSchema.h"    // VariableSizeBlobId and FixedSizeBlobId are parameters.
+#include "BitFunnel/Index/IFactSet.h"               // FactHandle is a parameter.
 
 namespace BitFunnel
 {
     class Slice;
     class Term;
+
+    // BITFUNNELTYPES
+    // A unique, system-wide document identifier.
+    // For now we will make not assumptions about how DocIDs are assigned to
+    // documents. The mapping may have significant and seemingly random gaps.
+    // DESIGN NOTE: The concept of invalid documents (documents with invalid
+    // document ID) was introduced to allow the ResultsProcessor to pass over
+    // document positions used to pad the DocTable row length quanta. It also
+    // provides a means to invalidate a document position after index
+    // construction.
+    typedef unsigned __int64 DocId;
+
+
+    // BITFUNNELTYPES
+    // A shard-independent document identifier which is local to a BitFunnel index.
+    // DocIndex values in an index run from 0 to n where n-1 is the number of documents
+    // in the index. The number of bits for DocIndex and ShardId together must not 
+    // exceed 32.
+    typedef unsigned __int32 DocIndex;
+
 
     //*************************************************************************
     //
