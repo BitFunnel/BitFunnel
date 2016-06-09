@@ -9,7 +9,6 @@ set(CPPFILES
     TaskDistributor.cpp
     TaskDistributorThread.cpp
     ThreadManager.cpp
-    ThreadsafeCounter.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -24,7 +23,6 @@ set(PRIVATE_HFILES
     TaskDistributor.h
     TaskDistributorThread.h
     ThreadManager.h
-    ThreadsafeCounter.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

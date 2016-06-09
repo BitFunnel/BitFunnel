@@ -20,13 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <array>
+#include <atomic>
 #include <chrono>
 #include <thread>
 #include <ostream>
 #include <vector>
 
 #include "BitFunnel/Utilities/ITaskProcessor.h"
-#include "ThreadsafeCounter.h"
 #include "TaskDistributor.h"
 #include "gtest/gtest.h"
 
@@ -35,14 +36,20 @@ namespace BitFunnel
 {
     namespace TaskDistributorUnitTest
     {
+
+        // Hard NUM_TASKSis a hack. This was done when ripping out
+        // ThreadsafeCounter in favor of std::atomic because this resulted
+        // in the quickest possible change.
+        #define NUM_TASKS 100
+
         void RunTest1(unsigned taskCount, unsigned maxSleepInMS);
 
         class TaskProcessor : public ITaskProcessor, NonCopyable
         {
         public:
-            TaskProcessor(std::vector<ThreadsafeCounter64>& tasks,
+            TaskProcessor(std::array<std::atomic<uint64_t>, NUM_TASKS>& tasks,
                 int maxSleepInMS,
-                ThreadsafeCounter64& activeThreadCount);
+                std::atomic<uint64_t>& activeThreadCount);
 
             void ProcessTask(size_t taskId);
             void Finished();
@@ -50,10 +57,10 @@ namespace BitFunnel
             void Print(std::ostream& out);
 
         private:
-            ThreadsafeCounter64& m_activeThreadCount;
+            std::atomic<uint64_t>& m_activeThreadCount;
             int m_callCount;
             std::vector<std::chrono::milliseconds> m_randomWaits;
-            std::vector<ThreadsafeCounter64>& m_tasks;
+            std::array<std::atomic<uint64_t>, NUM_TASKS>& m_tasks;
         };
 
 
@@ -64,8 +71,8 @@ namespace BitFunnel
         //*************************************************************************
         TEST(TaskDistributorUnitTest, Comprehensive)
         {
-            RunTest1(100000, 0);
-            RunTest1(1000, 20);
+            RunTest1(NUM_TASKS, 0);
+            RunTest1(NUM_TASKS, 3);
         }
 
 
@@ -74,15 +81,11 @@ namespace BitFunnel
             const int threadCount = 10;
 
             // The tasks vector will count the number of times each task is processed.
-            std::vector<ThreadsafeCounter64> tasks;
-            for (unsigned i = 0; i < taskCount; ++i)
-            {
-                tasks.push_back(ThreadsafeCounter64(0));
-            }
+            std::array<std::atomic<uint64_t>, NUM_TASKS> tasks = {};
 
             // Create one processor for each thread.
             srand(12345);
-            ThreadsafeCounter64 activeThreadCount(threadCount);
+            std::atomic<uint64_t> activeThreadCount(threadCount);
             std::vector<ITaskProcessor*> processors;
             for (int i = 0 ; i < threadCount; ++i)
             {
@@ -93,12 +96,12 @@ namespace BitFunnel
             distributor.WaitForCompletion();
 
             // Verify that ITaskProcessor::Finished() was called one time for each thread.
-            ASSERT_EQ(activeThreadCount.ThreadsafeGetValue(), 0u);
+            ASSERT_EQ(activeThreadCount.load(), 0u);
 
             // Verify results that each task was done exactly once.
             for (unsigned i = 0; i < taskCount; ++i)
             {
-                ASSERT_EQ(tasks[i].ThreadsafeGetValue(), 1u);
+                ASSERT_EQ(tasks[i].load(), 1u);
             }
 
             // Cleanup processors vector.
@@ -114,9 +117,9 @@ namespace BitFunnel
         // TaskProcessor
         //
         //*************************************************************************
-        TaskProcessor::TaskProcessor(std::vector<ThreadsafeCounter64>& tasks,
+        TaskProcessor::TaskProcessor(std::array<std::atomic<uint64_t>, NUM_TASKS>& tasks,
                                      int maxSleepInMS,
-                                     ThreadsafeCounter64& activeThreadCount)
+                                     std::atomic<uint64_t>& activeThreadCount)
             : m_activeThreadCount(activeThreadCount),
               m_callCount(0),
               m_tasks(tasks)
@@ -140,7 +143,7 @@ namespace BitFunnel
         {
             ++m_callCount;
 
-            m_tasks[taskId].ThreadsafeIncrement();
+            ++m_tasks[taskId];
 
             if (m_randomWaits.size() > 0)
             {
@@ -151,7 +154,7 @@ namespace BitFunnel
 
         void TaskProcessor::Finished()
         {
-            m_activeThreadCount.ThreadsafeDecrement();
+            --m_activeThreadCount;
         }
 
 
