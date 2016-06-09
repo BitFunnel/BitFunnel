@@ -115,19 +115,8 @@ namespace CsvTsv
     }
 
 
-
-    void TsvTableFormatter::WriteEscapedValue(const char* value)
+    void TsvTableFormatter::WriteEscapedValue(const char*)
     {
-        std::string escapee;
-        if (value != NULL)
-        {
-            escapee = std::string(value);
-        }
-        else
-        {
-            escapee = "";
-        }
-        throw std::runtime_error("WriteEscapedValue not implemented; failed to escape"
-                                 + escapee);
+        throw std::runtime_error("WriteEscapedValue not implemented");
     }
 }
