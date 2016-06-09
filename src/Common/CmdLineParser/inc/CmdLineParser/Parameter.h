@@ -282,7 +282,6 @@ namespace CmdLine
 
         void Usage(std::ostream& out, unsigned left, unsigned targetWidth) const;
         void Syntax(std::ostream& out) const;
-//        void Description(std::ostream& out) const;
 
     private:
         std::vector<IRequiredParameter*> m_parameters;
