@@ -31,14 +31,11 @@
 
 // C4505 must be enabled for the entire header file and everything that comes 
 // after because the compiler generates C4505 after parsing all files.
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
+#ifdef _MSC_VER
 #pragma warning(disable:4505)
-#endif // BITFUNNEL_PLATFORM_WINDOWS
-
 // C4250 is caused by a compiler bug - see http://connect.microsoft.com/VisualStudio/feedback/details/101259/disable-warning-c4250-class1-inherits-class2-member-via-dominance-when-weak-member-is-a-pure-virtual-function
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
 #pragma warning(disable:4250)
-#endif // BITFUNNEL_PLATFORM_WINDOWS
+#endif // _MSC_VER
 
 
 namespace CmdLine

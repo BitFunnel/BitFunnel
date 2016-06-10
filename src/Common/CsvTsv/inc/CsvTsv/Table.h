@@ -28,9 +28,9 @@
 
 // C4505 must be enabled for the entire header file and everything that comes 
 // after because the compiler generates C4505 after parsing all files.
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
+#ifdef _MSC_VER
 #pragma warning(disable:4505)
-#endif // BITFUNNEL_PLATFORM_WINDOWS
+#endif // _MSC_VER
 
 
 namespace CsvTsv
@@ -422,10 +422,10 @@ namespace CsvTsv
     // TypedVectorColumn<T>
     //
     //*************************************************************************
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4250)
-#endif // BITFUNNEL_PLATFORM_WINDOWS
+#endif // _MSC_VER
     template <class T>
     class TypedVectorColumn : public TypedColumn<T>, public VectorColumnBase
     {
@@ -452,9 +452,9 @@ namespace CsvTsv
         int m_cursor;
         std::vector<T>& m_data;
     };
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
+#ifdef _MSC_VER
 #pragma warning(pop)
-#endif // BITFUNNEL_PLATFORM_WINDOWS
+#endif // _MSC_VER
 
 
     //*************************************************************************
@@ -462,10 +462,10 @@ namespace CsvTsv
     // InputVectorColumn<T>
     //
     //*************************************************************************
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4250)
-#endif // BITFUNNEL_PLATFORM_WINDOWS
+#endif // _MSC_VER
     template <class T>
     class InputVectorColumn : public TypedVectorColumn<T>
     {
@@ -478,9 +478,9 @@ namespace CsvTsv
         bool IsInputColumn() const;
         bool IsOutputColumn() const;
     };
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
+#ifdef _MSC_VER
 #pragma warning(pop)
-#endif // BITFUNNEL_PLATFORM_WINDOWS
+#endif // _MSC_VER
 
 
     //*************************************************************************
@@ -488,10 +488,10 @@ namespace CsvTsv
     // OutputVectorColumn<T>
     //
     //*************************************************************************
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4250)
-#endif // BITFUNNEL_PLATFORM_WINDOWS
+#endif // _MSC_VER
     template <class T>
     class OutputVectorColumn : public TypedVectorColumn<T>
     {
@@ -504,9 +504,9 @@ namespace CsvTsv
         bool IsInputColumn() const;
         bool IsOutputColumn() const;
     };
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
+#ifdef _MSC_VER
 #pragma warning(pop)
-#endif // BITFUNNEL_PLATFORM_WINDOWS
+#endif // _MSC_VER
 
 
     //*************************************************************************

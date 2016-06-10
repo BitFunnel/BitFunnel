@@ -28,8 +28,9 @@
 #include "AnswerResponseUnitTestBase.h"
 #include "gtest/gtest.h"
 
-#ifdef BITFUNNEL_PLATFORM_WINDOWS
-#define strdup _strdup
+#ifdef _MSC_VER
+// Use cross platform strdup for simplicity.
+#pragma warning(disable:4996)
 #endif
 
 namespace CmdLine

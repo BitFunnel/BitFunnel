@@ -28,8 +28,9 @@
 #include "CsvTsv/ParseError.h"
 #include "CsvTsv/Table.h"
 
-#ifndef BITFUNNEL_PLATFORM_WINDOWS
-#define _strdup strdup
+#ifdef _MSC_VER
+// Use cross platform strdup for simplicity.
+#pragma warning(disable:4996)
 #endif
 
 
@@ -41,7 +42,7 @@ namespace CsvTsv
     //
     //*************************************************************************
     ColumnBase::ColumnBase(const char* name, const char* helpMessage)
-        : m_name(_strdup(name)), m_helpMessage(_strdup(helpMessage))
+        : m_name(strdup(name)), m_helpMessage(strdup(helpMessage))
     {
     }
 
