@@ -44,9 +44,20 @@ int main()
     std::mt19937 gen(rd());
     std::binomial_distribution<int> base_dist(511, 0.2);
 
-    for (int i = 2; i < MAX_NUM_ROWS; ++i) {
-        for (int j = 0; j < NUM_ITERS; ++j) {
-            std::cout << run_once(gen, base_dist, i) << ",";
+    for (int i = 1; i <= MAX_NUM_ROWS; ++i) {
+        std::cout << i;
+        if (i <= MAX_NUM_ROWS-1) {
+            std::cout << ",";
+        }
+    }
+    std::cout << std::endl;
+
+    for (int i = 0; i < NUM_ITERS; ++i) {
+        for (int j = 1; j <= MAX_NUM_ROWS; ++j) {
+            std::cout << run_once(gen, base_dist, j);
+            if (j <= MAX_NUM_ROWS-1) {
+                std::cout << ",";
+            }
         }
         std::cout << std::endl;
     }
