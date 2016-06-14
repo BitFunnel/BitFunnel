@@ -1,10 +1,11 @@
 # BitFunnel/src/Index/UnitTest
 
 set(CPPFILES
+    DocumentLengthHistogramUnitTest.cpp
+    Placeholder.cpp
 )
 
 set(WINDOWS_CPPFILES
-    Placeholder.cpp
 )
 
 set(POSIX_CPPFILES
@@ -22,12 +23,12 @@ set(POSIX_PRIVATE_HFILES
 COMBINE_FILE_LISTS()
 
 # Unit tests are allowed to access private headers of the library they test.
-# include_directories(${CMAKE_SOURCE_DIR}/src/Common/Utilities/src)
+include_directories(${CMAKE_SOURCE_DIR}/src/Index/src)
 
 
 add_executable(IndexUnitTest ${CPPFILES} ${PRIVATE_HFILES} ${PUBLIC_HFILES})
 set_property(TARGET IndexUnitTest PROPERTY FOLDER "src/Index")
 set_property(TARGET IndexUnitTest PROPERTY PROJECT_LABEL "UnitTest")
-target_link_libraries (IndexUnitTest Utilities gtest gtest_main)
+target_link_libraries (IndexUnitTest Index gtest gtest_main)
 
-add_test(NAME IndexUnitTest COMMAND UtilitiesUnitTest)
+add_test(NAME IndexUnitTest COMMAND IndexUnitTest)

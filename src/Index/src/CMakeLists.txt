@@ -11,6 +11,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+DocumentLengthHistogram.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
