@@ -1,5 +1,5 @@
 #include "BitFunnel/Index/IIngestionIndex.h"
-#include "Histogram.h"
+#include "DocumentLengthHistogram.h"
 
 namespace BitFunnel
 {
