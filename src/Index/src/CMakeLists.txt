@@ -1,10 +1,10 @@
 # BitFunnel/src/Index/src
 
 set(CPPFILES
+    Placeholder.cpp
 )
 
 set(WINDOWS_CPPFILES
-    Placeholder.cpp
 )
 
 set(POSIX_CPPFILES

@@ -15,7 +15,7 @@ namespace BitFunnel
     // to group documents based on time stamp. Each group is assigned a GroupId
     // which is a unique identifier for the group that the client can use to
     // manage the index.
-    typedef unsigned __int64 GroupId;
+    typedef uint64_t GroupId;
 
 
     //*************************************************************************
@@ -81,7 +81,7 @@ namespace BitFunnel
 
         // Returns the size in bytes of the capacity of row tables in the 
         // entire ingestion index.
-        virtual unsigned __int64 GetUsedCapacityInBytes() const = 0;
+        virtual uint64_t GetUsedCapacityInBytes() const = 0;
 
         // Shuts down the index and releases resources allocated to it.
         virtual void Shutdown() = 0;
