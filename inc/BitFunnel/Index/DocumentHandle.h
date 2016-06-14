@@ -1,5 +1,8 @@
 #pragma once
 
+#include <inttypes.h> // For uint*_t
+#include <stddef.h>   // For size_t
+
 #include "BitFunnel/Index/IDocumentDataSchema.h"    // VariableSizeBlobId and FixedSizeBlobId are parameters.
 #include "BitFunnel/Index/IFactSet.h"               // FactHandle is a parameter.
 
@@ -17,7 +20,7 @@ namespace BitFunnel
     // document positions used to pad the DocTable row length quanta. It also
     // provides a means to invalidate a document position after index
     // construction.
-    typedef unsigned __int64 DocId;
+    typedef uint64_t DocId;
 
 
     // BITFUNNELTYPES
@@ -25,7 +28,7 @@ namespace BitFunnel
     // DocIndex values in an index run from 0 to n where n-1 is the number of documents
     // in the index. The number of bits for DocIndex and ShardId together must not 
     // exceed 32.
-    typedef unsigned __int32 DocIndex;
+    typedef uint32_t DocIndex;
 
 
     //*************************************************************************

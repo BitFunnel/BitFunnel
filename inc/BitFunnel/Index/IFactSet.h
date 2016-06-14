@@ -1,5 +1,7 @@
 #pragma once
 
+#include <inttypes.h> // For uint64_t.
+
 namespace BitFunnel
 {
     //*************************************************************************
@@ -21,7 +23,8 @@ namespace BitFunnel
     // plan.
     //
     //*************************************************************************
-    typedef unsigned __int64 FactHandle;
+
+    typedef uint64_t FactHandle;
 
     class IFactSet
     {
