@@ -1,8 +1,6 @@
 # BitFunnel/src/Index/src
 
 set(CPPFILES
-    ChunkReader.cpp
-    DocumentLengthHistogram.cpp
     Placeholder.cpp
 )
 
