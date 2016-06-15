@@ -1,6 +1,7 @@
 # BitFunnel/src/Index/src
 
 set(CPPFILES
+    DocumentLengthHistogram.cpp
     Placeholder.cpp
 )
 
@@ -11,7 +12,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
-DocumentLengthHistogram.h
+    DocumentLengthHistogram.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
