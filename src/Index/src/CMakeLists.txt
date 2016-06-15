@@ -1,6 +1,7 @@
 # BitFunnel/src/Index/src
 
 set(CPPFILES
+    ChunkReader.cpp
     DocumentLengthHistogram.cpp
     Placeholder.cpp
 )
@@ -12,6 +13,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    ChunkReader.h
     DocumentLengthHistogram.h
 )
 
