@@ -1,7 +1,6 @@
 # BitFunnel/src/Index/UnitTest
 
 set(CPPFILES
-    DocumentLengthHistogramUnitTest.cpp
     Placeholder.cpp
 )
 
