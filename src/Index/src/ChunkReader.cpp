@@ -1,4 +1,6 @@
 
+#include <istream>
+#include <sstream>
 
 #include "ChunkEnumerator.h" // TODO: change to appropriate file.
 
@@ -6,53 +8,93 @@
 
 namespace BitFunnel
 {
-    ChunkReader::ChunkReader(std::istream& input, IChunkReaderEvents& processor)
+    ChunkReader::ChunkReader(std::vector<char> const & input, IEvents& processor)
+      : m_haveChar(false),
+        m_index(0),
+        m_input(input),
+        m_processor(processor)
     {
-        processor.OnFileEnter();
-        while (input.peek() != '\0')
-        {
-            ProcessDocument(input, processor);
+        m_processor.OnFileEnter();
+        while (PeekChar() != 0) {
+            ProcessDocument();
         }
-        ProcessNull(input);
-        processor.OnFileExit();
+
+        Consume(0);
+        m_processor.OnFileExit();
     }
 
 
-    void ChunkReader::ProcessDocument(std::istream& input, IChunkReaderEvents& processor)
+    void ChunkReader::ProcessDocument()
     {
-        // TODO: get a doc id.
-        processor.OnDocumentEnter(-1);
-        while (input.peek() != '\0')
-        {
-            ProcessStream(input, processor);
+        // TODO: Get doc id.
+        m_processor.OnDocumentEnter(-1);
+        while (PeekChar() != 0) {
+            ProcessStream();
         }
-        ProcessNull(input);
-        processor.OnDocumentExit();
+
+        Consume(0);
+
+        m_processor.OnDocumentExit();
     }
 
 
-    void ChunkReader::ProcessStream(std::istream& input, IChunkReaderEvents& processor)
+    void ChunkReader::ProcessStream()
     {
-        std::string token;
-        std::getline(input, token, '\0');
-        processor.OnStreamEnter(token.c_str());
-        while (input.peek() != '\0')
-        {
-            std::getline(input, token, '\0');
-            processor.OnTerm1(token.c_str());
+        m_processor.OnStreamEnter(GetToken().c_str());
+        while (PeekChar() != 0) {
+            m_processor.OnTerm(GetToken().c_str());
         }
-        ProcessNull(input);
-        processor.OnStreamExit();
+
+        Consume(0);
+
+        m_processor.OnStreamExit();
     }
 
-
-    void ChunkReader::ProcessNull(std::istream& input)
+    char ChunkReader::PeekChar()
     {
-        char maybeNull;
-        input.get(maybeNull);
-        if (maybeNull != '\0')
-        {
-            throw std::runtime_error("Expected \0, got " + maybeNull);
+        if (!m_haveChar) {
+            if (m_index >= m_input.size()) {
+                throw 0;
+            }
+
+            m_current = m_input[m_index++];
+            m_haveChar = true;
         }
+
+        return m_current;
+    }
+
+    std::string ChunkReader::GetToken()
+    {
+        std::string s;
+        while (PeekChar() != 0) {
+            s.push_back(GetChar());
+        }
+
+        Consume(0);
+
+        return s;
+    }
+
+    char ChunkReader::GetChar()
+    {
+        PeekChar();
+
+        if (!m_haveChar) {
+            throw 0;
+        }
+
+        m_haveChar = false;
+
+        return m_current;
+    }
+
+    void ChunkReader::Consume(char c)
+    {
+        if (PeekChar() != c) {
+            throw 0;
+        }
+
+        GetChar();
     }
 }

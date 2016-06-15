@@ -22,6 +22,10 @@
 
 #pragma once
 
+#include <stddef.h>
+#include <vector>
+
+#include "BitFunnel/Utilities/ITaskProcessor.h"
 
 namespace BitFunnel
 {
@@ -57,4 +61,12 @@ namespace BitFunnel
         // Waits for all tasks to complete.
         virtual void WaitForCompletion() = 0;
     };
+
+
+    namespace Factories
+    {
+        ITaskDistributor*
+            CreateTaskDistributor(const std::vector<ITaskProcessor*>& processors,
+                                  size_t taskCount);
+    }
 }

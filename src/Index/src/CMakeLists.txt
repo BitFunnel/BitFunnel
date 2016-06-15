@@ -1,6 +1,10 @@
 # BitFunnel/src/Index/src
 
 set(CPPFILES
+    ChunkEnumerator.cpp
+    ChunkIngestor.cpp
+    ChunkReader.cpp
+    ChunkTaskProcessor.cpp
     Placeholder.cpp
 )
 
@@ -11,7 +15,10 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    ChunkEnumerator.h
+    ChunkIngestor.h
     ChunkReader.h
+    ChunkTaskProcessor.h
     DocumentLengthHistogram.h
 )
 

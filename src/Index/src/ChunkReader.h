@@ -1,14 +1,19 @@
+#pragma once
+
+#include <iosfwd>
+#include <vector>
 
 #include "BitFunnel/IInterface.h"
+#include "BitFunnel/Index/DocumentHandle.h"
 #include "BitFunnel/NonCopyable.h"
 
 namespace BitFunnel
 {
     class ChunkReader : public NonCopyable
     {
-    // DESIGN NOTE: Would like to use const char * to avoid string copy and memory
-    // allocation during ingestion. This may require reading the entire file into
-    // a buffer before parsing.
+    // DESIGN NOTE: Would like to use const char * to avoid string copy and
+    // memory allocation during ingestion. This may require reading the entire
+    // file into a buffer before parsing.
     // DESIGN NOTE: Need to add arena allocators.
     public:
         // IChunkProcessor? IEventProcessor?
@@ -24,6 +29,20 @@ namespace BitFunnel
             virtual void OnFileExit() = 0;
         };
 
-        ChunkReader(std::istream& input, IChunkReaderEvents& processor);
+        ChunkReader(std::vector<char> const & input, IEvents& processor);
+
+    private:
+        void Consume(char c);
+        char GetChar();
+        std::string GetToken();
+        char PeekChar();
+        void ProcessDocument();
+        void ProcessStream();
+
+        char m_current;
+        bool m_haveChar;
+        size_t m_index;
+        std::vector<char> const & m_input;
+        IEvents& m_processor;
     };
 }

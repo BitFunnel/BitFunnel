@@ -1,6 +1,7 @@
 # BitFunnel/src/Index/UnitTest
 
 set(CPPFILES
+    EndToEndTests.cpp
     Placeholder.cpp
 )
 
