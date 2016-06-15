@@ -132,7 +132,11 @@ source_group("Logger" FILES ${LOGGER_HFILES})
 #
 # Local package include directories.
 #
-include_directories(inc src/Common/CmdLineParser/inc src/Common/CsvTsv/inc)
+include_directories(
+  inc
+  src/Common/CmdLineParser/inc
+  src/Common/CsvTsv/inc
+)
 
 #
 # Libraries and executables.

@@ -1,10 +1,8 @@
 #pragma once
 
-#include <inttypes.h> // For uint*_t
-#include <stddef.h>   // For size_t
-
 #include "BitFunnel/Index/IDocumentDataSchema.h"    // VariableSizeBlobId and FixedSizeBlobId are parameters.
 #include "BitFunnel/Index/IFactSet.h"               // FactHandle is a parameter.
+
 
 namespace BitFunnel
 {
@@ -20,7 +18,7 @@ namespace BitFunnel
     // document positions used to pad the DocTable row length quanta. It also
     // provides a means to invalidate a document position after index
     // construction.
-    typedef uint64_t DocId;
+    typedef size_t DocId;
 
 
     // BITFUNNELTYPES
@@ -28,7 +26,7 @@ namespace BitFunnel
     // DocIndex values in an index run from 0 to n where n-1 is the number of documents
     // in the index. The number of bits for DocIndex and ShardId together must not 
     // exceed 32.
-    typedef uint32_t DocIndex;
+    typedef size_t DocIndex;
 
 
     //*************************************************************************
@@ -44,40 +42,43 @@ namespace BitFunnel
     class DocumentHandle
     {
     public:
-        // Allocates data for a blob with the given blob ID and a requested size.
-        // The blob data is allocated on the heap and will be released when the 
-        // document is recycled out of the index. Returns the pointer to the 
-        // blob data. Blob ID must have been previously declared by a call to
-        // IDocumentDataSchema::RegisterVariableSizeBlob, otherwise the function
-        // throws.
-        void* AllocateVariableSizeBlob(VariableSizeBlobId id, size_t size);
+        // Allocates a block of memory for the variable-sized blob associated
+        // with a given VariableSizeBlobId. The VariableSizeBlobId must have
+        // been previously assigned by a call to
+        //    IDocumentDataSchema::RegisterVariableSizeBlob().
+        //
+        // The block will consist of byteSize bytes and will be registered in
+        // the index with this DocumentHandle. The block is guaranteed to be
+        // available until the first call to DocHandle::Expire(). Returns a
+        // pointer to the blob.
+        void* AllocateVariableSizeBlob(VariableSizeBlobId id, size_t byteSize);
 
-        // Returns the pointer to a variable size blob with the given ID in the
-        // DocTable. Blob ID must have been previously declared by a call to
-        // IDocumentDataSchema::RegisterVariableSizeBlob, otherwise the function
-        // throws. Returns nullptr if the blob data has not been previously 
-        // allocated.
+        // Returns a pointer to the variable-sized blob associated with a
+        // given VariableSizeBlobId. The VariableSizeBlobId must have
+        // been previouslyassigned by a call to
+        //    IDocumentDataSchema::RegisterVariableSizeBlob().
+        //
+        // Returns nullptr if the blob data has not been previously allocated.
         void* GetVariableSizeBlob(VariableSizeBlobId id) const;
 
-        // Returns a pointer to the slot in the fixed size storage with the
-        // given ID. A slot must have been previously registered during system
-        // configuration with the call to
-        // IDocumentDataSchema::RegisterFixedSizeBlob, otherwise the function
-        // throws.
+        // Returns a pointer to the fixed-sized blob associated with a
+        // given FixedSizeBlobId. The FIxedSizeBlobId must have been previously
+        // assigned by a call to
+        //    IDocumentDataSchema::RegisterFixedSizeBlob().
         void* GetFixedSizeBlob(FixedSizeBlobId id) const;
 
-        // Sets or clears a fact about a document. Fact must have been previously
-        // registered in the IFactSet, otherwise the function throws.
+        // Sets or clears a fact associated with the document. The FactHandle
+        // must have been previously registered in the IFactSet.
         void AssertFact(FactHandle fact, bool value);
 
-        // Adds a posting to the index for the term.
-        //
-        // Implementation:
-        //   TermTable const & termTable = m_slice->GetShard().GetTermTable();
-        //   TermInfo(term, termTable);
-        //   foreach (row : termInfo) m_slice->SetBit(row, m_index);
+        // Adds a posting to the index, asserting that a Term is associated
+        // with this document.
         void AddPosting(Term const & term);
 
+        // Removes this document from the index. Queries initiated after
+        // Expire() returns will not see this document. Queries already in
+        // progress at the time Expire() is called may be able to see the
+        // document. 
         // Expires a document and removes it from serving. The document will no 
         // longer be served from the queries, however it may still be physically 
         // present in the index until it is recycled.

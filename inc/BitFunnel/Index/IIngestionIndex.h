@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BitFunnel/IInterface.h"
-#include "BitFunnel/Index/IFactSet.h"
-#include "BitFunnel/Index/DocumentHandle.h"
+#include "BitFunnel/IInterface.h"               // IIngestionIndex inherits from IIndex.
+#include "BitFunnel/Index/IFactSet.h"           // FactHandle parameter.
+#include "BitFunnel/Index/DocumentHandle.h"     // DocHandle return value.
 
 
 namespace BitFunnel
@@ -15,7 +15,7 @@ namespace BitFunnel
     // to group documents based on time stamp. Each group is assigned a GroupId
     // which is a unique identifier for the group that the client can use to
     // manage the index.
-    typedef uint64_t GroupId;
+    typedef size_t GroupId;
 
 
     //*************************************************************************
@@ -34,61 +34,48 @@ namespace BitFunnel
     class IIngester : public IInterface
     {
     public:
-        // Adds a document to the index. Throws if there is no space to add the 
+        // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.
-        // The IDocument must implement the Place method which should call 
+        // The IDocument must implement the Place method which should call
         // IIndex::AllocateDocument, passing the ddrCandidateCount parameter.
-        // Throws if the index already contains a document with the same id 
+        // Throws if the index already contains a document with the same id
         // value.
         virtual void Add(DocId id, IDocument const & document) = 0;
 
         // Removes a document from serving. The document with the specified id
-        // will no longer be returned from the queries. Returns true if the 
-        // document was successfully removed and false otherwise. False means 
-        // that a document with this id wasn't added previously or it was 
+        // will no longer be returned from the queries. Returns true if the
+        // document was successfully removed and false otherwise. False means
+        // that a document with this id wasn't added previously or it was
         // already removed.
         //
-        // DESIGN NOTE: The system supports deleting a document that has been 
-        // already deleted in order to simplify bulk deletion of documents, 
+        // DESIGN NOTE: The system supports deleting a document that has been
+        // already deleted in order to simplify bulk deletion of documents,
         // some of which may already have been deleted for other reasons.
         virtual bool Delete(DocId id) = 0;
 
-        // Sets or clears a fact about a document with the given DocId. The 
-        // FactHandle must have been previously registered in the IFactSet, 
+        // Sets or clears a fact about a document with the given DocId. The
+        // FactHandle must have been previously registered in the IFactSet,
         // otherwise the function throws.
+        // TODO: Update this comment to explain which IFactSet is referred
+        // to above.
         virtual void AssertFact(DocId id, FactHandle fact, bool value) = 0;
 
-        // Returns true if and only if the specified DocId corresponds to a 
-        // document currently visible to the query processing system. Returns 
-        // false for DocIds that have never been added, DocIds that are 
+        // Returns true if and only if the specified DocId corresponds to a
+        // document currently visible to the query processing system. Returns
+        // false for DocIds that have never been added, DocIds that are
         // partially ingested, and DocIds that have been deleted.
         virtual bool Contains(DocId id) const = 0;
 
-        // Attempts to allocate a DocumentHandle suitable for ingesting a 
-        // document with the specified DocId value and the DDR candidate count.
-        // Implementations that don't support Place() will throw.
-        //
-        // DESIGN NOTE: This method is not intended to be called directly from 
-        // the host. Rather, it is called by the implementation of 
-        // IDocument::Place(). The reason that IDocument::Place() does not take 
-        // a postingCount is to decouple the IDocument interface from the 
-        // criteria used to actually place documents in shards. If the criteria 
-        // should change in the future, say requiring a second parameter, the 
-        // signature of IDocument::Place() will remain unchanged while its 
-        // implementation will call IIngester::AllocateDocument() which now 
-        // takes one more parameter.
-        virtual DocumentHandle AllocateDocument(unsigned postingCount) = 0;
-
-        // Returns the size in bytes of the capacity of row tables in the 
+        // Returns the size in bytes of the capacity of row tables in the
         // entire ingestion index.
-        virtual uint64_t GetUsedCapacityInBytes() const = 0;
+        virtual size_t GetUsedCapacityInBytes() const = 0;
 
         // Shuts down the index and releases resources allocated to it.
         virtual void Shutdown() = 0;
 
         //
         // Group management functions.
-        // 
+        //
         // A group is a sequence of documents that were ingested after the opening
         // of the group and its sealing. Once the group is closed, it is considered
         // immutable. When expiring a group, all the data related to documents
