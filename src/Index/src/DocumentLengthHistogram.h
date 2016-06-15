@@ -12,7 +12,7 @@
 namespace BitFunnel
 {
     // Note: NonCopyable is probably incompatible with map.
-    class DocumentLengthHistogram : public NonCopyable, public std::map<size_t, size_t>
+    class DocumentLengthHistogram : public NonCopyable
     {
     public:
         // Use CsvTsv.
@@ -23,9 +23,11 @@ namespace BitFunnel
         // AddDocument is thread safe with multiple writers.
         // No other method is thread safe.
         void AddDocument(size_t postingCount);
+        size_t GetValue(size_t postingCount);
         void Write(std::ostream& output) const;
 
     private:
+        std::map<size_t, size_t> m_hist;
         std::mutex m_lock;
     };
 }
