@@ -13,12 +13,11 @@ namespace BitFunnel
         // std::string const & filePath,
         // IIndex& index,
         // IDocumentFactory& factory)
-        std::string const & filePath,
+        std::vector<char> const& chunkData,
         IIndex& index)
-      : m_filePath(filePath),
+      : m_chunkData(chunkData),
         m_index(index)
     {
-        std::cout << "ChunkIngestor: filePath:" << m_filePath << std::endl;
         m_index.noop();
 
         // TODO: We should transition this to actually opening the files.
@@ -30,21 +29,7 @@ namespace BitFunnel
         //     throw "MIke thought this was a good idea.";
         // }
 
-        char const chunk[] =
-            // First document
-            "Title\0Dogs\0\0"
-            "Body\0Dogs\0are\0man's\0best\0friend.\0\0"
-            "\0"
-
-            // Second document
-            "Title\0Cat\0Facts\0\0"
-            "Body\0The\0internet\0is\0made\0of\0cats.\0\0"
-            "\0"
-
-            // End of corpus
-            "\0";
-
-        ChunkReader(std::vector<char>(chunk, chunk + sizeof(chunk)), *this);
+        ChunkReader(m_chunkData, *this);
     }
 
     void ChunkIngestor::OnFileEnter()

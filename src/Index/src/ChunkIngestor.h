@@ -22,7 +22,7 @@ namespace BitFunnel
         // TODO: We need to implement IDocumentFactory before this make sense.
         // ChunkIngestor(std::string const & filePath, IIndex& index,
         //               IDocumentFactory& factory);
-        ChunkIngestor(std::string const & filePath, IIndex& index);
+        ChunkIngestor(std::vector<char> const& chunkData, IIndex& index);
 
         //
         // ChunkReader::IEvents methods.
@@ -36,7 +36,7 @@ namespace BitFunnel
         virtual void OnFileExit() override;
 
     private:
-        std::string const & m_filePath;
+        std::vector<char> const& m_chunkData;
         IIndex& m_index;
     };
 }
