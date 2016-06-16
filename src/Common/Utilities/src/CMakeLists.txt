@@ -12,7 +12,6 @@ set(CPPFILES
 )
 
 set(WINDOWS_CPPFILES
-    Stopwatch.cpp
 )
 
 set(POSIX_CPPFILES
@@ -26,7 +25,6 @@ set(PRIVATE_HFILES
 )
 
 set(WINDOWS_PRIVATE_HFILES
-    Stopwatch.h
 )
 
 set(POSIX_PRIVATE_HFILES
