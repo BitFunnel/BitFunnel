@@ -96,7 +96,7 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocument.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocumentDataSchema.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IFactSet.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IIngestionIndex.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IIngestor.h
 )
 
 set(UTILITIES_HFILES

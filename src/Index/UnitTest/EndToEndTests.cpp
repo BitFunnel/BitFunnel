@@ -11,7 +11,7 @@ namespace BitFunnel
 {
     namespace DocumentLengthHistogramUnitTest
     {
-        static std::vector<std::string const> const filePaths = {
+        static std::vector<std::string> const filePaths = {
             "Data/1.chunk",
             "Data/2.chunk",
         };

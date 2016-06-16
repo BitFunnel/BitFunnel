@@ -8,7 +8,7 @@
 namespace BitFunnel
 {
     ChunkTaskProcessor::ChunkTaskProcessor(
-        std::vector<std::string const> const & filePaths,
+        std::vector<std::string> const & filePaths,
         IIndex& index)
       : m_filePaths(filePaths),
         m_index(index)

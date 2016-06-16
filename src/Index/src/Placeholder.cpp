@@ -1,4 +1,4 @@
-#include "BitFunnel/Index/IIngestionIndex.h"
+#include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IDocument.h"
 
 

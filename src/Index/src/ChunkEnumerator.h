@@ -19,7 +19,7 @@ namespace BitFunnel
     class ChunkEnumerator : public NonCopyable
     {
     public:
-        ChunkEnumerator(std::vector<std::string const> const & filePaths,
+        ChunkEnumerator(std::vector<std::string> const & filePaths,
                         IIndex& index, size_t threadCount);
         void WaitForCompletion() const;
 

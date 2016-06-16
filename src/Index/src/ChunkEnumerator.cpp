@@ -5,7 +5,7 @@
 namespace BitFunnel
 {
     ChunkEnumerator::ChunkEnumerator(
-        std::vector<std::string const> const & filePaths,
+        std::vector<std::string> const & filePaths,
         IIndex& index,
         size_t threadCount)
       : m_index(index)

@@ -11,7 +11,7 @@ namespace BitFunnel
     class ChunkTaskProcessor : public ITaskProcessor
     {
     public:
-        ChunkTaskProcessor(std::vector<std::string const> const & filePaths,
+        ChunkTaskProcessor(std::vector<std::string> const & filePaths,
                            IIndex& index);
 
         //
@@ -21,7 +21,7 @@ namespace BitFunnel
         virtual void Finished() override;
 
     private:
-        std::vector<std::string const> const & m_filePaths;
+        std::vector<std::string> const & m_filePaths;
         IIndex& m_index;
     };
 }

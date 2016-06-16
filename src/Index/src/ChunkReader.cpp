@@ -27,7 +27,7 @@ namespace BitFunnel
     void ChunkReader::ProcessDocument()
     {
         // TODO: Get doc id.
-        m_processor.OnDocumentEnter(-1);
+        m_processor.OnDocumentEnter(0);
         while (PeekChar() != 0) {
             ProcessStream();
         }
