@@ -5,6 +5,7 @@ set(CPPFILES
     ChunkIngestor.cpp
     ChunkReader.cpp
     ChunkTaskProcessor.cpp
+    Document.cpp
     Placeholder.cpp
 )
 
@@ -19,6 +20,7 @@ set(PRIVATE_HFILES
     ChunkIngestor.h
     ChunkReader.h
     ChunkTaskProcessor.h
+    Document.h
     DocumentLengthHistogram.h
 )
 

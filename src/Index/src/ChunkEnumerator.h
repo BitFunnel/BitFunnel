@@ -20,7 +20,9 @@ namespace BitFunnel
     {
     public:
         ChunkEnumerator(std::vector<std::string> const & filePaths,
-                        IIndex& index, size_t threadCount);
+                        IIndex& index,
+                        size_t threadCount);
+
         void WaitForCompletion() const;
 
     private:
