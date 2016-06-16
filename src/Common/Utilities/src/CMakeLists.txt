@@ -10,6 +10,7 @@ set(CPPFILES
     TaskDistributorThread.cpp
     ThreadManager.cpp
     Token.cpp
+    TokenTracker.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -23,6 +24,7 @@ set(PRIVATE_HFILES
     TaskDistributor.h
     TaskDistributorThread.h
     Token.h
+    TokenTracker.h
     ThreadManager.h
 )
 

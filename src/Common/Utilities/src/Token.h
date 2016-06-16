@@ -49,7 +49,7 @@ namespace BitFunnel
         // a timeout is exceeded. Returns true if all of the Tokens in the set 
         // have been destroyed within a given timeout.
         // This method is thread-safe.
-        virtual bool WaitForCompletion(unsigned timeoutInMs) = 0;
+        virtual void WaitForCompletion() = 0;
     };
 
 

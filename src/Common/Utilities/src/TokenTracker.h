@@ -1,7 +1,10 @@
 #pragma once
 
-#include "BitFunnel/ThreadsafeCounter.h"
-#include "BitFunnel/Token.h"                // Inherits from ITokenTracker.
+#include <atomic>
+#include <condition_variable>
+
+// TODO: this seems weird. Why not have a seperate header for ITokenTracker?
+#include "Token.h"                // Inherits from ITokenTracker.
 
 namespace BitFunnel
 {
@@ -47,7 +50,7 @@ namespace BitFunnel
         // ITokenTracker API
         //
         virtual bool IsComplete() const override;
-        virtual bool WaitForCompletion(unsigned timeoutInMs) override;
+        virtual void WaitForCompletion() override;
 
     private:
 
@@ -57,6 +60,9 @@ namespace BitFunnel
         const SerialNumber m_cutoffSerialNumber;
 
         // Number of tokens of interest which are still in flight.
-        ThreadsafeCounter32 m_remainingTokenCount;
+        std::atomic<unsigned int> m_remainingTokenCount;
+
+        std::condition_variable m_condition;
+        std::mutex m_conditionLock;
     };
 }
