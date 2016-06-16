@@ -1,0 +1,185 @@
+#include "stdafx.h"
+
+#include <memory>
+
+#include "BitFunnel/Token.h"
+#include "SuiteCpp/UnitTest.h"
+
+
+namespace BitFunnel
+{
+    namespace TokenUnitTest
+    {
+        static const unsigned c_maxTokenCount = 1000;
+
+        // A test implementation of ITokenListener which allows to check if a 
+        // token with particular serial number has been returned. For every 
+        // serial number it keeps a counter which is incremented when a token
+        // with this number is issued, and decremented when it is returned.
+        // At the end we can verify that all of the counters have a zero value
+        // which means that all of the tokens were returned properly.
+        class TestTokenListener : public ITokenListener
+        {
+        public:
+            TestTokenListener();
+
+            // Record that a token with the given serial number is in flight.
+            void RecordIssuedToken(SerialNumber serialNumber);
+
+            // Returns true if a token with the given serial number is 
+            // in flight.
+            bool IsInFlight(SerialNumber serialNumber) const;
+
+            // Verifies that all issued tokens have been returned properly.
+            void VerifyAllTokensReturned() const;
+
+            //
+            // ITokenListener API.
+            //
+            virtual void OnTokenComplete(SerialNumber serialNumber);
+
+        private:
+            // An array of tokens counters. A value of 1 means the token was 
+            // issued and not returned. A value of 0 means the token was either
+            // not issued, or issued and returned. A negative value means the
+            // token was returned multiple times. At the end of the test, all
+            // items in the array should have a value of 0 to make a test pass.
+            int m_tokensCounter[c_maxTokenCount];
+        };
+
+
+        TestTokenListener::TestTokenListener()
+        {
+            for (unsigned i = 0; i < c_maxTokenCount; ++i)
+            {
+                m_tokensCounter[i] = 0;
+            }
+        }
+
+
+        void TestTokenListener::RecordIssuedToken(SerialNumber serialNumber)
+        {
+            TestEqual(m_tokensCounter[serialNumber], 0);
+
+            m_tokensCounter[serialNumber] = 1;
+        }
+
+
+        bool TestTokenListener::IsInFlight(SerialNumber serialNumber) const
+        {
+            return m_tokensCounter[serialNumber] == 1;
+        }
+
+
+        void TestTokenListener::VerifyAllTokensReturned() const
+        {
+            for (unsigned i = 0; i < c_maxTokenCount; ++i)
+            {
+                TestEqual(m_tokensCounter[i], 0);
+            }
+        }
+
+
+        void TestTokenListener::OnTokenComplete(SerialNumber serialNumber)
+        {
+            const int tokenCounterValue = --m_tokensCounter[serialNumber];
+            TestAssert(tokenCounterValue >= 0);
+        }
+
+
+        // Test which covers creation of tokens and verifies that tokens
+        // callback their issuer at the end of their lifetime.
+        TestCase(TokenBasicTest)
+        {
+            TestTokenListener issuer;
+
+            issuer.VerifyAllTokensReturned();
+
+            SerialNumber lastSerialNumber = 1;
+
+            {
+                TestAssert(!issuer.IsInFlight(lastSerialNumber));
+
+                Token token(issuer, lastSerialNumber);
+                issuer.RecordIssuedToken(lastSerialNumber);
+
+                TestEqual(token.GetSerialNumber(), lastSerialNumber);
+                TestAssert(issuer.IsInFlight(lastSerialNumber));
+
+                lastSerialNumber++;
+            }
+
+            // A token should be returned by now.
+            TestAssert(!issuer.IsInFlight(lastSerialNumber));
+            issuer.VerifyAllTokensReturned();
+
+            {
+                Token token1(issuer, lastSerialNumber);
+                issuer.RecordIssuedToken(lastSerialNumber);
+                TestEqual(token1.GetSerialNumber(), lastSerialNumber);
+
+                lastSerialNumber++;
+
+                {
+                    Token token2(issuer, lastSerialNumber);
+                    issuer.RecordIssuedToken(lastSerialNumber);
+                    TestEqual(token2.GetSerialNumber(), lastSerialNumber);
+
+                    // Both tokens should be in flight.
+                    TestAssert(issuer.IsInFlight(lastSerialNumber - 1));
+                    TestAssert(issuer.IsInFlight(lastSerialNumber));
+                }
+
+                // token2 has been returned.
+                TestAssert(issuer.IsInFlight(lastSerialNumber - 1));
+                TestAssert(!issuer.IsInFlight(lastSerialNumber));
+
+                lastSerialNumber++;
+            }
+
+            issuer.VerifyAllTokensReturned();
+        }
+
+
+        // Generate a token and return it by value. A token with this 
+        // serial number should only be returned once - when it goes out of
+        // scope in the calling context.
+        const Token GenerateToken(TestTokenListener& issuer, SerialNumber serialNumber)
+        {
+            issuer.RecordIssuedToken(serialNumber);
+            return Token(issuer, serialNumber);
+        }
+
+
+        // Test which verifies that copy is done by moving a token object.
+        TestCase(TokenCopyTest)
+        {
+            TestTokenListener issuer;
+
+            issuer.VerifyAllTokensReturned();
+
+            SerialNumber lastSerialNumber = 1;
+
+            {
+                TestAssert(!issuer.IsInFlight(lastSerialNumber));
+
+                Token token = GenerateToken(issuer, lastSerialNumber);
+
+                // Even though token was returned by value, it should not be
+                // marked as returned in the issuer yet since it is still valid
+                // in this scope.
+                TestAssert(issuer.IsInFlight(lastSerialNumber));
+
+                // Try to move a token to a different object. It should still 
+                // notify the issuer with this serial number only once.
+                Token tokenCopy(std::move(token));
+                TestAssert(issuer.IsInFlight(lastSerialNumber));
+            }
+
+            // Token goes out of scope and should be marked as returned.
+            TestAssert(!issuer.IsInFlight(lastSerialNumber));
+
+            issuer.VerifyAllTokensReturned();
+        }
+    }
+}
