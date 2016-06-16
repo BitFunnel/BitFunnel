@@ -4,9 +4,9 @@
 #include <stddef.h>
 #include <string>
 
+#include "BitFunnel/Index/IIndex.h"
 #include "BitFunnel/NonCopyable.h"
 #include "ChunkReader.h"
-#include "IIndex.h"
 
 namespace BitFunnel
 {

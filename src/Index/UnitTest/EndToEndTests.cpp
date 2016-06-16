@@ -3,8 +3,8 @@
 
 #include "gtest/gtest.h"
 
+#include "BitFunnel/Index/IIndex.h"
 #include "ChunkEnumerator.h"
-#include "IIndex.h"
 // #include "DocumentLengthHistogram.h"
 
 namespace BitFunnel

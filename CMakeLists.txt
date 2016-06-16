@@ -146,6 +146,8 @@ add_subdirectory(src/Common/CsvTsv)
 add_subdirectory(src/Common/Utilities)
 add_subdirectory(src/Index)
 
+add_subdirectory(tools/StatisticsBuilder)
+
 add_custom_target(TOPLEVEL SOURCES
 #  CMakeLists-googletest.txt.in
 #  Configure_Make.bat

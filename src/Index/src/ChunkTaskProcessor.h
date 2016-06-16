@@ -3,8 +3,8 @@
 #include <stddef.h>
 #include <vector>
 
+#include "BitFunnel/Index/IIndex.h"
 #include "BitFunnel/Utilities/ITaskProcessor.h"
-#include "IIndex.h"
 
 namespace BitFunnel
 {

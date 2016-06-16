@@ -30,6 +30,5 @@ namespace BitFunnel
 
     void ChunkEnumerator::WaitForCompletion() const
     {
-        throw;
     }
 }

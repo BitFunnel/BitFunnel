@@ -6,6 +6,7 @@ set(CPPFILES
     ChunkReader.cpp
     ChunkTaskProcessor.cpp
     Document.cpp
+    IngestChunks.cpp
     Placeholder.cpp
 )
 
