@@ -1,18 +1,21 @@
 #include <functional>
 #include <memory>
+#include <thread>
+#include <vector>
 
-#include "BitFunnel/Factories.h"
-#include "BitFunnel/ITaskDistributor.h"
-#include "BitFunnel/ITaskProcessor.h"
-#include "BitFunnel/Stopwatch.h"
-#include "SuiteCpp/UnitTest.h"
+#include "gtest/gtest.h"
+
+// #include "BitFunnel/Factories.h"
+#include "BitFunnel/Utilities/ITaskDistributor.h"
+#include "BitFunnel/Utilities/ITaskProcessor.h"
+#include "TaskDistributor.h"
 #include "TokenTracker.h"
 
 namespace BitFunnel
 {
     namespace TokenTrackerUnitTest
     {
-        TestCase(TokenTrackerBasicTest)
+        TEST(TokenTrackerBasicTest, Trivial)
         {
             static const SerialNumber c_anyCutoffSerialNumber = 10;
             static_assert(c_anyCutoffSerialNumber > 1, 
@@ -25,7 +28,7 @@ namespace BitFunnel
             TokenTracker tracker(c_anyCutoffSerialNumber, 
                                  c_anyInFlightTokenCount);
 
-            TestAssert(!tracker.IsComplete());
+            ASSERT_TRUE(!tracker.IsComplete());
 
             // Returning c_anyInFlightTokenCount - 1 tokens.
             for (unsigned i = 0; i < c_anyInFlightTokenCount - 1; ++i)
@@ -35,16 +38,16 @@ namespace BitFunnel
             }
 
             // One token is still in flight.
-            TestAssert(!tracker.IsComplete());
+            ASSERT_TRUE(!tracker.IsComplete());
 
             // This is a token outside of our tracking interest, it will not
             // affect tracking.
             tracker.OnTokenComplete(c_anyCutoffSerialNumber + 1);
-            TestAssert(!tracker.IsComplete());
+            ASSERT_TRUE(!tracker.IsComplete());
 
             // Returning the last token, tracking should be complete.
             tracker.OnTokenComplete(c_anyCutoffSerialNumber - 1);
-            TestAssert(tracker.IsComplete());
+            ASSERT_TRUE(tracker.IsComplete());
         }
 
 
@@ -61,7 +64,7 @@ namespace BitFunnel
 
             ~TokenDistributor();
 
-            bool WaitForCompletion(int timeoutInMs);
+            void WaitForCompletion();
 
         private:
 
@@ -85,7 +88,7 @@ namespace BitFunnel
 
             std::vector<ITaskProcessor*> m_taskProcessors;
             std::unique_ptr<ITaskDistributor> m_taskDistributor;
-            TokenTracker& m_tracker;
+            // TokenTracker& m_tracker;
         };
 
 
@@ -121,7 +124,7 @@ namespace BitFunnel
         TokenDistributor::TokenDistributor(TokenTracker& tracker, 
                                            unsigned threadCount, 
                                            unsigned tokenCount)
-            : m_tracker(tracker)
+        // : m_tracker(tracker)
         {
             for (unsigned i = 0; i < threadCount; ++i)
             {
@@ -141,13 +144,13 @@ namespace BitFunnel
         }
 
 
-        bool TokenDistributor::WaitForCompletion(int timeoutInMs)
+        void TokenDistributor::WaitForCompletion()
         {
-            return m_taskDistributor->WaitForCompletion(timeoutInMs);
+            m_taskDistributor->WaitForCompletion();
         }
 
 
-        TestCase(TokenTrackerMultithreadedTest)
+        TEST(TokenTrackerMultithreadedTest, Trivial)
         {
             // We will create c_anyTotalTokenCount with serial numbers monotonically
             // increasing starting from 0. Out of all of them, we are interested in
@@ -156,130 +159,21 @@ namespace BitFunnel
             static const unsigned c_anyTotalTokenCount = 50;
             static const SerialNumber c_anyCutoffSerialNumber = 10;
 
-            static const unsigned c_tokenDistributorTimeoutInMS = 60 * 1000;
             static const unsigned c_anyThreadCount = 20;
 
             // Since serial numbers are monotonically increasing starting from 1,
             // the number of tokens in flight is the same as the cutoff serial 
             // number.
             TokenTracker tracker(c_anyCutoffSerialNumber,  c_anyCutoffSerialNumber);
-            TestAssert(!tracker.IsComplete());
+            ASSERT_TRUE(!tracker.IsComplete());
 
             TokenDistributor distributor(tracker, c_anyThreadCount, c_anyTotalTokenCount);
-            distributor.WaitForCompletion(c_tokenDistributorTimeoutInMS);
+            distributor.WaitForCompletion();
 
-            TestAssert(tracker.IsComplete());
+            ASSERT_TRUE(tracker.IsComplete());
         }
 
-
-        // TODO : this class is used in multiple tests, consider moving to a 
-        // shared location.
-        //
-        // Class which represents an action which needs to be performed on a
-        // new thread. Takes the action via an argument to the constructor,
-        // launches a new thread, executes an action and destroyes a thread.
-        class ThreadAction : private NonCopyable
-        {
-        public:
-
-            // Starts a thread, executes an action and stops a thread.
-            ThreadAction(const std::function<void()> action);
-
-            // Closes thread's handle.
-            ~ThreadAction();
-
-            // Performs an action which was assigned to a thread.
-            void Action();
-
-            // Waits for the action to complete for a given timeout.
-            bool WaitForCompletion(unsigned timeoutMs);
-
-        private:
-
-            // Thread's entry point.
-            static void ThreadEntryPoint(void* data);
-
-            // Thread's handle.
-            HANDLE m_threadHandle;
-
-            // Action to perform.
-            const std::function<void()> m_action;
-        };
-
-
-        ThreadAction::ThreadAction(const std::function<void()> action)
-            : m_action(action)
-        {
-            DWORD threadId;
-            m_threadHandle = CreateThread(
-                0,              // Security attributes
-                0,              // Stack size
-                (LPTHREAD_START_ROUTINE)ThreadEntryPoint,
-                this,
-                0,              // Creation flags
-                &threadId);
-
-            TestAssert(m_threadHandle != nullptr, "Error: failed to start thread.");
-        }
-
-
-        ThreadAction::~ThreadAction()
-        {
-            int result = CloseHandle(m_threadHandle);
-            TestAssert(result != 0, "Error closing thread handle.");
-        }
-
-
-        void ThreadAction::Action()
-        {
-            try
-            {
-                m_action();
-            }
-            catch (...)
-            {
-                TestFail("Unexpected exception");
-            }
-        }
-
-
-        bool ThreadAction::WaitForCompletion(unsigned timeoutMs)
-        {
-            const DWORD result = WaitForSingleObject(m_threadHandle, timeoutMs);
-            return result == WAIT_OBJECT_0;
-        }
-
-
-        void ThreadAction::ThreadEntryPoint(void* data)
-        {
-            ThreadAction* thread = static_cast<ThreadAction*>(data);
-            thread->Action();
-        }
-
-
-        TestCase(WaitForCompletionTest)
-        {
-            static const SerialNumber c_anyCutoffSerialNumber = 10;
-            static const unsigned c_waitForCompletionTimeoutInMS = 200;
-
-            TokenTracker tracker(c_anyCutoffSerialNumber, 2);
-
-            ThreadAction getAndHoldToken1([&]() {
-                Sleep(100);
-                tracker.OnTokenComplete(c_anyCutoffSerialNumber - 1);
-            });
-
-            ThreadAction getAndHoldToken2([&]() {
-                Sleep(150);
-                tracker.OnTokenComplete(c_anyCutoffSerialNumber - 2);
-            });
-
-            const bool hasCompleted = tracker.WaitForCompletion(c_waitForCompletionTimeoutInMS);
-            TestAssert(hasCompleted);
-
-            // Threads holding the tokens should be finished by now.
-            TestAssert(getAndHoldToken1.WaitForCompletion(1));
-            TestAssert(getAndHoldToken2.WaitForCompletion(1));
-        }
+        // TODO: create a test that actually calls .IsComplete, etc., from
+        // other threads
    }
 }

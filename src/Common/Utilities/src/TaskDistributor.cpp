@@ -29,11 +29,11 @@
 
 namespace BitFunnel
 {
-    //ITaskDistributor* Factories::CreateTaskDistributor(const std::vector<ITaskProcessor*>& processors,
-    //                                                   size_t taskCount)
-    //{
-    //    return new TaskDistributor(processors, taskCount);
-    //}
+    ITaskDistributor* Factories::CreateTaskDistributor(const std::vector<ITaskProcessor*>& processors,
+                                                       size_t taskCount)
+    {
+        return new TaskDistributor(processors, taskCount);
+    }
 
 
     TaskDistributor::TaskDistributor(const std::vector<ITaskProcessor*>& processors, size_t taskCount)

@@ -59,10 +59,11 @@ namespace BitFunnel
     };
 
 
+    class ITaskProcessor;
     namespace Factories
     {
         ITaskDistributor* 
-            CreateTaskDistributor(const std::vector<ITaskProcessor*>& processors,
+            CreateTaskDistributor(std::vector<ITaskProcessor*> const & processors,
                                   size_t taskCount);
     }
 }

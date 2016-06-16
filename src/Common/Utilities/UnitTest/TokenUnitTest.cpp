@@ -1,7 +1,8 @@
 #include <memory>
 
-#include "Token.h"
 #include "gtest/gtest.h"
+
+#include "Token.h"
 
 namespace BitFunnel
 {

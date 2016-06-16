@@ -3,6 +3,7 @@
 set(CPPFILES
     MurmurHashUnitTest.cpp
     TaskDistributorUnitTest.cpp
+    TokenTrackerUnitTest.cpp
     TokenUnitTest.cpp
 )
 
