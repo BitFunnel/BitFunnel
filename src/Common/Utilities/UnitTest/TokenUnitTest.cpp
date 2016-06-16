@@ -1,10 +1,7 @@
-#include "stdafx.h"
-
 #include <memory>
 
-#include "BitFunnel/Token.h"
-#include "SuiteCpp/UnitTest.h"
-
+#include "Token.h"
+#include "gtest/gtest.h"
 
 namespace BitFunnel
 {
@@ -59,7 +56,7 @@ namespace BitFunnel
 
         void TestTokenListener::RecordIssuedToken(SerialNumber serialNumber)
         {
-            TestEqual(m_tokensCounter[serialNumber], 0);
+            ASSERT_EQ(m_tokensCounter[serialNumber], 0);
 
             m_tokensCounter[serialNumber] = 1;
         }
@@ -75,7 +72,7 @@ namespace BitFunnel
         {
             for (unsigned i = 0; i < c_maxTokenCount; ++i)
             {
-                TestEqual(m_tokensCounter[i], 0);
+                ASSERT_EQ(m_tokensCounter[i], 0);
             }
         }
 
@@ -83,13 +80,13 @@ namespace BitFunnel
         void TestTokenListener::OnTokenComplete(SerialNumber serialNumber)
         {
             const int tokenCounterValue = --m_tokensCounter[serialNumber];
-            TestAssert(tokenCounterValue >= 0);
+            ASSERT_TRUE(tokenCounterValue >= 0);
         }
 
 
         // Test which covers creation of tokens and verifies that tokens
         // callback their issuer at the end of their lifetime.
-        TestCase(TokenBasicTest)
+        TEST(TokenBasicTest, Trivial)
         {
             TestTokenListener issuer;
 
@@ -98,41 +95,41 @@ namespace BitFunnel
             SerialNumber lastSerialNumber = 1;
 
             {
-                TestAssert(!issuer.IsInFlight(lastSerialNumber));
+                ASSERT_TRUE(!issuer.IsInFlight(lastSerialNumber));
 
                 Token token(issuer, lastSerialNumber);
                 issuer.RecordIssuedToken(lastSerialNumber);
 
-                TestEqual(token.GetSerialNumber(), lastSerialNumber);
-                TestAssert(issuer.IsInFlight(lastSerialNumber));
+                ASSERT_EQ(token.GetSerialNumber(), lastSerialNumber);
+                ASSERT_TRUE(issuer.IsInFlight(lastSerialNumber));
 
                 lastSerialNumber++;
             }
 
             // A token should be returned by now.
-            TestAssert(!issuer.IsInFlight(lastSerialNumber));
+            ASSERT_TRUE(!issuer.IsInFlight(lastSerialNumber));
             issuer.VerifyAllTokensReturned();
 
             {
                 Token token1(issuer, lastSerialNumber);
                 issuer.RecordIssuedToken(lastSerialNumber);
-                TestEqual(token1.GetSerialNumber(), lastSerialNumber);
+                ASSERT_EQ(token1.GetSerialNumber(), lastSerialNumber);
 
                 lastSerialNumber++;
 
                 {
                     Token token2(issuer, lastSerialNumber);
                     issuer.RecordIssuedToken(lastSerialNumber);
-                    TestEqual(token2.GetSerialNumber(), lastSerialNumber);
+                    ASSERT_EQ(token2.GetSerialNumber(), lastSerialNumber);
 
                     // Both tokens should be in flight.
-                    TestAssert(issuer.IsInFlight(lastSerialNumber - 1));
-                    TestAssert(issuer.IsInFlight(lastSerialNumber));
+                    ASSERT_TRUE(issuer.IsInFlight(lastSerialNumber - 1));
+                    ASSERT_TRUE(issuer.IsInFlight(lastSerialNumber));
                 }
 
                 // token2 has been returned.
-                TestAssert(issuer.IsInFlight(lastSerialNumber - 1));
-                TestAssert(!issuer.IsInFlight(lastSerialNumber));
+                ASSERT_TRUE(issuer.IsInFlight(lastSerialNumber - 1));
+                ASSERT_TRUE(!issuer.IsInFlight(lastSerialNumber));
 
                 lastSerialNumber++;
             }
@@ -144,15 +141,18 @@ namespace BitFunnel
         // Generate a token and return it by value. A token with this 
         // serial number should only be returned once - when it goes out of
         // scope in the calling context.
+        /*
+          // TODO: understand this old code. This seems like it can't work because
+          // Token has an implictly deleted copy constructor
         const Token GenerateToken(TestTokenListener& issuer, SerialNumber serialNumber)
         {
             issuer.RecordIssuedToken(serialNumber);
             return Token(issuer, serialNumber);
         }
-
+        */
 
         // Test which verifies that copy is done by moving a token object.
-        TestCase(TokenCopyTest)
+        TEST(TokenCopyTest, Trivial)
         {
             TestTokenListener issuer;
 
@@ -161,23 +161,26 @@ namespace BitFunnel
             SerialNumber lastSerialNumber = 1;
 
             {
-                TestAssert(!issuer.IsInFlight(lastSerialNumber));
+                ASSERT_TRUE(!issuer.IsInFlight(lastSerialNumber));
 
-                Token token = GenerateToken(issuer, lastSerialNumber);
+                // TODO: see TODO for this function.
+                // Token token = GenerateToken(issuer, lastSerialNumber);
+                issuer.RecordIssuedToken(lastSerialNumber);
+                Token token(issuer, lastSerialNumber);
 
                 // Even though token was returned by value, it should not be
                 // marked as returned in the issuer yet since it is still valid
                 // in this scope.
-                TestAssert(issuer.IsInFlight(lastSerialNumber));
+                ASSERT_TRUE(issuer.IsInFlight(lastSerialNumber));
 
                 // Try to move a token to a different object. It should still 
                 // notify the issuer with this serial number only once.
                 Token tokenCopy(std::move(token));
-                TestAssert(issuer.IsInFlight(lastSerialNumber));
+                ASSERT_TRUE(issuer.IsInFlight(lastSerialNumber));
             }
 
             // Token goes out of scope and should be marked as returned.
-            TestAssert(!issuer.IsInFlight(lastSerialNumber));
+            ASSERT_TRUE(!issuer.IsInFlight(lastSerialNumber));
 
             issuer.VerifyAllTokensReturned();
         }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>                   // Uses shard_ptr<T>
+#include <memory>                   // Uses shared_ptr<T>
 
 #include "BitFunnel/NonCopyable.h"
 
@@ -199,15 +199,14 @@ namespace BitFunnel
         SerialNumber GetSerialNumber() const;
 
     private:
-
-        // Token's serial number.
-        const SerialNumber m_serialNumber;
-
         // This token's issuer. This is made a pointer instead of a reference 
         // to accommodate the fact that during the move of a token, the 
         // original copy still calls its destructor. We want exactly one call
         // to the issuer for a serial number, so when the object is moved,
         // we will mark it "dead" by resetting m_issuer to nullptr.
         ITokenListener * m_issuer;
+
+        // Token's serial number.
+        const SerialNumber m_serialNumber;
     };
 }

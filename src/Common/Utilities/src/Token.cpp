@@ -1,6 +1,4 @@
-#include "stdafx.h"
-
-#include "BitFunnel/Token.h"
+#include "Token.h"
 #include "LoggerInterfaces/Logging.h"
 
 namespace BitFunnel
@@ -39,7 +37,8 @@ namespace BitFunnel
         {
             LogB(Logging::Error, 
                  "Token", 
-                 "Exception caught while destroying a Token");
+                 "Exception caught while destroying a Token",
+                 "");
         }
     }
 

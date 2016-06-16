@@ -9,6 +9,7 @@ set(CPPFILES
     TaskDistributor.cpp
     TaskDistributorThread.cpp
     ThreadManager.cpp
+    Token.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -21,6 +22,7 @@ set(PRIVATE_HFILES
     MurmurHash2.h
     TaskDistributor.h
     TaskDistributorThread.h
+    Token.h
     ThreadManager.h
 )
 

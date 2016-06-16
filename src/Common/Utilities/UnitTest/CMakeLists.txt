@@ -3,6 +3,7 @@
 set(CPPFILES
     MurmurHashUnitTest.cpp
     TaskDistributorUnitTest.cpp
+    TokenUnitTest.cpp
 )
 
 set(WINDOWS_CPPFILES
