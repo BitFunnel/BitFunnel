@@ -23,5 +23,5 @@ COMBINE_FILE_LISTS()
 
 add_executable(StatisticBuilder ${CPPFILES} ${PRIVATE_HFILES} ${PUBLIC_HFILES})
 target_link_libraries(StatisticBuilder CmdLineParser Index)
-set_property(TARGET StatisticBuilder PROPERTY FOLDER "tools/StatisticsBuilder")
-set_property(TARGET StatisticBuilder PROPERTY PROJECT_LABEL "tools")
+set_property(TARGET StatisticBuilder PROPERTY FOLDER "tools")
+set_property(TARGET StatisticBuilder PROPERTY PROJECT_LABEL "StatisticsBuilder")
