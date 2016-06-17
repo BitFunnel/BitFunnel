@@ -28,6 +28,9 @@ namespace BitFunnel
     // exceed 32.
     typedef size_t DocIndex;
 
+    // Represent the value that the default constructor assigns to the instances of DocumentHandle.
+    static const DocIndex c_invalidDocIndex = UINT_MAX;
+
 
     //*************************************************************************
     //
