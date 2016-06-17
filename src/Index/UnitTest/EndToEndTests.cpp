@@ -5,6 +5,7 @@
 
 #include "BitFunnel/Index/IIndex.h"
 #include "ChunkEnumerator.h"
+#include "Ingestor.h"
 // #include "DocumentLengthHistogram.h"
 
 namespace BitFunnel
@@ -30,8 +31,8 @@ namespace BitFunnel
         //*********************************************************************
         TEST(EndToEndTest, Trivial)
         {
-            IIndex index;
-            ChunkEnumerator chunkEnumerator(filePaths, index, 2);
+            Ingestor ingestor;
+            ChunkEnumerator chunkEnumerator(filePaths, ingestor, 2);
         }
 
         // TODO: implement and test file read/write.

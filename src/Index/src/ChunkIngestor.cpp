@@ -6,6 +6,7 @@
 #include "ChunkEnumerator.h"
 #include "ChunkIngestor.h"
 
+
 namespace BitFunnel
 {
     ChunkIngestor::ChunkIngestor(
@@ -14,11 +15,10 @@ namespace BitFunnel
         // IIndex& index,
         // IDocumentFactory& factory)
         std::vector<char> const& chunkData,
-        IIndex& index)
+        IIngestor& ingestor)
       : m_chunkData(chunkData),
-        m_index(index)
+        m_ingestor(ingestor)
     {
-        m_index.noop();
 
         // TODO: We should transition this to actually opening the files.
         // std::ifstream chunkFile;

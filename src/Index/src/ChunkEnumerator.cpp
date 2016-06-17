@@ -6,13 +6,13 @@ namespace BitFunnel
 {
     ChunkEnumerator::ChunkEnumerator(
         std::vector<std::string> const & filePaths,
-        IIndex& index,
+        IIngestor& ingestor,
         size_t threadCount)
-      : m_index(index)
+      : m_ingestor(ingestor)
     {
         std::vector<ITaskProcessor*> processors;
         for (size_t i = 0; i < threadCount; ++i) {
-            processors.push_back(new ChunkTaskProcessor(filePaths, m_index));
+            processors.push_back(new ChunkTaskProcessor(filePaths, m_ingestor));
         }
 
         // TODO: The task distributor factory needs to be moved or created before

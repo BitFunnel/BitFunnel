@@ -1,5 +1,7 @@
+#include <memory>
 #include <stdexcept>
 
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocument.h"
 #include "DocumentHandleInternal.h"
 #include "Ingestor.h"
@@ -7,6 +9,12 @@
 
 namespace BitFunnel
 {
+    std::unique_ptr<IIngestor> Factories::CreateIngestor()
+    {
+        return std::unique_ptr<IIngestor>(new Ingestor());
+    }
+
+
     Ingestor::Ingestor()
         : m_termCount(0),
           m_documentCount(0)

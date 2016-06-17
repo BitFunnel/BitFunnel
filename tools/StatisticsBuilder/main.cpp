@@ -2,34 +2,42 @@
 #include <iostream>
 #include <vector>
 
-#include "BitFunnel/Index/IIndex.h"
+#include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "CmdLineParser/CmdLineParser.h"
 
 
-// Returns a vector with one entry for each line in the file.
-static std::vector<std::string> ReadLines(char const * fileName)
+namespace BitFunnel
 {
-    std::ifstream file(fileName);
 
-    std::vector<std::string> lines;
-    std::string line;
-    while(std::getline(file, line)) {
-        lines.push_back(std::move(line));
+    // Returns a vector with one entry for each line in the file.
+    static std::vector<std::string> ReadLines(char const * fileName)
+    {
+        std::ifstream file(fileName);
+
+        std::vector<std::string> lines;
+        std::string line;
+        while (std::getline(file, line)) {
+            lines.push_back(std::move(line));
+        }
+
+        return lines;
     }
 
-    return lines;
-}
 
+    static void LoadAndIngestChunkList(char const * chunkListFileName)
+    {
+        std::cout << "Loading chunk list file '" << chunkListFileName << "'"
+            << std::endl;
+        std::vector<std::string> filePaths = ReadLines(chunkListFileName);
 
-static void LoadAndIngestChunkList(char const * chunkListFileName)
-{
-    std::cout << "Loading chunk list file '" << chunkListFileName << "'"
-        << std::endl;
-    std::vector<std::string> filePaths = ReadLines(chunkListFileName);
+        std::unique_ptr<IIngestor> ingestor(Factories::CreateIngestor());
 
-    BitFunnel::IIndex index;
-    BitFunnel::IngestChunks(filePaths, index, 2);
+        // TODO: Get correct thread count.
+        size_t threadCount = 2;
+        IngestChunks(filePaths, *ingestor, threadCount);
+    }
 }
 
 
@@ -52,7 +60,7 @@ int main(int argc, char** argv)
     {
         try
         {
-            LoadAndIngestChunkList(chunkListFileName);
+            BitFunnel::LoadAndIngestChunkList(chunkListFileName);
             returnCode = 0;
         }
         catch (...)

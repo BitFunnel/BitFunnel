@@ -6,10 +6,13 @@
 
 namespace BitFunnel
 {
+    class IIngestor;
+
     void IngestChunks(std::vector<std::string> const & filePaths,
-                      IIndex& index, size_t threadCount)
+                      IIngestor& ingestor,
+                      size_t threadCount)
     {
-        ChunkEnumerator chunkEnumerator(filePaths, index, threadCount);
+        ChunkEnumerator chunkEnumerator(filePaths, ingestor, threadCount);
         chunkEnumerator.WaitForCompletion();
     }
 }

@@ -36,13 +36,15 @@ namespace BitFunnel
         return chunkData;
     }
 
+
     ChunkTaskProcessor::ChunkTaskProcessor(
         std::vector<std::string> const & filePaths,
-        IIndex& index)
+        IIngestor& ingestor)
       : m_filePaths(filePaths),
-        m_index(index)
+        m_ingestor(ingestor)
     {
     }
+
 
     void ChunkTaskProcessor::ProcessTask(size_t taskId)
     {
@@ -50,12 +52,12 @@ namespace BitFunnel
             << std::endl;
         std::cout << "ChunkTaskProcessor::ProcessTask: filePath:"
             << m_filePaths[taskId] << std::endl;
-        m_index.noop();
 
         // NOTE: The act of constructing a ChunkIngestor causes the file to be
         // ingested.
-        ChunkIngestor(readChunk(m_filePaths[taskId].c_str()), m_index);
+        ChunkIngestor(readChunk(m_filePaths[taskId].c_str()), m_ingestor);
     }
+
 
     void ChunkTaskProcessor::Finished()
     {

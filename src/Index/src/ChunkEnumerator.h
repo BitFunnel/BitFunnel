@@ -10,7 +10,7 @@
 
 namespace BitFunnel
 {
-    class IIndex;
+    class IIngestor;
     class ITaskDistributor;
 
     // Fill an std::vector with filenames
@@ -20,13 +20,13 @@ namespace BitFunnel
     {
     public:
         ChunkEnumerator(std::vector<std::string> const & filePaths,
-                        IIndex& index,
+                        IIngestor& ingestor,
                         size_t threadCount);
 
         void WaitForCompletion() const;
 
     private:
-        IIndex& m_index;
+        IIngestor& m_ingestor;
         // std::unique_ptr<ITaskDistributor> m_distributor;
     };
 }

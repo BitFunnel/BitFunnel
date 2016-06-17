@@ -14,6 +14,8 @@ namespace BitFunnel
 
 namespace BitFunnel
 {
+    class IIngestor;
+
     // DESIGN NOTE: Consider adding a document factory parameter to the
     // constructor.
     class ChunkIngestor : public NonCopyable, public ChunkReader::IEvents
@@ -22,7 +24,7 @@ namespace BitFunnel
         // TODO: We need to implement IDocumentFactory before this make sense.
         // ChunkIngestor(std::string const & filePath, IIndex& index,
         //               IDocumentFactory& factory);
-        ChunkIngestor(std::vector<char> const& chunkData, IIndex& index);
+        ChunkIngestor(std::vector<char> const& chunkData, IIngestor& ingestor);
 
         //
         // ChunkReader::IEvents methods.
@@ -37,6 +39,6 @@ namespace BitFunnel
 
     private:
         std::vector<char> const& m_chunkData;
-        IIndex& m_index;
+        IIngestor& m_ingestor;
     };
 }

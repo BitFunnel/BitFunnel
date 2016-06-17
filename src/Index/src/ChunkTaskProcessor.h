@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <vector>
 
-#include "BitFunnel/Index/IIndex.h"
+#include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Utilities/ITaskProcessor.h"
 
 namespace BitFunnel
@@ -12,7 +12,7 @@ namespace BitFunnel
     {
     public:
         ChunkTaskProcessor(std::vector<std::string> const & filePaths,
-                           IIndex& index);
+                           IIngestor& ingestor);
 
         //
         // ITaskProcessor methods.
@@ -22,6 +22,6 @@ namespace BitFunnel
 
     private:
         std::vector<std::string> const & m_filePaths;
-        IIndex& m_index;
+        IIngestor& m_ingestor;
     };
 }
