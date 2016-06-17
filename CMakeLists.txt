@@ -101,6 +101,7 @@ set(INDEX_HFILES
 )
 
 set(UTILITIES_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Factories.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskDistributor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskProcessor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IThreadManager.h

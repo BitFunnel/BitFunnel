@@ -73,7 +73,7 @@ namespace BitFunnel
         void WaitForCompletion();
 
     private:
-        const std::vector<std::unique_ptr<ITaskProcessor>>& m_processors;
+        std::vector<std::unique_ptr<ITaskProcessor>> const & m_processors;
         size_t m_taskCount;
         size_t m_nextTaskId;
 

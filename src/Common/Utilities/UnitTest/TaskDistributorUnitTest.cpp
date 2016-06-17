@@ -27,6 +27,7 @@
 #include <ostream>
 #include <vector>
 
+#include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/ITaskProcessor.h"
 #include "TaskDistributor.h"
 #include "gtest/gtest.h"
@@ -84,17 +85,18 @@ namespace BitFunnel
             std::array<std::atomic<uint64_t>, NUM_TASKS> tasks = {};
 
             // Create one processor for each thread.
+            // TODO: Review use of srand in BitFunnel and unit tests.
+            // Usually we use a different random number generator for a variety of reasons.
             srand(12345);
             std::atomic<uint64_t> activeThreadCount(threadCount);
             std::vector<std::unique_ptr<ITaskProcessor>> processors;
             for (int i = 0 ; i < threadCount; ++i)
             {
-                processors.push_back(
-                    std::unique_ptr<ITaskProcessor>(new TaskProcessor(tasks, maxSleepInMS, activeThreadCount)));
+                processors.push_back(std::unique_ptr<ITaskProcessor>(new TaskProcessor(tasks, maxSleepInMS, activeThreadCount)));
             }
 
-            TaskDistributor distributor(processors, taskCount);
-            distributor.WaitForCompletion();
+            std::unique_ptr<ITaskDistributor> distributor(Factories::CreateTaskDistributor(processors, taskCount));
+            distributor->WaitForCompletion();
 
             // Verify that ITaskProcessor::Finished() was called one time for each thread.
             ASSERT_EQ(activeThreadCount.load(), 0u);

@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #include "BitFunnel/Utilities/Factories.h"
+#include "BitFunnel/Utilities/ITaskProcessor.h"
 #include "TaskDistributor.h"
 #include "TaskDistributorThread.h"
 #include "ThreadManager.h"
@@ -28,17 +29,16 @@
 
 namespace BitFunnel
 {
-    std::unique_ptr<ITaskDistributor> Factories::CreateTaskDistributor(
-        const std::vector<std::unique_ptr<ITaskProcessor>>& processors,
-        size_t taskCount)
+    std::unique_ptr<ITaskDistributor>
+    Factories::CreateTaskDistributor(std::vector<std::unique_ptr<ITaskProcessor>> const & processors,
+                                     size_t taskCount)
     {
-        return std::unique_ptr<ITaskDistributor>(
-            new TaskDistributor(processors, taskCount));
+        return std::unique_ptr<ITaskDistributor>(new TaskDistributor(processors, taskCount));
     }
 
 
-    TaskDistributor::TaskDistributor(
-        const std::vector<std::unique_ptr<ITaskProcessor>>& processors, size_t taskCount)
+    TaskDistributor::TaskDistributor(std::vector<std::unique_ptr<ITaskProcessor>> const & processors,
+                                     size_t taskCount)
         : m_processors(processors),
           m_taskCount(taskCount),
           m_nextTaskId(0)

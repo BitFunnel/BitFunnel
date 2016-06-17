@@ -28,6 +28,7 @@ namespace BitFunnel
 
     static void LoadAndIngestChunkList(char const * chunkListFileName)
     {
+        // TODO: Add try/catch around file operations.
         std::cout << "Loading chunk list file '" << chunkListFileName << "'"
             << std::endl;
         std::vector<std::string> filePaths = ReadLines(chunkListFileName);
