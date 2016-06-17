@@ -23,17 +23,17 @@
 
 #include <stddef.h>
 
-//#include "BitFunnel/Factories.h"
+#include "BitFunnel/Utilities/Factories.h"
 //#include "LoggerInterfaces/Logging.h"
 #include "ThreadManager.h"
 
 
 namespace BitFunnel
 {
-    //IThreadManager* Factories::CreateThreadManager(const std::vector<IThreadBase*>& threads)
-    //{
-    //    return new ThreadManager(threads);
-    //}
+    IThreadManager* Factories::CreateThreadManager(const std::vector<IThreadBase*>& threads)
+    {
+       return new ThreadManager(threads);
+    }
 
 
     ThreadManager::ThreadManager(const std::vector<IThreadBase*>& threads)

@@ -21,12 +21,17 @@
 // THE SOFTWARE.
 
 #include <memory>  // For std::unique_ptr.
+#include <vector>  // For std::vector.
+
+#include "IThreadManager.h"
 
 namespace BitFunnel
 {
     class ITokenManager;
     namespace Factories
     {
+        IThreadManager* CreateThreadManager(const std::vector<IThreadBase*>& threads);
+
         std::unique_ptr<ITokenManager> CreateTokenManager();
     }
 }

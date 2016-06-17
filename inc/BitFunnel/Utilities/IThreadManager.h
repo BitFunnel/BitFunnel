@@ -44,10 +44,4 @@ namespace BitFunnel
         // Wait for all threads to exit.
         virtual void WaitForThreads() = 0;
     };
-
-
-    namespace Factories
-    {
-        IThreadManager* CreateThreadManager(const std::vector<IThreadBase*>& threads);
-    }
 }

@@ -1,14 +1,12 @@
-#include "stdafx.h"
+#include <chrono>
+#include <thread>
 
-#include <functional>
+#include "gtest/gtest.h"
 
-#include "BitFunnel/Factories.h"
-#include "BitFunnel/IThreadManager.h"
-#include "BitFunnel/Stopwatch.h"
+#include "BitFunnel/Utilities/Factories.h"
+#include "BitFunnel/Utilities/IThreadManager.h"
 #include "LoggerInterfaces/ConsoleLogger.h"
 #include "LoggerInterfaces/Logging.h"
-#include "SuiteCpp/UnitTest.h"
-#include "ThreadsafeState.h"
 #include "TokenManager.h"
 #include "TokenTracker.h"
 
@@ -16,23 +14,23 @@ namespace BitFunnel
 {
     namespace TokenManagerUnitTest
     {
-        TestCase(BasicTest)
+        TEST(BasicTest, Trivial)
         {
             TokenManager tokenManager;
 
             {
                 const Token token1 = tokenManager.RequestToken();
-                TestEqual(token1.GetSerialNumber(), 0);
+                ASSERT_EQ(token1.GetSerialNumber(), 0u);
 
                 const Token token2 = tokenManager.RequestToken();
-                TestEqual(token2.GetSerialNumber(), 1);
+                ASSERT_EQ(token2.GetSerialNumber(), 1u);
             }
 
             tokenManager.Shutdown();
         }
 
 
-        TestCase(StartTrackerTest)
+        TEST(StartTrackerTest, Trivial)
         {
             TokenManager tokenManager;
 
@@ -40,24 +38,24 @@ namespace BitFunnel
             const std::shared_ptr<ITokenTracker> noTokensTracker 
                 = tokenManager.StartTracker();
             
-            TestAssert(noTokensTracker->IsComplete());
+            ASSERT_TRUE(noTokensTracker->IsComplete());
 
             // Tracker with token[0] in flight.
             std::shared_ptr<ITokenTracker> token0Tracker;
             {
                 const Token token0 = tokenManager.RequestToken();
-                TestAssert(noTokensTracker->IsComplete());
+                ASSERT_TRUE(noTokensTracker->IsComplete());
 
                 token0Tracker = tokenManager.StartTracker();
-                TestAssert(!(token0Tracker->IsComplete()));
+                ASSERT_TRUE(!(token0Tracker->IsComplete()));
             }
 
             // token0 goes out of scope, which should make the token0Tracker 
             // complete.
-            TestAssert(token0Tracker->IsComplete());
+            ASSERT_TRUE(token0Tracker->IsComplete());
 
             // No impact on noTokensTracker.
-            TestAssert(noTokensTracker->IsComplete());
+            ASSERT_TRUE(noTokensTracker->IsComplete());
 
             // Tracker with token[1] in flight.
             std::shared_ptr<ITokenTracker> token1Tracker;
@@ -65,27 +63,27 @@ namespace BitFunnel
                 const Token token1 = tokenManager.RequestToken();
 
                 token1Tracker = tokenManager.StartTracker();
-                TestAssert(!(token1Tracker->IsComplete()));
+                ASSERT_TRUE(!(token1Tracker->IsComplete()));
 
                 // Request one more token after a tracker has been started and
                 // release it before releasing a previous token. It should not
                 // impact the tracker because this token is not of its interest.
                 {
                     const Token token2 = tokenManager.RequestToken();
-                    TestAssert(!(token1Tracker->IsComplete()));
+                    ASSERT_TRUE(!(token1Tracker->IsComplete()));
                 }
 
                 // token1Tracker is still not complete since token1 has not 
                 // been returned.
-                TestAssert(!(token1Tracker->IsComplete()));
+                ASSERT_TRUE(!(token1Tracker->IsComplete()));
             }
 
             // token1 goes out of scope marking token1Tracker complete.
-            TestAssert(token1Tracker->IsComplete());
+            ASSERT_TRUE(token1Tracker->IsComplete());
 
             // No impact on previous trackers.
-            TestAssert(noTokensTracker->IsComplete());
-            TestAssert(token0Tracker->IsComplete());
+            ASSERT_TRUE(noTokensTracker->IsComplete());
+            ASSERT_TRUE(token0Tracker->IsComplete());
 
             tokenManager.Shutdown();
         }
@@ -102,59 +100,43 @@ namespace BitFunnel
         public:
             TestTokenTracker(SerialNumber cutoffSerialNumber, unsigned remainingTokenCount);
 
-            // Instructs the tracker that from now on it should not receive token 
-            // notifications, and if it does, it will be considered a test failure.
-            void StopExpectingTokens();
-
             bool OnTokenComplete(SerialNumber serialNumber);
 
             //
             // ITokenTracker API.
             //
             virtual bool IsComplete() const override;
-            virtual bool WaitForCompletion(unsigned timeoutInMs) override;
+            virtual void WaitForCompletion() override;
 
         private:
             TokenTracker m_tracker;
-            ThreadsafeState m_isExpectingTokens;
             const SerialNumber m_cutoffSerialNumber;
+            std::atomic<bool> m_isExpectingTokens;
         };
 
 
         TestTokenTracker::TestTokenTracker(SerialNumber cutoffSerialNumber, unsigned remainingTokenCount)
             : m_tracker(cutoffSerialNumber, remainingTokenCount),
               m_cutoffSerialNumber(cutoffSerialNumber),
-              m_isExpectingTokens(1)
+              m_isExpectingTokens(true)
         {
-        }
-
-
-        void TestTokenTracker::StopExpectingTokens()
-        {
-            for (unsigned attemptsLeft = 10; attemptsLeft > 0; --attemptsLeft)
-            {
-                if (m_isExpectingTokens.TryThreadsafeTransit(1, 0))
-                {
-                    return;
-                }
-            }
-
-            TestFail("Could not stop expecting tracking after 10 attempts");
         }
 
 
         bool TestTokenTracker::OnTokenComplete(SerialNumber serialNumber)
         {
-            const bool isExpectingCallbacks = m_isExpectingTokens.ThreadsafeGetState() != 0;
-            TestAssert(isExpectingCallbacks, 
-                       "Token %u was not expected. Cutoff serial number: %u", 
-                       serialNumber, 
-                       m_cutoffSerialNumber);
-            
+            // DESIGN NOTE: we can't ASSERT_TRUE here because that causes a void
+            // return, which conflicts with this functions type.
+            const bool isExpectingCallbacks = m_isExpectingTokens.load() != 0;
+            EXPECT_TRUE(isExpectingCallbacks)
+                << serialNumber
+                << "was not expected. Cutoff: "
+                << m_cutoffSerialNumber;
+
             const bool hasTrackingComplete = m_tracker.OnTokenComplete(serialNumber);
             if (hasTrackingComplete)
             {
-                StopExpectingTokens();
+                m_isExpectingTokens = false;
             }
 
             return hasTrackingComplete;
@@ -167,9 +149,9 @@ namespace BitFunnel
         }
 
 
-        bool TestTokenTracker::WaitForCompletion(unsigned timeoutInMs)
+        void TestTokenTracker::WaitForCompletion()
         {
-            return m_tracker.WaitForCompletion(timeoutInMs);
+            return m_tracker.WaitForCompletion();
         }
 
 
@@ -210,7 +192,6 @@ namespace BitFunnel
         void TokenRequestorThread::GetAndReleaseToken() const
         {
             const Token token = m_tokenManager.RequestToken();
-            Sleep(10 + rand() % 20);
         }
 
 
@@ -262,40 +243,33 @@ namespace BitFunnel
             while (m_isRunning)
             {
                 TrackTokens();
-
-                Sleep(500 + rand() % 50);
             }
         }
 
 
         void TokenTrackerThread::TrackTokens() const
         {
-            Stopwatch timer;
             const std::shared_ptr<ITokenTracker> tracker = m_tokenManager.StartTracker();
 
             // There are 2 holders of the tracker - token manager and this 
             // function.
             const long useCount = tracker.use_count();
-            TestEqual(useCount, 2);
+            ASSERT_EQ(useCount, 2);
 
-            static const unsigned c_trackerCompletionTimeoutInMS = 1000;
-            const bool hasTrackerCompleted = 
-                tracker->WaitForCompletion(c_trackerCompletionTimeoutInMS);
-
-            TestAssert(hasTrackerCompleted);
+            // static const unsigned c_trackerCompletionTimeoutInMS = 1000; TODO
+            tracker->WaitForCompletion();
 
             // Give the manager some time to de-register a tracker.
             // This is to accommodate the fact that WaitForCompletion() call 
             // here and token manager checking the status of the tracker 
             // happening on different threads and potentially one can be 
             // a little faster than the other. 
-            Sleep(10);
 
             // The tracker should now be de-registered from the token manager,
             // and this should reduce the use count by 1.
-            TestEqual(tracker.use_count(), useCount - 1);
+            ASSERT_EQ(tracker.use_count(), useCount - 1);
 
-            LogB(Logging::Info, "TokenTrackerThread", "Tracker finished in %f", timer.ElapsedTime());
+            // LogB(Logging::Info, "TokenTrackerThread", "Tracker finished in %f", timer.ElapsedTime()); TODO
         }
 
 
@@ -366,19 +340,17 @@ namespace BitFunnel
         {
             m_isRunning = false;
 
-            static const unsigned c_threadDrainTimeout = 1000;
-            const bool haveThreadsStopped = m_threadManager->WaitForThreads(c_threadDrainTimeout);
-
-            TestEqual(haveThreadsStopped, true);
+            // static const unsigned c_threadDrainTimeout = 1000; TODO
+            m_threadManager->WaitForThreads();
         }
 
 
         // Test which verifies distribution of tokens and starting/stopping
         // token trackers.
-        TestCase(TokenManagerWithTrackersTest)
+        TEST(TokenManagerWithTrackersTest, Trivial)
         {
             static const unsigned c_threadCount = 16;
-            static const unsigned c_testDuration = 5 * 1000;
+            // static const unsigned c_testDuration = 5 * 1000; TODO
 
             TokenManager tokenManager;
 
@@ -395,7 +367,19 @@ namespace BitFunnel
 
             tokenDistributor.Start();
 
-            Sleep(c_testDuration);
+            // DESIGN NOTE: this test used to have random sleeps in the methods
+            // and a 5 second sleep here. All the sleeps were removed because we
+            // still get some randomness in ordering and this test shouldn't
+            // take 5+ seconds to run. However, it's possible that's too extreme
+            // and we should have some random sleeps.
+            // However, if we end up having tests that sleep for any significant
+            // length of time, we should really have that be part of some
+            // more comprehensive test suite, not part of a test that's run
+            // once whenever people happen to run unit tests.
+            // Additionally, if we really want to check that this works we
+            // should do model checking over possible re-orderings, since
+            // random sleeps have a tendency to pile up and wake up in ways
+            // that make them less random than we want.
 
             isRunning = false;
             tokenDistributor.Stop();
@@ -404,7 +388,7 @@ namespace BitFunnel
                 const Token lastToken = tokenManager.RequestToken();
 
                 // Sanity check that some tokens have actually been issued.
-                TestAssert(lastToken.GetSerialNumber() > 0);
+                ASSERT_TRUE(lastToken.GetSerialNumber() > 0);
 
                 LogB(Logging::Info, 
                      "TokenManagerWithTrackersTest", 
@@ -413,222 +397,6 @@ namespace BitFunnel
             }
 
             tokenManager.Shutdown();
-        }
-
-
-        // Class which represent an action which needs to be performed on a 
-        // new thread. Takes the action via an argument to the constructor,
-        // launches a new thread, executes an action and destroyes a thread.
-        class ThreadAction : private NonCopyable
-        {
-        public:
-
-            // Starts a thread, executes an action and stops a thread.
-            ThreadAction(const std::function<void()> action);
-
-            // Closes thread's handle.
-            ~ThreadAction();
-
-            // Performs an action which was assigned to a thread.
-            void Action();
-
-            // Waits for the action to complete for a given timeout.
-            bool WaitForCompletion(unsigned timeoutMs);
-
-        private:
-
-            // Thread's entry point.
-            static void ThreadEntryPoint(void* data);
-
-            // Thread's handle.
-            HANDLE m_threadHandle;
-
-            // Action to perform.
-            const std::function<void()> m_action;
-        };
-
-
-        ThreadAction::ThreadAction(const std::function<void()> action)
-            : m_action(action)
-        {
-            DWORD threadId;
-            m_threadHandle = CreateThread(
-                0,              // Security attributes
-                0,              // Stack size
-                (LPTHREAD_START_ROUTINE)ThreadEntryPoint,
-                this,
-                0,              // Creation flags
-                &threadId);
-
-            TestAssert(m_threadHandle != nullptr, "Error: failed to start thread.");
-        }
-
-
-        ThreadAction::~ThreadAction()
-        {
-            int result = CloseHandle(m_threadHandle);
-            TestAssert(result != 0, "Error closing thread handle.");
-        }
-
-
-        void ThreadAction::Action()
-        {
-            try
-            {
-                m_action();
-            }
-            catch (...)
-            {
-                TestFail("Unexpected exception");
-            }
-        }
-
-
-        bool ThreadAction::WaitForCompletion(unsigned timeoutMs)
-        {
-            const DWORD result = WaitForSingleObject(m_threadHandle, timeoutMs);
-            return result == WAIT_OBJECT_0;
-        }
-
-
-        void ThreadAction::ThreadEntryPoint(void* data)
-        {
-            ThreadAction* thread = static_cast<ThreadAction*>(data);
-            thread->Action();
-        }
-
-
-        // Test which verifies disabling/enabling distribution of tokens.
-        TestCase(TokenManagerDisableTokensTest)
-        {
-            TokenManager tokenManager;
-
-            // Maximum time in milliseconds in which we are expected to get a token.
-            static const unsigned c_requestTokenMaxTime = 100;
-
-            // Maximum time in milliseconds to wait for a thread to finish.
-            static const unsigned c_threadCompletionTimeout = 10 * 1000;
-
-            // Gets a single token, check if time taken is within acceptable 
-            // boundaries.
-            {
-                Stopwatch timer;
-                ThreadAction thread1([&] () {
-                    tokenManager.RequestToken();
-                });
-
-                TestAssert(thread1.WaitForCompletion(c_threadCompletionTimeout));
-
-                const double elapsedTime = timer.ElapsedTime();
-                TestAssert(elapsedTime * 1000 < c_requestTokenMaxTime);
-            }
-
-            // Gets 2 tokens in multiple threads, check if time taken for each 
-            // is within acceptable boundaries.
-            {
-                Stopwatch timer;
-                double elapsedTime1, elapsedTime2;
-
-                ThreadAction thread1([&] () {
-                    tokenManager.RequestToken();
-                    elapsedTime1 = timer.ElapsedTime();
-                });
-
-
-                ThreadAction thread2([&] () {
-                    tokenManager.RequestToken();
-                    elapsedTime2 = timer.ElapsedTime();
-                });
-
-                TestAssert(thread1.WaitForCompletion(c_threadCompletionTimeout));
-                TestAssert(thread2.WaitForCompletion(c_threadCompletionTimeout));
-
-                TestAssert(elapsedTime1 < c_requestTokenMaxTime);
-                TestAssert(elapsedTime2 < c_requestTokenMaxTime);
-            }
-
-            // Launches a thread which needs to get a token when distribution of
-            // tokens is disabled. Re-enable distribution of tokens after a 
-            // defined period of time. Checks if the token can now be obtained 
-            // and that it indeed was obtained only after re-enabling of tokens.
-            {
-                Stopwatch timer;
-
-                tokenManager.DisableNewTokens();
-
-                static const unsigned c_disabledTokensDuration = 5000;
-
-                ThreadAction thread1([&] () {
-                    tokenManager.RequestToken();
-                });
-
-                Sleep(c_disabledTokensDuration);
-
-                tokenManager.EnableNewTokens();
-
-                TestAssert(thread1.WaitForCompletion(c_threadCompletionTimeout));
-                const double elapsedTime1 = timer.ElapsedTime();
-
-                TestAssert(elapsedTime1 * 1000 >= c_disabledTokensDuration, 
-                           "We were not expected to get a token in %f seconds, but got one after %f seconds",
-                           c_disabledTokensDuration / 1000.0,
-                           elapsedTime1);
-                TestAssert(elapsedTime1 * 1000 < c_disabledTokensDuration + c_requestTokenMaxTime,
-                           "We were expected to get a token in %f seconds, but got one after %f seconds",
-                           (c_disabledTokensDuration + c_requestTokenMaxTime) / 1000.0,
-                           elapsedTime1);
-            }
-
-            tokenManager.Shutdown();
-        }
-
-
-        void GetAndHoldToken(ITokenManager& tokenManager, unsigned durationInMs)
-        {
-            const Token token = tokenManager.RequestToken();
-            Sleep(durationInMs);
-        }
-
-
-        TestCase(ShutdownTest)
-        {
-            std::unique_ptr<TokenManager> tokenManager(new TokenManager());
-
-            bool thread1HasStarted = false;
-            bool thread1HasExited = false;
-            ThreadAction thread1([&] () {
-                thread1HasStarted = true;
-
-                GetAndHoldToken(*tokenManager, 100);
-
-                thread1HasExited = true;
-            });
-
-            bool thread2HasStarted = false;
-            bool thread2HasExited = false;
-            ThreadAction thread2([&] () {
-                thread2HasStarted = true;
-
-                GetAndHoldToken(*tokenManager, 100);
-
-                thread2HasExited = true;
-            });
-
-            // Give threads a chance to get tokens. Check that threads have 
-            // started but not yet exited.
-            Sleep(50);
-            TestAssert(thread1HasStarted);
-            TestAssert(thread2HasStarted);
-            TestAssert(!thread1HasExited);
-            TestAssert(!thread2HasExited);
-
-            tokenManager->Shutdown();
-
-            // Resetting unique_ptr, effectively asking TokenManager to shutdown.
-            tokenManager.reset();
-
-            TestAssert(thread1HasExited);
-            TestAssert(thread2HasExited);
         }
     }
 }

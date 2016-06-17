@@ -124,8 +124,7 @@ namespace BitFunnel
 
         virtual ~ITokenManager() {};
 
-        // Requests a new token from the manager. If distribution of tokens is 
-        // disabled, this call will block or spin until it is re-enabled.
+        // Requests a new token from the manager.
         virtual Token RequestToken() = 0;
 
         // Returns an std::shared_ptr to an ITokenTracker for the set of Tokens
