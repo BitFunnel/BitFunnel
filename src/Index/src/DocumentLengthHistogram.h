@@ -1,9 +1,13 @@
 #pragma once
 
 #include <iosfwd>
+#include <iostream>
 #include <map>
 #include <mutex>
+
 #include "BitFunnel/NonCopyable.h"
+#include "CsvTsv/Csv.h"
+#include "CsvTsv/Table.h"
 
 // BitFunnelLib\src\Common\Configuration\DocumentDocumentLengthHistogram.cpp
 // TODO: one unit test should be to write and read and get the same result.
@@ -24,7 +28,8 @@ namespace BitFunnel
         // No other method is thread safe.
         void AddDocument(size_t postingCount);
         size_t GetValue(size_t postingCount);
-        void Write(std::ostream& output) const;
+        // Persists the contents of the histogram to a stream
+        void Write(std::ostream& output);
 
     private:
         std::map<size_t, size_t> m_hist;
