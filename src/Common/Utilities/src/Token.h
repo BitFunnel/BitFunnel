@@ -45,9 +45,7 @@ namespace BitFunnel
         // This method is thread-safe.
         virtual bool IsComplete() const = 0;
 
-        // Blocks until all of the Tokens in the set have been destroyed, or 
-        // a timeout is exceeded. Returns true if all of the Tokens in the set 
-        // have been destroyed within a given timeout.
+        // Blocks until all of the Tokens in the set have been destroyed.
         // This method is thread-safe.
         virtual void WaitForCompletion() = 0;
     };
@@ -129,16 +127,6 @@ namespace BitFunnel
         // Requests a new token from the manager. If distribution of tokens is 
         // disabled, this call will block or spin until it is re-enabled.
         virtual Token RequestToken() = 0;
-
-        // Pauses distributing new tokens. This only sets a flag for all new 
-        // token requests and it is expected that the tokens that are already 
-        // in progress of being handed out, will be still issued.
-        // The effect of this call will be to cause subsequent calls to 
-        // RequestToken() to block or spin until EnableNewTokens() is invoked.
-        virtual void DisableNewTokens() = 0;
-
-        // Re-enables token distribution.
-        virtual void EnableNewTokens() = 0;
 
         // Returns an std::shared_ptr to an ITokenTracker for the set of Tokens
         // in existance at the time of the call. The ITokenManager retains a 

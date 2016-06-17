@@ -1,10 +1,11 @@
 #pragma once
 
+#include <condition_variable> // Uses std::contiion_variable.
 #include <deque>              // Uses std::deque.
 #include <memory>             // Uses std::shared_ptr.
+#include <mutex>              // Uses std::mutex.
 
-#include "BitFunnel/Token.h"  // Inherits from ITokenManager and ITokenListener
-#include "Mutex.h"
+#include "Token.h"  // Inherits from ITokenManager and ITokenListener
 
 namespace BitFunnel
 {
@@ -35,11 +36,7 @@ namespace BitFunnel
         // ITokenManager API.
         //
 
-        // If distribution of tokens is disabled, this method blocks until
-        // distribution is re-enabled.
         virtual Token RequestToken() override;
-        virtual void DisableNewTokens() override;
-        virtual void EnableNewTokens() override;
         virtual const std::shared_ptr<ITokenTracker> StartTracker() override;
         virtual void Shutdown() override;
 
@@ -50,14 +47,11 @@ namespace BitFunnel
         //
         virtual void OnTokenComplete(SerialNumber serialNumber) override;
 
-        // Number of tokens currently in-flight.
-        unsigned m_tokensInFlight;
-
         // Serial number for the next issued token.
         unsigned m_nextSerialNumber;
 
-        // Flag to indicate whether the distribution of tokens is allowed.
-        bool m_isTokenDistributionAllowed;
+        // Number of tokens currently in-flight.
+        unsigned m_tokensInFlight;
 
         // Flag indicating that TokenManager is shutting down.
         bool m_isShuttingDown;
@@ -72,10 +66,13 @@ namespace BitFunnel
 
         // Lock protecting all of the above private members to ensure 
         // thread safety.
-        Mutex m_lock;
+        std::mutex m_lock;
 
-        // Event which is used to signal when all of the tokens in existence
-        // have been destroyed when the TokenManager is shutting down.
-        HANDLE m_tokenHaveShutdown;
+        // Lock on condition variable.
+        std::mutex m_condLock;
+
+        // Signal that all tokens have been destroyed. This allows Shutdown()
+        // to proceed.
+        std::condition_variable m_condition;
     };
 }

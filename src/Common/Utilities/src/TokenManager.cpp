@@ -1,20 +1,12 @@
-#include "stdafx.h"
-
 #include <algorithm>
 
-#include "BitFunnel/Factories.h"
-#include "LockGuard.h"
+#include "BitFunnel/Utilities/Factories.h"
 #include "LoggerInterfaces/Logging.h"
 #include "TokenManager.h"
 #include "TokenTracker.h"
 
 namespace BitFunnel
 {
-    // Timeout to wait for outstanding tokens to be returned when TokenManager
-    // is shutting down. For the average amount of time that the tokens are 
-    // being held, this timeout should be more than sufficient.
-    static const unsigned c_shutdownTimeoutInMs = 1 * 1000;
-
     std::unique_ptr<ITokenManager> Factories::CreateTokenManager()
     {
         return std::unique_ptr<ITokenManager>(new TokenManager());
@@ -22,69 +14,36 @@ namespace BitFunnel
 
 
     TokenManager::TokenManager()
-        : m_isTokenDistributionAllowed(true),
+        : m_nextSerialNumber(0),
           m_tokensInFlight(0),
-          m_nextSerialNumber(0),
-          m_isShuttingDown(false),
-          m_tokenHaveShutdown(CreateEvent(nullptr, true, false, nullptr))
+          m_isShuttingDown(false)
     {
     }
 
 
     TokenManager::~TokenManager()
     {
-        CloseHandle(m_tokenHaveShutdown);
-
         // This happens when the user has not called Shutdown when destroying
         // this object.
-        LogAssertB(m_isShuttingDown);
-    }
-
-
-    void TokenManager::DisableNewTokens()
-    {
-        LockGuard lock(m_lock);
-
-        m_isTokenDistributionAllowed = false;
-    }
-
-
-    void TokenManager::EnableNewTokens()
-    {
-        LockGuard lock(m_lock);
-
-        m_isTokenDistributionAllowed = true;
+        LogAssertB(m_isShuttingDown, "Destructed TokenManager without shutdown.");
     }
 
 
     Token TokenManager::RequestToken()
     {
-        // Distribution of tokens will be disabled rarely and only for a short 
-        // period of time (in the order of milliseconds). When it is disabled, 
-        // it is sufficient to spin and wait for it to be re-enabled again.
-        for (;;)
-        {
-            LockGuard lock(m_lock);
+        std::lock_guard<std::mutex> lock(m_lock);
 
-            LogAssertB(!m_isShuttingDown);
+        LogAssertB(!m_isShuttingDown, "Requested Token while shutting down");
 
-            if (m_isTokenDistributionAllowed)
-            {
-                const SerialNumber serialNumber = m_nextSerialNumber++;
-                m_tokensInFlight++;
-                return Token(*this, serialNumber);
-            }
-
-            // TODO: Check if we need to sleep for a short time so that we 
-            // don't create thread contention on threads that are waiting for 
-            // a Token.
-        }
+        const SerialNumber serialNumber = m_nextSerialNumber++;
+        ++m_tokensInFlight;
+        return Token(*this, serialNumber);
     }
 
 
     const std::shared_ptr<ITokenTracker> TokenManager::StartTracker()
     {
-        LockGuard lock(m_lock);
+        std::lock_guard<std::mutex> lock(m_lock);
 
         std::shared_ptr<TokenTracker> tracker(
             new TokenTracker(m_nextSerialNumber, m_tokensInFlight));
@@ -108,25 +67,26 @@ namespace BitFunnel
         // Wait for existing tokens to be returned.
         unsigned tokensInFlightCount = 0;
         {
-            LockGuard lock(m_lock);
+            std::lock_guard<std::mutex> lock(m_lock);
             m_isShuttingDown = true;
             tokensInFlightCount = m_tokensInFlight;
         }
 
-        if (tokensInFlightCount > 0)
+        // TODO: consider if we want to timeout and log an error.
+        while (tokensInFlightCount > 0)
         {
-            const DWORD result = WaitForSingleObject(m_tokenHaveShutdown, 
-                                                     c_shutdownTimeoutInMs);
-            LogAssertB(result == WAIT_OBJECT_0);
+            std::unique_lock<std::mutex> lock(m_condLock);
+            m_condition.wait(lock);
         }
     }
 
 
     void TokenManager::OnTokenComplete(SerialNumber serialNumber)
     {
-        LockGuard lock(m_lock);
+        std::lock_guard<std::mutex> lock(m_lock);
 
-        LogAssertB(m_tokensInFlight > 0);
+        LogAssertB(m_tokensInFlight > 0,
+                   "Token completed with <= 0 tokens in flight.");
 
         m_tokensInFlight--;
 
@@ -143,12 +103,13 @@ namespace BitFunnel
         // have already notified the first one in the while loop above.
         for (unsigned i = 1; i < m_trackers.size(); ++i)
         {
-            LogAssertB(!m_trackers[i]->OnTokenComplete(serialNumber));
+            LogAssertB(!m_trackers[i]->OnTokenComplete(serialNumber),
+                       "Tracker completed when older tracker didn't complete.");
         }
     
         if (m_tokensInFlight == 0 && m_isShuttingDown)
         {
-            SetEvent(m_tokenHaveShutdown);
+            m_condition.notify_all();
         }
     }
 }
