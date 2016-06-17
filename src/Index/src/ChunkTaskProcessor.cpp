@@ -10,33 +10,6 @@
 
 namespace BitFunnel
 {
-    static std::vector<char> readChunk(char const * fileName)
-    {
-        // TODO: Make this RAII.
-        std::ifstream file(fileName);
-
-        if (!file.is_open()) {
-            // TODO: Make this a sensible error.
-            throw 99;
-        }
-
-        std::stringstream ss;
-        std::string line;
-        while(std::getline(file, line)) {
-            ss << line;
-        }
-
-        file.close();
-
-        std::string lines = ss.str();
-        const std::vector<char> chunkData = std::vector<char>(
-            lines.c_str(),
-            lines.c_str() + lines.size());
-
-        return chunkData;
-    }
-
-
     ChunkTaskProcessor::ChunkTaskProcessor(
         std::vector<std::string> const & filePaths,
         IIngestor& ingestor)
@@ -53,9 +26,13 @@ namespace BitFunnel
         std::cout << "ChunkTaskProcessor::ProcessTask: filePath:"
             << m_filePaths[taskId] << std::endl;
 
-        // NOTE: The act of constructing a ChunkIngestor causes the file to be
-        // ingested.
-        ChunkIngestor(readChunk(m_filePaths[taskId].c_str()), m_ingestor);
+        std::ifstream inputStream(m_filePaths[taskId], std::ios::binary);
+        std::vector<char> chunkData((std::istreambuf_iterator<char>(inputStream)),
+                                    std::istreambuf_iterator<char>());
+
+        // NOTE: The act of constructing a ChunkIngestor causes the bytes in
+        // chunkData to be parsed into documents and ingested.
+        ChunkIngestor(chunkData, m_ingestor);
     }
 
 

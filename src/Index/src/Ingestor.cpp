@@ -1,3 +1,4 @@
+#include <iostream>     // TODO: Remove this header.
 #include <memory>
 #include <stdexcept>
 
@@ -21,6 +22,14 @@ namespace BitFunnel
     {
         // Initialize histogram and frequency tables here.
     }
+
+
+    void Ingestor::PrintStatistics() const
+    {
+        std::cout << "Document count: " << m_documentCount << std::endl;
+        std::cout << "Term count: " << m_termCount << std::endl;
+    }
+
 
 
     void Ingestor::Add(DocId /*id*/, IDocument const & document)

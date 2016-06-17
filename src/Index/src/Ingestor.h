@@ -12,6 +12,9 @@ namespace BitFunnel
     public:
         Ingestor();
 
+        // TODO: Remove this temporary method.
+        virtual void PrintStatistics() const override;
+
         // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.
         // The IDocument must implement the Place method which should call
@@ -73,6 +76,8 @@ namespace BitFunnel
         virtual void ExpireGroup(GroupId groupId) override;
 
     private:
+        // TODO: Replace these tempoary statistics variables with document
+        // length hash table and term frequency tables.
         std::atomic<size_t> m_termCount;
         std::atomic<size_t> m_documentCount;
     };

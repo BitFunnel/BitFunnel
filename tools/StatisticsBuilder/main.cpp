@@ -35,10 +35,52 @@ namespace BitFunnel
 
         std::unique_ptr<IIngestor> ingestor(Factories::CreateIngestor());
 
-        // TODO: Get correct thread count.
-        size_t threadCount = 2;
+        // TODO: Use correct thread count.
+        size_t threadCount = 1;
         IngestChunks(filePaths, *ingestor, threadCount);
+        ingestor->PrintStatistics();
     }
+}
+
+
+void CreateTestFiles(char const * chunkPath, char const * manifestPath)
+{
+    {
+        std::ofstream chunkStream(chunkPath);
+
+        char const chunk[] =
+
+            // First document
+            "Title\0Dogs\0\0"
+            "Body\0Dogs\0are\0man's\0best\0friend.\0\0"
+            "\0"
+
+            // Second document
+            "Title\0Cat\0Facts\0\0"
+            "Body\0The\0internet\0is\0made\0of\0cats.\0\0"
+            "\0"
+
+            // End of corpus
+            "\0";
+
+        // Write out sizeof(chunk) - 1 bytes to skip the trailing zero in corpus
+        // which is not part of the file format.
+        chunkStream.write(chunk, sizeof(chunk) - 1);
+        chunkStream.close();
+    }
+
+    {
+        std::ofstream manifestStream(manifestPath);
+        manifestStream << chunkPath << std::endl;
+        manifestStream.close();
+    }
+}
+
+
+int main2(int /*argc*/, char** /*argv*/)
+{
+    CreateTestFiles("c:\\temp\\chunks\\Chunk1", "c:\\temp\\chunks\\manifest.txt");
+    return 0;
 }
 
 

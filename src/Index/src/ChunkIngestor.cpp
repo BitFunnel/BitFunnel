@@ -3,8 +3,10 @@
 #include <iostream>
 #include <sstream>
 
+#include "BitFunnel/Index/IIngestor.h"
 #include "ChunkEnumerator.h"
 #include "ChunkIngestor.h"
+#include "Document.h"
 
 
 namespace BitFunnel
@@ -19,16 +21,6 @@ namespace BitFunnel
       : m_chunkData(chunkData),
         m_ingestor(ingestor)
     {
-
-        // TODO: We should transition this to actually opening the files.
-        // std::ifstream chunkFile;
-        // chunkFile.open(filePath);
-
-        // chunkFile.exceptions(std::ifstream::badbit);
-        // if (!chunkFile.is_open()) {
-        //     throw "MIke thought this was a good idea.";
-        // }
-
         ChunkReader(m_chunkData, *this);
     }
 
@@ -40,26 +32,32 @@ namespace BitFunnel
     void ChunkIngestor::OnDocumentEnter(DocId id)
     {
         std::cout << "ChunkIngestor::OnDocumentEnter: id:" << id << std::endl;
+        m_currentDocument.reset(new Document());
     }
 
     void ChunkIngestor::OnStreamEnter(char const * name)
     {
         std::cout << "ChunkIngestor::OnStreamEnter: name:" << name << std::endl;
+        m_currentDocument->OpenStream(name);
     }
 
     void ChunkIngestor::OnTerm(char const * term)
     {
         std::cout << "ChunkIngestor::OnTerm: term:" << term << std::endl;
+        m_currentDocument->AddTerm(term);
     }
 
     void ChunkIngestor::OnStreamExit()
     {
         std::cout << "ChunkIngestor::OnStreamExit" << std::endl;
+        m_currentDocument->CloseStream();
     }
 
     void ChunkIngestor::OnDocumentExit()
     {
         std::cout << "ChunkIngestor::OnDocumentExit" << std::endl;
+        m_ingestor.Add(0, *m_currentDocument);
+        m_currentDocument.reset(nullptr);
     }
 
     void ChunkIngestor::OnFileExit()

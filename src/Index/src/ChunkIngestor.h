@@ -1,8 +1,9 @@
 #pragma once
 
-#include "BitFunnel/Index/DocumentHandle.h"
-#include "BitFunnel/NonCopyable.h"
-#include "ChunkReader.h"
+#include "BitFunnel/Index/IDocument.h"  // std::unique_ptr<IDocument>
+#include "BitFunnel/NonCopyable.h"      // Inherits from NonCopyable.
+#include "ChunkReader.h"                // Inherits from ChunkReader::IEvents.
+
 
 namespace BitFunnel
 {
@@ -40,5 +41,6 @@ namespace BitFunnel
     private:
         std::vector<char> const& m_chunkData;
         IIngestor& m_ingestor;
+        std::unique_ptr<IDocument> m_currentDocument;
     };
 }

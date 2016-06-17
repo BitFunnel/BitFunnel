@@ -34,6 +34,9 @@ namespace BitFunnel
     class IIngestor : public IInterface
     {
     public:
+        // TODO: Remove this temporary method.
+        virtual void PrintStatistics() const = 0;
+
         // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.
         // The IDocument must implement the Place method which should call
