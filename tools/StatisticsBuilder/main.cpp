@@ -1,14 +1,14 @@
-
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <vector>
 
 #include "BitFunnel/Index/IIndex.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "CmdLineParser/CmdLineParser.h"
 
-static std::vector<std::string> readLines(char const * fileName)
+
+// Returns a vector with one entry for each line in the file.
+static std::vector<std::string> ReadLines(char const * fileName)
 {
     std::ifstream file(fileName);
 
@@ -22,11 +22,11 @@ static std::vector<std::string> readLines(char const * fileName)
 }
 
 
-static void loadAndIngestChunkList(char const * chunkListFileName)
+static void LoadAndIngestChunkList(char const * chunkListFileName)
 {
     std::cout << "Loading chunk list file '" << chunkListFileName << "'"
         << std::endl;
-    std::vector<std::string> filePaths = readLines(chunkListFileName);
+    std::vector<std::string> filePaths = ReadLines(chunkListFileName);
 
     BitFunnel::IIndex index;
     BitFunnel::IngestChunks(filePaths, index, 2);
@@ -41,16 +41,31 @@ int main(int argc, char** argv)
 
     CmdLine::RequiredParameter<char const *> chunkListFileName(
         "chunkListFileName",
-        "Path to the file to convert to a vector.");
+        "Path to a file containing the paths to the chunk files to be ingested. "
+        "One chunk file per line. Paths are relative to working directory.");
 
     parser.AddParameter(chunkListFileName);
 
-    if (!parser.TryParse(std::cout, argc, argv))
+    int returnCode = 0;
+
+    if (parser.TryParse(std::cout, argc, argv))
     {
-        return 0;
+        try
+        {
+            LoadAndIngestChunkList(chunkListFileName);
+            returnCode = 0;
+        }
+        catch (...)
+        {
+            std::cout << "Unexpected error.";
+            returnCode = 1;
+        }
+    }
+    else
+    {
+        parser.Usage(std::cout, argv[0]);
+        returnCode = 1;
     }
 
-    loadAndIngestChunkList(chunkListFileName);
-
-    return 0;
+    return returnCode;
 }
