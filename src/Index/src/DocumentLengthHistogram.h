@@ -25,6 +25,7 @@
 #include <iosfwd>
 #include <map>
 #include <mutex>
+
 #include "BitFunnel/NonCopyable.h"
 
 // BitFunnelLib\src\Common\Configuration\DocumentDocumentLengthHistogram.cpp
@@ -33,20 +34,22 @@
 
 namespace BitFunnel
 {
-    // Note: NonCopyable is probably incompatible with map.
     class DocumentLengthHistogram : public NonCopyable
     {
     public:
-        // Use CsvTsv.
-        // TODO: Do we need a document scaling constructor, like in the original?
+        // TODO: Do we need a document scaling constructor, like in the
+        // original?
         DocumentLengthHistogram(std::istream& input);
         DocumentLengthHistogram();
 
         // AddDocument is thread safe with multiple writers.
-        // No other method is thread safe.
         void AddDocument(size_t postingCount);
+
+        // AddDocument is thread safe with multiple readers and writers.
         size_t GetValue(size_t postingCount);
-        void Write(std::ostream& output) const;
+
+        // Persists the contents of the histogram to a stream, not thread-safe
+        void Write(std::ostream& output);
 
     private:
         std::map<size_t, size_t> m_hist;

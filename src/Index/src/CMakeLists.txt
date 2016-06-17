@@ -8,6 +8,7 @@ set(CPPFILES
     Configuration.cpp
     Document.cpp
     DocumentHandleInternal.cpp
+    DocumentLengthHistogram.cpp
     IngestChunks.cpp
     Ingestor.cpp
     Placeholder.cpp
