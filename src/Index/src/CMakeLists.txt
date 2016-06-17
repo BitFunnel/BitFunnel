@@ -2,6 +2,7 @@
 
 set(CPPFILES
     Placeholder.cpp
+    DocumentLengthHistogram.cpp
 )
 
 set(WINDOWS_CPPFILES

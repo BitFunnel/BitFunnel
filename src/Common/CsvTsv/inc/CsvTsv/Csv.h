@@ -24,6 +24,7 @@
 
 #include "DelimitedTable.h"
 #include "ParseError.h"
+#include "Table.h"
 
 
 namespace CsvTsv
