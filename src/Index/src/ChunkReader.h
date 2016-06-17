@@ -32,17 +32,22 @@ namespace BitFunnel
         ChunkReader(std::vector<char> const & input, IEvents& processor);
 
     private:
-        void Consume(char c);
-        char GetChar();
-        std::string GetToken();
-        char PeekChar();
         void ProcessDocument();
         void ProcessStream();
+        char const * GetToken();
 
-        char m_current;
-        bool m_haveChar;
-        size_t m_index;
+        void Consume(char c);
+        char GetChar();
+        char PeekChar();
+
+        // Construtor parameters.
         std::vector<char> const & m_input;
         IEvents& m_processor;
+
+        // Next character to be processed.
+        char const * m_next;
+
+        // Pointer to character beyond the end of m_input.
+        char const * m_end;
     };
 }

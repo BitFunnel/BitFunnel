@@ -1,18 +1,13 @@
+#include "ChunkReader.h"
 
-#include <istream>
-#include <sstream>
-
-#include "ChunkEnumerator.h" // TODO: change to appropriate file.
-
-// TODO: change to avoid creating std::string objects while running.
 
 namespace BitFunnel
 {
     ChunkReader::ChunkReader(std::vector<char> const & input, IEvents& processor)
-      : m_haveChar(false),
-        m_index(0),
-        m_input(input),
-        m_processor(processor)
+      : m_input(input),
+        m_processor(processor),
+        m_next(&input[0]),
+        m_end(&input[0] + input.size())
     {
         m_processor.OnFileEnter();
         while (PeekChar() != 0) {
@@ -40,9 +35,9 @@ namespace BitFunnel
 
     void ChunkReader::ProcessStream()
     {
-        m_processor.OnStreamEnter(GetToken().c_str());
+        m_processor.OnStreamEnter(GetToken());
         while (PeekChar() != 0) {
-            m_processor.OnTerm(GetToken().c_str());
+            m_processor.OnTerm(GetToken());
         }
 
         Consume(0);
@@ -50,43 +45,42 @@ namespace BitFunnel
         m_processor.OnStreamExit();
     }
 
-    char ChunkReader::PeekChar()
+
+    char const * ChunkReader::GetToken()
     {
-        if (!m_haveChar) {
-            if (m_index >= m_input.size()) {
-                throw 0;
-            }
+        char const * begin = m_next;
 
-            m_current = m_input[m_index++];
-            m_haveChar = true;
-        }
-
-        return m_current;
-    }
-
-    std::string ChunkReader::GetToken()
-    {
-        std::string s;
         while (PeekChar() != 0) {
-            s.push_back(GetChar());
+            GetChar();
         }
 
         Consume(0);
 
-        return s;
+        return begin;
     }
+
+
+    char ChunkReader::PeekChar()
+    {
+        if (m_next == m_end) {
+            throw 0;
+        }
+        else
+        {
+            return *m_next;
+        }
+    }
+
 
     char ChunkReader::GetChar()
     {
-        PeekChar();
-
-        if (!m_haveChar) {
+        if (m_next == m_end) {
             throw 0;
         }
-
-        m_haveChar = false;
-
-        return m_current;
+        else
+        {
+            return *m_next++;
+        }
     }
 
     void ChunkReader::Consume(char c)
