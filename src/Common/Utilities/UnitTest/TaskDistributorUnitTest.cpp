@@ -86,10 +86,11 @@ namespace BitFunnel
             // Create one processor for each thread.
             srand(12345);
             std::atomic<uint64_t> activeThreadCount(threadCount);
-            std::vector<ITaskProcessor*> processors;
+            std::vector<std::unique_ptr<ITaskProcessor>> processors;
             for (int i = 0 ; i < threadCount; ++i)
             {
-                processors.push_back(new TaskProcessor(tasks, maxSleepInMS, activeThreadCount));
+                processors.push_back(
+                    std::unique_ptr<ITaskProcessor>(new TaskProcessor(tasks, maxSleepInMS, activeThreadCount)));
             }
 
             TaskDistributor distributor(processors, taskCount);
@@ -102,12 +103,6 @@ namespace BitFunnel
             for (unsigned i = 0; i < taskCount; ++i)
             {
                 ASSERT_EQ(tasks[i].load(), 1u);
-            }
-
-            // Cleanup processors vector.
-            for (int i = 0 ; i < threadCount; ++i)
-            {
-                delete processors[i];
             }
         }
 

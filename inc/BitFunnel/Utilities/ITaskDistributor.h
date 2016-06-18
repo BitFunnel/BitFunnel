@@ -57,13 +57,4 @@ namespace BitFunnel
         // Waits for all tasks to complete.
         virtual void WaitForCompletion() = 0;
     };
-
-
-    class ITaskProcessor;
-    namespace Factories
-    {
-        ITaskDistributor* 
-            CreateTaskDistributor(std::vector<ITaskProcessor*> const & processors,
-                                  size_t taskCount);
-    }
 }

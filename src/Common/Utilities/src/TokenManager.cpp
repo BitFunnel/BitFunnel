@@ -31,10 +31,9 @@ namespace BitFunnel
 
     Token TokenManager::RequestToken()
     {
-        std::lock_guard<std::mutex> lock(m_lock);
-
         LogAssertB(!m_isShuttingDown, "Requested Token while shutting down");
 
+        std::lock_guard<std::mutex> lock(m_lock);
         const SerialNumber serialNumber = m_nextSerialNumber++;
         ++m_tokensInFlight;
         return Token(*this, serialNumber);
@@ -44,7 +43,6 @@ namespace BitFunnel
     const std::shared_ptr<ITokenTracker> TokenManager::StartTracker()
     {
         std::lock_guard<std::mutex> lock(m_lock);
-
         std::shared_ptr<TokenTracker> tracker(
             new TokenTracker(m_nextSerialNumber, m_tokensInFlight));
 
@@ -64,31 +62,26 @@ namespace BitFunnel
 
     void TokenManager::Shutdown()
     {
-        // Wait for existing tokens to be returned.
-        unsigned tokensInFlightCount = 0;
-        {
-            std::lock_guard<std::mutex> lock(m_lock);
-            m_isShuttingDown = true;
-            tokensInFlightCount = m_tokensInFlight;
-        }
+        LogAssertB(!m_isShuttingDown, "Multiple shutdowns seen.\n");
+        m_isShuttingDown = true;
 
+        // Wait for existing tokens to be returned.
         // TODO: consider if we want to timeout and log an error.
-        while (tokensInFlightCount > 0)
+        while (m_tokensInFlight > 0)
         {
-            std::unique_lock<std::mutex> lock(m_condLock);
-            m_condition.wait(lock);
+            std::unique_lock<std::mutex> lock(m_lock);
+            m_shutdownCondition.wait(lock);
         }
     }
 
 
     void TokenManager::OnTokenComplete(SerialNumber serialNumber)
     {
-        std::lock_guard<std::mutex> lock(m_lock);
-
         LogAssertB(m_tokensInFlight > 0,
                    "Token completed with <= 0 tokens in flight.");
 
-        m_tokensInFlight--;
+        m_lock.lock();
+        --m_tokensInFlight;
 
         // m_trackers consists of a sequence of zero or more complete trackers,
         // followed by a sequence of trackers that have not completed.
@@ -106,10 +99,11 @@ namespace BitFunnel
             LogAssertB(!m_trackers[i]->OnTokenComplete(serialNumber),
                        "Tracker completed when older tracker didn't complete.");
         }
+        m_lock.unlock();
     
         if (m_tokensInFlight == 0 && m_isShuttingDown)
         {
-            m_condition.notify_all();
+            m_shutdownCondition.notify_all();
         }
     }
 }

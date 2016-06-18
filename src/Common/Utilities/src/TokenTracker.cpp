@@ -1,4 +1,4 @@
-#include <limits>       // For ULONG_MAX.
+#include <limits>
 
 #include "LoggerInterfaces/Logging.h"
 #include "TokenTracker.h"
@@ -41,7 +41,8 @@ namespace BitFunnel
             // m_remainingTokenCount should always be >= 0 because we know the
             // number of tokens in flight when starting the tracker.
             // Decrementing 0 would result in an underflow.
-            LogAssertB(newValue != std::numeric_limits<unsigned int>::max(),"");
+            LogAssertB(newValue != std::numeric_limits<unsigned int>::max(),
+                       "m_remainingTokenCount underflow.");
 
             if (newValue == 0)
             {

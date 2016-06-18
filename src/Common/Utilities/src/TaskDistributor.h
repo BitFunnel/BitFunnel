@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <memory> // For std::unique_ptr.
 #include <mutex>  // For std::mutex.
 #include <vector>
 
@@ -56,8 +57,9 @@ namespace BitFunnel
     class TaskDistributor : public ITaskDistributor, NonCopyable
     {
     public:
-        TaskDistributor(const std::vector<ITaskProcessor*>& processors,
-                        size_t taskCount);
+        TaskDistributor(
+            const std::vector<std::unique_ptr<ITaskProcessor>>& processors,
+            size_t taskCount);
 
         ~TaskDistributor();
 
@@ -71,7 +73,7 @@ namespace BitFunnel
         void WaitForCompletion();
 
     private:
-        const std::vector<ITaskProcessor*>& m_processors;
+        const std::vector<std::unique_ptr<ITaskProcessor>>& m_processors;
         size_t m_taskCount;
         size_t m_nextTaskId;
 

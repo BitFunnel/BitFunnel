@@ -23,15 +23,23 @@
 #include <memory>  // For std::unique_ptr.
 #include <vector>  // For std::vector.
 
+#include "ITaskDistributor.h"
 #include "IThreadManager.h"
 
 namespace BitFunnel
 {
+    class ITaskProcessor;
     class ITokenManager;
     namespace Factories
     {
-        IThreadManager* CreateThreadManager(const std::vector<IThreadBase*>& threads);
+        std::unique_ptr<IThreadManager> CreateThreadManager(
+            const std::vector<IThreadBase*>& threads);
 
         std::unique_ptr<ITokenManager> CreateTokenManager();
+
+        std::unique_ptr<ITaskDistributor>
+            CreateTaskDistributor(
+                std::vector<std::unique_ptr<ITaskProcessor>> const & processors,
+                size_t taskCount);
     }
 }

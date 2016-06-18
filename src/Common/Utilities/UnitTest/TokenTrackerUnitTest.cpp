@@ -5,9 +5,9 @@
 
 #include "gtest/gtest.h"
 
-// #include "BitFunnel/Factories.h"
 #include "BitFunnel/Utilities/ITaskDistributor.h"
 #include "BitFunnel/Utilities/ITaskProcessor.h"
+#include "BitFunnel/Utilities/Factories.h"
 #include "TaskDistributor.h"
 #include "TokenTracker.h"
 
@@ -19,11 +19,11 @@ namespace BitFunnel
         {
             static const SerialNumber c_anyCutoffSerialNumber = 10;
             static_assert(c_anyCutoffSerialNumber > 1, 
-                          "For test purposes c_anyCutoffSerialNumber must be greater than 1");
+            "For test purposes c_anyCutoffSerialNumber must be greater than 1");
 
             static const unsigned c_anyInFlightTokenCount = 5;
             static_assert(c_anyInFlightTokenCount > 1, 
-                          "For test purposes c_anyInFlightTokenCount must be greater than 1");
+            "For test purposes c_anyInFlightTokenCount must be greater than 1");
 
             TokenTracker tracker(c_anyCutoffSerialNumber, 
                                  c_anyInFlightTokenCount);
@@ -86,9 +86,8 @@ namespace BitFunnel
 
             };
 
-            std::vector<ITaskProcessor*> m_taskProcessors;
+            std::vector<std::unique_ptr<ITaskProcessor>> m_taskProcessors;
             std::unique_ptr<ITaskDistributor> m_taskDistributor;
-            // TokenTracker& m_tracker;
         };
 
 
@@ -124,23 +123,20 @@ namespace BitFunnel
         TokenDistributor::TokenDistributor(TokenTracker& tracker, 
                                            unsigned threadCount, 
                                            unsigned tokenCount)
-        // : m_tracker(tracker)
         {
             for (unsigned i = 0; i < threadCount; ++i)
             {
-                m_taskProcessors.push_back(new TokenProcessor(tracker));
+                m_taskProcessors.push_back(
+                    std::unique_ptr<ITaskProcessor>(new TokenProcessor(tracker)));
             }
 
-            m_taskDistributor.reset(Factories::CreateTaskDistributor(m_taskProcessors, tokenCount));
+            m_taskDistributor =
+                Factories::CreateTaskDistributor(m_taskProcessors, tokenCount);
         }
 
 
         TokenDistributor::~TokenDistributor()
         {
-            for (unsigned i = 0; i < m_taskProcessors.size(); ++i)
-            {
-                delete m_taskProcessors[i];
-            }
         }
 
 

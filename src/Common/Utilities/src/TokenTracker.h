@@ -32,8 +32,7 @@ namespace BitFunnel
     public:
 
         // Constructs a tracker to track tokens issued before a cut off serial 
-        // number, when it is known that there are remainingTokenCount such 
-        // tokens currently in flight. 
+        // number
         TokenTracker(SerialNumber cutoffSerialNumber, unsigned remainingTokenCount);
 
         ~TokenTracker();
@@ -55,8 +54,7 @@ namespace BitFunnel
     private:
 
         // Cutoff serial number of the tokens of interest. This is 
-        // non-inclusive meaning that it tracks tokens with serial number that
-        // is less than this value.
+        // a non-inclusive range.
         const SerialNumber m_cutoffSerialNumber;
 
         // Number of tokens of interest which are still in flight.

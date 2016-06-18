@@ -30,9 +30,11 @@
 
 namespace BitFunnel
 {
-    IThreadManager* Factories::CreateThreadManager(const std::vector<IThreadBase*>& threads)
+    std::unique_ptr<IThreadManager> Factories::CreateThreadManager(
+// const std::vector<std::unique_ptr<IThreadBase>>& threads)
+        const std::vector<IThreadBase*>& threads)
     {
-       return new ThreadManager(threads);
+        return std::unique_ptr<IThreadManager>(new ThreadManager(threads));
     }
 
 

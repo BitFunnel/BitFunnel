@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>             // Uses std::atomic.
 #include <condition_variable> // Uses std::contiion_variable.
 #include <deque>              // Uses std::deque.
 #include <memory>             // Uses std::shared_ptr.
@@ -48,13 +49,13 @@ namespace BitFunnel
         virtual void OnTokenComplete(SerialNumber serialNumber) override;
 
         // Serial number for the next issued token.
-        unsigned m_nextSerialNumber;
+        std::atomic<unsigned> m_nextSerialNumber;
 
         // Number of tokens currently in-flight.
-        unsigned m_tokensInFlight;
+        std::atomic<unsigned> m_tokensInFlight;
 
         // Flag indicating that TokenManager is shutting down.
-        bool m_isShuttingDown;
+        std::atomic<bool> m_isShuttingDown;
 
         // A list of registered token trackers.
         // DESIGN NOTE: std::deque is chosen since we always want to add new 
@@ -64,15 +65,20 @@ namespace BitFunnel
         // be able to pop the trackers off the list as soon as they complete.
         std::deque<std::shared_ptr<TokenTracker>> m_trackers;
 
-        // Lock protecting all of the above private members to ensure 
-        // thread safety.
+        // This lock is required to protect two things. First, it's used
+        // to protect the m_trackers deque, which isn't thread safe.
+        // Second, it's used to protect the tuple (m_nextSerialNumber,
+        // m_tokensInFlight), which must be updated in tandem.
+        // Making each of those atomic isn't sufficient. because a new tracker
+        // instantiated when only one of the two variables has been updated will
+        // have an inconsistent state.
+        // This mutex is also used to protect the condition variable, although,
+        // strictly speaking, a finer grained mutex could be used that only
+        // protects the condition variable and m_tokensInFlight.
         std::mutex m_lock;
-
-        // Lock on condition variable.
-        std::mutex m_condLock;
 
         // Signal that all tokens have been destroyed. This allows Shutdown()
         // to proceed.
-        std::condition_variable m_condition;
+        std::condition_variable m_shutdownCondition;
     };
 }
