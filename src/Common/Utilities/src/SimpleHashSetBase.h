@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>  // For std::atomic.
 #include <istream>
 #include <ostream>
 
@@ -33,7 +34,7 @@ namespace BitFunnel
     //*************************************************************************
     class SimpleHashSetBase
     {
-        static const unsigned __int64 c_invalidKeyZero = static_cast<unsigned __int64>(-1);
+        static const uint64_t c_invalidKeyZero = static_cast<uint64_t>(-1);
 
     public:
         // Constructs a SimpleHashSetBase with initial hash table size based
@@ -74,27 +75,27 @@ namespace BitFunnel
         // pair.
         bool IsFilledSlot(unsigned slot) const;
 
-        static bool IsFilledSlot(unsigned slot, unsigned capacity, volatile unsigned __int64* keys);
+        static bool IsFilledSlot(unsigned slot, unsigned capacity, volatile uint64_t* keys);
 
         // Returns the key associated with a filled slot. This method will
         // assert if the slot is invalid or empty.
-        unsigned __int64 GetKey(unsigned slot) const;
+        uint64_t GetKey(unsigned slot) const;
 
         // Attempts to find a slot associated with a specified key. If the key
         // is found, the slot will be set to the key's slot and the method will
         // return true. Otherwise the method will return false.
-        bool TryFindSlot(unsigned __int64 key, unsigned& slot, bool& foundKey) const;
+        bool TryFindSlot(uint64_t key, unsigned& slot, bool& foundKey) const;
 
         // Allocates and initializes the buffer containing keys.
         // Returns the previous value of the buffer. The caller must dispose
         // of the previous buffer using a call to delete [].
-        unsigned __int64* ResizeKeyBuffer(unsigned capacity);
+        uint64_t* ResizeKeyBuffer(unsigned capacity);
 
         // True if the hash table contains a zero key.
         bool HasKeyZero() const;
 
         // Returns the key of the slot when the slot is empty for a given key.
-        unsigned __int64 GetKeyForEmptySlot(unsigned __int64 key) const;
+        uint64_t GetKeyForEmptySlot(uint64_t key) const;
 
         // Pointer to allocator, or null if no allocator was supplied. Note
         // that this allocator is not owned by the SimpleHashSetBase.
@@ -102,6 +103,12 @@ namespace BitFunnel
 
         // Number of slots for storing non-zero keys where the key.
         unsigned m_capacity;
+
+        // Storage for keys.
+        // TODO: is atomic what we want here? This used to be volatile, and it
+        // looks like volatile is used for thread safety throughout the old
+        // code.
+        std::atomic<uint64_t*> m_keys;
 
         // Maximum number of probes to allow when looking for key.
         unsigned m_maxProbes;
@@ -112,9 +119,6 @@ namespace BitFunnel
         // slot, zero means the slot is taken. So that slot is initialized to nonzero
         // value.
         unsigned m_slotCount;
-
-        // Storage for keys.
-        volatile unsigned __int64 *m_keys;
 
         // Base class for IEnumerators implemented in subclasses of SimpleHashSetBase.
         class EnumeratorObjectBase : public virtual IEnumeratorBase, NonCopyable
