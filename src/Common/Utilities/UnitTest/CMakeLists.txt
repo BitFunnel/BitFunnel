@@ -2,6 +2,7 @@
 
 set(CPPFILES
     MurmurHashUnitTest.cpp
+    SimpleHashSetUnitTest.cpp
     TaskDistributorUnitTest.cpp
     TokenManagerUnitTest.cpp
     TokenTrackerUnitTest.cpp

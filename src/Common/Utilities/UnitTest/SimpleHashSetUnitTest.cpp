@@ -1,10 +1,9 @@
-#include "stdafx.h"
-
 #include <map>
 
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
+#include "gtest/gtest.h"
+
+#include "BitFunnel/Allocators/IAllocator.h"
 #include "SimpleHashSet.h"
-#include "SuiteCpp/UnitTest.h"
 
 
 namespace BitFunnel
@@ -22,9 +21,9 @@ namespace BitFunnel
 
 
         void RunTest1(unsigned capacity, bool allowResize, unsigned iterations, bool useAllocator);
-        static unsigned __int64 Hash(unsigned __int64 index);
+        static uint64_t Hash(uint64_t index);
 
-        TestCase(HeapAllocations)
+        TEST(HeapAllocations, Trivial)
         {
             RunTest1(200, false, 1, false);
             RunTest1(200, false, 0, false);
@@ -34,7 +33,7 @@ namespace BitFunnel
         }
 
 
-        TestCase(ArenaAllocations)
+        TEST(ArenaAllocations, Trivial)
         {
             RunTest1(200, false, 1, true);
             RunTest1(200, false, 0, true);
@@ -46,11 +45,11 @@ namespace BitFunnel
 
         void RunTest1(unsigned capacity, bool allowResize, unsigned iterations, bool useAllocator)
         {
-            typedef std::map<unsigned __int64, unsigned> MapType;
+            typedef std::map<uint64_t, unsigned> MapType;
             MapType map;
 
             Allocator allocator;
-            std::auto_ptr<SimpleHashSet> hashSetPointer;
+            std::unique_ptr<SimpleHashSet> hashSetPointer;
 
             if (useAllocator)
             {
@@ -69,21 +68,21 @@ namespace BitFunnel
             {
                 // Generate a random key, based on the iteration number.
                 // Note that when i == 0, Hash(i) == 0 which tests the zero key case.
-                unsigned __int64 key = Hash(i);
+                uint64_t key = Hash(i);
                 map[key] = i;
                 set.Add(key);
 
                 // Verify that all of the keys added are in the set.
                 for (MapType::const_iterator it = map.begin(); it != map.end(); ++it)
                 {
-                    TestAssert(set.Contains(it->first));
+                    ASSERT_TRUE(set.Contains(it->first));
                 }
 
                 // Verify that all of the keys in the set are ones that were added.
-                std::auto_ptr<IEnumerator<unsigned __int64>> enumerator(set.GetEnumerator());
+                std::unique_ptr<IEnumerator<uint64_t>> enumerator(set.GetEnumerator());
                 while (enumerator->MoveNext())
                 {
-                    TestAssert(map.find(enumerator->Current()) != map.end());
+                    ASSERT_TRUE(map.find(enumerator->Current()) != map.end());
                 }
             }
         }
@@ -91,7 +90,7 @@ namespace BitFunnel
 
         // DESIGN NOTE: It is important that Hash(0) returns 0 in order to test
         // the case where the key is 0.
-        unsigned __int64 SimpleHashSetUnitTest::Hash(unsigned __int64 index)
+        uint64_t Hash(uint64_t index)
         {
             return(index * 179426549 ^ (index * 15486953 << 32));
         }
@@ -104,13 +103,13 @@ namespace BitFunnel
         //*************************************************************************
         void* SimpleHashSetUnitTest::Allocator::Allocate(size_t size)
         {
-            return new char[size];
+            return static_cast<void*>(new char[size]);
         }
 
 
         void SimpleHashSetUnitTest::Allocator::Deallocate(void* block)
         {
-            delete [] block;
+            delete static_cast<char*>(block);
         }
 
 

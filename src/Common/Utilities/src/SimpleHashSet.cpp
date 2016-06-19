@@ -1,8 +1,6 @@
-#include "stdafx.h"
-
 #include <memory>           // For nullptr.
 
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
+#include "BitFunnel/Allocators/IAllocator.h"
 #include "LoggerInterfaces/Logging.h"
 #include "SimpleHashSet.h"
 
@@ -29,7 +27,7 @@ namespace BitFunnel
     }
 
 
-    void SimpleHashSet::Add(unsigned __int64 key)
+    void SimpleHashSet::Add(uint64_t key)
     {
         while (!AddInternal(key))
         {
@@ -40,7 +38,7 @@ namespace BitFunnel
     }
 
 
-    bool SimpleHashSet::Contains(unsigned __int64 key)
+    bool SimpleHashSet::Contains(uint64_t key)
     {
         unsigned slot = 0;
         bool foundKey = false;
@@ -56,7 +54,7 @@ namespace BitFunnel
     }
 
 
-    bool SimpleHashSet::AddInternal(unsigned __int64 key)
+    bool SimpleHashSet::AddInternal(uint64_t key)
     {
         unsigned slot = 0;
         bool foundKey = false;
@@ -80,7 +78,7 @@ namespace BitFunnel
     {
         unsigned oldCapacity = m_capacity;
         unsigned oldSlotCount = m_slotCount;
-        unsigned __int64* oldKeys = ResizeKeyBuffer(m_capacity * 2);
+        uint64_t* oldKeys = ResizeKeyBuffer(m_capacity * 2);
 
         for (unsigned i = 0 ; i < oldSlotCount; ++i)
         {
@@ -112,7 +110,7 @@ namespace BitFunnel
     {
     }
 
-    unsigned __int64 SimpleHashSet::EnumeratorObject::Current() const
+    uint64_t SimpleHashSet::EnumeratorObject::Current() const
     {
         return m_set2.GetKey(m_current);
     }

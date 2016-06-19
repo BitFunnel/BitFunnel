@@ -31,7 +31,7 @@ namespace BitFunnel
     //
     //*************************************************************************
     class SimpleHashSet : protected SimpleHashSetBase, 
-                          public IEnumerable<unsigned __int64>
+                          public IEnumerable<uint64_t>
     {
     public:
         // Constructs a SimpleHashSet with initial hash table size based
@@ -52,13 +52,13 @@ namespace BitFunnel
         // allowResize == true and there is insufficient space to add the
         // key, Add() will trigger a reallocation of the underlying hash
         // table.
-        void Add(unsigned __int64 key);
+        void Add(uint64_t key);
 
         // Returns true if the set contains the specified key.
-        bool Contains(unsigned __int64 key);
+        bool Contains(uint64_t key);
 
         //
-        // IEnumerable<unsigned __int64> methods.
+        // IEnumerable<uint64_t> methods.
         //
         // Returns an enumerator for the SimpleHashSet.  WARNING: It is the
         // caller's responsibility to delete the enumerator, even if the
@@ -66,22 +66,24 @@ namespace BitFunnel
         // free enumeration, simple construct a SimpleHashSet::Enumerator object
         // as a local variable. GetEnumerator() exists solely to support
         // IEnumerable.
-        typedef IEnumerator<unsigned __int64> Enumerator;
+        typedef IEnumerator<uint64_t> Enumerator;
         Enumerator* GetEnumerator() const;
 
     private:
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4250)
+#endif
         // Returned by GetEnumerator.
-        class EnumeratorObject : public SimpleHashSetBase::EnumeratorObjectBase, public IEnumerator<unsigned __int64>
+        class EnumeratorObject : public SimpleHashSetBase::EnumeratorObjectBase, public IEnumerator<uint64_t>
         {
         public:
             EnumeratorObject(const SimpleHashSet& set);
 
             //
-            // IEnumerator<unsigned __int64> methods.
+            // IEnumerator<uint64_t> methods.
             //
-            unsigned __int64 Current() const;
+            uint64_t Current() const;
 
         private:
             // m_set2 serves the same puporse as SimpleHashSetBase::EnumeratorObjectBase::m_set.
@@ -89,11 +91,13 @@ namespace BitFunnel
             // For some reason, m_set.GetKey() is inaccessible, m_set2.GetKey() is not.
             const SimpleHashSet& m_set2;
         };
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
         // Attempts to add the specified key to the set if there is enough
         // space. Returns true on success. Otherwise returns false.
-        bool AddInternal(unsigned __int64 key);
+        bool AddInternal(uint64_t key);
 
         // Expands the underlying hash table.
         void Rehash();
