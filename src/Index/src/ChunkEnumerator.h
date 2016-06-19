@@ -4,7 +4,6 @@
 #include <stddef.h>
 #include <string>
 
-#include "BitFunnel/Index/IIndex.h"
 #include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/Utilities/ITaskDistributor.h"
 #include "ChunkReader.h"

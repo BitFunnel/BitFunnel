@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BitFunnel/Index/DocumentHandle.h"     // DocumentHandle parameter.
-#include "BitFunnel/IInterface.h"               // Inherits from IIndex.
+#include "BitFunnel/IInterface.h"               // Inherits from IInterface.
 
 
 namespace BitFunnel

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BitFunnel/IInterface.h"               // IIngestionIndex inherits from IIndex.
+#include "BitFunnel/IInterface.h"               // IIngestor inherits from IInterface.
 #include "BitFunnel/Index/IFactSet.h"           // FactHandle parameter.
 #include "BitFunnel/Index/DocumentHandle.h"     // DocHandle return value.
 

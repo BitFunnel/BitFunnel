@@ -3,10 +3,10 @@
 
 #include "gtest/gtest.h"
 
-#include "BitFunnel/Index/IIndex.h"
 #include "ChunkEnumerator.h"
 #include "Ingestor.h"
 // #include "DocumentLengthHistogram.h"
+
 
 namespace BitFunnel
 {
