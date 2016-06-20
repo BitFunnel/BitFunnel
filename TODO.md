@@ -148,5 +148,17 @@ of Document.
 ### Fix Travis CI build.
 
 
+### Initial corpus statistics analysis.
+
+* Generate document length histogram and term frequency tables for English Wikipedia.
+* Generate optimal shard definition or some proxy definition.
+* Generate term frequency tables per shard for English Wikipedia.
+* Form an opinion/recommendation on whether each shard needs its own term table.
+* Model costs (space, speed, false positives) of various row configuration strategies.
+  * Would like to do away with BandTable and trainer.
+  * Need to select adhoc term cutoff idf.
+  * Need to know what term characteristics (e.g. ngram size, idf sum, idf max, etc.)
+    are needed for adhoc row configuration.
+
 
 
