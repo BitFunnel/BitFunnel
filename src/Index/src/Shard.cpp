@@ -44,7 +44,11 @@ namespace BitFunnel
         term.Print(std::cout);
         std::cout << std::endl;
 
-        m_temporaryFrequencyTable[term]++;
+        {
+            // TODO: Remove this lock once it is incorporated into the frequency table class.
+            std::lock_guard<std::mutex> lock(m_temporaryFrequencyTableMutex);
+            m_temporaryFrequencyTable[term]++;
+        }
     }
 
 

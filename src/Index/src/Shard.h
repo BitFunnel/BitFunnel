@@ -24,6 +24,7 @@
 
 //#include <iosfwd>
 #include <memory>                               // std::unique_ptr member.
+#include <mutex>                                // std::mutex member.
 #include <ostream>                              // TODO: Remove this temporary include.
 #include <unordered_map>                        // TODO: Remove this temporary include.
 //#include <vector>
@@ -274,6 +275,7 @@ namespace BitFunnel
         //std::unique_ptr<DocTableDescriptor> m_docTable;
         //std::vector<RowTableDescriptor> m_rowTables;
 
+        std::mutex m_temporaryFrequencyTableMutex;
         std::unordered_map<Term, size_t, Term::Hasher> m_temporaryFrequencyTable;
     };
 }
