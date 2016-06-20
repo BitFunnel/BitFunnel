@@ -32,6 +32,14 @@
 
 namespace BitFunnel
 {
+    static uint64_t rotl64By1(uint64_t x)
+    {
+        // TODO: Investigate `_rotl64` intrinsics; this exists on Windows, but
+        // does not seem to on Clang.
+        return (x << 1) | (x >> 63);
+    }
+
+
     //*************************************************************************
     //
     // Term
@@ -55,7 +63,8 @@ namespace BitFunnel
         {
             throw FatalError("Attempting to combine terms with different streams.");
         }
-        m_rawHash = _rotl64(m_rawHash, 1) ^ term.m_rawHash;
+
+        m_rawHash = rotl64By1(m_rawHash) ^ term.m_rawHash;
         m_gramSize += term.m_gramSize;
         m_idfSum += term.m_idfSum;
         m_idfMax = std::max(m_idfMax, term.m_idfMax);

@@ -88,8 +88,11 @@ namespace BitFunnel
         static const size_t c_slotCount = 1 << LOG2_CAPACITY;
         static const size_t c_slotMask = c_slotCount - 1;
 
-
+#ifdef _MSC_VER
         __declspec(align(8)) char m_buffer[sizeof(T) * c_slotCount];
+#else
+        __attribute__((__aligned__(8))) char m_buffer[sizeof(T) * c_slotCount];
+#endif
 
         T* m_slots;
         size_t m_head;
@@ -118,7 +121,7 @@ namespace BitFunnel
     template <typename T, size_t LOG2_CAPACITY>
     T* RingBuffer<T, LOG2_CAPACITY>::PushBack()
     {
-        LogAssertB(!IsFull());
+        LogAssertB(!IsFull(), "Ring buffer is full.");
 
         T* slot = m_slots + m_tail;
         m_tail = (m_tail + 1) & c_slotMask;
@@ -130,7 +133,7 @@ namespace BitFunnel
     template <typename T, size_t LOG2_CAPACITY>
     void RingBuffer<T, LOG2_CAPACITY>::PopFront()
     {
-        LogAssertB(!IsEmpty());
+        LogAssertB(!IsEmpty(), "Ring buffer is empty.");
 
         m_head = (m_head + 1) & c_slotMask;
     }
@@ -141,7 +144,7 @@ namespace BitFunnel
     {
         size_t slot = m_head + index;
         size_t tail = (m_tail < m_head) ? m_tail + c_slotCount : m_tail;
-        LogAssertB(slot < tail);
+        LogAssertB(slot < tail, "Ring buffer invalid index.");
 
         return m_slots[slot & c_slotMask];
     }

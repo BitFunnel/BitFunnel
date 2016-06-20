@@ -126,7 +126,7 @@ namespace BitFunnel
     void Document::ProcessNGrams()
     {
         const size_t count = m_ringBuffer.GetCount();
-        LogAssertB(count > 0);
+        LogAssertB(count > 0, "Count must be greater than 0.");
 
         // Process each of the higher order n-grams.
         Term term(m_ringBuffer[0]);

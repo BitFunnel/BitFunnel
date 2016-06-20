@@ -29,8 +29,7 @@
 namespace BitFunnel
 {
     ChunkReader::ChunkReader(std::vector<char> const & input, IEvents& processor)
-      : m_input(input),
-        m_processor(processor),
+      : m_processor(processor),
         m_next(&input[0]),
         m_end(&input[0] + input.size())
     {

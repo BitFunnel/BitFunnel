@@ -63,7 +63,6 @@ namespace BitFunnel
         char PeekChar();
 
         // Construtor parameters.
-        std::vector<char> const & m_input;
         IEvents& m_processor;
 
         // Next character to be processed.
