@@ -148,6 +148,18 @@ of Document.
 ### Fix Appveyor CI build.
 
 
+### Investigate use of Boost Serialization
+
+* Boost Serialization is not a header-only library and would need to be built.
+* How would we integrate Boost into our build?
+* How is the performance for std::unordered_map vs writing our own serialization?
+* Can we interoperate with file headers and versions?
+* Do we even want a binary format or will we be all CSV?
+* License compatability
+
+
+
+
 
 ### Fix Travis CI build.
 
