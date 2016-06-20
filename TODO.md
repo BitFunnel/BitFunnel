@@ -161,4 +161,7 @@ of Document.
     are needed for adhoc row configuration.
 
 
+### Ensure index branch builds and passes tests on Linux and OSX.
+
+
 
