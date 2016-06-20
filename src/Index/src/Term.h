@@ -50,6 +50,9 @@ namespace BitFunnel
 
         void AddTerm(Term const & term);
 
+        // Equality operator provided for use by unordered_map in Document class.
+        bool operator==(const Term& rhs) const;
+
         // Returns the raw hash value for the term. For most terms, the raw
         // hash is based solely on the term's text. Terms with classification
         // Click and ClickExperimental also incorporate the stream suffix in
@@ -102,6 +105,16 @@ namespace BitFunnel
 
         // Computes the raw hash (based on term characters only) for the specified term text. 
         static Hash ComputeRawHash(const char* text);
+
+        // Hasher for std::unordered_set.
+        // Definition is inlined for use by template.
+        struct Hasher
+        {
+            size_t operator()(Term const & key) const
+            {
+                return key.GetRawHash();
+            }
+        };
 
     private:
         // For now declaring private constructor to prevent use of Term in

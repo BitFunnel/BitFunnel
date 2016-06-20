@@ -40,6 +40,15 @@ namespace BitFunnel
     }
 
 
+    bool Term::operator==(const Term& other) const
+    {
+        return m_rawHash == other.m_rawHash
+            && m_gramSize == other.m_gramSize
+            && m_idfSum == other.m_idfSum
+            && m_idfMax == other.m_idfMax;
+    }
+
+
     Term::Hash Term::GetRawHash() const
     {
         return m_rawHash;

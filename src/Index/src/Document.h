@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_set>
+
 #include "BitFunnel/Index/IDocument.h"      // Inherits from IDocument.
 #include "BitFunnel/Utilities/RingBuffer.h" // RingBuffer member.
 #include "Term.h"                           // Term template parameter.
@@ -9,7 +11,6 @@ namespace BitFunnel
 {
     class IConfiguration;
     class IDocumentFrequencyTable;
-
 
     class Document : public IDocument
     {
@@ -85,5 +86,8 @@ namespace BitFunnel
         // StreamId specified in last call to OpenStream.
         // Only valid when m_streamIsOpen is true.
         Term::StreamId m_currentStreamId;
+
+        // TODO: Replace unordered_set with alloc free version.
+        std::unordered_set<Term, Term::Hasher> m_terms;
     };
 }
