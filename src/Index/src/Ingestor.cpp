@@ -21,6 +21,7 @@ namespace BitFunnel
           m_documentCount(0)
     {
         // Initialize histogram and frequency tables here.
+        m_shards.push_back(std::unique_ptr<Shard>(new Shard(*this)));
     }
 
 
@@ -37,7 +38,7 @@ namespace BitFunnel
         ++m_documentCount;
         m_termCount += document.GetPostingCount();
 
-        DocumentHandleInternal handle;
+        DocumentHandleInternal handle = m_shards[0]->AllocateDocument();
         document.Ingest(handle);
     }
 

@@ -1,5 +1,7 @@
 #include "BitFunnel/Exceptions.h"
 #include "DocumentHandleInternal.h"
+#include "Shard.h"                      // TODO: Remove this temporary include.
+#include "Slice.h"
 
 
 namespace BitFunnel
@@ -33,9 +35,9 @@ namespace BitFunnel
     }
 
 
-    void DocumentHandle::AddPosting(Term const & /*term*/)
+    void DocumentHandle::AddPosting(Term const & term)
     {
-        throw NotImplemented();
+        m_slice->GetShard().TemporaryAddPosting(term, m_index);
     }
 
 
@@ -51,7 +53,9 @@ namespace BitFunnel
     }
 
 
-    DocumentHandle::DocumentHandle(Slice* /*slice*/, DocIndex /*index*/)
+    DocumentHandle::DocumentHandle(Slice* slice, DocIndex index)
+        : m_slice(slice),
+          m_index(index)
     {
     }
 

@@ -11,6 +11,8 @@ set(CPPFILES
     IngestChunks.cpp
     Ingestor.cpp
     Placeholder.cpp
+    Shard.cpp
+    Slice.cpp
     Term.cpp
 )
 
@@ -30,6 +32,8 @@ set(PRIVATE_HFILES
     DocumentHandleInternal.h
     DocumentLengthHistogram.h
     Ingestor.h
+    Shard.h
+    Slice.h
     Term.h
 )
 

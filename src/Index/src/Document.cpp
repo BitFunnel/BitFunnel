@@ -22,7 +22,7 @@ namespace BitFunnel
     }
 
 
-    void Document::Ingest(DocumentHandle /*handle*/) const
+    void Document::Ingest(DocumentHandle handle) const
     {
         // TODO: convert unique terms into postings.
         std::cout << "Document::Ingest()" << std::endl;
@@ -33,9 +33,7 @@ namespace BitFunnel
 
         for (auto it = m_terms.begin(); it != m_terms.end(); ++it)
         {
-            std::cout << "  ";
-            (*it).Print(std::cout);
-            std::cout << std::endl;
+            handle.AddPosting(*it);
         }
 
         std::cout << "=====================" << std::endl;

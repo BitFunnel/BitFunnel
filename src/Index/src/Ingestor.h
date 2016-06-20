@@ -4,6 +4,7 @@
 #include <stddef.h>                     // size_t template parameter.
 
 #include "BitFunnel/Index/IIngestor.h"  // Inherits from IIngestor.
+#include "Shard.h"                      // std::unique_ptr template parameter.
 
 
 namespace BitFunnel
@@ -81,5 +82,7 @@ namespace BitFunnel
         // length hash table and term frequency tables.
         std::atomic<size_t> m_termCount;
         std::atomic<size_t> m_documentCount;
+
+        std::vector<std::unique_ptr<Shard>> m_shards;
     };
 }
