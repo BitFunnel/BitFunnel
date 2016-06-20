@@ -2,6 +2,8 @@
 
 //#include <iosfwd>
 #include <memory>                               // std::unique_ptr member.
+#include <ostream>                              // TODO: Remove this temporary include.
+#include <unordered_map>                        // TODO: Remove this temporary include.
 //#include <vector>
 //
 //#include "BitFunnel/Internal/IShardIndex.h"  // Inherits from IShardIndex.
@@ -11,6 +13,7 @@
 #include "DocumentHandleInternal.h"          // Return value.
 //#include "Mutex.h"
 //#include "RowTableDescriptor.h"              // Required for embedded std::vector.
+#include "Term.h"                               // TODO: Remove this temporary include. Added for unordered_map.
 #include "Slice.h"                              // std::unique_ptr template parameter.
 
 
@@ -39,10 +42,13 @@ namespace BitFunnel
     class Shard : private NonCopyable
     {
     public:
+        typedef size_t Id;
+
         // Constructs an empty Shard with no slices. sliceBufferSize must be 
         // sufficient to hold the minimum capacity Slice. The minimum capacity
         // is determined by a value returned by Row::DocumentsInRank0Row(1).
-        Shard(IIngestor& ingestor);
+        Shard(IIngestor& ingestor,
+              Id id);
         //Shard(IngestionIndex& index, 
         //      ShardId id,
         //      ITermTable const & termTable,
@@ -51,6 +57,7 @@ namespace BitFunnel
         //      size_t sliceBufferSize);
 
         void TemporaryAddPosting(Term const & term, DocIndex index);
+        void TemporaryPrintFrequencies(std::ostream& out);
 
         //
         // IShardIndex APIs.
@@ -183,7 +190,7 @@ namespace BitFunnel
         IIngestor& m_ingestor;
 
         // Shard's ID.
-        //ShardId m_id;
+        Id m_id;
 
         // TermTable for this shard.
         //ITermTable const & m_termTable;
@@ -244,5 +251,7 @@ namespace BitFunnel
         // initializer order dependencies in constructor list.
         //std::unique_ptr<DocTableDescriptor> m_docTable;
         //std::vector<RowTableDescriptor> m_rowTables;
+
+        std::unordered_map<Term, size_t, Term::Hasher> m_temporaryFrequencyTable;
     };
 }

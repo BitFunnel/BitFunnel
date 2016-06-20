@@ -18,7 +18,7 @@ namespace BitFunnel
 
     size_t Document::GetPostingCount() const
     {
-        return m_postingCount;
+        return m_terms.size();
     }
 
 
@@ -27,7 +27,7 @@ namespace BitFunnel
         // TODO: convert unique terms into postings.
         std::cout << "Document::Ingest()" << std::endl;
         std::cout << "  "
-                  << m_terms.size() 
+                  << GetPostingCount()
                   << " postings"
                   << std::endl;
 

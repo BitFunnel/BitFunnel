@@ -68,6 +68,11 @@ void CreateTestFiles(char const * chunkPath, char const * manifestPath)
             "Body\0The\0internet\0is\0made\0of\0cats.\0\0"
             "\0"
 
+            // Third document
+            "Title\0More\0Cat\0Facts\0\0"
+            "Body\0The\0internet\0really\0is\0made\0of\0cats.\0\0"
+            "\0"
+
             // End of corpus
             "\0";
 

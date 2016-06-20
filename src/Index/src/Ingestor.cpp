@@ -21,7 +21,7 @@ namespace BitFunnel
           m_documentCount(0)
     {
         // Initialize histogram and frequency tables here.
-        m_shards.push_back(std::unique_ptr<Shard>(new Shard(*this)));
+        m_shards.push_back(std::unique_ptr<Shard>(new Shard(*this, 123)));
     }
 
 
@@ -29,6 +29,11 @@ namespace BitFunnel
     {
         std::cout << "Document count: " << m_documentCount << std::endl;
         std::cout << "Term count: " << m_termCount << std::endl;
+
+        for (auto it = m_shards.begin(); it != m_shards.end(); ++it)
+        {
+            (*it)->TemporaryPrintFrequencies(std::cout);
+        }
     }
 
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_set>
+#include <unordered_set>                    // TODO: Remove this temporary include.
 
 #include "BitFunnel/Index/IDocument.h"      // Inherits from IDocument.
 #include "BitFunnel/Utilities/RingBuffer.h" // RingBuffer member.
