@@ -64,7 +64,7 @@ of Document.
 
 
 
-# Add arena allocation to chunk ingestion pipeline.
+### Add arena allocation to chunk ingestion pipeline.
 
 * One arena or buffer per thread to hold entire chunk file. Reset per file.
 * One arena per thread to hold document data. Reset per document.
@@ -74,7 +74,7 @@ of Document.
 
 
 
-# Class comments for Chunk ingestion pipeline.
+### Class comments for Chunk ingestion pipeline.
 
 * Overview
 * IngestChunks
@@ -87,7 +87,7 @@ of Document.
 
 
 
-# Chunk ingestion pipeline unit tests.
+### Chunk ingestion pipeline unit tests.
 
 * IngestChunks
 * ChunkEnumerator
@@ -103,7 +103,7 @@ of Document.
 
 
 
-# DocumentFrequencyTable
+### DocumentFrequencyTable
 
 * Design file format. CSV vs binary.
 * Sorted?
@@ -118,14 +118,14 @@ of Document.
 
 
 
-# Port Version and FileHeader
+### Port Version and FileHeader
 
 * Reimplement version parser.
 * Potentially redesign to work with plain text files.
 
 
 
-# GTest submodule.
+### GTest submodule.
 
 * GTest brought into src/gtest via git submodule.
 * Update README.md instructions on cloning/fetching.
@@ -133,7 +133,7 @@ of Document.
 
 
 
-# Port AllocatorInterfaces and Arena allocators.
+### Port AllocatorInterfaces and Arena allocators.
 
 * IAllocator
 * General allocator with initial buffer size and ability to grow.
@@ -141,11 +141,11 @@ of Document.
 
 
 
-# Fix Appveyor CI build.
+### Fix Appveyor CI build.
 
 
 
-# Fix Travis CI build.
+### Fix Travis CI build.
 
 
 
