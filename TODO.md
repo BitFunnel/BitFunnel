@@ -37,11 +37,11 @@ of Document.
 
 
 
-### Integrate document length histogram into Shard.
+### Integrate document length histogram into Shard.[mihaela]
 
 
 
-### Integrate ShardDefinition into Ingstor
+### Integrate ShardDefinition into Ingestor
 
 * Create one shard per entry in ShardDefinition.
 * Ingestor::Add() uses ShardDefinition to choose shard.
@@ -57,7 +57,7 @@ of Document.
 
 
 
-### Port FileManager.
+### Port FileManager. [mhop]
 
 * Create new Common/Configuration project.
 * FileManager goes in this project.
@@ -74,7 +74,7 @@ of Document.
 
 
 
-### Class comments for Chunk ingestion pipeline.
+### Class comments for Chunk ingestion pipeline. [mhop]
 
 * Overview
 * IngestChunks
@@ -87,7 +87,7 @@ of Document.
 
 
 
-### Chunk ingestion pipeline unit tests.
+### Chunk ingestion pipeline unit tests. [aclemmer]
 
 * IngestChunks
 * ChunkEnumerator
@@ -103,7 +103,7 @@ of Document.
 
 
 
-### DocumentFrequencyTable
+### DocumentFrequencyTable [mhop]
 
 * Design file format. CSV vs binary.
 * Sorted?
@@ -112,13 +112,17 @@ of Document.
 * Initial version uses std::unordered_map.
 * Decide whether new version needs to be lock free.
 * Decide whether new version needs to be POD for fast load.
+* Do we need Builder/Table separation?
+  * Question has to do with sorting.
+  * Can we afford to use an std::map or must we use a lock free hash table?
+  * Do we need to enumerate terms in descending frequency for term table builder?
 * Scenarios
   * Gathering term frequency data.
   * Term table?
 
 
 
-### Port Version and FileHeader
+### Port Version and FileHeader [mhop]
 
 * Reimplement version parser.
 * Potentially redesign to work with plain text files.
@@ -148,7 +152,7 @@ of Document.
 ### Fix Travis CI build.
 
 
-### Initial corpus statistics analysis.
+### Initial corpus statistics analysis. [aclemmer, mihaela]
 
 * Generate document length histogram and term frequency tables for English Wikipedia.
 * Generate optimal shard definition or some proxy definition.
@@ -161,7 +165,7 @@ of Document.
     are needed for adhoc row configuration.
 
 
-### Ensure index branch builds and passes tests on Linux and OSX.
+### Ensure index branch builds and passes tests on Linux and OSX. [aclemmer]
 
 
 
