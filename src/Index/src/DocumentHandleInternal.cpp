@@ -1,5 +1,4 @@
-#include <stdexcept>
-
+#include "BitFunnel/Exceptions.h"
 #include "DocumentHandleInternal.h"
 
 
@@ -12,43 +11,43 @@ namespace BitFunnel
     //*************************************************************************
     void* DocumentHandle::AllocateVariableSizeBlob(VariableSizeBlobId /*id*/, size_t /*byteSize*/)
     {
-        throw std::runtime_error("Not implemented.");
+        throw NotImplemented();
     }
 
 
     void* DocumentHandle::GetVariableSizeBlob(VariableSizeBlobId /*id*/) const
     {
-        throw std::runtime_error("Not implemented.");
+        throw NotImplemented();
     }
 
 
     void* DocumentHandle::GetFixedSizeBlob(FixedSizeBlobId /*id*/) const
     {
-        throw std::runtime_error("Not implemented.");
+        throw NotImplemented();
     }
 
 
     void DocumentHandle::AssertFact(FactHandle /*fact*/, bool /*value*/)
     {
-        throw std::runtime_error("Not implemented.");
+        throw NotImplemented();
     }
 
 
     void DocumentHandle::AddPosting(Term const & /*term*/)
     {
-        throw std::runtime_error("Not implemented.");
+        throw NotImplemented();
     }
 
 
     void DocumentHandle::Expire()
     {
-        throw std::runtime_error("Not implemented.");
+        throw NotImplemented();
     }
 
 
     DocId DocumentHandle::GetDocId() const
     {
-        throw std::runtime_error("Not implemented.");
+        throw NotImplemented();
     }
 
 
@@ -95,6 +94,6 @@ namespace BitFunnel
 
     void DocumentHandleInternal::Activate()
     {
-        throw std::runtime_error("Not implemented.");
+        throw NotImplemented();
     }
 }

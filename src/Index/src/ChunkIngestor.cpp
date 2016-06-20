@@ -1,10 +1,6 @@
-
-#include <fstream>
-#include <iostream>
-#include <sstream>
+#include <iostream>     // TODO: Remove this temporary header.
 
 #include "BitFunnel/Index/IIngestor.h"
-#include "ChunkEnumerator.h"
 #include "ChunkIngestor.h"
 #include "Document.h"
 
@@ -12,28 +8,29 @@
 namespace BitFunnel
 {
     ChunkIngestor::ChunkIngestor(
-        // TODO: We need to implement IDocumentFactory before this make sense.
-        // std::string const & filePath,
-        // IIndex& index,
-        // IDocumentFactory& factory)
         std::vector<char> const& chunkData,
+        IConfiguration const & config,
         IIngestor& ingestor)
-      : m_chunkData(chunkData),
-        m_ingestor(ingestor)
+      : m_config(config),
+        m_ingestor(ingestor),
+        m_chunkData(chunkData)
     {
         ChunkReader(m_chunkData, *this);
     }
+
 
     void ChunkIngestor::OnFileEnter()
     {
         std::cout << "ChunkIngestor::OnFileEnter" << std::endl;
     }
 
+
     void ChunkIngestor::OnDocumentEnter(DocId id)
     {
         std::cout << "ChunkIngestor::OnDocumentEnter: id:" << id << std::endl;
-        m_currentDocument.reset(new Document());
+        m_currentDocument.reset(new Document(m_config));
     }
+
 
     void ChunkIngestor::OnStreamEnter(char const * name)
     {
@@ -41,11 +38,13 @@ namespace BitFunnel
         m_currentDocument->OpenStream(name);
     }
 
+
     void ChunkIngestor::OnTerm(char const * term)
     {
         std::cout << "ChunkIngestor::OnTerm: term:" << term << std::endl;
         m_currentDocument->AddTerm(term);
     }
+
 
     void ChunkIngestor::OnStreamExit()
     {
@@ -53,12 +52,14 @@ namespace BitFunnel
         m_currentDocument->CloseStream();
     }
 
+
     void ChunkIngestor::OnDocumentExit()
     {
         std::cout << "ChunkIngestor::OnDocumentExit" << std::endl;
         m_ingestor.Add(0, *m_currentDocument);
         m_currentDocument.reset(nullptr);
     }
+
 
     void ChunkIngestor::OnFileExit()
     {

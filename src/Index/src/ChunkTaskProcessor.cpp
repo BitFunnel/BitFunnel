@@ -1,19 +1,18 @@
-
 #include <fstream>
-#include <iostream>
-#include <sstream>
-#include <vector>
+#include <iostream>     // TODO: Remove this temporary header.
 
-#include "ChunkEnumerator.h"
 #include "ChunkIngestor.h"
 #include "ChunkTaskProcessor.h"
+
 
 namespace BitFunnel
 {
     ChunkTaskProcessor::ChunkTaskProcessor(
         std::vector<std::string> const & filePaths,
+        IConfiguration const & config,
         IIngestor& ingestor)
       : m_filePaths(filePaths),
+        m_config(config),
         m_ingestor(ingestor)
     {
     }
@@ -22,9 +21,9 @@ namespace BitFunnel
     void ChunkTaskProcessor::ProcessTask(size_t taskId)
     {
         std::cout << "ChunkTaskProcessor::ProcessTask: taskId:" << taskId
-            << std::endl;
+                  << std::endl;
         std::cout << "ChunkTaskProcessor::ProcessTask: filePath:"
-            << m_filePaths[taskId] << std::endl;
+                  << m_filePaths[taskId] << std::endl;
 
         std::ifstream inputStream(m_filePaths[taskId], std::ios::binary);
         std::vector<char> chunkData((std::istreambuf_iterator<char>(inputStream)),
@@ -32,7 +31,7 @@ namespace BitFunnel
 
         // NOTE: The act of constructing a ChunkIngestor causes the bytes in
         // chunkData to be parsed into documents and ingested.
-        ChunkIngestor(chunkData, m_ingestor);
+        ChunkIngestor(chunkData, m_config, m_ingestor);
     }
 
 

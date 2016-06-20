@@ -1,18 +1,17 @@
 #pragma once
 
-#include <memory>
-#include <stddef.h>
-#include <string>
+#include <memory>       // std::unique_ptr member.
+#include <stddef.h>     // size_t parameter.
+#include <string>       // std::string template parameter.
 
-#include "BitFunnel/NonCopyable.h"
-#include "BitFunnel/Utilities/ITaskDistributor.h"
-#include "ChunkReader.h"
+#include "BitFunnel/NonCopyable.h"                  // Inherits from NonCopyable.
+#include "BitFunnel/Utilities/ITaskDistributor.h"   // std::unqiue_ptr template parameter.
 
 
 namespace BitFunnel
 {
+    class IConfiguration;
     class IIngestor;
-    class ITaskDistributor;
 
     // Fill an std::vector with filenames
     // Construct a ChunkTaskProcessor for each thread
@@ -21,13 +20,13 @@ namespace BitFunnel
     {
     public:
         ChunkEnumerator(std::vector<std::string> const & filePaths,
+                        IConfiguration const & config,
                         IIngestor& ingestor,
                         size_t threadCount);
 
         void WaitForCompletion() const;
 
     private:
-        IIngestor& m_ingestor;
         std::unique_ptr<ITaskDistributor> m_distributor;
     };
 }

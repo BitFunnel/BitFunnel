@@ -1,17 +1,22 @@
 #pragma once
 
-#include <stddef.h>
-#include <vector>
+#include <stddef.h>     // size_t parameter.
+#include <string>       // std::string template parameter.
+#include <vector>       // std::vector member.
 
-#include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Utilities/ITaskProcessor.h"
+
 
 namespace BitFunnel
 {
+    class IConfiguration;
+
+
     class ChunkTaskProcessor : public ITaskProcessor
     {
     public:
         ChunkTaskProcessor(std::vector<std::string> const & filePaths,
+                           IConfiguration const & config,
                            IIngestor& ingestor);
 
         //
@@ -21,7 +26,11 @@ namespace BitFunnel
         virtual void Finished() override;
 
     private:
+        //
+        // Constructor parameters.
+        //
         std::vector<std::string> const & m_filePaths;
+        IConfiguration const & m_config;
         IIngestor& m_ingestor;
     };
 }

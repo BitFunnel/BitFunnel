@@ -9,15 +9,15 @@ namespace BitFunnel
 {
     ChunkEnumerator::ChunkEnumerator(
         std::vector<std::string> const & filePaths,
+        IConfiguration const & config,
         IIngestor& ingestor,
         size_t threadCount)
-        : m_ingestor(ingestor)
     {
         std::vector<std::unique_ptr<ITaskProcessor>> processors;
         for (size_t i = 0; i < threadCount; ++i) {
             processors.push_back(
                 std::unique_ptr<ITaskProcessor>(
-                    new ChunkTaskProcessor(filePaths, m_ingestor)));
+                    new ChunkTaskProcessor(filePaths, config, ingestor)));
         }
 
         if (threadCount > 1)

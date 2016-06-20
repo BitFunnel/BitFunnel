@@ -1,6 +1,9 @@
 #pragma once
 
-#include "BitFunnel/Index/IDocument.h"  // std::unique_ptr<IDocument>
+#include <memory>                       // std::unqiue_ptr member.
+#include <vector>                       // std::vector member.
+
+#include "BitFunnel/Index/IDocument.h"  // std::unique_ptr<IDocument>.
 #include "BitFunnel/NonCopyable.h"      // Inherits from NonCopyable.
 #include "ChunkReader.h"                // Inherits from ChunkReader::IEvents.
 
@@ -15,6 +18,7 @@ namespace BitFunnel
 
 namespace BitFunnel
 {
+    class IConfiguration;
     class IIngestor;
 
     // DESIGN NOTE: Consider adding a document factory parameter to the
@@ -25,7 +29,9 @@ namespace BitFunnel
         // TODO: We need to implement IDocumentFactory before this make sense.
         // ChunkIngestor(std::string const & filePath, IIndex& index,
         //               IDocumentFactory& factory);
-        ChunkIngestor(std::vector<char> const& chunkData, IIngestor& ingestor);
+        ChunkIngestor(std::vector<char> const& chunkData,
+                      IConfiguration const & configuration,
+                      IIngestor& ingestor);
 
         //
         // ChunkReader::IEvents methods.
@@ -39,8 +45,16 @@ namespace BitFunnel
         virtual void OnFileExit() override;
 
     private:
-        std::vector<char> const& m_chunkData;
+        //
+        // Constructor parameters
+        //
+        IConfiguration const & m_config;
         IIngestor& m_ingestor;
+
+        //
+        // Other members
+        //
+        std::vector<char> const& m_chunkData;
         std::unique_ptr<IDocument> m_currentDocument;
     };
 }

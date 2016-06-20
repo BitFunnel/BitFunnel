@@ -4,6 +4,7 @@
 #include "gtest/gtest.h"
 
 #include "ChunkEnumerator.h"
+#include "Configuration.h"
 #include "Ingestor.h"
 // #include "DocumentLengthHistogram.h"
 
@@ -31,8 +32,9 @@ namespace BitFunnel
         //*********************************************************************
         TEST(EndToEndTest, Trivial)
         {
+            Configuration config(1);
             Ingestor ingestor;
-            ChunkEnumerator chunkEnumerator(filePaths, ingestor, 2);
+            ChunkEnumerator chunkEnumerator(filePaths, config, ingestor, 2);
         }
 
         // TODO: implement and test file read/write.

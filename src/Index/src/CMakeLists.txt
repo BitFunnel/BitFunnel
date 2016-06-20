@@ -5,11 +5,13 @@ set(CPPFILES
     ChunkIngestor.cpp
     ChunkReader.cpp
     ChunkTaskProcessor.cpp
+    Configuration.cpp
     Document.cpp
     DocumentHandleInternal.cpp
     IngestChunks.cpp
     Ingestor.cpp
     Placeholder.cpp
+    Term.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -23,10 +25,12 @@ set(PRIVATE_HFILES
     ChunkIngestor.h
     ChunkReader.h
     ChunkTaskProcessor.h
+    Configuration.h
     Document.h
     DocumentHandleInternal.h
     DocumentLengthHistogram.h
     Ingestor.h
+    Term.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

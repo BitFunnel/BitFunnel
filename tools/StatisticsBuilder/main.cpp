@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 
+#include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
@@ -35,9 +37,15 @@ namespace BitFunnel
 
         std::unique_ptr<IIngestor> ingestor(Factories::CreateIngestor());
 
+        // Arbitrary maxGramSize that is greater than 1. For initial tests.
+        // TODO: Choose correct maxGramSize.
+        const size_t maxGramSize = 3;
+        std::unique_ptr<IConfiguration>
+            configuration(Factories::CreateConfiguration(maxGramSize));
+
         // TODO: Use correct thread count.
         size_t threadCount = 1;
-        IngestChunks(filePaths, *ingestor, threadCount);
+        IngestChunks(filePaths, *configuration, *ingestor, threadCount);
         ingestor->PrintStatistics();
     }
 }

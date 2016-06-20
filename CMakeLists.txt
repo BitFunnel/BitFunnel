@@ -83,6 +83,7 @@ endmacro()
 ###############################################################################
 
 set(BITFUNNEL_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Exceptions.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IInterface.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerator.h
@@ -94,6 +95,7 @@ set(BITFUNNEL_HFILES
 set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/DocumentHandle.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Factories.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IConfiguration.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocument.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocumentDataSchema.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IFactSet.h
@@ -105,6 +107,7 @@ set(UTILITIES_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskDistributor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskProcessor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IThreadManager.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/RingBuffer.h
 )
 
 set(LOGGER_HFILES
@@ -143,10 +146,11 @@ include_directories(
 #
 # Libraries and executables.
 #
-add_subdirectory(src/Common/CmdLineParser)
-add_subdirectory(src/Common/CsvTsv)
-add_subdirectory(src/Common/Utilities)
-add_subdirectory(src/Index)
+add_subdirectory(src)
+# add_subdirectory(src/Common/CmdLineParser)
+# add_subdirectory(src/Common/CsvTsv)
+# add_subdirectory(src/Common/Utilities)
+# add_subdirectory(src/Index)
 
 add_subdirectory(tools/StatisticsBuilder)
 

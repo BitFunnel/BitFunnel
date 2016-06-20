@@ -2,6 +2,7 @@
 
 set(CPPFILES
     ConsoleLogger.cpp
+    Exceptions.cpp
     Logging.cpp
     LogLevel.cpp
     MurmurHash2.cpp

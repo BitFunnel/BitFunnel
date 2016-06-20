@@ -1,7 +1,7 @@
-#include <iostream>     // TODO: Remove this header.
+#include <iostream>     // TODO: Remove this temporary header.
 #include <memory>
-#include <stdexcept>
 
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocument.h"
 #include "DocumentHandleInternal.h"
@@ -44,48 +44,48 @@ namespace BitFunnel
 
     bool Ingestor::Delete(DocId /*id*/)
     {
-        throw std::runtime_error("No implemented.");
+        throw NotImplemented();
     }
 
 
     void Ingestor::AssertFact(DocId /*id*/, FactHandle /*fact*/, bool /*value*/)
     {
-        throw std::runtime_error("No implemented.");
+        throw NotImplemented();
     }
 
 
     bool Ingestor::Contains(DocId /*id*/) const
     {
-        throw std::runtime_error("No implemented.");
+        throw NotImplemented();
     }
 
 
     size_t Ingestor::GetUsedCapacityInBytes() const
     {
-        throw std::runtime_error("No implemented.");
+        throw NotImplemented();
     }
 
 
     void Ingestor::Shutdown()
     {
-        throw std::runtime_error("No implemented.");
+        throw NotImplemented();
     }
 
 
     void Ingestor::OpenGroup(GroupId /*groupId*/)
     {
-        throw std::runtime_error("No implemented.");
+        throw NotImplemented();
     }
 
 
     void Ingestor::CloseGroup()
     {
-        throw std::runtime_error("No implemented.");
+        throw NotImplemented();
     }
 
 
     void Ingestor::ExpireGroup(GroupId /*groupId*/)
     {
-        throw std::runtime_error("No implemented.");
+        throw NotImplemented();
     }
 }

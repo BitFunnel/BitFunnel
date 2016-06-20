@@ -1,6 +1,7 @@
 #pragma once
 
-#include <atomic>
+#include <atomic>                       // std::atomic member.
+#include <stddef.h>                     // size_t template parameter.
 
 #include "BitFunnel/Index/IIngestor.h"  // Inherits from IIngestor.
 

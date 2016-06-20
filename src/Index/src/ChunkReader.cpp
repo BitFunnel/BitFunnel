@@ -1,3 +1,6 @@
+#include <sstream>
+
+#include "BitFunnel/Exceptions.h"
 #include "ChunkReader.h"
 
 
@@ -63,7 +66,7 @@ namespace BitFunnel
     char ChunkReader::PeekChar()
     {
         if (m_next == m_end) {
-            throw 0;
+            throw FatalError("Attempt to read beyond end of buffer.");
         }
         else
         {
@@ -75,7 +78,7 @@ namespace BitFunnel
     char ChunkReader::GetChar()
     {
         if (m_next == m_end) {
-            throw 0;
+            throw FatalError("Attempt to read beyond end of buffer.");
         }
         else
         {
@@ -86,7 +89,10 @@ namespace BitFunnel
     void ChunkReader::Consume(char c)
     {
         if (PeekChar() != c) {
-            throw 0;
+            std::stringstream msg;
+            msg << "Expected character " << c << ". ";
+            msg << "Found character " << PeekChar() << ".";
+            throw FatalError(msg.str());
         }
 
         GetChar();
