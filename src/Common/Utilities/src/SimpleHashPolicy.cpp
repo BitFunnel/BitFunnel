@@ -2,10 +2,7 @@
 #include "SimpleHashPolicy.h"
 
 #ifdef _MSC_VER
-// TODO: is this #define even necessary, or does VC++ have
-// __sync_val_compare_and_swap?
-#include <Windows.h>
-#define __sync_val_compare_and_swap(ptr, expected, desired) InterlockedCompareExchange64(ptr, desired, expected)
+#include <Windows.h>  // For InterlockedCompareExchange64.
 #endif
 
 
@@ -32,10 +29,17 @@ namespace BitFunnel
     {
         // Only perform the operation if the existing key has the expected
         // existing value (no other threads touch it).
+#ifndef _MSC_VER
         return (static_cast<uint64_t>(expectedCurrentKey) ==
                 __sync_val_compare_and_swap(reinterpret_cast<volatile uint64_t*>(keys + slot),
-                                             static_cast<uint64_t>(expectedCurrentKey),
-                                             static_cast<uint64_t>(desiredKey)));
+                                            static_cast<uint64_t>(expectedCurrentKey),
+                                            static_cast<uint64_t>(desiredKey)));
+#else
+        return (static_cast<LONGLONG>(expectedCurrentKey) ==
+                InterlockedCompareExchange64(reinterpret_cast<volatile LONGLONG*>(keys + slot),
+                                             static_cast<LONGLONG>(desiredKey),
+                                             static_cast<LONGLONG>(expectedCurrentKey)));
+#endif
     }
 
 

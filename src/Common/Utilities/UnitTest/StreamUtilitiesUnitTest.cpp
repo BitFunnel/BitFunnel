@@ -37,7 +37,11 @@ namespace BitFunnel
             {
                 persons[i].m_id = i;
                 persons[i].m_score = 100 - i;
+                #ifndef _MSC_VER
                 sprintf(persons[i].m_name, "name_%d", i);
+                #else
+                sprintf_s(persons[i].m_name, 32, "name_%d", i);
+                #endif
             }
             StreamUtilities::WriteArray<TestStructPerson>(writeStream, persons,
                                                           10);
