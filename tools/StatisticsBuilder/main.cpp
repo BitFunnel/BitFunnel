@@ -92,7 +92,9 @@ void CreateTestFiles(char const * chunkPath, char const * manifestPath)
 
 int main2(int /*argc*/, char** /*argv*/)
 {
-    CreateTestFiles("c:\\temp\\chunks\\Chunk1", "c:\\temp\\chunks\\manifest.txt");
+    CreateTestFiles(
+        "/tmp/chunks/Chunk1",
+        "/tmp/chunks/manifest.txt");
     return 0;
 }
 

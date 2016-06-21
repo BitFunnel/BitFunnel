@@ -30,6 +30,9 @@ include_directories(${CMAKE_SOURCE_DIR}/src/Index/src)
 add_executable(IndexUnitTest ${CPPFILES} ${PRIVATE_HFILES} ${PUBLIC_HFILES})
 set_property(TARGET IndexUnitTest PROPERTY FOLDER "src/Index")
 set_property(TARGET IndexUnitTest PROPERTY PROJECT_LABEL "UnitTest")
-target_link_libraries (IndexUnitTest CsvTsv Index Utilities gtest gtest_main)
+
+# NOTE: The ordering Utilities-Index is important for XCode. If you reverse
+# Utilities and Index, we will get linker errors.
+target_link_libraries (IndexUnitTest CsvTsv Utilities Index gtest gtest_main)
 
 add_test(NAME IndexUnitTest COMMAND IndexUnitTest)
