@@ -53,10 +53,10 @@ namespace BitFunnel
     //*************************************************************************
     //
     // Shard is an implementation of the IShardIndex interface which represents
-    // a partition of the index where documents share common properties. The 
-    // Shard maintains a collection of Slices, each of which holds set of 
-    // documents. The Shard may add or remove Slices as needed to adjust its 
-    // capacity. All Slices in the shard share the same characteristics such 
+    // a partition of the index where documents share common properties. The
+    // Shard maintains a collection of Slices, each of which holds set of
+    // documents. The Shard may add or remove Slices as needed to adjust its
+    // capacity. All Slices in the shard share the same characteristics such
     // as capacity and size of their memory buffer.
     //
     // Thread safety: all public methods are thread safe.
@@ -67,12 +67,12 @@ namespace BitFunnel
     public:
         typedef size_t Id;
 
-        // Constructs an empty Shard with no slices. sliceBufferSize must be 
+        // Constructs an empty Shard with no slices. sliceBufferSize must be
         // sufficient to hold the minimum capacity Slice. The minimum capacity
         // is determined by a value returned by Row::DocumentsInRank0Row(1).
         Shard(IIngestor& ingestor,
               Id id);
-        //Shard(IngestionIndex& index, 
+        //Shard(IngestionIndex& index,
         //      ShardId id,
         //      ITermTable const & termTable,
         //      IDocumentDataSchema const & docDataSchema,
@@ -88,13 +88,13 @@ namespace BitFunnel
         // Returns the Id of the shard.
         //virtual ShardId GetId() const override;
 
-        // Returns capacity of a single Slice in the Shard. All Slices in the 
+        // Returns capacity of a single Slice in the Shard. All Slices in the
         // Shard have the same capacity.
         //virtual DocIndex GetSliceCapacity() const override;
 
         // Returns a vector of slice buffers for this shard.
         // The callers needs to obtain a Token from ITokenManager to protect
-        // the pointer to the list of slice buffers, as well as the buffers 
+        // the pointer to the list of slice buffers, as well as the buffers
         // themselves.
         //virtual std::vector<void*> const & GetSliceBuffers() const override;
 
@@ -109,10 +109,10 @@ namespace BitFunnel
         // Shard exclusive members.
         //
 
-        // Allocates storage for a new document. Creates a new slice if 
+        // Allocates storage for a new document. Creates a new slice if
         // required. Returns a handle to the document storage for the caller
         // to use to populate document's contents. When there is no space in
-        // the current slice and no memory available in the 
+        // the current slice and no memory available in the
         // SliceBufferAllocator, this method throws.
         //
         // Implementation:
@@ -122,28 +122,28 @@ namespace BitFunnel
         //   {
         //       CreateNewActiveSlice();
         //   }
-        //   
+        //
         //   return DocumentHandleInternal(m_activeSlice, docIndex);
         DocumentHandleInternal AllocateDocument();
 
         // Loads a Slice from a previously serialized state and adds it to the
-        // list of Slices. As part of deserialization, LoadSlice loads 
-        // RowTable/DocTable descriptors from the stream and verifies that it 
-        // is compatible with the current descriptors. Uses descriptor's 
-        // IsCompatibleWith methods for verification, and if not passed, this 
+        // list of Slices. As part of deserialization, LoadSlice loads
+        // RowTable/DocTable descriptors from the stream and verifies that it
+        // is compatible with the current descriptors. Uses descriptor's
+        // IsCompatibleWith methods for verification, and if not passed, this
         // function throws.
         // Design intent is that the serialized files act as a cache, and it
-        // is expected that the index may not be able to restore some or all 
-        // slices from the cache, and the host will re-ingest the documents 
+        // is expected that the index may not be able to restore some or all
+        // slices from the cache, and the host will re-ingest the documents
         // which were not restored.
         //void LoadSlice(std::istream& input);
 
         // TODO: WriteSlice here or in Slice?
 
         // Remove slice buffer and its Slice from the list of slices. Throws if
-        // slice buffer wasn't found in the list of active slice buffers. 
-        // Throws if the slice buffer being removed corresponds to a Slice 
-        // which is not fully expired. A slice which is removed, along with the 
+        // slice buffer wasn't found in the list of active slice buffers.
+        // Throws if the slice buffer being removed corresponds to a Slice
+        // which is not fully expired. A slice which is removed, along with the
         // old copy of the vector of slices, is scheduled for recycling.
         //void RecycleSlice(Slice& slice);
 
@@ -165,28 +165,28 @@ namespace BitFunnel
         // m_sliceBufferSize.
         //void* AllocateSliceBuffer();
 
-        // Allocates and loads the contents of the slice buffer from the 
-        // stream. The stream has the size of the buffer embedded as the first 
-        // element, and the function verifies that it matches the value stored 
+        // Allocates and loads the contents of the slice buffer from the
+        // stream. The stream has the size of the buffer embedded as the first
+        // element, and the function verifies that it matches the value stored
         // in buffer m_sliceBufferSize.
         //void* LoadSliceBuffer(std::istream& input);
 
-        // Writes the contents of the slice buffer to the output stream. The 
-        // size of the stream is stored in m_sliceBufferSize and is written 
+        // Writes the contents of the slice buffer to the output stream. The
+        // size of the stream is stored in m_sliceBufferSize and is written
         // before the buffer's data for compatibility checks.
         //void WriteSliceBuffer(void* buffer, std::ostream& output);
 
-        // Releases the slice buffer and returns it to the 
+        // Releases the slice buffer and returns it to the
         // ISliceBufferAllocator.
         //void ReleaseSliceBuffer(void* sliceBuffer);
 
         // Returns the size in bytes of the used capacity in the Shard.
         //unsigned __int64 GetUsedCapacityInBytes() const;
 
-        // Returns the buffer size required to store a single Slice based on 
-        // the capacity and schema. If the optional Shard argument is provided, 
-        // then it also initializes its DocTable and RowTable descriptors. 
-        // The same function combines both actions in order to avoid code 
+        // Returns the buffer size required to store a single Slice based on
+        // the capacity and schema. If the optional Shard argument is provided,
+        // then it also initializes its DocTable and RowTable descriptors.
+        // The same function combines both actions in order to avoid code
         // for the two scenarios.
         // DESIGN NOTE: This is made public in order to be used in unit tests.
         //static size_t InitializeDescriptors(Shard* shard,
@@ -194,7 +194,7 @@ namespace BitFunnel
         //                                    IDocumentDataSchema const & docDataSchema,
         //                                    ITermTable const & termTable);
 
-        // Calculates the number of documents which can be hosted in a slice 
+        // Calculates the number of documents which can be hosted in a slice
         // buffer of the given byte size.
         //static DocIndex GetCapacityForByteSize(size_t bufferByteSize,
         //                                       IDocumentDataSchema const & schema,
@@ -224,8 +224,8 @@ namespace BitFunnel
         // Row which is used to mark documents as soft deleted.
         // The value of 0 means the document in this column is soft deleted
         // and excluded from matching. Typically this is a private rank 0 row in
-        // DDR. During the AddDocument workflow, the bit in this row is set 
-        // to 1 as the last step and this effectively makes the document 
+        // DDR. During the AddDocument workflow, the bit in this row is set
+        // to 1 as the last step and this effectively makes the document
         // "serving".
         //const RowId m_softDeletedRowId;
 
@@ -236,21 +236,21 @@ namespace BitFunnel
         //mutable Mutex m_slicesLock;
 
         // Pointer to the current Slice where documents are being ingested to.
-        // Initially set to nullptr. First call to AllocateDocument() will 
+        // Initially set to nullptr. First call to AllocateDocument() will
         // allocate a new Slice via CreateNewActiveSlice().
         Slice* m_activeSlice;
         std::unique_ptr<Slice> m_slice;
 
         // Vector of pointers to slice buffers.
         //
-        // DESIGN NOTE: We store a pointer to an std::vector here instead of 
-        // embedding the vector in order to support lock free vector replacement. 
-        // A vector modification is implemented as a copy, followed by an 
-        // interlocked exchange of vector pointers. This approach allows query 
-        // processing to run lock free at full speed while another thread adds 
+        // DESIGN NOTE: We store a pointer to an std::vector here instead of
+        // embedding the vector in order to support lock free vector replacement.
+        // A vector modification is implemented as a copy, followed by an
+        // interlocked exchange of vector pointers. This approach allows query
+        // processing to run lock free at full speed while another thread adds
         // and removes slices.
         //
-        // DESIGN NOTE: We store a vector of void*, instead of Slice* in order 
+        // DESIGN NOTE: We store a vector of void*, instead of Slice* in order
         // to provide an array of Slice buffer pointers to the matcher.
         //
         // TODO: make this std::vector<void*> const * when a thread safe swap
@@ -260,17 +260,17 @@ namespace BitFunnel
         // Capacity of a Slice. All Slices in the shard have the same capacity.
         //const DocIndex m_sliceCapacity;
 
-        // Size of the buffer for storing data for a single Slice. This member 
+        // Size of the buffer for storing data for a single Slice. This member
         // is required for two reasons.
         // 1. Shard needs to convert from slice buffer to Slice* in order to
         //    recycle an empty slice.
-        // 2. This value will be passed to ISliceBufferAllocator in order to 
+        // 2. This value will be passed to ISliceBufferAllocator in order to
         //    allow handling allocations of buffers of different byte sizes
         //    in future.
         //const size_t m_sliceBufferSize;
 
         // Descriptors for RowTables and DocTable.
-        // DESIGN NOTE: using pointers, rather than embedded instances to avoid 
+        // DESIGN NOTE: using pointers, rather than embedded instances to avoid
         // initializer order dependencies in constructor list.
         //std::unique_ptr<DocTableDescriptor> m_docTable;
         //std::vector<RowTableDescriptor> m_rowTables;
