@@ -23,6 +23,8 @@ if(MINGW)
   set(gtest_disable_pthreads ON CACHE BOOL "" FORCE)
 endif()
 
+enable_testing()
+
 # Add googletest directly to our build. This adds
 # the following targets: gtest, gtest_main, gmock
 # and gmock_main
@@ -164,12 +166,7 @@ add_custom_target(TOPLEVEL SOURCES
   README.md
 )
 
-enable_testing()
 # TODO: CMake is making this directory, which the tests require, but we should
 # ideally write platform-independent C++ code to do this.
 file(MAKE_DIRECTORY "/tmp/chunks")
-add_test(NAME CmdLineParserUnitTest COMMAND CmdLineParserUnitTest)
-add_test(NAME CsvTsvUnitTest COMMAND CsvTsvUnitTest)
-add_test(NAME IndexUnitTest COMMAND IndexUnitTest)
-add_test(NAME UtilitiesUnitTest COMMAND UtilitiesUnitTest)
 
