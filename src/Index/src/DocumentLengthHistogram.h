@@ -49,7 +49,9 @@ namespace BitFunnel
         size_t GetValue(size_t postingCount);
 
         // Persists the contents of the histogram to a stream, not thread-safe
-        void Write(std::ostream& output);
+        void Write(std::ostream& output) const;
+
+        size_t m_totalCount;
 
     private:
         std::map<size_t, size_t> m_hist;

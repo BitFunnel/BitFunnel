@@ -26,6 +26,7 @@
 #include <stddef.h>                     // size_t template parameter.
 
 #include "BitFunnel/Index/IIngestor.h"  // Inherits from IIngestor.
+#include "DocumentLengthHistogram.h"    // Embeds DocumentLengthHistogram.
 #include "Shard.h"                      // std::unique_ptr template parameter.
 
 
@@ -102,9 +103,11 @@ namespace BitFunnel
     private:
         // TODO: Replace these tempoary statistics variables with document
         // length hash table and term frequency tables.
-        std::atomic<size_t> m_termCount;
         std::atomic<size_t> m_documentCount;
 
         std::vector<std::unique_ptr<Shard>> m_shards;
+
+        DocumentLengthHistogram m_postingsCount;
+
     };
 }

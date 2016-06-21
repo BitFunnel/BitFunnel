@@ -32,7 +32,6 @@ namespace BitFunnel
     Document::Document(IConfiguration const & config)
         : m_maxGramSize(config.GetMaxGramSize()),
           m_docFreqTable(config.GetDocumentFrequencyTable()),
-          m_postingCount(0),
           m_streamIsOpen(false)
     {
     }
@@ -40,7 +39,7 @@ namespace BitFunnel
 
     size_t Document::GetPostingCount() const
     {
-        return m_terms.size();
+        return m_postings.size();
     }
 
 
@@ -53,7 +52,7 @@ namespace BitFunnel
                   << " postings"
                   << std::endl;
 
-        for (auto it = m_terms.begin(); it != m_terms.end(); ++it)
+        for (auto it = m_postings.begin(); it != m_postings.end(); ++it)
         {
             handle.AddPosting(*it);
         }
@@ -91,7 +90,6 @@ namespace BitFunnel
         {
             // TODO: This is placeholder code that computes the term count.
             // TODO: Make it compute the unique posting count.
-            ++m_postingCount;
 
             // TODO: should we use the dfThreshold parameter instead of the fixed value?
             new(m_ringBuffer.PushBack()) Term(termText,
@@ -130,11 +128,11 @@ namespace BitFunnel
 
         // Process each of the higher order n-grams.
         Term term(m_ringBuffer[0]);
-        PostTerm(term);
+        AddPosting(term);
         for (size_t n = 1; n < count; ++n)
         {
             term.AddTerm(m_ringBuffer[n]);
-            PostTerm(term);
+            AddPosting(term);
         }
     }
 
@@ -149,10 +147,10 @@ namespace BitFunnel
     }
 
 
-    void Document::PostTerm(Term term)
+    void Document::AddPosting(Term term)
     {
         term.Print(std::cout);
         std::cout << std::endl;
-        m_terms.insert(term);
+        m_postings.insert(term);
     }
 }

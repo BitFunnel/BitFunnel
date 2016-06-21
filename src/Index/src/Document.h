@@ -56,22 +56,22 @@ namespace BitFunnel
         // Adds a term to the currently opened stream.
         virtual void AddTerm(char const * term) override;
 
-        // Closes the current stream. 
+        // Closes the current stream.
         virtual void CloseStream() override;
 
     private:
-        // Invoke PostTerm() for each ngram starting at the front of
+        // Invoke AddPosting() for each ngram starting at the front of
         // m_ringBuffer. This includes ngrams with lengths 1 to
         // IConfiguration::GetMaxGramSize.
         void ProcessNGrams();
 
-        // Invoke PostTerm for each ngram starting at each position in
+        // Invoke AddPosting() for each ngram starting at each position in
         // m_ringBuffer.
         void PurgeRingBuffer();
 
         // Add term to the set of terms used to create postings in a
         // call to Ingest().
-        void PostTerm(Term term);
+        void AddPosting(Term term);
 
         //
         // Constructor parameters.
@@ -87,10 +87,6 @@ namespace BitFunnel
         //
         // Other members.
         //
-
-        // Temporary count of postings in this document.
-        // TODO: replace with count from hash table.
-        size_t m_postingCount;
 
         // Ring buffer used to generate ngram postings.
         static const size_t c_ringBufferSize = Term::c_log2MaxGramSize + 1;
@@ -110,6 +106,6 @@ namespace BitFunnel
         Term::StreamId m_currentStreamId;
 
         // TODO: Replace unordered_set with alloc free version.
-        std::unordered_set<Term, Term::Hasher> m_terms;
+        std::unordered_set<Term, Term::Hasher> m_postings;
     };
 }

@@ -21,6 +21,7 @@ namespace BitFunnel
         }
 
         ++m_hist[postingCount];
+        m_totalCount += postingCount;
     }
 
 
@@ -40,7 +41,7 @@ namespace BitFunnel
     }
 
 
-    void DocumentLengthHistogram::Write(std::ostream& output)
+    void DocumentLengthHistogram::Write(std::ostream& output) const
     {
         CsvTsv::CsvTableFormatter formatter(output);
         CsvTsv::TableWriter writer(formatter);

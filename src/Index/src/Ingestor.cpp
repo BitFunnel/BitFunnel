@@ -39,8 +39,7 @@ namespace BitFunnel
 
 
     Ingestor::Ingestor()
-        : m_termCount(0),
-          m_documentCount(0)
+        : m_documentCount(0)
     {
         // Initialize histogram and frequency tables here.
         m_shards.push_back(std::unique_ptr<Shard>(new Shard(*this, 123)));
@@ -50,12 +49,16 @@ namespace BitFunnel
     void Ingestor::PrintStatistics() const
     {
         std::cout << "Document count: " << m_documentCount << std::endl;
-        std::cout << "Term count: " << m_termCount << std::endl;
+        std::cout << "Term count: " << m_postingsCount.m_totalCount << std::endl;
 
         for (auto it = m_shards.begin(); it != m_shards.end(); ++it)
         {
             (*it)->TemporaryPrintFrequencies(std::cout);
         }
+
+        std::cout << "Posting count histogram" << std::endl;
+
+        m_postingsCount.Write(std::cout);
     }
 
 
@@ -63,7 +66,9 @@ namespace BitFunnel
     void Ingestor::Add(DocId /*id*/, IDocument const & document)
     {
         ++m_documentCount;
-        m_termCount += document.GetPostingCount();
+
+        // Add postingCount to the DocumentLengthHistogram
+        m_postingsCount.AddDocument(document.GetPostingCount());
 
         DocumentHandleInternal handle = m_shards[0]->AllocateDocument();
         document.Ingest(handle);
