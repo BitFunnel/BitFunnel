@@ -21,7 +21,9 @@ namespace BitFunnel
     SimpleHashSet::SimpleHashSet(unsigned capacity,
                                  bool allowResize,
                                  Allocators::IAllocator& allocator)
-        : SimpleHashSetBase(capacity, allocator, allowResize ? c_maxProbes : capacity),
+        : SimpleHashSetBase(capacity, allocator, allowResize ?
+                            c_maxProbes :
+                            capacity),
           m_allowResize(allowResize)
     {
     }

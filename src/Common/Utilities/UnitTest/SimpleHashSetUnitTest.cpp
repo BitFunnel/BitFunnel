@@ -20,7 +20,8 @@ namespace BitFunnel
         };
 
 
-        void RunTest1(unsigned capacity, bool allowResize, unsigned iterations, bool useAllocator);
+        void RunTest1(unsigned capacity, bool allowResize, unsigned iterations,
+                      bool useAllocator);
         static uint64_t Hash(uint64_t index);
 
         TEST(HeapAllocations, Trivial)
@@ -43,7 +44,8 @@ namespace BitFunnel
         }
 
 
-        void RunTest1(unsigned capacity, bool allowResize, unsigned iterations, bool useAllocator)
+        void RunTest1(unsigned capacity, bool allowResize, unsigned iterations,
+                      bool useAllocator)
         {
             typedef std::map<uint64_t, unsigned> MapType;
             MapType map;
@@ -53,7 +55,8 @@ namespace BitFunnel
 
             if (useAllocator)
             {
-                hashSetPointer.reset(new SimpleHashSet(capacity, allowResize, allocator));
+                hashSetPointer.reset(
+                    new SimpleHashSet(capacity, allowResize, allocator));
             }
             else
             {
@@ -109,7 +112,7 @@ namespace BitFunnel
 
         void SimpleHashSetUnitTest::Allocator::Deallocate(void* block)
         {
-            delete static_cast<char*>(block);
+            delete [] static_cast<char*>(block);
         }
 
 

@@ -1,7 +1,7 @@
 #include <cstring>               // For memset().
 
 #include "BitFunnel/Allocators/IAllocator.h"
-// #include "BitFunnel/StreamUtilities.h"
+#include "BitFunnel/Utilities/StreamUtilities.h"
 #include "LoggerInterfaces/Logging.h"
 #include "SimpleHashSetBase.h"
 
@@ -31,11 +31,9 @@ namespace BitFunnel
     {
         if (m_allocator != nullptr)
         {
-            // TODO: figure out if we need to convert m_keys to a plain pointer.
-            // The original code const_cast volatile away, but we can't do that
-            // for atomic.
-            // Destruction is not thread safe
-            m_allocator->Deallocate(m_keys);
+            // Destruction is not thread safe.
+            // cast is to remove volatile.
+            m_allocator->Deallocate(const_cast<uint64_t*>(m_keys));
         }
         else
         {
@@ -50,28 +48,27 @@ namespace BitFunnel
         : m_allocator(nullptr),
           m_keys(nullptr)
     {
-        /*
-        m_capacity = StreamUtilities::ReadField<unsigned __int32>(input);
+        m_capacity = StreamUtilities::ReadField<uint32_t>(input);
         m_maxProbes = m_capacity;
 
         ResizeKeyBuffer(m_capacity);
 
-        // const_cast is to get rid of volatile attribute. Construction is not thread safe
-        StreamUtilities::ReadBytes(input, const_cast<uint64_t*>(m_keys), m_slotCount * sizeof(uint64_t));
-        */
-        throw &input;
+        // Construction is not thread safe.
+        // const_cast is to get rid of volatile attribute.
+        StreamUtilities::ReadBytes(input, const_cast<uint64_t*>(m_keys),
+                                   m_slotCount * sizeof(uint64_t));
     }
 
 
     void SimpleHashSetBase::Write(std::ostream& output) const
     {
-        /*
-        StreamUtilities::WriteField<unsigned __int32>(output, m_capacity);
+        StreamUtilities::WriteField<uint32_t>(output, m_capacity);
 
-        // const_cast is to get rid of volatile attribute.  File writing is not thread safe
-        StreamUtilities::WriteBytes(output, reinterpret_cast<const char*>(const_cast<uint64_t*>(m_keys)), m_slotCount * sizeof(uint64_t));
-        */
-        throw &output;
+        // File writing is not thread safe.
+        // const_cast is to get rid of volatile attribute.
+        StreamUtilities::WriteBytes(output,
+            reinterpret_cast<const char*>(const_cast<uint64_t*>(m_keys)),
+                                          m_slotCount * sizeof(uint64_t));
     }
 
 
@@ -97,11 +94,12 @@ namespace BitFunnel
 
     bool SimpleHashSetBase::IsFilledSlot(unsigned slot) const
     {
-        return IsFilledSlot(slot, m_capacity, m_keys); 
+        return IsFilledSlot(slot, m_capacity, m_keys);
     }
 
 
-    bool SimpleHashSetBase::IsFilledSlot(unsigned slot, unsigned capacity, volatile uint64_t* keys)
+    bool SimpleHashSetBase::IsFilledSlot(unsigned slot, unsigned capacity,
+                                         volatile uint64_t* keys)
     {
         return (slot < capacity) ^ (keys[slot] == 0);
     }
@@ -116,7 +114,8 @@ namespace BitFunnel
     }
 
 
-    bool SimpleHashSetBase::TryFindSlot(uint64_t key, unsigned& slotOut, bool& foundKey) const
+    bool SimpleHashSetBase::TryFindSlot(uint64_t key, unsigned& slotOut,
+                                        bool& foundKey) const
     {
         if (key == 0)
         {
@@ -129,7 +128,8 @@ namespace BitFunnel
         }
         else
         {
-            // Warning: Edits to the hash to slot mapping will necessitate regeneration of the TermTables.
+            // Warning: Edits to the hash to slot mapping will necessitate
+            // regeneration of the TermTables.
             unsigned slot = key % m_capacity;
             for (unsigned i = 0; i < m_maxProbes; ++i)
             {
@@ -148,9 +148,10 @@ namespace BitFunnel
                     foundKey = false;
                     return true;
                 }
-                
-                // The original operation slot = (slot + 1) % m_capacity was determined to 
-                // be less performant since it does a 32 bit divide.
+
+                // The original operation slot = (slot + 1) % m_capacity was
+                // determined to be less performant since it does a 32 bit
+                // divide.
                 slot++;
                 if (slot >= m_capacity)
                 {
@@ -166,10 +167,10 @@ namespace BitFunnel
 
     uint64_t* SimpleHashSetBase::ResizeKeyBuffer(unsigned capacity)
     {
-        // Ensure that requested capacity is greater than zero. The current 
-        // implementation relies on a non-zero capacity for the modulus 
-        // operation in SimpleHashSetBase::TryFindSlot(). Also 
-        // SimpleHashTable::Rehash() doubles the capacity, and therefore 
+        // Ensure that requested capacity is greater than zero. The current
+        // implementation relies on a non-zero capacity for the modulus
+        // operation in SimpleHashSetBase::TryFindSlot(). Also
+        // SimpleHashTable::Rehash() doubles the capacity, and therefore
         // requires a non-zero capacity in order to actually grow the table.
         LogAssertB(capacity > 0, "Negative capacity.\n");
         m_capacity = capacity;
@@ -178,27 +179,29 @@ namespace BitFunnel
         // case where key == 0.
         m_slotCount = m_capacity + 1;
 
-        // Resizing is not thread safe
-        uint64_t* oldBuffer = m_keys.load();
+        // Resizing is not thread safe.
+        // const_cast is to remove volatile.
+        uint64_t* oldBuffer = const_cast<uint64_t*>(m_keys);
         if (m_allocator != nullptr)
         {
-            m_keys.store(
+            m_keys =
                 reinterpret_cast<uint64_t*>(
-                    m_allocator->Allocate(sizeof(uint64_t) * m_slotCount)));
+                    m_allocator->Allocate(sizeof(uint64_t) * m_slotCount));
         }
         else
         {
             m_keys = new uint64_t[m_slotCount];
         }
 
-        memset(m_keys.load(), 0, sizeof(uint64_t) * m_slotCount);
+        memset(const_cast<uint64_t*>(m_keys),
+               0, sizeof(uint64_t) * m_slotCount);
 
         // Initialize this zero key slot to a non-zero value to indicate it is empty.
-        m_keys[m_capacity] = c_invalidKeyZero; 
+        m_keys[m_capacity] = c_invalidKeyZero;
         return oldBuffer;
     }
 
-    
+
     bool SimpleHashSetBase::HasKeyZero() const
     {
         return m_keys[m_capacity] == 0;
@@ -216,7 +219,8 @@ namespace BitFunnel
     // SimpleHashBase::EnumeratorObjectBase
     //
     //*************************************************************************
-    SimpleHashSetBase::EnumeratorObjectBase::EnumeratorObjectBase(const SimpleHashSetBase& hashSet)
+    SimpleHashSetBase::EnumeratorObjectBase::EnumeratorObjectBase(
+        const SimpleHashSetBase& hashSet)
         : m_current(c_currentBeforeStart),
           m_set(hashSet)
     {
@@ -235,6 +239,6 @@ namespace BitFunnel
 
     void SimpleHashSetBase::EnumeratorObjectBase::Reset()
     {
-        m_current = c_currentBeforeStart; 
+        m_current = c_currentBeforeStart;
     }
 }

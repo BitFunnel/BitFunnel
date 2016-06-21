@@ -41,5 +41,9 @@ namespace BitFunnel
             CreateTaskDistributor(
                 std::vector<std::unique_ptr<ITaskProcessor>> const & processors,
                 size_t taskCount);
+
+        ITaskDistributor*
+            CreateTaskDistributor(std::vector<ITaskProcessor*> const & processors,
+                                  size_t taskCount);
     }
 }

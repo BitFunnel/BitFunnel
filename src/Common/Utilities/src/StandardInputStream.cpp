@@ -1,8 +1,6 @@
-#include "stdafx.h"
-
 #include <istream>
 
-#include "BitFunnel/StandardInputStream.h"
+#include "BitFunnel/Utilities/StandardInputStream.h"
 
 
 namespace BitFunnel

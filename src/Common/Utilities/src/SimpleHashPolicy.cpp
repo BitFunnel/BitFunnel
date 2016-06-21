@@ -1,9 +1,12 @@
-#include "stdafx.h"
-
-#include <Windows.h>
-
 #include "LoggerInterfaces/Logging.h"
 #include "SimpleHashPolicy.h"
+
+#ifdef _MSC_VER
+// TODO: is this #define even necessary, or does VC++ have
+// __sync_val_compare_and_swap?
+#include <Windows.h>
+#define __sync_val_compare_and_swap(ptr, expected, desired) InterlockedCompareExchange64(ptr, desired, expected)
+#endif
 
 
 namespace BitFunnel
@@ -16,19 +19,23 @@ namespace BitFunnel
     SimpleHashPolicy::Threadsafe::Threadsafe(bool allowResize)
         : m_allowsResize(false)
     {
-        LogAssertB(!allowResize);
+        LogAssertB(!allowResize,
+                   "Illegal combination: allowResize && threadsafe.");
     }
 
 
-    bool SimpleHashPolicy::Threadsafe::UpdateKeyIfUnchanged(volatile unsigned __int64* keys,
-                                                            unsigned slot,
-                                                            unsigned __int64 expectedCurrentKey,
-                                                            unsigned __int64 desiredKey)
+    bool SimpleHashPolicy::Threadsafe::UpdateKeyIfUnchanged(
+        volatile uint64_t* keys,
+        unsigned slot,
+        uint64_t expectedCurrentKey,
+        uint64_t desiredKey)
     {
-        // Only perform the operation if the existing key has the expected existing value (no other threads touch it).
-        return (static_cast<LONGLONG>(expectedCurrentKey) == InterlockedCompareExchange64(reinterpret_cast<volatile LONGLONG*>(keys + slot),
-                                                                                          static_cast<LONGLONG>(desiredKey),
-                                                                                          static_cast<LONGLONG>(expectedCurrentKey)));
+        // Only perform the operation if the existing key has the expected
+        // existing value (no other threads touch it).
+        return (static_cast<uint64_t>(expectedCurrentKey) ==
+                __sync_val_compare_and_swap(reinterpret_cast<volatile uint64_t*>(keys + slot),
+                                             static_cast<uint64_t>(expectedCurrentKey),
+                                             static_cast<uint64_t>(desiredKey)));
     }
 
 
@@ -49,12 +56,14 @@ namespace BitFunnel
     }
 
 
-    bool SimpleHashPolicy::SingleThreaded::UpdateKeyIfUnchanged(volatile unsigned __int64* keys,
-                                                                unsigned slot,
-                                                                unsigned __int64 expectedCurrentKey,
-                                                                unsigned __int64 desiredKey)
+    bool SimpleHashPolicy::SingleThreaded::UpdateKeyIfUnchanged(
+        volatile uint64_t* keys,
+        unsigned slot,
+        uint64_t expectedCurrentKey,
+        uint64_t desiredKey)
     {
-        LogAssertB(keys[slot] == expectedCurrentKey);
+        LogAssertB(keys[slot] == expectedCurrentKey,
+                   "Found changed key in UpdateKeyIfUnchanged");
 
         keys[slot] = desiredKey;
         return true;

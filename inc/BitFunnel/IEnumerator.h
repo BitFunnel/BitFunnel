@@ -12,7 +12,7 @@ namespace BitFunnel
         // that MoveNext() must be called at the beginning of the enumeration
         // before any calls to the Current() method. MoveNext() returns true
         // if it successfully moved to an item in the collection. MoveNext()
-        // returns false when the collection is empty or the last item has 
+        // returns false when the collection is empty or the last item has
         // been passed.
         virtual bool MoveNext() = 0;
 

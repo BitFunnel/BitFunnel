@@ -1,12 +1,9 @@
-// Copyright 2011 Microsoft Corporation. All Rights Reserved.
-// Author: danzhi@microsoft.com (Daniel Zhi)
-#include "stdafx.h"
-
+#include <inttypes.h>
 #include <fstream>
 #include <string>
 #include <vector>
 
-#include "BitFunnel/StreamUtilities.h"
+#include "BitFunnel/Utilities/StreamUtilities.h"
 #include "LoggerInterfaces/Logging.h"
 
 
@@ -14,14 +11,17 @@ using namespace std;
 
 namespace BitFunnel
 {
-    void StreamUtilities::ReadBytes(IInputStream &stream, void* buffer, size_t byteCount)
+    void StreamUtilities::ReadBytes(IInputStream &stream, void* buffer,
+                                    size_t byteCount)
     {
-        LogAssertB(buffer != nullptr);
-        __int64 offset = 0;  // number of bytes read.
+        LogAssertB(buffer != nullptr, "buffer == nullptr");
+        size_t offset = 0;  // number of bytes read.
         while (byteCount > 0)
         {
-            int len = (byteCount <= c_readWriteChunkSize) ? (int)byteCount : c_readWriteChunkSize;
-            const size_t bytesRead = stream.Read(static_cast<char*>(buffer) + offset, len);
+            size_t len = (byteCount <= c_readWriteChunkSize) ?
+                (int)byteCount : c_readWriteChunkSize;
+            const size_t bytesRead = stream.Read(
+                                     static_cast<char*>(buffer) + offset, len);
             LogAssertB(bytesRead == len, "Stream Read Unexpected Bytes Count");
             byteCount -= len;
             offset += len;
@@ -29,7 +29,8 @@ namespace BitFunnel
     }
 
 
-    void StreamUtilities::ReadBytes(std::istream& stream, void* buffer, size_t byteCount)
+    void StreamUtilities::ReadBytes(std::istream& stream, void* buffer,
+                                    size_t byteCount)
     {
         StandardInputStream stdStream(stream);
 
@@ -37,13 +38,15 @@ namespace BitFunnel
     }
 
 
-    void StreamUtilities::WriteBytes(std::ostream &stream, const char* buffer, size_t byteCount)
+    void StreamUtilities::WriteBytes(std::ostream &stream, const char* buffer,
+                                     size_t byteCount)
     {
-        LogAssertB(buffer != nullptr);
-        __int64 offset = 0;  // number of bytes written.
+        LogAssertB(buffer != nullptr, "buffer == nullptr");
+        size_t offset = 0;  // number of bytes written.
         while (byteCount > 0)
         {
-            int len = (byteCount <= c_readWriteChunkSize) ? (int)byteCount : c_readWriteChunkSize;
+            int len = (byteCount <= c_readWriteChunkSize) ?
+                (int)byteCount : c_readWriteChunkSize;
             stream.write((char*)(buffer + offset), len);
             LogAssertB(!stream.bad(), "Stream Write Error");
             byteCount -= len;
@@ -51,7 +54,8 @@ namespace BitFunnel
             // Trace progress if we are writing full chunks.
             if (offset > c_readWriteChunkSize)
             {
-                LogB(Logging::Info, "StreamIO", "write chunk:%-10lld total:%lld", len, offset);
+                LogB(Logging::Info, "StreamIO", "write chunk:%-10lld total:%lld",
+                     len, offset);
             }
         }
     }
@@ -80,7 +84,8 @@ namespace BitFunnel
     }
 
 
-    void StreamUtilities::WriteString(std::ostream& stream, const std::string& str)
+    void StreamUtilities::WriteString(std::ostream& stream,
+                                      const std::string& str)
     {
         WriteField<unsigned>(stream, static_cast<unsigned>(str.size()));
         WriteBytes(stream, str.c_str(), str.size());
@@ -119,13 +124,14 @@ namespace BitFunnel
     }
 
 
-    void StreamUtilities::ReadTrimmedLine(std::istream& stream, std::string& str)
+    void StreamUtilities::ReadTrimmedLine(std::istream& stream,
+                                          std::string& str)
     {
         getline(stream, str);
 
         if (!stream.eof())
         {
-            LogAssertB(!stream.fail());
+            LogAssertB(!stream.fail(), "Stream.fail()");
         }
 
         Trim(str);

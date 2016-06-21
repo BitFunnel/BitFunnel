@@ -1,10 +1,9 @@
-#include "stdafx.h"
-
 #include <map>
 
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
+#include "gtest/gtest.h"
+
+#include "BitFunnel/Allocators//IAllocator.h"
 #include "SimpleHashTable.h"
-#include "SuiteCpp/UnitTest.h"
 #include "ThrowingLogger.h"
 
 
@@ -28,9 +27,10 @@ namespace BitFunnel
         };
 
         template <class ThreadingPolicy>
-        void RunTest1(unsigned capacity, bool allowResize, unsigned iterations, bool useAllocator);
+        void RunTest1(unsigned capacity, bool allowResize, unsigned iterations,
+                      bool useAllocator);
 
-        static unsigned __int64 Hash(unsigned __int64 index);
+        static uint64_t Hash(uint64_t index);
 
         class Item
         {
@@ -40,7 +40,7 @@ namespace BitFunnel
 
             ~Item();
 
-            operator unsigned() const; 
+            operator unsigned() const;
 
             static unsigned GetConstructionCount();
             static unsigned GetDestructionCount();
@@ -53,7 +53,8 @@ namespace BitFunnel
             static unsigned m_destructionCounter;
         };
 
-        TestCase(HeapAllocSingleThreaded)
+
+        TEST(HeapAllocSingleThreaded, Trivial)
         {
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 1, false);
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 0, false);
@@ -63,7 +64,7 @@ namespace BitFunnel
         }
 
 
-        TestCase(ArenaAllocSingleThreaded)
+        TEST(ArenaAllocSingleThreaded, Trivial)
         {
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 1, true);
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 0, true);
@@ -73,7 +74,7 @@ namespace BitFunnel
         }
 
 
-        TestCase(HeapAllocThreadsafe)
+        TEST(HeapAllocThreadsafe, Trivial)
         {
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 1, false);
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 0, false);
@@ -85,7 +86,7 @@ namespace BitFunnel
             try
             {
                 RunTest1<SimpleHashPolicy::Threadsafe>(200, true, 200, true);
-                TestFail();
+                ADD_FAILURE();
             }
             catch (...)
             {
@@ -95,7 +96,7 @@ namespace BitFunnel
         }
 
 
-        TestCase(ArenaAllocThreadsafe)
+        TEST(ArenaAllocThreadsafe, Trivial)
         {
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 1, true);
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 0, true);
@@ -107,7 +108,7 @@ namespace BitFunnel
             try
             {
                 RunTest1<SimpleHashPolicy::Threadsafe>(200, true, 200, true);
-                TestFail();
+                ADD_FAILURE();
             }
             catch (...)
             {
@@ -116,29 +117,33 @@ namespace BitFunnel
             delete logger;
         }
 
-        
+
         template <class ThreadingPolicy>
-        void VerifyHashTable(std::map<__int64, unsigned> const & referenceMap,
-                             SimpleHashTable<Item, ThreadingPolicy> const & hashTableToCheck)
+        void VerifyHashTable(
+            std::map<int64_t, unsigned> const & referenceMap,
+            SimpleHashTable<Item, ThreadingPolicy> const & hashTableToCheck)
         {
             // Verify that all of the keys added are in the set.
-            for (std::map<__int64, unsigned>::const_iterator it = referenceMap.begin(); it != referenceMap.end(); ++it)
+            for (std::map<int64_t, unsigned>::const_iterator it =
+                     referenceMap.begin(); it != referenceMap.end(); ++it)
             {
                 bool found;
                 Item& value = hashTableToCheck.Find(it->first, found);
 
                 // Ensure the key is found.
-                TestAssert(found);
+                ASSERT_TRUE(found);
 
                 // Ensure the corrseponding value is correct.
-                TestAssert(value == it->second);
+                ASSERT_TRUE(value == it->second);
             }
 
             // Verify that all of the keys in the set are ones that were added.
-            std::auto_ptr<IEnumerator<Pair<unsigned __int64, Item>>> enumerator(hashTableToCheck.GetEnumerator());
+            std::unique_ptr<IEnumerator<std::pair<uint64_t, Item&>>> enumerator(
+                hashTableToCheck.GetEnumerator());
             while (enumerator->MoveNext())
             {
-                TestAssert(referenceMap.find(enumerator->Current().First()) != referenceMap.end());
+                ASSERT_TRUE(referenceMap.find(enumerator->Current().first)
+                            != referenceMap.end());
             }
         }
 
@@ -149,12 +154,12 @@ namespace BitFunnel
             unsigned iterations,
             bool useAllocator)
         {
-            typedef std::map<__int64, unsigned> MapType;
+            typedef std::map<int64_t, unsigned> MapType;
             MapType map;
 
             Allocator allocator;
             typedef SimpleHashTable<Item, ThreadingPolicy> HashTable;
-            std::auto_ptr<HashTable> tablePointer;
+            std::unique_ptr<HashTable> tablePointer;
 
             Item::ResetCounters();
             if (useAllocator)
@@ -169,8 +174,8 @@ namespace BitFunnel
             HashTable& table = *tablePointer;
 
             // Ensure that constructors were called when tables were initialized.
-            TestAssert(Item::GetConstructionCount() == capacity + 1);
-            TestAssert(Item::GetDestructionCount() == 0);
+            ASSERT_TRUE(Item::GetConstructionCount() == capacity + 1);
+            ASSERT_TRUE(Item::GetDestructionCount() == 0);
             Item::ResetCounters();
 
             // For each iteration, add another key and then verify the integrity
@@ -179,7 +184,7 @@ namespace BitFunnel
             {
                 // Generate a random key, based on the iteration number.
                 // Note that when i == 0, Hash(i) == 0 which tests the zero key case.
-                unsigned __int64 key = Hash(i);
+                uint64_t key = Hash(i);
 
                 // Generate a value based on the loop counter. Added 123 to i to
                 // ensure that the value for the zero key was not also zero. If the
@@ -212,8 +217,8 @@ namespace BitFunnel
                 // If we don't allow resize, or if we never added enough items
                 // to trigger resize, expect one constructor call per iteration
                 // and one destructor call per iteration.
-                TestAssert(Item::GetConstructionCount() == iterations);
-                TestAssert(Item::GetDestructionCount() == iterations);
+                EXPECT_EQ(Item::GetConstructionCount(), iterations);
+                EXPECT_EQ(Item::GetDestructionCount(), iterations);
             }
             else if (allowResize && iterations > capacity)
             {
@@ -221,19 +226,19 @@ namespace BitFunnel
                 // at least one rehash, expect more constructor calls then
                 // iterations and at least on destructor call for each slot in
                 // the original table before the rehash.
-                TestAssert(Item::GetConstructionCount() > iterations);
-                TestAssert(Item::GetDestructionCount() >= capacity);
+                EXPECT_GT(Item::GetConstructionCount(), iterations);
+                EXPECT_GE(Item::GetDestructionCount(), capacity);
             }
 
             // Check for item destructor calls when SimpleHashTable is destroyed.
             Item::ResetCounters();
             tablePointer.reset(nullptr);
-            TestAssert(Item::GetDestructionCount() >= capacity);
+            EXPECT_GE(Item::GetDestructionCount(), capacity);
         }
 
         // DESIGN NOTE: It is important that Hash(0) returns 0 in order to test
         // the case where the key is 0.
-        unsigned __int64 Hash(unsigned __int64 index)
+        uint64_t Hash(uint64_t index)
         {
             return(index * 179426549 ^ (index * 15486953 << 32));
         }
@@ -300,13 +305,13 @@ namespace BitFunnel
         //*************************************************************************
         void* Allocator::Allocate(size_t size)
         {
-            return new char[size];
+            return static_cast<void*>(new char[size]);
         }
 
 
         void Allocator::Deallocate(void* block)
         {
-            delete [] block;
+            delete [] static_cast<char*>(block);
         }
 
 

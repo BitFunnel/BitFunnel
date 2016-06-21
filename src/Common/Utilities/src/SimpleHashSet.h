@@ -30,7 +30,7 @@ namespace BitFunnel
     // THREAD SAFETY: This code is not threadsafe.
     //
     //*************************************************************************
-    class SimpleHashSet : protected SimpleHashSetBase, 
+    class SimpleHashSet : protected SimpleHashSetBase,
                           public IEnumerable<uint64_t>
     {
     public:
@@ -75,7 +75,8 @@ namespace BitFunnel
 #pragma warning(disable:4250)
 #endif
         // Returned by GetEnumerator.
-        class EnumeratorObject : public SimpleHashSetBase::EnumeratorObjectBase, public IEnumerator<uint64_t>
+        class EnumeratorObject : public SimpleHashSetBase::EnumeratorObjectBase,
+            public IEnumerator<uint64_t>
         {
         public:
             EnumeratorObject(const SimpleHashSet& set);
@@ -86,7 +87,8 @@ namespace BitFunnel
             uint64_t Current() const;
 
         private:
-            // m_set2 serves the same puporse as SimpleHashSetBase::EnumeratorObjectBase::m_set.
+            // m_set2 serves the same puporse as
+            // SimpleHashSetBase::EnumeratorObjectBase::m_set.
             // Need to put m_set2 here in EnumeratorObject to allow access to m_set.GetKey().
             // For some reason, m_set.GetKey() is inaccessible, m_set2.GetKey() is not.
             const SimpleHashSet& m_set2;

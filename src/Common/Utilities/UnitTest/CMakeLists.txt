@@ -1,9 +1,14 @@
 # BitFunnel/src/Common/Utilities/UnitTest
 
+# TODO: move ThrowingLogger to some shared folder?
+
 set(CPPFILES
     MurmurHashUnitTest.cpp
     SimpleHashSetUnitTest.cpp
+    SimpleHashTableUnitTest.cpp
+    StreamUtilitiesUnitTest.cpp
     TaskDistributorUnitTest.cpp
+    ThrowingLogger.cpp
     TokenManagerUnitTest.cpp
     TokenTrackerUnitTest.cpp
     TokenUnitTest.cpp
@@ -16,6 +21,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    ThrowingLogger.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

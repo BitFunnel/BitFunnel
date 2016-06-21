@@ -1,6 +1,6 @@
 #pragma once
 
-#include <BitFunnel/IInputStream.h>
+#include <BitFunnel/Utilities/IInputStream.h>
 
 #include <iosfwd>
 #include <utility>

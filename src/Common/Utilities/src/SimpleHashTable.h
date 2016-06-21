@@ -2,29 +2,28 @@
 
 #include <istream>
 #include <ostream>
-#include <Windows.h>                    // Template method calls 
-                                        // InterlockedCompareExchange64.
+#include <utility>  // For std::pair.
 
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"     // Used in template method.
+#include "BitFunnel/Allocators/IAllocator.h" // Used in template method.
 #include "BitFunnel/IEnumerable.h"      // Inherits from IEnumerable<T>.
 #include "BitFunnel/IEnumerator.h"      // SimpleHashTable<T>::EnumeratorObject
                                         // inherits from IEnumerator<T>.
-#include "BitFunnel/StreamUtilities.h"  // Used in template method.
+#include "BitFunnel/Utilities/StreamUtilities.h" // Used in template method.
 #include "LoggerInterfaces/Logging.h"   // Used in template method.
-#include "BitFunnel/Pair.h"             // Used as template parameter in definition
-                                        // of SimpleHashTable<T>::EnumeratorObject.
 #include "SimpleHashPolicy.h"           // This header is not strictly required,
                                         // but provides types that are always used
                                         // as template parameters to SimpleHashTable.
 #include "SimpleHashSetBase.h"          // Inherits from SimpleHashSetBase.
 
 
+#ifdef _MSC_VER
 // Suppress C4505 - unreferenced local function has been removed.
 // This warning can crop up if you use a SimpleHashTable, but don't use all of
 // its methods. Note that C4505 must be enabled for the entire header file and
 // everything that comes after because the compiler generates C4505 after
 // parsing all files.
 #pragma warning(disable:4505)
+#endif
 
 namespace BitFunnel
 {
@@ -34,7 +33,7 @@ namespace BitFunnel
     //
     // SimpleHashTable provides (key, value) storage and access for keys which
     // are 64-bit hashes and values that are POD type T. Since the keys
-    // are already hashes, SimpleHashTable does no hashing of its own. The 
+    // are already hashes, SimpleHashTable does no hashing of its own. The
     // initial hash table slot is just a modulus of the key. Key values should
     // contain a random distribution of one and zero bits, but they don't
     // require the guarantees of a cryptographic hashing algorithm. A simpler
@@ -59,7 +58,7 @@ namespace BitFunnel
     template <typename T, class ThreadingPolicy>
     class SimpleHashTable : public SimpleHashSetBase,
                             public ThreadingPolicy,
-                            public IEnumerable<Pair<unsigned __int64, T>>
+                            public IEnumerable<std::pair<uint64_t, T&>>
     {
     public:
         // Constructs a SimpleHashTable2Base with initial hash table size based
@@ -78,7 +77,7 @@ namespace BitFunnel
         // policy does not support resizing and will cause an exception in the
         // constructor when the allowResize parameter is true.
         SimpleHashTable(unsigned capacity,
-                        bool allowResize, 
+                        bool allowResize,
                         Allocators::IAllocator& allocator);
 
         // Constructs a SimpleHashTable from data in a stream. Note that
@@ -95,21 +94,21 @@ namespace BitFunnel
         // pointer-typed value will be initialized to nullptr. If there is not
         // enough space for the new key and resize is allowed, the key-value
         // buffers will be reallocated and rehashed.
-        T& operator[](unsigned __int64 key);
+        T& operator[](uint64_t key);
 
         // Searches the hash table for a specified key. If the key is found,
-        // the found parameter will be set to true, and a reference to the 
+        // the found parameter will be set to true, and a reference to the
         // POD type value associated with the key will be returned.
         // Otherwise, the found parameter will be set to false, and an
         // unspecified reference will be returned.
-        T& Find(unsigned __int64 key, bool &found) const;
+        T& Find(uint64_t key, bool &found) const;
 
         // Delete the POD type value associated with a specific key from the
         // hash table. If the key is not found, no operation is performed.
-        void Delete(unsigned __int64 key);
+        void Delete(uint64_t key);
 
         //
-        // IEnumerable<unsigned __int64> methods.
+        // IEnumerable<uint64_t> methods.
         //
         // Returns an enumerator for the table. WARNING: It is the caller's
         // responsibility to delete the enumerator, even if the SimpleHashTable
@@ -117,22 +116,26 @@ namespace BitFunnel
         // enumeration, simply construct a SimpleHashTable::Enumerator object
         // as a local variable. GetEnumerator() exists solely to support
         // IEnumerable.
-        typedef IEnumerator<Pair<unsigned __int64, T>> Enumerator;
+        typedef IEnumerator<std::pair<uint64_t, T&>> Enumerator;
         Enumerator* GetEnumerator() const;
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4250)
+#endif
         class EnumeratorObject : public SimpleHashSetBase::EnumeratorObjectBase,
-                                 public IEnumerator<Pair<unsigned __int64, T>>
+                                 public IEnumerator<std::pair<uint64_t, T&>>
         {
         public:
             EnumeratorObject(const SimpleHashTable<T, ThreadingPolicy>& hashTable);
-            Pair<unsigned __int64, T> Current() const;
+            std::pair<uint64_t, T&> Current() const;
 
         private:
             const SimpleHashTable<T, ThreadingPolicy>& m_hashTable;
         };
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
     private:
         // Returns the POD  type value associated with a filled slot.
@@ -146,7 +149,7 @@ namespace BitFunnel
         // the new buffers.
         void Rehash();
 
-        // Storage for values. When the zero key is stored, m_values[m_capacity] 
+        // Storage for values. When the zero key is stored, m_values[m_capacity]
         // is used to store the corresponding value.
         T* m_values;
     };
@@ -169,10 +172,12 @@ namespace BitFunnel
 
 
     template <typename T, class ThreadingPolicy>
-    SimpleHashTable<T, ThreadingPolicy>::SimpleHashTable(unsigned capacity,
-                                                         bool allowResize,
-                                                         Allocators::IAllocator& allocator)
-        : SimpleHashSetBase(capacity, allocator, allowResize ? c_maxProbes : capacity),
+    SimpleHashTable<T, ThreadingPolicy>::
+        SimpleHashTable(unsigned capacity,
+                        bool allowResize,
+                        Allocators::IAllocator& allocator)
+        : SimpleHashSetBase(capacity, allocator, allowResize ?
+                            c_maxProbes : capacity),
           ThreadingPolicy(allowResize),
           m_values(nullptr)
     {
@@ -214,19 +219,19 @@ namespace BitFunnel
     void SimpleHashTable<T, ThreadingPolicy>::Write(std::ostream& output) const
     {
         SimpleHashSetBase::Write(output);
-        StreamUtilities::WriteBytes(output, 
+        StreamUtilities::WriteBytes(output,
                                     reinterpret_cast<const char*>(m_values),
                                     m_capacity * sizeof(T));
     }
 
 
     template <typename T, class ThreadingPolicy>
-    T& SimpleHashTable<T, ThreadingPolicy>::operator[](unsigned __int64 key)
+    T& SimpleHashTable<T, ThreadingPolicy>::operator[](uint64_t key)
     {
         unsigned slot = 0;
         bool foundKey = false;
 
-        const unsigned __int64 keyForEmptySlot = GetKeyForEmptySlot(key);
+        const uint64_t keyForEmptySlot = GetKeyForEmptySlot(key);
 
         // Repeat operation until InterlockedCompareExchange64 succeeds.
         for (;;)
@@ -236,7 +241,9 @@ namespace BitFunnel
                 if (!foundKey)
                 {
                     // If this is an empty slot, allocate it by storing the key.
-                    if (UpdateKeyIfUnchanged(m_keys, slot, keyForEmptySlot, key))
+                    if (this->
+                        UpdateKeyIfUnchanged(
+                            m_keys, slot, keyForEmptySlot, key))
                     {
                         return m_values[slot];
                     }
@@ -249,7 +256,7 @@ namespace BitFunnel
                 }
 
             }
-            else if (AllowsResize())
+            else if (this->AllowsResize())
             {
                 // We didn't find the key and were unable to allocate a slot.
                 Rehash();
@@ -266,7 +273,7 @@ namespace BitFunnel
 
 
     template <typename T, class ThreadingPolicy>
-    T& SimpleHashTable<T, ThreadingPolicy>::Find(unsigned __int64 key,
+    T& SimpleHashTable<T, ThreadingPolicy>::Find(uint64_t key,
                                                  bool &found) const
     {
         unsigned slot = 0;
@@ -277,24 +284,26 @@ namespace BitFunnel
 
 
     template <typename T, class ThreadingPolicy>
-    void SimpleHashTable<T, ThreadingPolicy>::Delete(unsigned __int64 key)
+    void SimpleHashTable<T, ThreadingPolicy>::Delete(uint64_t key)
     {
         unsigned slot = 0;
         bool foundKey = false;
 
-        const unsigned __int64 keyForEmptySlot = GetKeyForEmptySlot(key);
+        const uint64_t keyForEmptySlot = GetKeyForEmptySlot(key);
 
         // Repeat operation until InterlockedCompareExchange64 succeeds.
         while (TryFindSlot(key, slot, foundKey)
                && foundKey
-               && !UpdateKeyIfUnchanged(m_keys, slot, key, keyForEmptySlot))
+               && !this->UpdateKeyIfUnchanged(
+                      m_keys, slot, key, keyForEmptySlot))
         {
         }
     }
 
 
     template <typename T, class ThreadingPolicy>
-    IEnumerator<Pair<unsigned __int64, T>>* SimpleHashTable<T, ThreadingPolicy>::GetEnumerator() const
+    IEnumerator<std::pair<uint64_t, T&>>*
+        SimpleHashTable<T, ThreadingPolicy>::GetEnumerator() const
     {
         return new EnumeratorObject(*this);
     }
@@ -303,8 +312,8 @@ namespace BitFunnel
     template <typename T, class ThreadingPolicy>
     T& SimpleHashTable<T, ThreadingPolicy>::GetValue(unsigned slot) const
     {
-        LogAssertB(IsValidSlot(slot));
-        LogAssertB(IsFilledSlot(slot));
+        LogAssertB(IsValidSlot(slot), "GetValue on invalid slot.");
+        LogAssertB(IsFilledSlot(slot), "GetValue on empty slot.");
 
         return m_values[slot];
     }
@@ -317,7 +326,8 @@ namespace BitFunnel
 
         if (m_allocator != nullptr)
         {
-            m_values = reinterpret_cast<T*>(m_allocator->Allocate(sizeof(T) * m_slotCount));
+            m_values = reinterpret_cast<T*>(
+                       m_allocator->Allocate(sizeof(T) * m_slotCount));
             for (unsigned i = 0 ; i < m_slotCount; ++i)
             {
                 new (m_values + i)T();
@@ -337,7 +347,7 @@ namespace BitFunnel
     {
         unsigned oldCapacity = m_capacity;
         unsigned oldSlotCount = m_slotCount;
-        unsigned __int64* oldKeys = ResizeKeyBuffer(m_capacity * 2);
+        uint64_t* oldKeys = ResizeKeyBuffer(m_capacity * 2);
         T* oldValues = ResizeValueBuffer();
 
         for (unsigned i = 0 ; i < oldSlotCount; ++i)
@@ -372,7 +382,9 @@ namespace BitFunnel
     //
     //*************************************************************************
     template <typename T, class ThreadingPolicy>
-    SimpleHashTable<T, ThreadingPolicy>::EnumeratorObject::EnumeratorObject(const SimpleHashTable<T, ThreadingPolicy>& hashTable)
+    SimpleHashTable<T, ThreadingPolicy>::
+        EnumeratorObject::
+        EnumeratorObject(const SimpleHashTable<T, ThreadingPolicy>& hashTable)
         : SimpleHashSetBase::EnumeratorObjectBase(hashTable),
           m_hashTable(hashTable)
     {
@@ -380,9 +392,10 @@ namespace BitFunnel
 
 
     template <typename T, class ThreadingPolicy>
-    Pair<unsigned __int64, T> SimpleHashTable<T, ThreadingPolicy>::EnumeratorObject::Current() const
+    std::pair<uint64_t, T&> SimpleHashTable<T, ThreadingPolicy>::
+        EnumeratorObject::Current() const
     {
-        return Pair<unsigned __int64, T>(m_hashTable.GetKey(m_current),
-                                         m_hashTable.GetValue(m_current));
+        return std::pair<uint64_t, T&>(m_hashTable.GetKey(m_current),
+                                      m_hashTable.GetValue(m_current));
     }
 }

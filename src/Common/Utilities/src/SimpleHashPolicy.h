@@ -1,5 +1,7 @@
 #pragma once
 
+#include <inttypes.h>  // For uint64_t.
+
 namespace BitFunnel
 {
     namespace SimpleHashPolicy
@@ -27,10 +29,10 @@ namespace BitFunnel
             // value if the value of the existing key is not changed before the
             // update operation performs. Returns false if slot of the key is
             // already updated.
-            bool UpdateKeyIfUnchanged(volatile unsigned __int64* keys,
+            bool UpdateKeyIfUnchanged(volatile uint64_t* keys,
                                       unsigned slot,
-                                      unsigned __int64 expectedCurrentKey,
-                                      unsigned __int64 desiredKey);
+                                      uint64_t expectedCurrentKey,
+                                      uint64_t desiredKey);
 
             // Returns true if this instance allows hash table resizing. Since
             // the Threadsafe policy does not allow hash table resizing, this
@@ -57,14 +59,14 @@ namespace BitFunnel
             // configures the hash table's resize policy.
             SingleThreaded(bool allowResize);
 
-            // Non-atomic method to update a key from an existing value to a 
-            // desired new value in a hash table slot. Returns true if the key 
+            // Non-atomic method to update a key from an existing value to a
+            // desired new value in a hash table slot. Returns true if the key
             // was successfully written. Returns false if the slot doesn't have
             // the expected existing key.
-            bool UpdateKeyIfUnchanged(volatile unsigned __int64* keys,
+            bool UpdateKeyIfUnchanged(volatile uint64_t* keys,
                                       unsigned slot,
-                                      unsigned __int64 expectedCurrentKey,
-                                      unsigned __int64 desiredKey);
+                                      uint64_t expectedCurrentKey,
+                                      uint64_t desiredKey);
 
             // Returns true if the hash table is configured to allow resizing.
             bool AllowsResize() const;

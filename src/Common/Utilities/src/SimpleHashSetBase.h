@@ -1,11 +1,10 @@
 #pragma once
 
-#include <atomic>  // For std::atomic.
 #include <istream>
 #include <ostream>
 
-#include "BitFunnel/IEnumerable.h"            // EnumeratorObjectBase inherits from IEnumerable.
-#include "BitFunnel/NonCopyable.h"            // SimpleHashSetBase inherits from NonCopyable.
+#include "BitFunnel/IEnumerable.h" // EnumeratorObjectBase inherits from IEnumerable.
+#include "BitFunnel/NonCopyable.h" // SimpleHashSetBase inherits from NonCopyable.
 
 
 namespace BitFunnel
@@ -61,7 +60,7 @@ namespace BitFunnel
         static const int c_maxProbes = 10;
 
         // Given the index of a non-empty slot, returns the index of the next
-        // non-empty if one exists. Otherwise, returns an invalid slot index. 
+        // non-empty if one exists. Otherwise, returns an invalid slot index.
         // The IsValidSlot() method can be used to check whether an index is
         // valid.
         unsigned GetNextSlot(unsigned slot) const;
@@ -105,10 +104,7 @@ namespace BitFunnel
         unsigned m_capacity;
 
         // Storage for keys.
-        // TODO: is atomic what we want here? This used to be volatile, and it
-        // looks like volatile is used for thread safety throughout the old
-        // code.
-        std::atomic<uint64_t*> m_keys;
+        volatile uint64_t* m_keys;
 
         // Maximum number of probes to allow when looking for key.
         unsigned m_maxProbes;
@@ -132,7 +128,7 @@ namespace BitFunnel
 
         protected:
             // Current slot number for this enumeration. Value is set to -1
-            // before first call to MoveNext(). 
+            // before first call to MoveNext().
             unsigned m_current;
 
             // The SimpleHashSetBase being enumerated.

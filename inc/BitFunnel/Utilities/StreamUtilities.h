@@ -1,13 +1,14 @@
 #pragma once
 
+#include <cstddef>  // For std::ptrdiff
 #include <iosfwd>
 #include <istream>
 #include <memory>
 #include <ostream>
 #include <string>
 
-#include "BitFunnel/IInputStream.h"
-#include "BitFunnel/StandardInputStream.h"
+#include "BitFunnel/Utilities/IInputStream.h"
+#include "BitFunnel/Utilities/StandardInputStream.h"
 #include "LoggerInterfaces/Logging.h"
 
 namespace BitFunnel
@@ -25,7 +26,7 @@ namespace BitFunnel
         // Internally this function reads in 1GB chunks if byteCount is more than 1G.
         // This function throws exception if read fails.
         void ReadBytes(IInputStream& stream, void* buffer, size_t byteCount);
-        
+
         // Reads the value of type T from stream.
         // Depending on the size of T, this read variable number of bytes.
         template <typename T>
@@ -81,7 +82,7 @@ namespace BitFunnel
         template <typename T>
         void WriteArray(std::ostream& stream, const T* buffer, size_t itemCount);
 
-        // The chunk size in bytes to read from istream or write to ostream. 
+        // The chunk size in bytes to read from istream or write to ostream.
         // The reasons are:
         //  1. istream/ostream does not support int64 length;
         //  2. we can trace the progress if necessary;
@@ -112,7 +113,7 @@ namespace BitFunnel
     T StreamUtilities::ReadField(IInputStream& stream)
     {
         T temp;
-        const size_t bytesRead = stream.Read(reinterpret_cast<__int8*>(&temp), sizeof(T));
+        const size_t bytesRead = stream.Read(reinterpret_cast<char*>(&temp), sizeof(T));
         LogAssertB(bytesRead == sizeof(T), "Stream Read Error");
         return temp;
     }
@@ -123,7 +124,7 @@ namespace BitFunnel
                                     T* buffer,
                                     size_t itemCount)
     {
-        ptrdiff_t byteCount = itemCount * sizeof(T);
+        std::ptrdiff_t byteCount = itemCount * sizeof(T);
         ReadBytes(stream, reinterpret_cast<char*>(buffer), byteCount);
     }
 
@@ -159,7 +160,7 @@ namespace BitFunnel
     template <typename T>
     void StreamUtilities::WriteField(std::ostream& stream, const T& field)
     {
-        stream.write(reinterpret_cast<const __int8*>(&field), sizeof(T));
+        stream.write(reinterpret_cast<const char*>(&field), sizeof(T));
         LogAssertB(!stream.bad(), "Stream Write Error");
     }
 

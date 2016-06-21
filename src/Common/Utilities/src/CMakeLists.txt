@@ -6,8 +6,11 @@ set(CPPFILES
     LogLevel.cpp
     MurmurHash2.cpp
     NullLogger.cpp
+    SimpleHashPolicy.cpp
     SimpleHashSet.cpp
     SimpleHashSetBase.cpp
+    StandardInputStream.cpp
+    StreamUtilities.cpp
     TaskDistributor.cpp
     TaskDistributorThread.cpp
     ThreadManager.cpp
@@ -24,8 +27,10 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     MurmurHash2.h
+    SimpleHashPolicy.h
     SimpleHashSet.h
     SimpleHashSetBase.h
+    SimpleHashTable.h
     TaskDistributor.h
     TaskDistributorThread.h
     Token.h
