@@ -395,7 +395,7 @@ namespace CsvTsv
         CsvTsv::InputColumn<std::string> chunkClass("ChunkClass","unused");
         CsvTsv::InputColumn<std::string> republishVersion("RepublishVersion","unused");
         CsvTsv::InputColumn<unsigned> activateVersion("ActivateVersion","ActivateVersion");
-        CsvTsv::InputColumn<unsigned> retireVersion("RetireVersion","ActivateVersion");
+        CsvTsv::InputColumn<int> retireVersion("RetireVersion","ActivateVersion");
         CsvTsv::InputColumn<std::string> fullCRC("FullCRC","unused");
         CsvTsv::InputColumn<std::string> quickCRC("QuickCRC","unused");
         CsvTsv::InputColumn<std::string> quickCRCType("QuickCRCType","unused");
