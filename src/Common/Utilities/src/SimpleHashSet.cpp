@@ -43,7 +43,7 @@ namespace BitFunnel
 
     SimpleHashSet::SimpleHashSet(unsigned capacity,
                                  bool allowResize,
-                                 Allocators::IAllocator& allocator)
+                                 IAllocator& allocator)
         : SimpleHashSetBase(capacity, allocator, allowResize ?
                             c_maxProbes :
                             capacity),

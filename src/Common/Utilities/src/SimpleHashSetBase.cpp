@@ -40,7 +40,7 @@ namespace BitFunnel
 
 
     SimpleHashSetBase::SimpleHashSetBase(unsigned capacity,
-                                         Allocators::IAllocator& allocator,
+                                         IAllocator& allocator,
                                          unsigned maxProbes)
         : m_allocator(&allocator),
           m_keys(nullptr),

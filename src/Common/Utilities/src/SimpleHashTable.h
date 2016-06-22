@@ -101,7 +101,7 @@ namespace BitFunnel
         // constructor when the allowResize parameter is true.
         SimpleHashTable(unsigned capacity,
                         bool allowResize,
-                        Allocators::IAllocator& allocator);
+                        IAllocator& allocator);
 
         // Constructs a SimpleHashTable from data in a stream. Note that
         // SimpleHashTables constructed from a stream do not support resizing.
@@ -198,7 +198,7 @@ namespace BitFunnel
     SimpleHashTable<T, ThreadingPolicy>::
         SimpleHashTable(unsigned capacity,
                         bool allowResize,
-                        Allocators::IAllocator& allocator)
+                        IAllocator& allocator)
         : SimpleHashSetBase(capacity, allocator, allowResize ?
                             c_maxProbes : capacity),
           ThreadingPolicy(allowResize),

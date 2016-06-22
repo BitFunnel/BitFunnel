@@ -30,10 +30,8 @@
 
 namespace BitFunnel
 {
-    namespace Allocators
-    {
-        class IAllocator;
-    }
+    class IAllocator;
+
 
     //*************************************************************************
     //
@@ -68,7 +66,7 @@ namespace BitFunnel
         // a specified allocator.
         SimpleHashSet(unsigned capacity,
                       bool allowResize,
-                      Allocators::IAllocator& allocator);
+                      IAllocator& allocator);
 
 
         // Add a key to set set. If the SimpleHashSet was constructed with

@@ -40,7 +40,7 @@ namespace BitFunnel
     namespace SimpleHashTableUnitTest
     {
 
-        class Allocator : public Allocators::IAllocator
+        class Allocator : public IAllocator
         {
         public:
             void* Allocate(size_t size);

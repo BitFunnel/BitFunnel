@@ -32,10 +32,8 @@
 
 namespace BitFunnel
 {
-    namespace Allocators
-    {
-        class IAllocator;
-    }
+    class IAllocator;
+
 
     //*************************************************************************
     //
@@ -67,7 +65,7 @@ namespace BitFunnel
         // Constructs a SimpleHashSetBase where memory allocations are made
         // from a specified allocator.
         SimpleHashSetBase(unsigned capacity,
-                          Allocators::IAllocator& allocator,
+                          IAllocator& allocator,
                           unsigned maxProbes);
 
         // Constructs a SimpleHashSetBase from data in a stream.
@@ -121,7 +119,7 @@ namespace BitFunnel
 
         // Pointer to allocator, or null if no allocator was supplied. Note
         // that this allocator is not owned by the SimpleHashSetBase.
-        Allocators::IAllocator* m_allocator;
+        IAllocator* m_allocator;
 
         // Number of slots for storing non-zero keys where the key.
         unsigned m_capacity;
