@@ -282,6 +282,20 @@ namespace CsvTsv
     }
 
 
+    void DelimitedTableFormatter::WriteField(unsigned long int value)
+    {
+        WriteFieldDelimiter();
+        if (m_hexMode)
+        {
+            *m_out << std::hex << value << std::dec;
+        }
+        else
+        {
+            *m_out << value;
+        }
+    }
+
+
     void DelimitedTableFormatter::WriteField(long long int value)
     {
         WriteFieldDelimiter();

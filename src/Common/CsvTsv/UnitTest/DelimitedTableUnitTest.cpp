@@ -21,7 +21,9 @@
 // THE SOFTWARE.
 
 #include <iostream>
+#include <limits>
 #include <sstream>
+#include <stdexcept>
 #include <stdio.h>
 
 
@@ -83,7 +85,7 @@ namespace CsvTsv
             //{5, 1234567.89, "string with newline (\n) embedded", false},
             {0, 10e6, "", true, 123, (long long)1 << 62, (unsigned long long)1 << 63},
             {0x7fffffff, 1.0, "hexidecimal", true, 0xffffffff, 0x7fffffffffffffff, 0xffffffffffffffff}  // Test hexidecimal values
-        }; 
+        };
 
         InputColumn<int> c1("C1", "Integer column");
         InputColumn<double> c2("C2", "Double column");
@@ -325,6 +327,58 @@ namespace CsvTsv
         ASSERT_TRUE(Expect<int>(3, c1));
 
         reader.ReadEpilogue();
+    }
+
+
+    TEST(CsvTsv, UnsignedLongInt)
+    {
+        const unsigned long int maximum =
+            std::numeric_limits<unsigned long int>::max();
+        const unsigned long int minimum =
+            std::numeric_limits<unsigned long>::lowest();
+
+        std::stringstream inputStream;
+        inputStream << "C1" << std::endl
+                    << "32" << std::endl
+                    << "493434" << std::endl
+                    << maximum << std::endl
+                    << maximum + 1 << std::endl
+                    << minimum << std::endl
+                    << "-1" << std::endl
+                    << "dummy_value_never_parsed" << std::endl;
+
+        InputColumn<unsigned long int> c1("C1", "Integer column");
+
+        CsvTableParser parser(inputStream);
+
+        TableReader reader(parser);
+        reader.DefineColumn(c1);
+
+        reader.ReadPrologue();
+
+        reader.ReadDataRow();
+        ASSERT_EQ(c1.GetValue(), 32U);
+
+        reader.ReadDataRow();
+        ASSERT_EQ(c1.GetValue(), 493434U);
+
+        reader.ReadDataRow();
+        ASSERT_EQ(c1.GetValue(), maximum);
+
+        // MAX + 1 for unsigned integral type is defined behavior in C.
+        reader.ReadDataRow();
+        ASSERT_EQ(c1.GetValue(), 0U);
+
+        reader.ReadDataRow();
+        ASSERT_EQ(c1.GetValue(), minimum);
+
+        // Parsing the -1 causes ParserError.
+        ASSERT_THROW(reader.ReadDataRow(), CsvTsv::ParseError);
+
+        // Parsing the dummy line correctly reads, but getting the value
+        // delivers runtime_error.
+        reader.ReadDataRow();
+        ASSERT_THROW(c1.GetValue(), std::runtime_error);
     }
 
 

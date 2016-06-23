@@ -82,7 +82,7 @@ namespace BitFunnel
             const int threadCount = 10;
 
             // The tasks vector will count the number of times each task is processed.
-            std::array<std::atomic<uint64_t>, NUM_TASKS> tasks = {};
+            std::array<std::atomic<uint64_t>, NUM_TASKS> tasks{{}};
 
             // Create one processor for each thread.
             // TODO: Review use of srand in BitFunnel and unit tests.

@@ -214,6 +214,50 @@ namespace CsvTsv
 
 
     template <>
+    void TypedColumn<unsigned long int>::Read(IFieldParser& parser)
+    {
+        std::string s;
+        if (parser.TryReadField(s))
+        {
+            std::stringstream ss(s);
+            if (m_hexMode)
+            {
+                // DESIGN NOTE: the two lines below exhibit different behavior
+                //   (1) ss >> std::hex >> m_value;
+                //   (2) ss >> std::hex; ss >> m_value;
+                ss >> std::hex >> m_value;
+            }
+            else
+            {
+                ss >> m_value;
+            }
+            if (ss.fail())
+            {
+                // TODO: Add code to reject negative numbers.
+                // Currently stringstream::operator>>(unsigned long long int)
+                // accepts negative numbers.
+                if (s.length() > 0)
+                {
+                    // There was actually text here that didn't parse so report an error.
+                    ParseErrorBuilder error(parser);
+                    error << "expected unsigned long integer value in " << Name() << " column.";
+                    error.Throw();
+                }
+                else
+                {
+                    // Field was empty - use default value if it exists.
+                    Reset();
+                }
+            }
+            else
+            {
+                m_hasValue = true;
+            }
+        }
+    }
+
+
+    template <>
     void TypedColumn<long long int>::Read(IFieldParser& parser)
     {
         std::string s;
@@ -286,7 +330,7 @@ namespace CsvTsv
                 {
                     // There was actually text here that didn't parse so report an error.
                     ParseErrorBuilder error(parser);
-                    error << "expected unsigned 64-bit integer value in " << Name() << " column.";
+                    error << "expected unsigned long long integer value in " << Name() << " column.";
                     error.Throw();
                 }
                 else

@@ -37,6 +37,8 @@ include_directories(
 
 ###############################################################################
 
+string(COMPARE EQUAL ${CMAKE_SYSTEM_NAME} "Linux" LINUX)
+
 if (WIN32 OR CYGWIN)
   set(BITFUNNEL_PLATFORM_POSIX 0)
   set(BITFUNNEL_PLATFORM_WINDOWS 1)
@@ -65,6 +67,16 @@ else()
   set(CMAKE_CXX_FLAGS "-msse4.2 -std=c++14 -Wall -Wextra -Werror")
 endif()
 
+
+if(LINUX)
+    find_package(Threads REQUIRED)
+    if(CMAKE_USE_PTHREADS_INIT)
+        # TODO: pthreads are an issue in general on linux.
+        # TODO: We need a permanent recommendation for when/how to use libc++.
+        # On clang for at least some platforms, we require `libc++-dev`.
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    endif()
+endif()
 
 
 # This allows the solution to group projects into folders like src and UnitTest.

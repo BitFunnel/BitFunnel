@@ -156,6 +156,7 @@ namespace CsvTsv
         void WriteField(const std::string& value);
         void WriteField(int value);
         void WriteField(unsigned int value);
+        void WriteField(unsigned long int);
         void WriteField(long long int value);
         void WriteField(unsigned long long int value);
         void WriteField(double value);

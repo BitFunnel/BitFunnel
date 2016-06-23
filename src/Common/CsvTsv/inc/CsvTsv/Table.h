@@ -24,6 +24,7 @@
 
 #include <istream>
 #include <ostream>
+#include <stdexcept>
 #include <vector>
 
 // C4505 must be enabled for the entire header file and everything that comes
@@ -240,6 +241,7 @@ namespace CsvTsv
         virtual void WriteField(const char* value) = 0;
         virtual void WriteField(int value) = 0;
         virtual void WriteField(unsigned int value) = 0;
+        virtual void WriteField(long unsigned int value) = 0;
         virtual void WriteField(long long int value) = 0;
         virtual void WriteField(long long unsigned int value) = 0;
         virtual void WriteField(double value) = 0;

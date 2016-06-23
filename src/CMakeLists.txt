@@ -3,7 +3,7 @@
 # BitFunnel libraries are allowed to access private headers of
 # the Utilities library.
 include_directories(
-  common/Utilities/src
+  Common/Utilities/src
 )
 
 #

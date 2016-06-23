@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #include <algorithm>        // For std::min.
+#include <cstring>          // For strlen.
 #include <math.h>           // For log10.
 #include <ostream>          // Print() uses std::ostream.
 

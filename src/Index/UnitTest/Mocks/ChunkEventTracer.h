@@ -36,7 +36,7 @@ namespace BitFunnel
             }
 
 
-            void OnDocumentEnter(DocId id)
+            void OnDocumentEnter(DocId id) override
             {
                 m_trace << "OnDocumentEnter;DocId: '"
                         << id
@@ -45,7 +45,7 @@ namespace BitFunnel
             }
 
 
-            void OnStreamEnter(char const * streamName)
+            void OnStreamEnter(char const * streamName) override
             {
                 m_trace << "OnStreamEnter;streamName: '"
                         << streamName
@@ -54,7 +54,7 @@ namespace BitFunnel
             }
 
 
-            void OnTerm(char const * term)
+            void OnTerm(char const * term) override
             {
                 m_trace << "OnTerm;term: '"
                         << term
@@ -63,19 +63,19 @@ namespace BitFunnel
             }
 
 
-            void OnStreamExit()
+            void OnStreamExit() override
             {
                 m_trace << "OnStreamExit" << std::endl;
             }
 
 
-            void OnDocumentExit()
+            void OnDocumentExit() override
             {
                 m_trace << "OnDocumentExit" << std::endl;
             }
 
 
-            void OnFileExit()
+            void OnFileExit() override
             {
                 m_trace << "OnFileExit" << std::endl;
             }
