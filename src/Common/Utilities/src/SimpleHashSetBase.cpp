@@ -30,7 +30,7 @@
 
 namespace BitFunnel
 {
-    SimpleHashSetBase::SimpleHashSetBase(unsigned capacity, unsigned maxProbes)
+    SimpleHashSetBase::SimpleHashSetBase(size_t capacity, unsigned maxProbes)
         : m_allocator(nullptr),
           m_keys(nullptr),
           m_maxProbes(maxProbes)
@@ -39,7 +39,7 @@ namespace BitFunnel
     }
 
 
-    SimpleHashSetBase::SimpleHashSetBase(unsigned capacity,
+    SimpleHashSetBase::SimpleHashSetBase(size_t capacity,
                                          IAllocator& allocator,
                                          unsigned maxProbes)
         : m_allocator(&allocator),
@@ -85,7 +85,7 @@ namespace BitFunnel
 
     void SimpleHashSetBase::Write(std::ostream& output) const
     {
-        StreamUtilities::WriteField<uint32_t>(output, m_capacity);
+        StreamUtilities::WriteField<size_t>(output, m_capacity);
 
         // File writing is not thread safe.
         // const_cast is to get rid of volatile attribute.
@@ -95,7 +95,7 @@ namespace BitFunnel
     }
 
 
-    unsigned SimpleHashSetBase::GetNextSlot(unsigned slot) const
+    size_t SimpleHashSetBase::GetNextSlot(size_t slot) const
     {
         for (++slot; slot < m_slotCount; ++slot)
         {
@@ -109,26 +109,26 @@ namespace BitFunnel
     }
 
 
-    bool SimpleHashSetBase::IsValidSlot(unsigned slot) const
+    bool SimpleHashSetBase::IsValidSlot(size_t slot) const
     {
         return (slot < m_slotCount);
     }
 
 
-    bool SimpleHashSetBase::IsFilledSlot(unsigned slot) const
+    bool SimpleHashSetBase::IsFilledSlot(size_t slot) const
     {
         return IsFilledSlot(slot, m_capacity, m_keys);
     }
 
 
-    bool SimpleHashSetBase::IsFilledSlot(unsigned slot, unsigned capacity,
+    bool SimpleHashSetBase::IsFilledSlot(size_t slot, size_t capacity,
                                          volatile uint64_t* keys)
     {
         return (slot < capacity) ^ (keys[slot] == 0);
     }
 
 
-    uint64_t SimpleHashSetBase::GetKey(unsigned slot) const
+    uint64_t SimpleHashSetBase::GetKey(size_t slot) const
     {
         LogAssertB(IsValidSlot(slot), "GetKey on invalid slot.\n");
         LogAssertB(IsFilledSlot(slot), "GetKey on empty slot.\n");
@@ -137,7 +137,7 @@ namespace BitFunnel
     }
 
 
-    bool SimpleHashSetBase::TryFindSlot(uint64_t key, unsigned& slotOut,
+    bool SimpleHashSetBase::TryFindSlot(uint64_t key, size_t& slotOut,
                                         bool& foundKey) const
     {
         if (key == 0)
@@ -153,7 +153,7 @@ namespace BitFunnel
         {
             // Warning: Edits to the hash to slot mapping will necessitate
             // regeneration of the TermTables.
-            unsigned slot = key % m_capacity;
+            size_t slot = key % m_capacity;
             for (unsigned i = 0; i < m_maxProbes; ++i)
             {
                 if (m_keys[slot] == key)
@@ -188,7 +188,7 @@ namespace BitFunnel
     }
 
 
-    uint64_t* SimpleHashSetBase::ResizeKeyBuffer(unsigned capacity)
+    uint64_t* SimpleHashSetBase::ResizeKeyBuffer(size_t capacity)
     {
         // Ensure that requested capacity is greater than zero. The current
         // implementation relies on a non-zero capacity for the modulus

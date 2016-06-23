@@ -46,7 +46,7 @@ namespace BitFunnel
 
     bool SimpleHashPolicy::Threadsafe::UpdateKeyIfUnchanged(
         volatile uint64_t* keys,
-        unsigned slot,
+        size_t slot,
         uint64_t expectedCurrentKey,
         uint64_t desiredKey)
     {
@@ -85,7 +85,7 @@ namespace BitFunnel
 
     bool SimpleHashPolicy::SingleThreaded::UpdateKeyIfUnchanged(
         volatile uint64_t* keys,
-        unsigned slot,
+        size_t slot,
         uint64_t expectedCurrentKey,
         uint64_t desiredKey)
     {

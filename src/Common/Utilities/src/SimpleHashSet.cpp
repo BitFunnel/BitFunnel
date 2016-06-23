@@ -65,7 +65,7 @@ namespace BitFunnel
 
     bool SimpleHashSet::Contains(uint64_t key)
     {
-        unsigned slot = 0;
+        size_t slot = 0;
         bool foundKey = false;
         TryFindSlot(key, slot, foundKey);
 
@@ -81,7 +81,7 @@ namespace BitFunnel
 
     bool SimpleHashSet::AddInternal(uint64_t key)
     {
-        unsigned slot = 0;
+        size_t slot = 0;
         bool foundKey = false;
         if (TryFindSlot(key, slot, foundKey))
         {
@@ -101,11 +101,11 @@ namespace BitFunnel
 
     void SimpleHashSet::Rehash()
     {
-        unsigned oldCapacity = m_capacity;
-        unsigned oldSlotCount = m_slotCount;
+        size_t oldCapacity = m_capacity;
+        size_t oldSlotCount = m_slotCount;
         uint64_t* oldKeys = ResizeKeyBuffer(m_capacity * 2);
 
-        for (unsigned i = 0 ; i < oldSlotCount; ++i)
+        for (size_t i = 0 ; i < oldSlotCount; ++i)
         {
             if (IsFilledSlot(i, oldCapacity, oldKeys))
             {

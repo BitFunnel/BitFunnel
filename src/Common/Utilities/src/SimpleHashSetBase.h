@@ -24,6 +24,7 @@
 #pragma once
 
 #include <istream>
+#include <limits>  // For max size_t.
 #include <ostream>
 
 #include "BitFunnel/IEnumerable.h" // EnumeratorObjectBase inherits from IEnumerable.
@@ -60,11 +61,11 @@ namespace BitFunnel
         // Constructs a SimpleHashSetBase with initial hash table size based
         // on the capaity param. For best performance the capacity should be
         // set to about twice the number of items to be stored in the table.
-        SimpleHashSetBase(unsigned capacity, unsigned maxProbes);
+        SimpleHashSetBase(size_t capacity, unsigned maxProbes);
 
         // Constructs a SimpleHashSetBase where memory allocations are made
         // from a specified allocator.
-        SimpleHashSetBase(unsigned capacity,
+        SimpleHashSetBase(size_t capacity,
                           IAllocator& allocator,
                           unsigned maxProbes);
 
@@ -84,32 +85,32 @@ namespace BitFunnel
         // non-empty if one exists. Otherwise, returns an invalid slot index.
         // The IsValidSlot() method can be used to check whether an index is
         // valid.
-        unsigned GetNextSlot(unsigned slot) const;
+        size_t GetNextSlot(size_t slot) const;
 
         // Returns true if slot is a valid index for a slot. This function is
         // primarily intended to check whether GetFirstSlot() and GetNextSlot()
         // have failed to find another filled slot.
-        bool IsValidSlot(unsigned slot) const;
+        bool IsValidSlot(size_t slot) const;
 
         // Returns true if a slot is currently used to hold a (key, value)
         // pair.
-        bool IsFilledSlot(unsigned slot) const;
+        bool IsFilledSlot(size_t slot) const;
 
-        static bool IsFilledSlot(unsigned slot, unsigned capacity, volatile uint64_t* keys);
+        static bool IsFilledSlot(size_t slot, size_t capacity, volatile uint64_t* keys);
 
         // Returns the key associated with a filled slot. This method will
         // assert if the slot is invalid or empty.
-        uint64_t GetKey(unsigned slot) const;
+        uint64_t GetKey(size_t slot) const;
 
         // Attempts to find a slot associated with a specified key. If the key
         // is found, the slot will be set to the key's slot and the method will
         // return true. Otherwise the method will return false.
-        bool TryFindSlot(uint64_t key, unsigned& slot, bool& foundKey) const;
+        bool TryFindSlot(uint64_t key, size_t& slot, bool& foundKey) const;
 
         // Allocates and initializes the buffer containing keys.
         // Returns the previous value of the buffer. The caller must dispose
         // of the previous buffer using a call to delete [].
-        uint64_t* ResizeKeyBuffer(unsigned capacity);
+        uint64_t* ResizeKeyBuffer(size_t capacity);
 
         // True if the hash table contains a zero key.
         bool HasKeyZero() const;
@@ -122,7 +123,7 @@ namespace BitFunnel
         IAllocator* m_allocator;
 
         // Number of slots for storing non-zero keys where the key.
-        unsigned m_capacity;
+        size_t m_capacity;
 
         // Storage for keys.
         volatile uint64_t* m_keys;
@@ -135,7 +136,7 @@ namespace BitFunnel
         // a non-zero value in m_keys indicates a slot is taken. For the zero key
         // slot, zero means the slot is taken. So that slot is initialized to nonzero
         // value.
-        unsigned m_slotCount;
+        size_t m_slotCount;
 
         // Base class for IEnumerators implemented in subclasses of SimpleHashSetBase.
         class EnumeratorObjectBase : public virtual IEnumeratorBase, NonCopyable
@@ -150,13 +151,14 @@ namespace BitFunnel
         protected:
             // Current slot number for this enumeration. Value is set to -1
             // before first call to MoveNext().
-            unsigned m_current;
+            size_t m_current;
 
             // The SimpleHashSetBase being enumerated.
             const SimpleHashSetBase& m_set;
 
         private:
-            static const unsigned c_currentBeforeStart = static_cast<unsigned>(-1);
+            static const size_t c_currentBeforeStart =
+                std::numeric_limits<size_t>::max();
         };
     };
 }

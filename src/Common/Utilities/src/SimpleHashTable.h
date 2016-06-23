@@ -163,7 +163,7 @@ namespace BitFunnel
     private:
         // Returns the POD  type value associated with a filled slot.
         // This method will assert if the slot is invalid or empty.
-        T& GetValue(unsigned slot) const;
+        T& GetValue(size_t slot) const;
 
         // Allocates and initializes the buffers containing keys and values.
         T* ResizeValueBuffer();
@@ -224,7 +224,7 @@ namespace BitFunnel
     {
         if (m_allocator != nullptr)
         {
-            for (unsigned i = 0 ; i < m_slotCount; ++i)
+            for (size_t i = 0 ; i < m_slotCount; ++i)
             {
                 m_values[i].~T();
             }
@@ -251,7 +251,7 @@ namespace BitFunnel
     template <typename T, class ThreadingPolicy>
     T& SimpleHashTable<T, ThreadingPolicy>::operator[](uint64_t key)
     {
-        unsigned slot = 0;
+        size_t slot = 0;
         bool foundKey = false;
 
         const uint64_t keyForEmptySlot = GetKeyForEmptySlot(key);
@@ -299,7 +299,7 @@ namespace BitFunnel
     T& SimpleHashTable<T, ThreadingPolicy>::Find(uint64_t key,
                                                  bool &found) const
     {
-        unsigned slot = 0;
+        size_t slot = 0;
         TryFindSlot(key, slot, found);
 
         return m_values[slot];
@@ -309,7 +309,7 @@ namespace BitFunnel
     template <typename T, class ThreadingPolicy>
     void SimpleHashTable<T, ThreadingPolicy>::Delete(uint64_t key)
     {
-        unsigned slot = 0;
+        size_t slot = 0;
         bool foundKey = false;
 
         const uint64_t keyForEmptySlot = GetKeyForEmptySlot(key);
@@ -333,7 +333,7 @@ namespace BitFunnel
 
 
     template <typename T, class ThreadingPolicy>
-    T& SimpleHashTable<T, ThreadingPolicy>::GetValue(unsigned slot) const
+    T& SimpleHashTable<T, ThreadingPolicy>::GetValue(size_t slot) const
     {
         LogAssertB(IsValidSlot(slot), "GetValue on invalid slot.");
         LogAssertB(IsFilledSlot(slot), "GetValue on empty slot.");
@@ -351,7 +351,7 @@ namespace BitFunnel
         {
             m_values = reinterpret_cast<T*>(
                        m_allocator->Allocate(sizeof(T) * m_slotCount));
-            for (unsigned i = 0 ; i < m_slotCount; ++i)
+            for (size_t i = 0 ; i < m_slotCount; ++i)
             {
                 new (m_values + i)T();
             }
@@ -368,12 +368,12 @@ namespace BitFunnel
     template <typename T, class ThreadingPolicy>
     void SimpleHashTable<T, ThreadingPolicy>::Rehash()
     {
-        unsigned oldCapacity = m_capacity;
-        unsigned oldSlotCount = m_slotCount;
+        size_t oldCapacity = m_capacity;
+        size_t oldSlotCount = m_slotCount;
         uint64_t* oldKeys = ResizeKeyBuffer(m_capacity * 2);
         T* oldValues = ResizeValueBuffer();
 
-        for (unsigned i = 0 ; i < oldSlotCount; ++i)
+        for (size_t i = 0 ; i < oldSlotCount; ++i)
         {
             if (IsFilledSlot(i, oldCapacity, oldKeys))
             {
@@ -383,7 +383,7 @@ namespace BitFunnel
 
         if (m_allocator != nullptr)
         {
-            for (unsigned i = 0 ; i < m_slotCount; ++i)
+            for (size_t i = 0 ; i < m_slotCount; ++i)
             {
                 m_values[i].~T();
             }

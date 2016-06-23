@@ -24,6 +24,7 @@
 #pragma once
 
 #include <inttypes.h>  // For uint64_t.
+#include <stddef.h>    // For size_t.
 
 namespace BitFunnel
 {
@@ -53,7 +54,7 @@ namespace BitFunnel
             // update operation performs. Returns false if slot of the key is
             // already updated.
             bool UpdateKeyIfUnchanged(volatile uint64_t* keys,
-                                      unsigned slot,
+                                      size_t slot,
                                       uint64_t expectedCurrentKey,
                                       uint64_t desiredKey);
 
@@ -87,7 +88,7 @@ namespace BitFunnel
             // was successfully written. Returns false if the slot doesn't have
             // the expected existing key.
             bool UpdateKeyIfUnchanged(volatile uint64_t* keys,
-                                      unsigned slot,
+                                      size_t slot,
                                       uint64_t expectedCurrentKey,
                                       uint64_t desiredKey);
 
