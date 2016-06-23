@@ -1,9 +1,11 @@
 # BitFunnel/src/Index/UnitTest
 
 set(CPPFILES
+    ChunkReaderUnitTest.cpp
+    ChunkTaskProcessorUnitTest.cpp
+    DocumentLengthHistogramUnitTest.cpp
     EndToEndTests.cpp
     Placeholder.cpp
-    DocumentLengthHistogramUnitTest.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -13,6 +15,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    Mocks/ChunkEventTracer.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
