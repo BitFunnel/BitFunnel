@@ -32,6 +32,7 @@
 namespace BitFunnel
 {
     class IConfiguration;
+    class IIngestor;
 
 
     class ChunkTaskProcessor : public ITaskProcessor

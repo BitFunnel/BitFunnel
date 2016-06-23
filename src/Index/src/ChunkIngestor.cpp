@@ -30,7 +30,7 @@
 namespace BitFunnel
 {
     ChunkIngestor::ChunkIngestor(
-        std::vector<char> const& chunkData,
+        std::vector<char> const & chunkData,
         IConfiguration const & config,
         IIngestor& ingestor)
       : m_config(config),

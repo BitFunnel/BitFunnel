@@ -22,7 +22,9 @@
 
 #include <fstream>
 #include <iostream>     // TODO: Remove this temporary header.
+#include <sstream>
 
+#include "BitFunnel/Exceptions.h"
 #include "ChunkIngestor.h"
 #include "ChunkTaskProcessor.h"
 
@@ -42,14 +44,32 @@ namespace BitFunnel
 
     void ChunkTaskProcessor::ProcessTask(size_t taskId)
     {
+        if (taskId >= m_filePaths.size())
+        {
+            std::stringstream message;
+            message << "No task corresponds to task id '" << taskId << "'";
+            throw FatalError(message.str());
+        }
+
+        // TODO: Replace stream to cout with calls to the logger.
         std::cout << "ChunkTaskProcessor::ProcessTask: taskId:" << taskId
                   << std::endl;
         std::cout << "ChunkTaskProcessor::ProcessTask: filePath:"
                   << m_filePaths[taskId] << std::endl;
 
         std::ifstream inputStream(m_filePaths[taskId], std::ios::binary);
-        std::vector<char> chunkData((std::istreambuf_iterator<char>(inputStream)),
-                                    std::istreambuf_iterator<char>());
+        if (!inputStream.is_open())
+        {
+            std::stringstream message;
+            message << "Failed to open chunk file '"
+                    << m_filePaths[taskId]
+                    << "'";
+            throw FatalError(message.str());
+        }
+
+        std::vector<char> chunkData(
+            (std::istreambuf_iterator<char>(inputStream)),
+            std::istreambuf_iterator<char>());
 
         // NOTE: The act of constructing a ChunkIngestor causes the bytes in
         // chunkData to be parsed into documents and ingested.

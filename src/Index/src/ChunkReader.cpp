@@ -33,6 +33,10 @@ namespace BitFunnel
         m_next(&input[0]),
         m_end(&input[0] + input.size())
     {
+        if (m_next == m_end) {
+            throw FatalError("Attempt to read empty chunk.");
+        }
+
         m_processor.OnFileEnter();
         while (PeekChar() != 0) {
             ProcessDocument();
