@@ -72,7 +72,7 @@ namespace BitFunnel
           m_keys(nullptr)
     {
         m_capacity = StreamUtilities::ReadField<uint32_t>(input);
-        m_maxProbes = m_capacity;
+        m_maxProbes = c_maxProbes;
 
         ResizeKeyBuffer(m_capacity);
 
