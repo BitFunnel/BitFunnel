@@ -1,10 +1,13 @@
 #pragma once
+
+
 namespace BitFunnel
 {
     //*************************************************************************
     //
     // AlignedBuffer provides a block of memory that is aligned to a 2^alignment
-    // boundary.
+    // boundary. This is intended to be used for allocating "large" blocks of
+    // memory, something like 10GB or 100GB at a time.
     //
     //*************************************************************************
     class AlignedBuffer

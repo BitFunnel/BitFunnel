@@ -1,6 +1,7 @@
 # BitFunnel/src/Common/Utilities/src
 
 set(CPPFILES
+    AlignedBuffer.cpp
     ConsoleLogger.cpp
     Exceptions.cpp
     Logging.cpp
@@ -27,6 +28,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    AlignedBuffer.h
     MurmurHash2.h
     SimpleHashPolicy.h
     SimpleHashSet.h
