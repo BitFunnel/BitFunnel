@@ -72,7 +72,6 @@ namespace BitFunnel
         }
         m_alignedBuffer = m_rawBuffer;
 #endif
-
     }
 
     AlignedBuffer::~AlignedBuffer()
