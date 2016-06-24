@@ -58,14 +58,13 @@ namespace BitFunnel
                 // Throw for generic out-of-bounds errors.
                 EXPECT_ANY_THROW(processor.ProcessTask(3));
 
-                // Throw for negative numbers (in this case they get converted
-                // to really big positive numbers, but we want to protect
-                // against this no matter what).
-                // This test broke the build and I'm commenting it out so that I
-                // can build. TODO: figure out what this test was doing and fix
-                // it for real. Note that I'm using break the build to mean
-                // it broke the build compilation, not that the test fails.
-                // EXPECT_ANY_THROW(processor.ProcessTask(-1));
+                // Throw for negative numbers. On most platforms, this will end
+                // up being a really large number. NOTE: Clang and GCC don't
+                // warn about this case, but MSVC will error out because of the
+                // signed/unsigned conversion.
+#ifndef _MSC_VER
+                EXPECT_ANY_THROW(processor.ProcessTask(-1));
+#endif
 
                 // Throw when `taskId` is the size of the array (i.e., protect
                 // against boundary condition errors).
