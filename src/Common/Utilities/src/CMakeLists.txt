@@ -8,6 +8,7 @@ set(CPPFILES
     LogLevel.cpp
     MurmurHash2.cpp
     NullLogger.cpp
+    Rounding.cpp
     SimpleHashPolicy.cpp
     SimpleHashSet.cpp
     SimpleHashSetBase.cpp
@@ -30,6 +31,7 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     AlignedBuffer.h
     MurmurHash2.h
+    Rounding.h
     SimpleHashPolicy.h
     SimpleHashSet.h
     SimpleHashSetBase.h

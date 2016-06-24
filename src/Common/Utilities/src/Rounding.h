@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stddef.h>  // For size_t.
+
 namespace BitFunnel
 {   
     // Get the nearest power of 2 integer for valueToBeRounded.

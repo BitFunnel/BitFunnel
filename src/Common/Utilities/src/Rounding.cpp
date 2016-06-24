@@ -1,6 +1,5 @@
-#include "stdafx.h"
 #include "Rounding.h"
-#include "windows.h"
+
 
 namespace BitFunnel
 {   
