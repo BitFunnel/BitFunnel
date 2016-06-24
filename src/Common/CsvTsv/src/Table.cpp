@@ -136,7 +136,7 @@ namespace CsvTsv
                 //   (1) ss >> std::hex >> m_value;
                 //   (2) ss >> std::hex; ss >> m_value;
                 // DESIGN NOTE: Operator >> fails for large negative numbers.
-                // Work around is to store value into an unsigned int and then 
+                // Work around is to store value into an unsigned int and then
                 // cast to int.
                 unsigned x;
                 ss >> std::hex >> x;
@@ -279,7 +279,7 @@ namespace CsvTsv
             }
             if (ss.fail())
             {
-                // TODO: Add code to reject negative numbers. 
+                // TODO: Add code to reject negative numbers.
                 // Currently stringstream::operator>>(unsigned long long int)
                 // accepts negative numbers.
                 if (s.length() > 0)

@@ -25,8 +25,8 @@
 
 namespace CsvTsv
 {
-    // TODO: Add line number support by routing all Peek(), EOF(), GetChars(), 
-    // PutChars() through functions in DelimitedTableParser and 
+    // TODO: Add line number support by routing all Peek(), EOF(), GetChars(),
+    // PutChars() through functions in DelimitedTableParser and
     // DelimitedTableFormatter, and then restrict access to the input and output
     // streams. Copy error reporting mechanism from JSON parser/formatter.
     // TODO: Consider converting all signed char to int. Check related bug that Daniel
@@ -170,7 +170,7 @@ namespace CsvTsv
     }
 
 
-    void DelimitedTableParser::ReadColumnNames(const char* current, 
+    void DelimitedTableParser::ReadColumnNames(const char* current,
                                                std::vector<std::string>& columns)
     {
         while (*current != 0)
@@ -234,7 +234,7 @@ namespace CsvTsv
     void DelimitedTableFormatter::WriteField(const char* value)
     {
         WriteFieldDelimiter();
-        if (strchr(value, m_fieldDelimiter) != NULL 
+        if (strchr(value, m_fieldDelimiter) != NULL
             || (m_quoteChar != 0 && strchr(value, m_quoteChar) != NULL)     // m_quoteChar == 0 when there is no quote character.
             || strchr(value, '\n') != NULL
             || strchr(value, '\r') != NULL)

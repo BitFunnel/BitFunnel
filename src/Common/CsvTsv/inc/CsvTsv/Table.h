@@ -26,7 +26,7 @@
 #include <ostream>
 #include <vector>
 
-// C4505 must be enabled for the entire header file and everything that comes 
+// C4505 must be enabled for the entire header file and everything that comes
 // after because the compiler generates C4505 after parsing all files.
 #ifdef _MSC_VER
 #pragma warning(disable:4505)
@@ -138,7 +138,7 @@ namespace CsvTsv
     //
     // IFieldParser
     //
-    // Provides row parsing services to ITableReader. Responsible for reading 
+    // Provides row parsing services to ITableReader. Responsible for reading
     // string valued fields from a stream and providing error reporting
     // functionality.
     //
@@ -207,7 +207,7 @@ namespace CsvTsv
 
         // Moves the current position past the next field on the line if there
         // are fields remaining. Does not advance to the next line. Returns
-        // true if the current position after the advance attempt is 
+        // true if the current position after the advance attempt is
         // immediately before the end of a line.
         virtual bool TrySkipField() = 0;
 
@@ -316,7 +316,7 @@ namespace CsvTsv
     //
     //*************************************************************************
     //  TODO: add concept of default value for columns?
-    template <class T> 
+    template <class T>
     class TypedColumn : public ColumnBase
     {
     public:
@@ -522,7 +522,7 @@ namespace CsvTsv
     //*************************************************************************
     template <class T>
     TypedColumn<T>::TypedColumn(const char* name, const char* helpMessage)
-        : ColumnBase(name, helpMessage),    
+        : ColumnBase(name, helpMessage),
           m_hasValue(false), m_hasInitialValue(false), m_hexMode(false)
     {
     }

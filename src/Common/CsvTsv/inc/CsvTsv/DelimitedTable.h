@@ -37,7 +37,7 @@ namespace CsvTsv
     //
     // DelimitedTableParser
     //
-    // For use with the class TableReader. DelimitedTableParser is the base 
+    // For use with the class TableReader. DelimitedTableParser is the base
     // class for parsers of files with a single-character field delimiter,
     // an optional single-character quote for escaping the field delimiter,
     // and multi-character row delimiter.
@@ -122,8 +122,8 @@ namespace CsvTsv
     //
     // DelimitedTableFormatter
     //
-    // Abstract base class for ITableFormatters that output data in tabular 
-    // format with a single-character field delimiter, an optional single-character 
+    // Abstract base class for ITableFormatters that output data in tabular
+    // format with a single-character field delimiter, an optional single-character
     // quote for escaping the field delimiter, and multi-character row delimiter
     // equal to "\n", "\n\r", or "\r\n".
     //

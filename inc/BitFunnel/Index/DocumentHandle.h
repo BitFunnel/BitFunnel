@@ -46,7 +46,7 @@ namespace BitFunnel
     // BITFUNNELTYPES
     // A shard-independent document identifier which is local to a BitFunnel index.
     // DocIndex values in an index run from 0 to n where n-1 is the number of documents
-    // in the index. The number of bits for DocIndex and ShardId together must not 
+    // in the index. The number of bits for DocIndex and ShardId together must not
     // exceed 32.
     typedef size_t DocIndex;
 
@@ -57,10 +57,10 @@ namespace BitFunnel
     //*************************************************************************
     //
     // Represents a handle to the document that is being ingested. Implementators
-    // of IDocument will use this class to set postings, assert facts, or get 
+    // of IDocument will use this class to set postings, assert facts, or get
     // access to the variable size or fixed size document blobs in DocTable.
     //
-    // DESIGN NOTE: This class is meant to be passed around by copy rather 
+    // DESIGN NOTE: This class is meant to be passed around by copy rather
     // than a reference.
     //
     //*************************************************************************
@@ -103,9 +103,9 @@ namespace BitFunnel
         // Removes this document from the index. Queries initiated after
         // Expire() returns will not see this document. Queries already in
         // progress at the time Expire() is called may be able to see the
-        // document. 
-        // Expires a document and removes it from serving. The document will no 
-        // longer be served from the queries, however it may still be physically 
+        // document.
+        // Expires a document and removes it from serving. The document will no
+        // longer be served from the queries, however it may still be physically
         // present in the index until it is recycled.
         // Always legal to call. Can't call multiple times on the same instance.
         //
@@ -121,7 +121,7 @@ namespace BitFunnel
         // TODO: Methods for JIT trees.
 
     protected:
-        // Constructor declared private to prevent public creation of the 
+        // Constructor declared private to prevent public creation of the
         // instances of this class.
         DocumentHandle(Slice* slice, DocIndex index);
 
