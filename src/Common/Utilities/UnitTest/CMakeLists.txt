@@ -5,6 +5,7 @@
 set(CPPFILES
     BlockAllocatorUnitTest.cpp
     MurmurHashUnitTest.cpp
+    RandomUnitTest.cpp
     SimpleHashSetUnitTest.cpp
     SimpleHashTableUnitTest.cpp
     StreamUtilitiesUnitTest.cpp

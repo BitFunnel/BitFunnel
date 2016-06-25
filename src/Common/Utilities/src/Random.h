@@ -1,6 +1,6 @@
 #pragma once
 
-#include <random>   // Typedef for std::tr1::mt19937.
+#include <random>   // Typedef for std::mt19937.
 
 
 namespace BitFunnel
@@ -17,10 +17,6 @@ namespace BitFunnel
     //
     // RandomInt is not threadsafe.
     //
-    // NOTE that the current implementation is based on the std::tr1 classes
-    // for compatability with VS2008. This code should be migrated to the C++11
-    // standard classes once VS2010 becomes available in our build.
-    //
     //*************************************************************************
     template <typename T>
     class RandomInt
@@ -31,8 +27,8 @@ namespace BitFunnel
         T operator()();
 
     private:
-        std::tr1::mt19937 m_mt19937Engine;
-        std::tr1::uniform_int<T> m_distribution;
+        std::mt19937 m_mt19937Engine;
+        std::uniform_int_distribution<T> m_distribution;
     };
 
 
@@ -49,10 +45,6 @@ namespace BitFunnel
     //
     // RandomReal is not threadsafe.
     //
-    // NOTE that the current implementation is based on the std::tr1 classes
-    // for compatability with VS2008. This code should be migrated to the C++11
-    // standard classes once VS2010 becomes available in our build.
-    //
     //*************************************************************************
     template <typename T>
     class RandomReal
@@ -63,8 +55,8 @@ namespace BitFunnel
         T operator()();
 
     private:
-        std::tr1::mt19937 m_mt19937Engine;
-        std::tr1::uniform_real<T> m_distribution;
+        std::mt19937 m_mt19937Engine;
+        std::uniform_real_distribution<T> m_distribution;
     };
 
 
