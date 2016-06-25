@@ -3,6 +3,7 @@
 # TODO: move ThrowingLogger to some shared folder?
 
 set(CPPFILES
+    BlockAllocatorUnitTest.cpp
     MurmurHashUnitTest.cpp
     SimpleHashSetUnitTest.cpp
     SimpleHashTableUnitTest.cpp
