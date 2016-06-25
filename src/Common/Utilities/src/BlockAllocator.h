@@ -1,8 +1,10 @@
 #pragma once
 
-#include "BitFunnel/IBlockAllocator.h"
+
+#include <mutex>
+
+#include "BitFunnel/Allocators/IBlockAllocator.h"
 #include "AlignedBuffer.h"
-#include "Mutex.h"
 
 namespace BitFunnel
 {
@@ -20,7 +22,7 @@ namespace BitFunnel
     //
     // DESIGN NOTE: The main usage of this allocator is for the RowTable rows 
     // which operate on quadwords. Therefore the allocator's pointers are 
-    // unsigned __int64 * and all blocks coming from the allocator are properly
+    // uint64_t * and all blocks coming from the allocator are properly
     // aligned to use for matcher.
     //
     //*************************************************************************
@@ -36,8 +38,8 @@ namespace BitFunnel
         //
         // IBlockAllocator API.
         //
-        virtual unsigned __int64* AllocateBlock() override;
-        virtual void ReleaseBlock(unsigned __int64*) override;
+        virtual uint64_t* AllocateBlock() override;
+        virtual void ReleaseBlock(uint64_t*) override;
         virtual size_t GetBlockSize() const override;
 
     private:
@@ -49,12 +51,12 @@ namespace BitFunnel
         const size_t m_totalPoolSize;
 
         // Lock protecting operations on the pool.
-        Mutex m_lock;
+        std::mutex m_lock;
 
         // Underlying pool of memory blocks.
         AlignedBuffer m_pool;
 
         // A pointer to the first available block.
-        unsigned __int64 * m_freeListHead;
+        uint64_t * m_freeListHead;
     };
 }

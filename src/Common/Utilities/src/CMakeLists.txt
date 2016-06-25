@@ -2,6 +2,7 @@
 
 set(CPPFILES
     AlignedBuffer.cpp
+    BlockAllocator.cpp
     ConsoleLogger.cpp
     Exceptions.cpp
     Logging.cpp
@@ -30,6 +31,7 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     AlignedBuffer.h
+    BlockAllocator.h
     MurmurHash2.h
     Rounding.h
     SimpleHashPolicy.h
