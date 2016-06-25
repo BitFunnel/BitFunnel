@@ -14,6 +14,7 @@ set(CPPFILES
     TokenManagerUnitTest.cpp
     TokenTrackerUnitTest.cpp
     TokenUnitTest.cpp
+    VersionUnitTest.cpp
 )
 
 set(WINDOWS_CPPFILES
