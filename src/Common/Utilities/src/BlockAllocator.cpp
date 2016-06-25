@@ -25,11 +25,11 @@ namespace BitFunnel
           m_totalPoolSize(m_blockSize * totalBlockCount),
           m_pool(m_totalPoolSize, c_log2ByteAlignment)
     {
-        // TODO: technically, one can create an allocator with a size = 0 which
-        // would simply throw on the first allocation. This would allow not 
-        // having any special handling on the client side where allocation is 
-        // not needed. However given that this is not a public class and we 
-        // know exactly its usage, let's not support this scenario now and 
+        // DESIGN NOTE: technically, one can create an allocator with a size = 0
+        // which would simply throw on the first allocation. This would allow
+        // not having any special handling on the client side where allocation
+        // is not needed. However, given that this is not a public class and we
+        // know exactly its usage, let's not support this scenario now and
         // re-visit it in future if needed.
         LogAssertB(m_blockSize > 0, "m_blockSize of 0.");
         LogAssertB(totalBlockCount > 0, "totalBlockCount of 0.");
@@ -73,7 +73,7 @@ namespace BitFunnel
 
     void BlockAllocator::ReleaseBlock(uint64_t * block)
     {
-        // Casting to char * for pointer arithmetics.
+        // Casting to char * for pointer arithmetic.
         char const * blockReturned = reinterpret_cast<char const *>(block);
 
         // Checking that the returned block belongs to our range.
