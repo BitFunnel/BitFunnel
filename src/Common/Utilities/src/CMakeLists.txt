@@ -21,6 +21,7 @@ set(CPPFILES
     Token.cpp
     TokenManager.cpp
     TokenTracker.cpp
+    Version.cpp
 )
 
 set(WINDOWS_CPPFILES

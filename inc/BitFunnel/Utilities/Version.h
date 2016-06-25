@@ -1,12 +1,9 @@
 #pragma once
 
-// Copyright 2011 Microsoft Corporation. All Rights Reserved.
-// Author: mhop@microsoft.com (Mike Hopcroft)
-
 #include <istream>
 #include <ostream>
 
-#include "BitFunnel/IInputStream.h"
+#include "BitFunnel/Utilities/IInputStream.h"
 
 namespace BitFunnel
 {

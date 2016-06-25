@@ -1,15 +1,11 @@
-// Copyright 2011 Microsoft Corporation. All Rights Reserved.
-// Author: danzhi@microsoft.com (Daniel Zhi)
-
-#pragma once
-
-#include "stdafx.h"
 #include <istream>
 #include <ostream>
+#include <string>
+#include <sstream>
 
-#include "BitFunnel/StandardInputStream.h"
-#include "BitFunnel/StreamUtilities.h"
-#include "BitFunnel/Version.h"
+#include "BitFunnel/Utilities/StandardInputStream.h"
+#include "BitFunnel/Utilities/StreamUtilities.h"
+#include "BitFunnel/Utilities/Version.h"
 #include "LoggerInterfaces/Logging.h"
 
 
@@ -20,7 +16,8 @@ namespace BitFunnel
           m_versionMiddle(middle),
           m_versionMinor(minor)
     {
-        LogAssertB(major >= 0 && middle >= 0 && minor >= 0);
+        LogAssertB(major >= 0 && middle >= 0 && minor >= 0,
+                   "Negative version number");
     }
 
     Version::Version(std::istream& in)
@@ -45,18 +42,22 @@ namespace BitFunnel
         while (ch != ' ')
         {
             // TODO: Why not read directly from stream instead of calling ReadField?
-            ch = StreamUtilities::ReadField<__int8>(in);
+            ch = StreamUtilities::ReadField<char>(in);
             if (ch == ' ')
             {
-                LogAssertB(readMajor && readMiddle && !readMinor);
-                LogAssertB(value >= 0);
+                LogAssertB(readMajor && readMiddle && !readMinor,
+                           "Bad state in reading Version.");
+                LogAssertB(value >= 0,
+                           "Read negative version number.");
                 m_versionMinor = value;
                 break;
             }
             if (ch == '.')
             {
-                LogAssertB(value >= 0);
-                LogAssertB(!readMajor || !readMiddle);
+                LogAssertB(value >= 0,
+                           "Read negative version number.");
+                LogAssertB(!readMajor || !readMiddle,
+                           "Bad state in reading Version.");
                 if (!readMajor)
                 {
                     m_versionMajor = value;
@@ -72,7 +73,8 @@ namespace BitFunnel
             }
             else
             {
-                LogAssertB(ch >= '0' && ch <= '9');
+                LogAssertB(ch >= '0' && ch <= '9',
+                           "Unexpected non-dig while reading Version.");
                 if (value == -1)
                 {
                     value = (ch - '0');
@@ -81,17 +83,28 @@ namespace BitFunnel
                 {
                     value = 10 * value + (ch - '0');
                 }
-                LogAssertB(value >= 0);
+                LogAssertB(value >= 0,
+                           "Read negative version number.");
             }
         }
     }
 
     void Version::Write(std::ostream& out) const
     {
-        // Write version in character string format like "1.23.4 " as expected by FileHeader.
-        char buf[64];
-        sprintf_s(buf, 64, "%d.%d.%d ", m_versionMajor, m_versionMiddle, m_versionMinor);
-        StreamUtilities::WriteBytes(out, buf, strlen(buf));
+        // Write version in character string format like "1.23.4 ", as
+        // expected by FileHeader.
+        std::stringstream buf;
+        buf << m_versionMajor
+            << "."
+            << m_versionMajor
+            << "."
+            << m_versionMinor
+            << " ";
+
+        std::string outputVersion = buf.str();
+        LogAssertB(outputVersion.length() < 64,
+                   "Unexpectedly long Version::Write");
+        StreamUtilities::WriteBytes(out, outputVersion.c_str(), outputVersion.length());
     }
 
     bool Version::IsCompatibleWith(const Version& other) const

@@ -37,9 +37,9 @@ namespace BitFunnel
         TEST(Dummy, Trivial)
         {
             RandomInt<unsigned> random(0,
-                                       0,
+                                       1,
                                        std::numeric_limits<unsigned>::max());
-            EXPECT_NE(random(), random());
+            EXPECT_GT(random(), 0u);
         }
     }
 }
