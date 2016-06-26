@@ -162,7 +162,11 @@ namespace BitFunnel
     // based on the need of the client. For example, a client can choose to group
     // documents based on time stamp. Each group is assigned a GroupId which is
     // a unique identifier for the group that the client can use to manage the
+<<<<<<< 1c17f1deb0d226dc85194e28891d64e6b498a4d7
     // index.
+=======
+    // index.
+>>>>>>> Port FileManager.
     typedef uint64_t GroupId;
 
     //*************************************************************************

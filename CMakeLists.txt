@@ -167,7 +167,6 @@ add_subdirectory(src)
 add_subdirectory(tools/StatisticsBuilder)
 
 
-
 add_custom_target(TOPLEVEL SOURCES
 #  CMakeLists-googletest.txt.in
 #  Configure_Make.bat
