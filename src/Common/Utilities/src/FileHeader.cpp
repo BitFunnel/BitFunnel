@@ -1,3 +1,4 @@
+<<<<<<< 81f1d08980c1aab68dad9be965d573d5373e001e
 // The MIT License (MIT)
 
 // Copyright (c) 2016, Microsoft
@@ -21,6 +22,8 @@
 // THE SOFTWARE.
 
 
+=======
+>>>>>>> Port FileHeader.
 #include <cstring>
 #include <ctime>
 #include <time.h>
@@ -67,7 +70,11 @@ namespace BitFunnel
         errorMessage += ch;
         LogAssertB(ch == '\n',
                    errorMessage.c_str());
+<<<<<<< 81f1d08980c1aab68dad9be965d573d5373e001e
         m_userData.reset(new FileHeaderData(in));
+=======
+        m_userData = new FileHeaderData(in);
+>>>>>>> Port FileHeader.
     }
 
     void FileHeader::Write(std::ostream& out) const
@@ -76,7 +83,11 @@ namespace BitFunnel
         m_time.get()->Write(out);
         char ch = '\n';
         StreamUtilities::WriteField<char>(out, ch);
+<<<<<<< 81f1d08980c1aab68dad9be965d573d5373e001e
         m_userData.get()->Write(out);
+=======
+        m_userData->Write(out);
+>>>>>>> Port FileHeader.
     }
 
     const Version& FileHeader::GetVersion() const
@@ -130,7 +141,12 @@ namespace BitFunnel
         char buffer[64];
         struct tm tms;
 #ifdef _MSC_VER
+<<<<<<< 81f1d08980c1aab68dad9be965d573d5373e001e
         gmtime_s(&tms, &m_time);
+=======
+        LogAssertB(gmtime_s(&tms, &m_time) != 0,
+                   "Bad time passed to gmtime_s.");
+>>>>>>> Port FileHeader.
         sprintf_s(buffer,
                   64,
                   "%02d/%2d/%04d %02d:%02d:%02d",
@@ -141,8 +157,11 @@ namespace BitFunnel
                   tms.tm_min,
                   tms.tm_sec);
 #else
+<<<<<<< 81f1d08980c1aab68dad9be965d573d5373e001e
         LogAssertB(gmtime_r(&m_time, &tms) != NULL,
                    "Bad time passed to gmtime_r.");
+=======
+>>>>>>> Port FileHeader.
         sprintf(buffer,
                 "%02d/%2d/%04d %02d:%02d:%02d",
                 tms.tm_mon,
@@ -151,6 +170,11 @@ namespace BitFunnel
                 tms.tm_hour,
                 tms.tm_min,
                 tms.tm_sec);
+<<<<<<< 81f1d08980c1aab68dad9be965d573d5373e001e
+=======
+        LogAssertB(gmtime_r(&m_time, &tms) != NULL,
+                   "Bad time passed to gmtime_r.");
+>>>>>>> Port FileHeader.
 #endif
         StreamUtilities::WriteBytes(out, buffer, strlen(buffer));
     }
