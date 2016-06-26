@@ -1,6 +1,3 @@
-// Copyright 2011 Microsoft Corporation. All Rights Reserved.
-// Author: mhop@microsoft.com (Mike Hopcroft)
-
 #pragma once
 
 #include <istream>

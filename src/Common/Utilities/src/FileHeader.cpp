@@ -1,16 +1,16 @@
-// Copyright 2011 Microsoft Corporation. All Rights Reserved.
-// Author: danzhi@microsoft.com (Daniel Zhi)
-
-#pragma once
-
-#include "stdafx.h"
+#include <cstring>
 #include <ctime>
 #include <time.h>
 
-#include "BitFunnel/FileHeader.h"
-#include "BitFunnel/StreamUtilities.h"
-#include "BitFunnel/Version.h"
+#include "BitFunnel/Utilities/FileHeader.h"
+#include "BitFunnel/Utilities/StreamUtilities.h"
+#include "BitFunnel/Utilities/Version.h"
 #include "LoggerInterfaces/Logging.h"
+
+#ifdef _MSC_VER
+#define sscanf sscanf_s
+#define timegm _mkgmtime
+#endif
 
 
 namespace BitFunnel
@@ -39,7 +39,10 @@ namespace BitFunnel
         m_version = new Version(in);
         m_time = new FileHeaderTime(in);
         char ch = StreamUtilities::ReadField<char>(in);
-        LogAssertB(ch == '\n');
+        std::string errorMessage = "Read expected '\n', found ";
+        errorMessage += ch;
+        LogAssertB(ch == '\n',
+                   errorMessage.c_str());
         m_userData = new FileHeaderData(in);
     }
 
@@ -48,7 +51,7 @@ namespace BitFunnel
         m_version->Write(out);
         m_time->Write(out);
         char ch = '\n';
-        StreamUtilities::WriteField<__int8>(out, ch);
+        StreamUtilities::WriteField<char>(out, ch);
         m_userData->Write(out);
     }
 
@@ -84,16 +87,17 @@ namespace BitFunnel
         StreamUtilities::ReadBytes(in, buffer, c_len);
         buffer[c_len] = 0;
         struct tm tms;
-        sscanf_s(buffer,
-                 "%02d/%2d/%04d %02d:%02d:%02d",
-                 &tms.tm_mon,
-                 &tms.tm_mday,
-                 &tms.tm_year,
-                 &tms.tm_hour,
-                 &tms.tm_min,
-                 &tms.tm_sec);
+        LogAssertB(sscanf(buffer,
+                          "%02d/%2d/%04d %02d:%02d:%02d",
+                          &tms.tm_mon,
+                          &tms.tm_mday,
+                          &tms.tm_year,
+                          &tms.tm_hour,
+                          &tms.tm_min,
+                          &tms.tm_sec) == 6,
+                   "sscanf failed to read header time.");
         tms.tm_year -= 1900;
-        m_time = _mkgmtime(&tms);
+        m_time = timegm(&tms);
     }
 
     void FileHeaderTime::Write(std::ostream& out) const
@@ -101,7 +105,9 @@ namespace BitFunnel
         // write in character format as: 04/20/2011 02:24:45
         char buffer[64];
         struct tm tms;
-        gmtime_s(&tms, &m_time);
+#ifdef _MSC_VER
+        LogAssertB(gmtime_s(&tms, &m_time) != 0,
+                   "Bad time passed to gmtime_s.");
         sprintf_s(buffer,
                   64,
                   "%02d/%2d/%04d %02d:%02d:%02d",
@@ -111,13 +117,26 @@ namespace BitFunnel
                   tms.tm_hour,
                   tms.tm_min,
                   tms.tm_sec);
+#else
+        sprintf(buffer,
+                "%02d/%2d/%04d %02d:%02d:%02d",
+                tms.tm_mon,
+                tms.tm_mday,
+                tms.tm_year + 1900,
+                tms.tm_hour,
+                tms.tm_min,
+                tms.tm_sec);
+        LogAssertB(gmtime_r(&m_time, &tms) != NULL,
+                   "Bad time passed to gmtime_r.");
+#endif
         StreamUtilities::WriteBytes(out, buffer, strlen(buffer));
     }
 
     FileHeaderData::FileHeaderData(const std::string& data)
         : m_data(data)
     {
-        LogAssertB(data.length() < c_maxUserDataLen);
+        LogAssertB(data.length() < c_maxUserDataLen,
+                   "FileHeaderData length >= c_maxUserDataLen");
     }
 
     const std::string& FileHeaderData::Data() const
@@ -132,14 +151,15 @@ namespace BitFunnel
         int len = 0;
         while (len < c_maxUserDataLen)
         {
-            buffer[len] = StreamUtilities::ReadField<__int8>(in);
+            buffer[len] = StreamUtilities::ReadField<char>(in);
             if (buffer[len] == 0)
             {
                 break;
             }
             len++;
         }
-        LogAssertB(len < c_maxUserDataLen);
+        LogAssertB(len < c_maxUserDataLen,
+                   "FileHeaderData len >= maxUserDataLen");
         m_data = buffer;
         delete [] buffer;
     }
@@ -148,6 +168,6 @@ namespace BitFunnel
     {   
         StreamUtilities::WriteBytes(out, m_data.c_str(), m_data.length());
         char ch = 0;
-        StreamUtilities::WriteField<__int8>(out, ch);
+        StreamUtilities::WriteField<char>(out, ch);
     }
 }

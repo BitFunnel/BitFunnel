@@ -5,6 +5,7 @@ set(CPPFILES
     BlockAllocator.cpp
     ConsoleLogger.cpp
     Exceptions.cpp
+    FileHeader.cpp
     Logging.cpp
     LogLevel.cpp
     MurmurHash2.cpp

@@ -4,6 +4,7 @@
 
 set(CPPFILES
     BlockAllocatorUnitTest.cpp
+    FileHeaderUnitTest.cpp
     MurmurHashUnitTest.cpp
     RandomUnitTest.cpp
     SimpleHashSetUnitTest.cpp

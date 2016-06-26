@@ -1,16 +1,15 @@
-#include "stdafx.h"
-
 #include <sstream>
 
-#include "BitFunnel/FileHeader.h"
-#include "BitFunnel/Version.h"
-#include "SuiteCpp/UnitTest.h"
+#include "gtest/gtest.h"
+
+#include "BitFunnel/Utilities/FileHeader.h"
+#include "BitFunnel/Utilities/Version.h"
 
 namespace BitFunnel
 {
     namespace FileHeaderUnitTest
     {
-        TestCase(Roundtrip)
+        TEST(Roundtrip, Trivial)
         {
             Version version(1, 1, 0);
             FileHeader fileHeader(version, "Hello World");
@@ -19,11 +18,23 @@ namespace BitFunnel
 
             FileHeader fileHeader2(stream);
 
-            TestAssert(fileHeader2.GetVersion().VersionMajor() == fileHeader.GetVersion().VersionMajor());
-            TestAssert(fileHeader2.GetVersion().VersionMiddle() == fileHeader.GetVersion().VersionMiddle());
-            TestAssert(fileHeader2.GetVersion().VersionMinor() == fileHeader.GetVersion().VersionMinor());
-            TestAssert(fileHeader2.TimeStamp() == fileHeader.TimeStamp());
-            TestAssert(strcmp(fileHeader2.UserData().c_str(), fileHeader.UserData().c_str()) == 0);
+            EXPECT_EQ(fileHeader2.GetVersion().VersionMajor(),
+                      fileHeader.GetVersion().VersionMajor());
+            EXPECT_EQ(fileHeader2.GetVersion().VersionMiddle(),
+                      fileHeader.GetVersion().VersionMiddle());
+            EXPECT_EQ(fileHeader2.GetVersion().VersionMinor(),
+                      fileHeader.GetVersion().VersionMinor());
+            // TODO: figure out what to do with this time API.
+            // EXPECT_EQ(fileHeader2.TimeStamp(),
+            //        fileHeader.TimeStamp());
+            EXPECT_EQ(fileHeader2.UserData(),
+                      fileHeader.UserData());
+
+            std::stringstream stream2;
+            fileHeader2.Write(stream2);
+
+            EXPECT_EQ(stream.str(), stream2.str());
+
         }
     }
 }
