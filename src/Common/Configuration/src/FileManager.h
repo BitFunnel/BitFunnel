@@ -9,11 +9,9 @@ namespace BitFunnel
     class FileManager : public IFileManager
     {
     public:
-        FileManager(char const * configDirectory,
-                    char const * intermediateDirectory,
-                    char const * backupDirectory,
-                    char const * hddIndexDirectory,
-                    char const * ssdIndexDirectory);
+        FileManager(char const * intermediateDirectory,
+                    char const * indexDirectory,
+                    char const * backupDirectory);
 
         //
         // IFileManager methods.
@@ -49,36 +47,8 @@ namespace BitFunnel
         virtual FileDescriptor2<ShardId, SliceId> IndexSlice(ShardId shard, SliceId slice) override;
 
     private:
-        std::unique_ptr<IParameterizedFile0> m_bandTable;
-        std::unique_ptr<IParameterizedFile0> m_commonNegatedTerms;
-        std::unique_ptr<IParameterizedFile0> m_commonPhrases;
-        std::unique_ptr<IParameterizedFile0> m_docFreqTable;
         std::unique_ptr<IParameterizedFile0> m_documentHistogram;
-        std::unique_ptr<IParameterizedFile0> m_l1RankerConfig;
-        std::unique_ptr<IParameterizedFile0> m_manifest;
-        std::unique_ptr<IParameterizedFile0> m_model;
-        std::unique_ptr<IParameterizedFile0> m_planDescriptors;
-        std::unique_ptr<IParameterizedFile0> m_postingCounts;
-        std::unique_ptr<IParameterizedFile0> m_shardCapacity;
-        std::unique_ptr<IParameterizedFile0> m_shardDefinition;
-        std::unique_ptr<IParameterizedFile0> m_shardDocCounts;
-        std::unique_ptr<IParameterizedFile0> m_shardedDocFreqTable;
-        std::unique_ptr<IParameterizedFile0> m_sortRankerConfig;
-        std::unique_ptr<IParameterizedFile0> m_streamNameToSuffixMap;
-        std::unique_ptr<IParameterizedFile0> m_suffixToClassificationMap;
-        std::unique_ptr<IParameterizedFile0> m_clickStreamSuffixToMarketMap;
-        std::unique_ptr<IParameterizedFile0> m_tierDefinition;
-        std::unique_ptr<IParameterizedFile0> m_termDisposeDefinition;
-        std::unique_ptr<IParameterizedFile0> m_metaWordTierHintMap;
-        std::unique_ptr<IParameterizedFile0> m_termTableStats;
-        std::unique_ptr<IParameterizedFile0> m_postingAndBitStats;
-        std::unique_ptr<IParameterizedFile0> m_strengtheningMetawords;
-
-        // TODO: cleanup unused files, e.g. DocTable, ScoreTable, RowTableSlice etc.
         std::unique_ptr<IParameterizedFile1<ShardId>> m_docTable;
-        std::unique_ptr<IParameterizedFile1<ShardId>> m_scoreTable;
-        std::unique_ptr<IParameterizedFile1<ShardId>> m_termTable;
-
         std::unique_ptr<IParameterizedFile2<ShardId, SliceId>> m_indexSlice;
     };
 }

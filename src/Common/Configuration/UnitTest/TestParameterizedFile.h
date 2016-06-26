@@ -8,6 +8,7 @@
 #include "LoggerInterfaces/Logging.h"
 #include "BitFunnel/NonCopyable.h"
 
+// TODO: what should we do with this old test?
 
 namespace BitFunnel
 {

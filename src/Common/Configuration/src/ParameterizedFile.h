@@ -5,7 +5,7 @@
 #include <string>
 
 #include "BitFunnel/IFileManager.h"
-#include "BitFunnel/Tier.h"
+// #include "BitFunnel/Tier.h"
 
 
 namespace BitFunnel
@@ -45,6 +45,7 @@ namespace BitFunnel
         };
 
 
+        /* TODO: do we need this?
         template <>
         struct Converter<Tier>
         {
@@ -53,6 +54,7 @@ namespace BitFunnel
                 return TierToString(value); 
             }
         };
+        */
     };
 
 

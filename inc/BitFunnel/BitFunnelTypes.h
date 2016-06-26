@@ -1,7 +1,8 @@
 #pragma once
 
+#include <inttypes.h>   // For uint8_t, etc.
 #include <limits.h>     // For constants UCHAR_MAX, _UINT32_MAX.
-
+#include <stddef.h>     // For size_t.
 
 namespace BitFunnel
 {
@@ -13,7 +14,7 @@ namespace BitFunnel
 
     // IDF (inverse document frequency), multiplied by 10 and rounded to the 
     // nearest integer.
-    typedef unsigned __int8 IdfX10;
+    typedef uint8_t IdfX10;
     
     // The maximum value of IdfX10 is the value we assign to all adhoc values.  
     // Note: the value UCHAR_MAX is reserved as a special parameter value in 
@@ -23,7 +24,7 @@ namespace BitFunnel
     // IdfSumX10 represents the sum of two IdfX10 values. IdfSumX10 is used to 
     // approximate the true IdfX10 of an n-gram. It is the sum of the IdfX10 
     // values corresponding to each term in the n-gram.
-    typedef unsigned __int8 IdfSumX10;
+    typedef uint8_t IdfSumX10;
 
     // IdfSumX10 is an 8-bit unsigned and therefore its maximum value is 
     // UCHAR_MAX.  We are reserving the top value as a flag.
@@ -36,14 +37,14 @@ namespace BitFunnel
     // document ID) was introduced to allow the ResultsProcessor to pass over
     // document positions used to pad the DocTable row length quanta. It also
     // provides a means to invalidate a document position after index construction.
-    typedef unsigned __int64 DocId;
+    typedef uint64_t DocId;
     const DocId c_invalidDocId = 0;
 
     // A shard-independent document identifier which is local to a BitFunnel index.
     // DocIndex values in an index run from 0 to n where n-1 is the number of documents
     // in the index. The number of bits for DocIndex and ShardId together must not 
     // exceed 32.
-    typedef unsigned __int32 DocIndex;
+    typedef uint32_t DocIndex;
 
     // Represent the value that the default constructor assigns to the instances of DocumentHandle.
     static const DocIndex c_invalidDocIndex = UINT_MAX;
@@ -58,14 +59,14 @@ namespace BitFunnel
     // limitations on which ranks can be used.
     // DESIGN NOTE: Rank must be an unsigned type because it is used as
     // an array index.
-    typedef unsigned __int32 Rank;
+    typedef uint32_t Rank;
     static const Rank c_maxRankValue = 6;
 
     // Specifies a shard in an index. A shard contains information about a set
     // of documents with similar lengths. This information includes a DocTable,
     // a ScoreTable, and one RowTable for each supported Rank.
     // The number of bits for DocIndex and ShardId together must not exceed 32.
-    typedef unsigned __int32 ShardId;
+    typedef uint32_t ShardId;
     static const unsigned c_bitsPerShardId = 4;
     static const ShardId c_maxShardCount = 1 << c_bitsPerShardId;
     static const ShardId c_maxShardValue = c_maxShardCount - 1;
@@ -80,7 +81,7 @@ namespace BitFunnel
     typedef unsigned SliceId;
 
     // The number of words in an n-gram.
-    typedef unsigned __int32 GramSize;
+    typedef uint32_t GramSize;
     static const GramSize c_log2MaxGramSize = 3;
     static const GramSize c_maxGramSize = 1 << c_log2MaxGramSize;
 
@@ -122,7 +123,7 @@ namespace BitFunnel
                   "maximumPerDocumentDataSizeInBytes must be a multiple of 4KB.");
 
     // Specifies the number of rows for a term.
-    typedef unsigned __int8 RowCount;
+    typedef uint8_t RowCount;
 
     // The number of rows reserved for the system internal purposes. These rows 
     // include soft-deleted row, match-all and match-none rows.
@@ -139,7 +140,7 @@ namespace BitFunnel
     // documents based on time stamp. Each group is assigned a GroupId which is
     // a unique identifier for the group that the client can use to manage the
     // index. 
-    typedef unsigned __int64 GroupId;
+    typedef uint64_t GroupId;
 
     //*************************************************************************
     //
