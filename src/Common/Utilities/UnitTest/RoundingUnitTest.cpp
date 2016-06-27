@@ -20,12 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
-#include "stdafx.h"
+#include "gtest/gtest.h"
 
 #include "LoggerInterfaces/Logging.h"
 #include "Rounding.h"
-#include "SuiteCpp/UnitTest.h"
 
 namespace BitFunnel
 {
@@ -39,7 +37,7 @@ namespace BitFunnel
         // [(2^(n-1) + 2^n) / 2 - 100, (2^(n-1) + 2^n) / 2],
         // [(2^(n-1) + 2^n) / 2, (2^(n-1) + 2^n) / 2 + 100],
         // and [2^n - 100, 2^n],
-        TestCase(RoundToNearestPowerOf2Test)
+        TEST(RoundToNearestPowerOf2Test, Trivial)
         {
             const size_t c_one = static_cast<size_t>(1);
 
@@ -47,14 +45,17 @@ namespace BitFunnel
             {
                 const size_t targetPowerOf2 = c_one << i;
                 const size_t previousPowerOf2 = c_one << (i - 1);
-                const size_t middleNumber = (targetPowerOf2 + previousPowerOf2) / 2;
+                const size_t middleNumber = (targetPowerOf2 + previousPowerOf2)
+                    / 2;
 
                 // Test numbers in the first range.
                 for (size_t testingNumber = previousPowerOf2;
-                     testingNumber <= previousPowerOf2 + c_testingRange && testingNumber <= middleNumber;
+                     testingNumber <= previousPowerOf2 + c_testingRange
+                         && testingNumber <= middleNumber;
                      ++testingNumber)
                 {
-                    TestEqual(previousPowerOf2, RoundToTheNearestPowerOf2(testingNumber));
+                    EXPECT_EQ(previousPowerOf2,
+                              RoundToTheNearestPowerOf2(testingNumber));
                 }
 
                 // Test numbers in the second range.
@@ -72,15 +73,18 @@ namespace BitFunnel
                      testingNumber <= middleNumber;
                      ++testingNumber)
                 {
-                    TestEqual(previousPowerOf2, RoundToTheNearestPowerOf2(testingNumber));
+                    EXPECT_EQ(previousPowerOf2,
+                              RoundToTheNearestPowerOf2(testingNumber));
                 }
 
                 // Test numbers in the third range.
                 for (size_t testingNumber = middleNumber + 1;
-                     testingNumber <= middleNumber + c_testingRange && testingNumber <= targetPowerOf2;
+                     testingNumber <= middleNumber + c_testingRange
+                         && testingNumber <= targetPowerOf2;
                      ++testingNumber)
                 {
-                    TestEqual(targetPowerOf2, RoundToTheNearestPowerOf2(testingNumber));
+                    EXPECT_EQ(targetPowerOf2,
+                              RoundToTheNearestPowerOf2(testingNumber));
                 }
 
                 // Test numbers in the fourth range.
@@ -98,7 +102,8 @@ namespace BitFunnel
                      testingNumber <= targetPowerOf2;
                      ++testingNumber)
                 {
-                    TestEqual(targetPowerOf2, RoundToTheNearestPowerOf2(testingNumber));
+                    EXPECT_EQ(targetPowerOf2,
+                              RoundToTheNearestPowerOf2(testingNumber));
                 }
             }
         }

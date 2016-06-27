@@ -7,6 +7,7 @@ set(CPPFILES
     FileHeaderUnitTest.cpp
     MurmurHashUnitTest.cpp
     RandomUnitTest.cpp
+    RoundingUnitTest.cpp
     SimpleHashSetUnitTest.cpp
     SimpleHashTableUnitTest.cpp
     StreamUtilitiesUnitTest.cpp

@@ -41,7 +41,8 @@ namespace BitFunnel
             static const size_t c_totalBlockCount = 3;
 
             std::unique_ptr<IBlockAllocator> allocator(
-                Factories::CreateBlockAllocator(c_blockSize, c_totalBlockCount));
+                Factories::CreateBlockAllocator(c_blockSize,
+                                                c_totalBlockCount));
 
             EXPECT_EQ(c_blockSize, allocator->GetBlockSize());
 
@@ -98,7 +99,8 @@ namespace BitFunnel
             static const size_t c_totalBlockCount = 4;
 
             std::unique_ptr<IBlockAllocator> allocator(
-                Factories::CreateBlockAllocator(c_blockSize, c_totalBlockCount));
+                Factories::CreateBlockAllocator(c_blockSize,
+                                                c_totalBlockCount));
 
             // Requested block size should be rounded up to 8.
             EXPECT_EQ(8u, allocator->GetBlockSize());
@@ -120,7 +122,8 @@ namespace BitFunnel
             static const size_t c_totalBlockCount = 4;
 
             std::unique_ptr<IBlockAllocator> allocator(
-                Factories::CreateBlockAllocator(c_blockSize, c_totalBlockCount));
+                Factories::CreateBlockAllocator(c_blockSize,
+                                                c_totalBlockCount));
 
             uint64_t * block = allocator->AllocateBlock();
 

@@ -55,7 +55,8 @@ namespace BitFunnel
         const size_t nextPowerOf2 = RoundUpPowerOf2(valueToBeRounded);
         const size_t previousPowerOf2 = nextPowerOf2 >> 1;
 
-        return (nextPowerOf2 - valueToBeRounded) >= (valueToBeRounded - previousPowerOf2)
+        return (nextPowerOf2 - valueToBeRounded) >=
+            (valueToBeRounded - previousPowerOf2)
                ? previousPowerOf2
                : nextPowerOf2;
     }

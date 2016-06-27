@@ -24,7 +24,7 @@
 #pragma once
 
 
-#include <mutex>
+#include <mutex>  // For std::mutex.
 
 #include "BitFunnel/Allocators/IBlockAllocator.h"
 #include "AlignedBuffer.h"
