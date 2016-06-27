@@ -7,13 +7,14 @@
 
 namespace BitFunnel
 {
-    IFileManager* Factories::CreateFileManager(char const * intermediateDirectory,
-                                               char const * indexDirectory,
-                                               char const * backupDirectory)
+    std::unique_ptr<IFileManager>
+        Factories::CreateFileManager(char const * intermediateDirectory,
+                                     char const * indexDirectory,
+                                     char const * backupDirectory)
     {
-        return new FileManager(intermediateDirectory,
-                               backupDirectory,
-                               indexDirectory);
+        return std::unique_ptr<IFileManager>(new FileManager(intermediateDirectory,
+                                                             backupDirectory,
+                                                             indexDirectory));
     }
 
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <istream>
+#include <memory>  // For std::unique_ptr.
 #include <ostream>
 #include <string>
 
@@ -79,9 +80,9 @@ namespace BitFunnel
     private:
         // Initialize by reading from input stream.
         void Read(std::istream& in);
-        Version* m_version;
-        FileHeaderTime* m_time;
-        FileHeaderData* m_userData;
+        std::unique_ptr<Version> m_version;
+        std::unique_ptr<FileHeaderTime> m_time;
+        std::unique_ptr<FileHeaderData> m_userData;
     };
 
     // A helper class to handle the time stamp in FileHeader.

@@ -16,9 +16,13 @@
 namespace BitFunnel
 {
     FileHeader::FileHeader(const Version& version, const std::string& userData)
-        : m_version(new Version(version.VersionMajor(), version.VersionMiddle(), version.VersionMinor())),
-          m_time(new FileHeaderTime()),
-          m_userData(new FileHeaderData(userData))
+        : m_version(std::unique_ptr<Version>(
+              new Version(version.VersionMajor(),
+                          version.VersionMiddle(),
+                          version.VersionMinor()))),
+          m_time(std::unique_ptr<FileHeaderTime>(new FileHeaderTime())),
+          m_userData(std::unique_ptr<FileHeaderData>(
+              new FileHeaderData(userData)))
     {
     }
 
@@ -29,30 +33,27 @@ namespace BitFunnel
 
     FileHeader::~FileHeader()
     {
-        delete m_userData;
-        delete m_time;
-        delete m_version;
     }
 
     void FileHeader::Read(std::istream& in)
     {
-        m_version = new Version(in);
-        m_time = new FileHeaderTime(in);
+        m_version.reset(new Version(in));
+        m_time.reset(new FileHeaderTime(in));
         char ch = StreamUtilities::ReadField<char>(in);
         std::string errorMessage = "Read expected '\n', found ";
         errorMessage += ch;
         LogAssertB(ch == '\n',
                    errorMessage.c_str());
-        m_userData = new FileHeaderData(in);
+        m_userData.reset(new FileHeaderData(in));
     }
 
     void FileHeader::Write(std::ostream& out) const
     {
-        m_version->Write(out);
-        m_time->Write(out);
+        m_version.get()->Write(out);
+        m_time.get()->Write(out);
         char ch = '\n';
         StreamUtilities::WriteField<char>(out, ch);
-        m_userData->Write(out);
+        m_userData.get()->Write(out);
     }
 
     const Version& FileHeader::GetVersion() const
@@ -62,12 +63,12 @@ namespace BitFunnel
 
     const time_t& FileHeader::TimeStamp() const
     {
-        return m_time->TimeStamp();
+        return m_time.get()->TimeStamp();
     }
 
     const std::string& FileHeader::UserData() const
     {
-        return m_userData->Data();
+        return m_userData.get()->Data();
     }
 
     FileHeaderTime::FileHeaderTime()
@@ -118,6 +119,8 @@ namespace BitFunnel
                   tms.tm_min,
                   tms.tm_sec);
 #else
+        LogAssertB(gmtime_r(&m_time, &tms) != NULL,
+                   "Bad time passed to gmtime_r.");
         sprintf(buffer,
                 "%02d/%2d/%04d %02d:%02d:%02d",
                 tms.tm_mon,
@@ -126,8 +129,6 @@ namespace BitFunnel
                 tms.tm_hour,
                 tms.tm_min,
                 tms.tm_sec);
-        LogAssertB(gmtime_r(&m_time, &tms) != NULL,
-                   "Bad time passed to gmtime_r.");
 #endif
         StreamUtilities::WriteBytes(out, buffer, strlen(buffer));
     }
