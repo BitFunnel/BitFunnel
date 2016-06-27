@@ -111,7 +111,7 @@ namespace BitFunnel
 
     void ParameterizedFile::Delete(const std::string& filename)
     {
-        LogAssertB(DeleteFileA(filename.c_str()) != 0, 
+        LogAssertB(DeleteFileA(filename.c_str()) != 0,
                    "Error %d deleting file %s.",
                    GetLastError(),
                    filename.c_str());

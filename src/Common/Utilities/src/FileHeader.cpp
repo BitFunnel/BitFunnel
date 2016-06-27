@@ -189,7 +189,7 @@ namespace BitFunnel
     }
 
     void FileHeaderData::Write(std::ostream& out) const
-    {   
+    {
         StreamUtilities::WriteBytes(out, m_data.c_str(), m_data.length());
         char ch = 0;
         StreamUtilities::WriteField<char>(out, ch);

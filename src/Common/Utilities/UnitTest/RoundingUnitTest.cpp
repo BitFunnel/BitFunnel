@@ -35,7 +35,7 @@ namespace BitFunnel
 
         // This test go through all 2^n from n = 1 to n = 63.
         // For each 2^n, it tests the numbers in the following range
-        // [2^(n-1), 2^(n-1) + 100], 
+        // [2^(n-1), 2^(n-1) + 100],
         // [(2^(n-1) + 2^n) / 2 - 100, (2^(n-1) + 2^n) / 2],
         // [(2^(n-1) + 2^n) / 2, (2^(n-1) + 2^n) / 2 + 100],
         // and [2^n - 100, 2^n],
@@ -50,7 +50,7 @@ namespace BitFunnel
                 const size_t middleNumber = (targetPowerOf2 + previousPowerOf2) / 2;
 
                 // Test numbers in the first range.
-                for (size_t testingNumber = previousPowerOf2; 
+                for (size_t testingNumber = previousPowerOf2;
                      testingNumber <= previousPowerOf2 + c_testingRange && testingNumber <= middleNumber;
                      ++testingNumber)
                 {
@@ -74,9 +74,9 @@ namespace BitFunnel
                 {
                     TestEqual(previousPowerOf2, RoundToTheNearestPowerOf2(testingNumber));
                 }
-                
+
                 // Test numbers in the third range.
-                for (size_t testingNumber = middleNumber + 1; 
+                for (size_t testingNumber = middleNumber + 1;
                      testingNumber <= middleNumber + c_testingRange && testingNumber <= targetPowerOf2;
                      ++testingNumber)
                 {
@@ -93,7 +93,7 @@ namespace BitFunnel
                 {
                     fourthRangeStart = middleNumber + 1;
                 }
-               
+
                 for (size_t testingNumber = fourthRangeStart;
                      testingNumber <= targetPowerOf2;
                      ++testingNumber)

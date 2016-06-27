@@ -35,21 +35,21 @@ namespace BitFunnel
     //
     //*****************************************************************************
 
-    // IDF (inverse document frequency), multiplied by 10 and rounded to the 
+    // IDF (inverse document frequency), multiplied by 10 and rounded to the
     // nearest integer.
     typedef uint8_t IdfX10;
-    
-    // The maximum value of IdfX10 is the value we assign to all adhoc values.  
-    // Note: the value UCHAR_MAX is reserved as a special parameter value in 
+
+    // The maximum value of IdfX10 is the value we assign to all adhoc values.
+    // Note: the value UCHAR_MAX is reserved as a special parameter value in
     // class Band. IdfX10 sums may never exceed UCHAR_MAX - 1.
     const IdfX10 c_maxIdfX10Value = 70;
 
-    // IdfSumX10 represents the sum of two IdfX10 values. IdfSumX10 is used to 
-    // approximate the true IdfX10 of an n-gram. It is the sum of the IdfX10 
+    // IdfSumX10 represents the sum of two IdfX10 values. IdfSumX10 is used to
+    // approximate the true IdfX10 of an n-gram. It is the sum of the IdfX10
     // values corresponding to each term in the n-gram.
     typedef uint8_t IdfSumX10;
 
-    // IdfSumX10 is an 8-bit unsigned and therefore its maximum value is 
+    // IdfSumX10 is an 8-bit unsigned and therefore its maximum value is
     // UCHAR_MAX.  We are reserving the top value as a flag.
     const IdfSumX10 c_maxIdfSumX10Value = UCHAR_MAX - 1;
 
@@ -65,7 +65,7 @@ namespace BitFunnel
 
     // A shard-independent document identifier which is local to a BitFunnel index.
     // DocIndex values in an index run from 0 to n where n-1 is the number of documents
-    // in the index. The number of bits for DocIndex and ShardId together must not 
+    // in the index. The number of bits for DocIndex and ShardId together must not
     // exceed 32.
     typedef uint32_t DocIndex;
 
@@ -98,8 +98,8 @@ namespace BitFunnel
     // fit into the 2-bit m_tier field in class RowId.
     enum Tier { DDRTier = 0, SSDTier = 1, HDDTier = 2, InvalidTier = 3, TierCount = 3, };
 
-    // Specifies an ID of a slice of an index shard. An index shard is composed 
-    // of a number of Slices. A slice corresponds to a contigous range of 
+    // Specifies an ID of a slice of an index shard. An index shard is composed
+    // of a number of Slices. A slice corresponds to a contigous range of
     // documents.
     typedef unsigned SliceId;
 
@@ -117,12 +117,12 @@ namespace BitFunnel
     // Constants for alignment of different in-memory structures.
     static const size_t c_bytesPerQuadword = 8;
 
-    // RocTable buffers are placed such that it is aligned with this 
+    // RocTable buffers are placed such that it is aligned with this
     // byte alignment. For performance reasons it is advantageous that
     // it is placed either at quadword or at cacheline boundaries.
     static const size_t c_rowTableByteAlignment = c_bytesPerQuadword;
 
-    // DocTable buffers are placed such that it is aligned with this 
+    // DocTable buffers are placed such that it is aligned with this
     // byte alignment. For performance reasons it is advantageous that
     // it is placed either at quadword or at cacheline boundaries.
     static const size_t c_docTableByteAlignment = c_bytesPerQuadword;
@@ -148,13 +148,13 @@ namespace BitFunnel
     // Specifies the number of rows for a term.
     typedef uint8_t RowCount;
 
-    // The number of rows reserved for the system internal purposes. These rows 
+    // The number of rows reserved for the system internal purposes. These rows
     // include soft-deleted row, match-all and match-none rows.
     static const unsigned c_systemRowCount = 3;
 
     // The maximum gram size for terms used in false positive evaluation.
-    // DESIGN NOTE: In order to have a lower SSD throughput requirement, not all gram size terms 
-    // are used in false positive evaluation. The optimal value for this parameter should be 
+    // DESIGN NOTE: In order to have a lower SSD throughput requirement, not all gram size terms
+    // are used in false positive evaluation. The optimal value for this parameter should be
     // determined based on careful designed experiments and/or simulations.
     const unsigned c_maxGramSizeForFalsePositiveEvaluation = 2;
 
@@ -162,13 +162,13 @@ namespace BitFunnel
     // based on the need of the client. For example, a client can choose to group
     // documents based on time stamp. Each group is assigned a GroupId which is
     // a unique identifier for the group that the client can use to manage the
-    // index. 
+    // index.
     typedef uint64_t GroupId;
 
     //*************************************************************************
     //
     // Memory allocation constants.
-    // 
+    //
     // The following values are compile-time set to allow
     // for use of fixed size arrays, rather than vectors.
     //

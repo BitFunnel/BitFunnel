@@ -73,7 +73,7 @@ namespace BitFunnel
         {
             static const char* Convert(const Tier& value)
             {
-                return TierToString(value); 
+                return TierToString(value);
             }
         };
         */
@@ -190,7 +190,7 @@ namespace BitFunnel
         {
             return ParameterizedFile::OpenForWrite(GetTempName(GetName(p1, p2)));
         }
-        
+
 
         void Commit(P1 p1, P2 p2)
         {

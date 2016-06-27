@@ -25,7 +25,7 @@
 
 
 namespace BitFunnel
-{   
+{
     size_t RoundUpPowerOf2(size_t valueToBeRounded)
     {
         if (0 == valueToBeRounded)

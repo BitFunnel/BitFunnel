@@ -41,11 +41,11 @@ namespace BitFunnel
     // Represents the header portion of a data file.
     //
     // File headers are UTF-8 and designed to be human readable and future
-    // proof. Future proofing means that any version of FileHeader can 
+    // proof. Future proofing means that any version of FileHeader can
     // successfully recover the version number from any future version and
     // determine whether it is able to parse the rest of the header.
     //
-    // The first line in the header consists of  
+    // The first line in the header consists of
     //   three-part version number
     //   a single space
     //   timestamp
@@ -63,7 +63,7 @@ namespace BitFunnel
     //
     // The timestamp is in GMT and has the following form:
     //   mm/dd/yyyy hh:mm:ss
-    // where m is in (00..11), dd is in (01..31), yyyy is in (1900..9999) and 
+    // where m is in (00..11), dd is in (01..31), yyyy is in (1900..9999) and
     // hh is in (00..23) and mm is in (00..59) and ss is in (00.59).
     //
     // The user data may contain any printable characters and must be terminated
@@ -97,7 +97,7 @@ namespace BitFunnel
         // Returns the header's timestamp field.
         const time_t& TimeStamp() const;
 
-        // Returns the header's user data field. 
+        // Returns the header's user data field.
         const std::string& UserData() const;
 
     private:

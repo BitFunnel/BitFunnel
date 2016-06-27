@@ -11,7 +11,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
-    FileManager.h    
+    FileManager.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

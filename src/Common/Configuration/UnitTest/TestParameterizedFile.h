@@ -62,7 +62,7 @@ namespace BitFunnel
         {
             return m_name;
         }
-        
+
 
         std::istream* OpenForRead()
         {
@@ -88,7 +88,7 @@ namespace BitFunnel
 
         std::ostream* OpenTempForWrite()
         {
-            return OpenForWrite(); 
+            return OpenForWrite();
         }
 
 
@@ -107,7 +107,7 @@ namespace BitFunnel
         void Delete()
         {
             delete m_buf;
-            m_buf = nullptr; 
+            m_buf = nullptr;
         }
 
 
@@ -172,7 +172,7 @@ namespace BitFunnel
 
         std::ostream* OpenTempForWrite(P1 p1)
         {
-            return OpenForWrite(p1); 
+            return OpenForWrite(p1);
         }
 
 
@@ -184,14 +184,14 @@ namespace BitFunnel
 
         bool Exists(P1 p1)
         {
-            return m_buffers.find(GetName(p1)) != m_buffers.end(); 
+            return m_buffers.find(GetName(p1)) != m_buffers.end();
         }
 
 
         void Delete(P1 p1)
         {
             std::map<std::string, std::stringbuf*>::iterator it = m_buffers.find(GetName(p1));
-            
+
             if (it != m_buffers.end())
             {
                 delete it->second;
@@ -211,7 +211,7 @@ namespace BitFunnel
     {
     public:
         TestParameterizedFile2(std::string const & name)
-            : m_name(name) 
+            : m_name(name)
         {
         }
 
@@ -237,7 +237,7 @@ namespace BitFunnel
         {
             std::stringbuf*& buf = m_buffers[GetName(p1, p2)];
             LogAssertB(buf != nullptr);
-            
+
             std::istream* stream = new std::istream(buf);
             stream->seekg(0, std::istream::beg);
 
@@ -261,9 +261,9 @@ namespace BitFunnel
 
         std::ostream* OpenTempForWrite(P1 p1, P2 p2)
         {
-            return OpenForWrite(p1, p2); 
+            return OpenForWrite(p1, p2);
         }
-        
+
 
         void Commit(P1, P2)
         {
@@ -273,14 +273,14 @@ namespace BitFunnel
 
         bool Exists(P1 p1, P2 p2)
         {
-            return m_buffers.find(GetName(p1, p2)) != m_buffers.end(); 
+            return m_buffers.find(GetName(p1, p2)) != m_buffers.end();
         }
 
 
         void Delete(P1 p1, P2 p2)
         {
             std::map<std::string, std::stringbuf*>::iterator it = m_buffers.find(GetName(p1, p2));
-            
+
             if (it != m_buffers.end())
             {
                 delete it->second;
@@ -293,4 +293,3 @@ namespace BitFunnel
         std::map<std::string, std::stringbuf*> m_buffers;
     };
 }
-

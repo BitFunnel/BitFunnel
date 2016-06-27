@@ -32,7 +32,7 @@ namespace BitFunnel
     //
     // RandomInt is a completely self-contained random number generator that
     // uses the Mersenne Twister mt19937 algorithm to generate uniformly
-    // distributed integers in a specified range. For more information see 
+    // distributed integers in a specified range. For more information see
     //      http://en.wikipedia.org/wiki/Mersenne_twister
     //
     // RandomInt is a template class that can be parameterized by any signed or
@@ -60,7 +60,7 @@ namespace BitFunnel
     // RandomReal is a completely self-contained random number generator that
     // uses the Mersenne Twister mt19937 algorithm to generate uniformly
     // distributed floating points values in a specified range. For more
-    // information see 
+    // information see
     //      http://en.wikipedia.org/wiki/Mersenne_twister
     //
     // RandomReal is a template class that can be parameterized by float or

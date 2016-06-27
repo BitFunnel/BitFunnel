@@ -106,7 +106,7 @@ namespace BitFunnel
         LogAssertB(blockReturned < bufferStart + m_totalPoolSize,
                    "ReleaseBlock out of range (past end)).");
 
-        // Block offset relative to the beginning of the pool should be a 
+        // Block offset relative to the beginning of the pool should be a
         // multiple of m_blockSize;
         LogAssertB(((blockReturned - bufferStart) % m_blockSize) == 0,
                    "Block offset (relative to begining of pool not a multiple of blockSize");

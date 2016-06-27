@@ -45,7 +45,7 @@ namespace BitFunnel
     //          the contents in some way.
     //
     // DESIGN NOTE: The Version class does not specify a versioning policy
-    // for the system. Users could choose, for example to use a single, 
+    // for the system. Users could choose, for example to use a single,
     // system-wide version, or at the other end of the spectrum, a set of
     // supported versions for each major component (e.g RowTable supports 1.1.XX
     // today and also 1.0.XX for backwards compatability).

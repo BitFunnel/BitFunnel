@@ -45,14 +45,14 @@ namespace BitFunnel
     //
     // IFileManager
     //
-    // Interface for objects that generate parameterized file names and open 
+    // Interface for objects that generate parameterized file names and open
     // and close streams associated with these files.
     //
     // DESIGN NOTE: None of the methods are const in order to allow greater
     // flexibility for mocks and other classes that implement IFileManager.
     //
     // DESIGN NOTE: The methods don't use the GetFoo() naming convention for
-    // two reasons. The first is that they are not really getters for 
+    // two reasons. The first is that they are not really getters for
     // properties. The implementation could choose to synthesize new
     // FileDescriptors for each call. The second reason is for brevity.
     //
@@ -91,13 +91,13 @@ namespace BitFunnel
         virtual FileDescriptor0 StrengtheningMetawords() = 0;
 
         // These methods return descriptors for files that are parameterized
-        // by a shard number.  The returned FileDescriptor1 objects provide 
+        // by a shard number.  The returned FileDescriptor1 objects provide
         // methods to generate the file names and open the files.
         virtual FileDescriptor1<ShardId> DocTable(ShardId shard) = 0;
         virtual FileDescriptor1<ShardId> ScoreTable(ShardId shard) = 0;
         virtual FileDescriptor1<ShardId> TermTable(ShardId shard) = 0;
 
-        virtual FileDescriptor2<ShardId, SliceId> IndexSlice(ShardId shard, 
+        virtual FileDescriptor2<ShardId, SliceId> IndexSlice(ShardId shard,
                                                              SliceId slice) = 0;
     };
 

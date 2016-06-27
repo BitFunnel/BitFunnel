@@ -132,7 +132,7 @@ namespace BitFunnel
 
             EXPECT_ANY_THROW(allocator->ReleaseBlock(block - 1));
 
-            // Cannot release a block which is not positioned at a multiple 
+            // Cannot release a block which is not positioned at a multiple
             // of the blockSize.
             EXPECT_ANY_THROW(allocator->ReleaseBlock(block + 1));
 
