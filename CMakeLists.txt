@@ -85,7 +85,9 @@ endmacro()
 ###############################################################################
 
 set(BITFUNNEL_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/BitFunnelTypes.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Exceptions.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IFileManager.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IInterface.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerator.h
@@ -93,6 +95,7 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/IBlockAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/IAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/Factories.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/Factories.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Factories.h
 )
 
@@ -108,10 +111,15 @@ set(INDEX_HFILES
 
 set(UTILITIES_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Factories.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/FileHeader.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IInputStream.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskDistributor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskProcessor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IThreadManager.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/RingBuffer.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StandardInputStream.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StreamUtilities.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Version.h
 )
 
 set(LOGGER_HFILES
@@ -170,7 +178,14 @@ add_custom_target(TOPLEVEL SOURCES
   README.md
 )
 
+<<<<<<< 3694a62dee0514c9bb1d7cdc04ba49c99aa0b6c9
 # TODO: CMake is making this directory, which the tests require, but we should
 # ideally write platform-independent C++ code to do this.
 file(MAKE_DIRECTORY "/tmp/chunks")
 
+=======
+enable_testing()
+add_test(NAME CmdLineParserUnitTest COMMAND CmdLineParserUnitTest)
+add_test(NAME CsvTsvUnitTest COMMAND CsvTsvUnitTest)
+add_test(NAME UtilitiesUnitTest COMMAND UtilitiesUnitTest)
+>>>>>>> Add public headers to CMakeLists.txt
