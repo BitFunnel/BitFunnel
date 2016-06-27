@@ -178,14 +178,7 @@ add_custom_target(TOPLEVEL SOURCES
   README.md
 )
 
-<<<<<<< 3694a62dee0514c9bb1d7cdc04ba49c99aa0b6c9
 # TODO: CMake is making this directory, which the tests require, but we should
 # ideally write platform-independent C++ code to do this.
 file(MAKE_DIRECTORY "/tmp/chunks")
 
-=======
-enable_testing()
-add_test(NAME CmdLineParserUnitTest COMMAND CmdLineParserUnitTest)
-add_test(NAME CsvTsvUnitTest COMMAND CsvTsvUnitTest)
-add_test(NAME UtilitiesUnitTest COMMAND UtilitiesUnitTest)
->>>>>>> Add public headers to CMakeLists.txt
