@@ -130,8 +130,7 @@ namespace BitFunnel
         char buffer[64];
         struct tm tms;
 #ifdef _MSC_VER
-        LogAssertB(gmtime_s(&tms, &m_time) != 0,
-                   "Bad time passed to gmtime_s.");
+        gmtime_s(&tms, &m_time);
         sprintf_s(buffer,
                   64,
                   "%02d/%2d/%04d %02d:%02d:%02d",
