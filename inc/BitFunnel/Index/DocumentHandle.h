@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <limits>
+
 #include "BitFunnel/Index/IDocumentDataSchema.h"    // VariableSizeBlobId and FixedSizeBlobId are parameters.
 #include "BitFunnel/Index/IFactSet.h"               // FactHandle is a parameter.
 
@@ -51,7 +53,7 @@ namespace BitFunnel
     typedef size_t DocIndex;
 
     // Represent the value that the default constructor assigns to the instances of DocumentHandle.
-    static const DocIndex c_invalidDocIndex = UINT_MAX;
+    static const DocIndex c_invalidDocIndex = std::numeric_limits<uint32_t>::max();
 
 
     //*************************************************************************
