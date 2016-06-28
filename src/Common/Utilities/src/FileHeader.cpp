@@ -35,6 +35,13 @@
 #define timegm _mkgmtime
 #endif
 
+// DESIGN NOTE: this is some of the older code that we're porting and is written
+// in a style that might be different from the more recent code. It would be
+// to refactor this code, but the current port just added some minimal error
+// checking and replace some raw pointers with unique_ptr.
+// Given the relative priority of getting a working ported system vs. making
+// this unimportant code better, it will probably be a while before this code
+// gets cleaned up.
 
 namespace BitFunnel
 {
