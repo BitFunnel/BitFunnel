@@ -24,8 +24,8 @@
 #include <exception>
 #include <memory>
 
-#include "BitFunnel/Allocators/Factories.h"
-#include "BitFunnel/Allocators/IBlockAllocator.h"
+#include "BitFunnel/Utilities/Factories.h"
+#include "BitFunnel/Utilities/IBlockAllocator.h"
 #include "BlockAllocator.h"
 #include "LoggerInterfaces/Logging.h"
 #include "Rounding.h"

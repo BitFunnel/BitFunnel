@@ -50,10 +50,12 @@ namespace BitFunnel
         LogAssertB(m_rawBuffer != nullptr, "VirtualAlloc() failed.");
         m_alignedBuffer = (char *)(((size_t)m_rawBuffer + padding -1) & ~(padding -1));
 #else
+        // TODO: detect non-4k size?
+        const int c_pageSize = 4096;
+
         // mmap will give us something page aligned and we assume that alignment
         // is sufficient.
-        LogAssertB(alignment <= 4096, "Alignment > 4096.\n");
-        // TODO: detect non-4k size?
+        LogAssertB(alignment <= c_pageSize, "Alignment > 4096.\n");
         m_actualSize = m_requestedSize;
         m_rawBuffer = mmap((caddr_t)0, size,
                            PROT_READ | PROT_WRITE,
@@ -78,9 +80,9 @@ namespace BitFunnel
     {
         if (m_rawBuffer != nullptr)
         {
-            #ifdef BITFUNNEL_PLATFORM_WINDOWS
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
             VirtualFree(m_rawBuffer, 0, MEM_RELEASE);
-            #else
+#else
             if (munmap(m_rawBuffer, m_actualSize) == -1)
             {
                 std::stringstream errorMessage;
@@ -91,7 +93,7 @@ namespace BitFunnel
                 // committed.
                 throw std::runtime_error(errorMessage.str());
             }
-            #endif
+#endif
         }
     }
 

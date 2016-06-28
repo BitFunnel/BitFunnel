@@ -30,22 +30,23 @@
 
 namespace BitFunnel
 {
+    class IBlockAllocator;
     class ITaskProcessor;
     class ITokenManager;
+
     namespace Factories
     {
-        std::unique_ptr<IThreadManager> CreateThreadManager(
-            const std::vector<IThreadBase*>& threads);
-
-        std::unique_ptr<ITokenManager> CreateTokenManager();
+        std::unique_ptr<IBlockAllocator>
+            CreateBlockAllocator(size_t blockSize, size_t totalBlockCount);
 
         std::unique_ptr<ITaskDistributor>
             CreateTaskDistributor(
                 std::vector<std::unique_ptr<ITaskProcessor>> const & processors,
                 size_t taskCount);
 
-        ITaskDistributor*
-            CreateTaskDistributor(std::vector<ITaskProcessor*> const & processors,
-                                  size_t taskCount);
+        std::unique_ptr<IThreadManager> CreateThreadManager(
+            const std::vector<IThreadBase*>& threads);
+
+        std::unique_ptr<ITokenManager> CreateTokenManager();
     }
 }

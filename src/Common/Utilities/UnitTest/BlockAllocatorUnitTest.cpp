@@ -25,8 +25,8 @@
 
 #include "gtest/gtest.h"
 
-#include "BitFunnel/Allocators/Factories.h"
-#include "BitFunnel/Allocators/IBlockAllocator.h"
+#include "BitFunnel/Utilities/Factories.h"
+#include "BitFunnel/Utilities/IBlockAllocator.h"
 #include "LoggerInterfaces/Logging.h"
 #include "ThrowingLogger.h"
 

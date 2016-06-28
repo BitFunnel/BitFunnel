@@ -26,7 +26,7 @@
 
 #include <mutex>  // For std::mutex.
 
-#include "BitFunnel/Allocators/IBlockAllocator.h"
+#include "BitFunnel/Utilities/IBlockAllocator.h"
 #include "AlignedBuffer.h"
 
 namespace BitFunnel
