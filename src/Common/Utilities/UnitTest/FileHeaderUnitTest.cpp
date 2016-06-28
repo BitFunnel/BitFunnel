@@ -54,27 +54,6 @@ namespace BitFunnel
             fileHeader2.Write(stream2);
 
             EXPECT_EQ(stream.str(), stream2.str());
-
-<<<<<<< 81f1d08980c1aab68dad9be965d573d5373e001e
-=======
-            EXPECT_EQ(fileHeader2.GetVersion().VersionMajor(),
-                      fileHeader.GetVersion().VersionMajor());
-            EXPECT_EQ(fileHeader2.GetVersion().VersionMiddle(),
-                      fileHeader.GetVersion().VersionMiddle());
-            EXPECT_EQ(fileHeader2.GetVersion().VersionMinor(),
-                      fileHeader.GetVersion().VersionMinor());
-            // TODO: figure out what to do with this time API.
-            // EXPECT_EQ(fileHeader2.TimeStamp(),
-            //        fileHeader.TimeStamp());
-            EXPECT_EQ(fileHeader2.UserData(),
-                      fileHeader.UserData());
-
-            std::stringstream stream2;
-            fileHeader2.Write(stream2);
-
-            EXPECT_EQ(stream.str(), stream2.str());
-
->>>>>>> Port FileHeader.
         }
     }
 }
