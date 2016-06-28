@@ -84,14 +84,8 @@ endmacro()
 
 ###############################################################################
 
-<<<<<<< 9ab1c5c307fa65dda9e64655ad16adca97cae79d
 set(BITFUNNEL_HFILES
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/BitFunnelTypes.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Exceptions.h
-=======
-set(PUBLIC_HFILES
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/BitFunnelTypes.h
->>>>>>> Add public headers to CMakeLists.txt
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IFileManager.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IInterface.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerable.h
@@ -101,8 +95,6 @@ set(PUBLIC_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/IAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/Factories.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/Factories.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Factories.h
-<<<<<<< 9ab1c5c307fa65dda9e64655ad16adca97cae79d
 )
 
 set(INDEX_HFILES
@@ -116,15 +108,12 @@ set(INDEX_HFILES
 )
 
 set(UTILITIES_HFILES
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Factories.h
-=======
->>>>>>> Add public headers to CMakeLists.txt
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Factories.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/FileHeader.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IInputStream.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskDistributor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskProcessor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IThreadManager.h
-<<<<<<< 9ab1c5c307fa65dda9e64655ad16adca97cae79d
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/RingBuffer.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StandardInputStream.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StreamUtilities.h
@@ -132,11 +121,6 @@ set(UTILITIES_HFILES
 )
 
 set(LOGGER_HFILES
-=======
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StandardInputStream.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StreamUtilities.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Version.h
->>>>>>> Add public headers to CMakeLists.txt
   ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/ConsoleLogger.h
   ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/ILogger.h
   ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/Logging.h

@@ -45,27 +45,26 @@ namespace BitFunnel
                              char const * indexDirectory,
                              char const * backupDirectory)
         : m_documentHistogram(new ParameterizedFile0(intermediateDirectory, "DocumentHistogram", ".csv" )),
-          m_docTable(new ParameterizedFile1<ShardId>(indexDirectory, "DocTable", ".bin" )),
-          m_indexSlice(new ParameterizedFile2<ShardId, SliceId>(backupDirectory, "IndexSlice", ".bin"))
+          m_docTable(new ParameterizedFile1(indexDirectory, "DocTable", ".bin" )),
+          m_indexSlice(new ParameterizedFile2(backupDirectory, "IndexSlice", ".bin"))
     {
     }
 
-        /* TODO: should we return an object even though this is NonCopyable?
+
     FileDescriptor0 FileManager::DocumentHistogram()
     {
         return FileDescriptor0(*m_documentHistogram);
     }
 
 
-    FileDescriptor1<ShardId> FileManager::DocTable(ShardId shard)
+    FileDescriptor1 FileManager::DocTable(size_t shard)
     {
-        return FileDescriptor1<ShardId>(*m_docTable, shard);
+        return FileDescriptor1(*m_docTable, shard);
     }
 
 
-    FileDescriptor2<ShardId, SliceId> FileManager::IndexSlice(ShardId shard, SliceId slice)
+    FileDescriptor2 FileManager::IndexSlice(size_t shard, size_t slice)
     {
-        return FileDescriptor2<ShardId, SliceId>(*m_indexSlice, shard, slice);
+        return FileDescriptor2(*m_indexSlice, shard, slice);
     }
-        */
 }

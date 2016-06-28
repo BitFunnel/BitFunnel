@@ -25,21 +25,19 @@
 
 #include <istream>
 #include <ostream>
+#include <stddef.h>  // For size_t.
 #include <string>
-
-#include "BitFunnel/BitFunnelTypes.h"     // For ShardId, SliceId.
-#include "BitFunnel/NonCopyable.h"
 
 
 namespace BitFunnel
 {
     class IParameterizedFile0;
-    template <typename P1> class IParameterizedFile1;
-    template <typename P1, typename P2> class IParameterizedFile2;
+    class IParameterizedFile1;
+    class IParameterizedFile2;
 
     class FileDescriptor0;
-    template <typename P1> class FileDescriptor1;
-    template <typename P1, typename P2> class FileDescriptor2;
+    class FileDescriptor1;
+    class FileDescriptor2;
 
     //*************************************************************************
     //
@@ -93,12 +91,12 @@ namespace BitFunnel
         // These methods return descriptors for files that are parameterized
         // by a shard number.  The returned FileDescriptor1 objects provide
         // methods to generate the file names and open the files.
-        virtual FileDescriptor1<ShardId> DocTable(ShardId shard) = 0;
-        virtual FileDescriptor1<ShardId> ScoreTable(ShardId shard) = 0;
-        virtual FileDescriptor1<ShardId> TermTable(ShardId shard) = 0;
+        virtual FileDescriptor1 DocTable(size_t shard) = 0;
+        virtual FileDescriptor1 ScoreTable(size_t shard) = 0;
+        virtual FileDescriptor1 TermTable(size_t shard) = 0;
 
-        virtual FileDescriptor2<ShardId, SliceId> IndexSlice(ShardId shard,
-                                                             SliceId slice) = 0;
+        virtual FileDescriptor2 IndexSlice(size_t shard,
+                                           size_t slice) = 0;
     };
 
 
@@ -116,40 +114,40 @@ namespace BitFunnel
         virtual void Delete() = 0;
     };
 
-    template <typename P1>
+
     class IParameterizedFile1
     {
     public:
         virtual ~IParameterizedFile1() {};
 
-        virtual std::string GetName(P1 p1) = 0;
-        virtual std::istream* OpenForRead(P1 p1) = 0;
-        virtual std::ostream* OpenForWrite(P1 p1) = 0;
-        virtual std::ostream* OpenTempForWrite(P1 p1) = 0;
-        virtual void Commit(P1 p1) = 0;
-        virtual bool Exists(P1 p1) = 0;
-        virtual void Delete(P1 p1) = 0;
+        virtual std::string GetName(size_t p1) = 0;
+        virtual std::istream* OpenForRead(size_t p1) = 0;
+        virtual std::ostream* OpenForWrite(size_t p1) = 0;
+        virtual std::ostream* OpenTempForWrite(size_t p1) = 0;
+        virtual void Commit(size_t p1) = 0;
+        virtual bool Exists(size_t p1) = 0;
+        virtual void Delete(size_t p1) = 0;
     };
 
-    template <typename P1, typename P2>
+
     class IParameterizedFile2
     {
     public:
         virtual ~IParameterizedFile2() {};
 
-        virtual std::string GetName(P1 p1, P2 p2) = 0;
-        virtual std::istream* OpenForRead(P1 p1, P2 p2) = 0;
-        virtual std::ostream* OpenForWrite(P1 p1, P2 p2) = 0;
-        virtual std::ostream* OpenTempForWrite(P1 p1, P2 p2) = 0;
-        virtual void Commit(P1 p1, P2 p2) = 0;
-        virtual bool Exists(P1 p1, P2 p2) = 0;
-        virtual void Delete(P1 p1, P2 p2) = 0;
+        virtual std::string GetName(size_t p1, size_t p2) = 0;
+        virtual std::istream* OpenForRead(size_t p1, size_t p2) = 0;
+        virtual std::ostream* OpenForWrite(size_t p1, size_t p2) = 0;
+        virtual std::ostream* OpenTempForWrite(size_t p1, size_t p2) = 0;
+        virtual void Commit(size_t p1, size_t p2) = 0;
+        virtual bool Exists(size_t p1, size_t p2) = 0;
+        virtual void Delete(size_t p1, size_t p2) = 0;
     };
 
 
     // DESIGN NOTE: Deliberately using inline template method definition for
     // brevity.
-    class FileDescriptor0 : NonCopyable
+    class FileDescriptor0
     {
     public:
         FileDescriptor0(IParameterizedFile0& file)
@@ -172,11 +170,10 @@ namespace BitFunnel
 
     // DESIGN NOTE: Deliberately using inline template method definition for
     // brevity.
-    template <typename P1>
-    class FileDescriptor1 : NonCopyable
+    class FileDescriptor1
     {
     public:
-        FileDescriptor1(IParameterizedFile1<P1>& file, P1 p1)
+        FileDescriptor1(IParameterizedFile1& file, size_t p1)
             : m_file(file),
               m_p1(p1)
         {
@@ -191,18 +188,17 @@ namespace BitFunnel
         void Delete() { m_file.Delete(m_p1); }
 
     private:
-        IParameterizedFile1<P1>& m_file;
-        P1 m_p1;
+        IParameterizedFile1& m_file;
+        size_t m_p1;
     };
 
 
     // DESIGN NOTE: Deliberately using inline template method definition for
     // brevity.
-    template <typename P1, typename P2>
-    class FileDescriptor2 : NonCopyable
+    class FileDescriptor2
     {
     public:
-        FileDescriptor2(IParameterizedFile2<P1, P2>& file, P1 p1, P2 p2)
+        FileDescriptor2(IParameterizedFile2& file, size_t p1, size_t p2)
             : m_file(file),
               m_p1(p1),
               m_p2(p2)
@@ -218,8 +214,8 @@ namespace BitFunnel
         void Delete() { m_file.Delete(m_p1, m_p2); }
 
     private:
-        IParameterizedFile2<P1, P2>& m_file;
-        P1 m_p1;
-        P2 m_p2;
+        IParameterizedFile2& m_file;
+        size_t m_p1;
+        size_t m_p2;
     };
 }

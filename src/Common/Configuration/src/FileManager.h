@@ -63,15 +63,15 @@ namespace BitFunnel
         virtual FileDescriptor0 PostingAndBitStats() override;
         virtual FileDescriptor0 StrengtheningMetawords() override;
 
-        virtual FileDescriptor1<ShardId> DocTable(ShardId shard) override;
-        virtual FileDescriptor1<ShardId> ScoreTable(ShardId shard) override;
-        virtual FileDescriptor1<ShardId> TermTable(ShardId shard) override;
+        virtual FileDescriptor1 DocTable(size_t shard) override;
+        virtual FileDescriptor1 ScoreTable(size_t shard) override;
+        virtual FileDescriptor1 TermTable(size_t shard) override;
 
-        virtual FileDescriptor2<ShardId, SliceId> IndexSlice(ShardId shard, SliceId slice) override;
+        virtual FileDescriptor2 IndexSlice(size_t shard, size_t slice) override;
 
     private:
         std::unique_ptr<IParameterizedFile0> m_documentHistogram;
-        std::unique_ptr<IParameterizedFile1<ShardId>> m_docTable;
-        std::unique_ptr<IParameterizedFile2<ShardId, SliceId>> m_indexSlice;
+        std::unique_ptr<IParameterizedFile1> m_docTable;
+        std::unique_ptr<IParameterizedFile2> m_indexSlice;
     };
 }
