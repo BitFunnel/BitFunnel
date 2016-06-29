@@ -342,7 +342,6 @@ namespace CsvTsv
                     << "32" << std::endl
                     << "493434" << std::endl
                     << maximum << std::endl
-                    << maximum + 1 << std::endl
                     << minimum << std::endl;
         // See bug#49.
         //          << "-1" << std::endl
@@ -365,10 +364,6 @@ namespace CsvTsv
 
         reader.ReadDataRow();
         ASSERT_EQ(c1.GetValue(), maximum);
-
-        // MAX + 1 for unsigned integral type is defined behavior in C.
-        reader.ReadDataRow();
-        ASSERT_EQ(c1.GetValue(), 0U);
 
         reader.ReadDataRow();
         ASSERT_EQ(c1.GetValue(), minimum);
