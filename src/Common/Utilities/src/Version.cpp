@@ -50,7 +50,7 @@ namespace BitFunnel
         // To avoid compiler warning 4239, create a temporary version
         // object using StandardInputStream and copy to this object.
         // Since the Version object is very small, no perf impact is expected.
-        *this = Version::Version(standardIn);
+        *this = Version(standardIn);
     }
 
 
