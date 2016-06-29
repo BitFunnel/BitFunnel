@@ -59,7 +59,7 @@ namespace BitFunnel
         m_actualSize = m_requestedSize;
         m_rawBuffer = mmap((caddr_t)0, size,
                            PROT_READ | PROT_WRITE,
-                           MAP_ANONYMOUS | MAP_PRIVATE,
+                           MAP_ANON | MAP_PRIVATE,
                            -1,  // No file descriptor.
                            0);
         if (m_rawBuffer == MAP_FAILED)
