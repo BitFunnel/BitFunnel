@@ -54,3 +54,9 @@ script:
   - cd build-make
   - make -j4
   - make test -j4
+
+notifications:
+  email:
+    - mhop@microsoft.com
+    - aclemmer@microsoft.com
+    - danluu@microsoft.com
