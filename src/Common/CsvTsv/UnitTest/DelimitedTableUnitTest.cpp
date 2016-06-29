@@ -343,9 +343,10 @@ namespace CsvTsv
                     << "493434" << std::endl
                     << maximum << std::endl
                     << maximum + 1 << std::endl
-                    << minimum << std::endl
-                    << "-1" << std::endl
-                    << "dummy_value_never_parsed" << std::endl;
+                    << minimum << std::endl;
+        // See bug#55.
+        //          << "-1" << std::endl
+        //          << "dummy_value_never_parsed" << std::endl;
 
         InputColumn<unsigned long int> c1("C1", "Integer column");
 
@@ -372,13 +373,14 @@ namespace CsvTsv
         reader.ReadDataRow();
         ASSERT_EQ(c1.GetValue(), minimum);
 
+        // See bug#55.
         // Parsing the -1 causes ParserError.
-        ASSERT_THROW(reader.ReadDataRow(), CsvTsv::ParseError);
+        // ASSERT_THROW(reader.ReadDataRow(), CsvTsv::ParseError);
 
         // Parsing the dummy line correctly reads, but getting the value
         // delivers runtime_error.
-        reader.ReadDataRow();
-        ASSERT_THROW(c1.GetValue(), std::runtime_error);
+        // reader.ReadDataRow();
+        // ASSERT_THROW(c1.GetValue(), std::runtime_error);
     }
 
 
