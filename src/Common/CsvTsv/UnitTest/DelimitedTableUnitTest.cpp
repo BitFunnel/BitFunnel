@@ -344,7 +344,7 @@ namespace CsvTsv
                     << maximum << std::endl
                     << maximum + 1 << std::endl
                     << minimum << std::endl;
-        // See bug#55.
+        // See bug#49.
         //          << "-1" << std::endl
         //          << "dummy_value_never_parsed" << std::endl;
 
@@ -373,7 +373,7 @@ namespace CsvTsv
         reader.ReadDataRow();
         ASSERT_EQ(c1.GetValue(), minimum);
 
-        // See bug#55.
+        // See bug#49.
         // Parsing the -1 causes ParserError.
         // ASSERT_THROW(reader.ReadDataRow(), CsvTsv::ParseError);
 
