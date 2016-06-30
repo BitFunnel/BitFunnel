@@ -20,7 +20,7 @@ namespace BitFunnel
 {
     //*************************************************************************
     // MurmurHash2, 64-bit versions, by Austin Appleby
-    // The same caveats as 32-bit MurmurHash2 apply here - beware of alignment 
+    // The same caveats as 32-bit MurmurHash2 apply here - beware of alignment
     // and endian-ness issues if used across multiple platforms.
     //*************************************************************************
 
@@ -30,7 +30,7 @@ namespace BitFunnel
         const uint64_t m = 0xc6a4a7935bd1e995;
         const int r = 47;
         uint64_t h = seed ^ (len * m);
-        const uint64_t *data = (const uint64_t *)key;
+        const uint64_t *data = static_cast<const uint64_t *>(key);
         const uint64_t *end = data + (len / 8);
         while (data != end)
         {
@@ -41,7 +41,7 @@ namespace BitFunnel
             h ^= k;
             h *= m;
         }
-        const unsigned char *data2 = (const unsigned char *)data;
+        const unsigned char *data2 = reinterpret_cast<const unsigned char *>(data);
 
         switch(len &7)
         {
@@ -70,7 +70,7 @@ namespace BitFunnel
 
     //*************************************************************************
     // MurmurHash2, 32-bit versions, by Austin Appleby
-    // The same caveats as 32-bit MurmurHash2 apply here - beware of alignment 
+    // The same caveats as 32-bit MurmurHash2 apply here - beware of alignment
     // and endian-ness issues if used across multiple platforms.
     //*************************************************************************
     #define mmix(h,k) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
@@ -81,13 +81,13 @@ namespace BitFunnel
         const int r = 24;
         uint32_t l = static_cast<uint32_t>(len);
 
-        const unsigned char * data = (const unsigned char *)key;
+        const unsigned char * data = static_cast<const unsigned char *>(key);
 
         uint32_t h = seed;
 
         while(len >= 4)
         {
-            uint32_t k = *(unsigned int*)data;
+            uint32_t k = *reinterpret_cast<const uint32_t*>(data);
 
             mmix(h,k);
 

@@ -76,15 +76,19 @@ namespace CsvTsv
         bool success = true;
 
         Row rows[] = {
-            {0xabcd, 1.0, "hello", true, 123, (long long)1 << 62, (unsigned long long)1 << 63},
-            {-1, -1.2, "string with embedded \"quote\"", false, 123, (long long)1 << 62, (unsigned long long)1 << 63},
-            {1234, 0, "   string with 3 leading spaces", true, 123, (long long)1 << 62, (unsigned long long)1 << 63},
-            {-6789, -1.2e-5, "string with comma (,)", false, 123, (long long)1 << 62, (unsigned long long)1 << 63},
+            {0xabcd, 1.0, "heLLo", true, 123, 1LL << 62, 1ULL << 63},
+            {-1, -1.2, "string with embedded \"quote\"", false,
+             123, 1LL << 62, 1ULL << 63},
+            {1234, 0, "   string with 3 leading spaces", true, 123,
+             1LL << 62, 1ULL << 63},
+            {-6789, -1.2e-5, "string with comma (,)", false, 123,
+             1LL << 62, 1ULL << 63},
             // TODO: decide whether to support embedded newlines.
             // Currently embedded newlines are not allowed in .TSV and .CSV files.
             //{5, 1234567.89, "string with newline (\n) embedded", false},
-            {0, 10e6, "", true, 123, (long long)1 << 62, (unsigned long long)1 << 63},
-            {0x7fffffff, 1.0, "hexidecimal", true, 0xffffffff, 0x7fffffffffffffff, 0xffffffffffffffff}  // Test hexidecimal values
+            {0, 10e6, "", true, 123, 1LL << 62, 1ULL << 63},
+            {0x7fffffff, 1.0, "hexidecimal", true, 0xffffffff,
+             0x7fffffffffffffff, 0xffffffffffffffff}  // Test hexidecimal values
         };
 
         InputColumn<int> c1("C1", "Integer column");
@@ -93,7 +97,8 @@ namespace CsvTsv
         InputColumn<bool> c4("C4", "Boolean column");
         InputColumn<unsigned int> c5("C5", "Unsigned Integer column");
         InputColumn<long long int> c6("C6", "Long Long Integer column");
-        InputColumn<unsigned long long int> c7("C7", "Unsigned Long Long Integer column");
+        InputColumn<unsigned long long int>
+            c7("C7","Unsigned Long Long Integer column");
 
         c1.SetHexMode(hexColumns);
         c5.SetHexMode(hexColumns);

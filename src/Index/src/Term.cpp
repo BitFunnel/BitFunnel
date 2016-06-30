@@ -134,7 +134,7 @@ namespace BitFunnel
         out << "Term("
             << std::hex << m_rawHash
             << ", "
-            << std::dec << (size_t)m_gramSize
+            << std::dec << m_gramSize
             << ")";
     }
 

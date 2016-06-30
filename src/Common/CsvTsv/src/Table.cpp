@@ -274,7 +274,7 @@ namespace CsvTsv
                 // and then cast to long long.
                 unsigned long long x;
                 ss >> std::hex >> x;
-                m_value = (long long)x;
+                m_value = static_cast<long long>(x);
             }
             else
             {

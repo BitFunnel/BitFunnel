@@ -68,7 +68,8 @@ namespace BitFunnel
             }
             StreamUtilities::WriteArray<TestStructPerson>(writeStream, persons,
                                                           10);
-            StreamUtilities::WriteBytes(writeStream, (char *)persons,
+            StreamUtilities::WriteBytes(writeStream,
+                                        reinterpret_cast<char *>(persons),
                                         10 * sizeof(TestStructPerson));
 
             // Read the set of values from the stream and compare.
@@ -78,7 +79,8 @@ namespace BitFunnel
             bool value2Read = StreamUtilities::ReadField<bool>(readStream);
             EXPECT_EQ(value2, value2Read);
 
-            double value3Read = StreamUtilities::ReadField<double>(readStream);
+            double value3Read = StreamUtilities::
+                ReadField<double>(readStream);
             EXPECT_EQ(value3, value3Read);
 
             std::string strRead;
@@ -86,14 +88,17 @@ namespace BitFunnel
             EXPECT_EQ(str, strRead);
 
             TestStructPerson personsRead[10];
-            StreamUtilities::ReadArray<TestStructPerson>(readStream, personsRead, 10);
+            StreamUtilities::ReadArray<TestStructPerson>(readStream,
+                                                         personsRead, 10);
             for (int i = 0; i < 10; i++)
             {
                 EXPECT_EQ(persons[i].m_id, personsRead[i].m_id);
                 EXPECT_EQ(persons[i].m_score, personsRead[i].m_score);
                 EXPECT_STREQ(persons[i].m_name, personsRead[i].m_name);
             }
-            StreamUtilities::ReadBytes(readStream, (char *)personsRead, 10);
+            StreamUtilities::ReadBytes(readStream,
+                                       reinterpret_cast<char *>(personsRead),
+                                       10);
             for (int i = 0; i < 10; i++)
             {
                 EXPECT_EQ(persons[i].m_id, personsRead[i].m_id);

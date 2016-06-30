@@ -147,7 +147,7 @@ namespace CsvTsv
     char DelimitedTableParser::GetChar()
     {
         // TODO: eliminate this cast by changing API to int.
-        char c = (char)m_input->get();
+        char c = static_cast<char>(m_input->get());
 
         // TODO: make sure currentPositionInLine can't get incremented on
         // attempted get at EOF.

@@ -243,7 +243,7 @@ namespace CmdLine
             }
         }
 
-        argc = (int)args.size();
+        argc = static_cast<int>(args.size());
         argv = new char*[argc];
         for (int i = 0; i < argc; ++i)
         {
@@ -260,4 +260,3 @@ namespace CmdLine
         return test.RunTest();
     }
 }
-

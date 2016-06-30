@@ -51,7 +51,7 @@ namespace CmdLine
         unsigned charCount = 0;
         while (left.peek() != std::char_traits<char>::eof())
         {
-            out << (char)left.get();
+            out << static_cast<char>(left.get());
             ++charCount;
         }
         Indent(out, leftWidth - charCount);
@@ -72,7 +72,7 @@ namespace CmdLine
             }
             else
             {
-                char c = (char)right.get();
+                char c = static_cast<char>(right.get());
                 if ((c == ' ') && (position > (leftWidth + rightWidth)))
                 {
                     out << std::endl;

@@ -50,6 +50,6 @@ namespace BitFunnel
         Configuration::GetDocumentFrequencyTable() const
     {
         // TODO: Implement this method.
-        return *(IDocumentFrequencyTable*)nullptr;
+        return *static_cast<IDocumentFrequencyTable *>(nullptr);
     }
 }

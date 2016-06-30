@@ -113,7 +113,7 @@ namespace BitFunnel
 
     FileHeaderTime::FileHeaderTime(std::istream& in)
     {
-        const int c_len = (int)strlen("04/20/2011 02:24:45");
+        const size_t c_len = strlen("04/20/2011 02:24:45");
         char buffer[64];
         StreamUtilities::ReadBytes(in, buffer, c_len);
         buffer[c_len] = 0;

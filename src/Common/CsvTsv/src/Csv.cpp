@@ -108,7 +108,7 @@ namespace CsvTsv
 
     // Attempt to parse the next field as a string, int, double or bool.
     // If successful, the value of the field will be stored in value and the function
-    // will return true. On return the current position will be immediately after 
+    // will return true. On return the current position will be immediately after
     // the field just returned.
     bool CsvTableParser::TryReadField(std::string& value)
     {
@@ -125,7 +125,7 @@ namespace CsvTsv
         else
         {
             // TODO: eliminate this cast by changing API to int.
-            char c = (char)m_input->peek();
+            char c = static_cast<char>(m_input->peek());
             if (c == '"')
             {
                 // This field is a quoted string. Skip over the opening quote.
@@ -181,7 +181,7 @@ namespace CsvTsv
                     }
                 }
             }
-            else 
+            else
             {
                 // This field is an unquoted string.
                 for (;;)

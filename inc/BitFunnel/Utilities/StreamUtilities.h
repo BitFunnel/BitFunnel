@@ -193,6 +193,7 @@ namespace BitFunnel
                                      const T* buffer,
                                      size_t itemCount)
     {
-        WriteBytes(stream, (char*)buffer, itemCount * sizeof(T));
+        WriteBytes(stream, reinterpret_cast<const char*>(buffer),
+                   itemCount * sizeof(T));
     }
 }

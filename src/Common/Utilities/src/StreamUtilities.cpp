@@ -42,7 +42,7 @@ namespace BitFunnel
         while (byteCount > 0)
         {
             size_t len = (byteCount <= c_readWriteChunkSize) ?
-                (int)byteCount : c_readWriteChunkSize;
+                byteCount : c_readWriteChunkSize;
             const size_t bytesRead = stream.Read(
                                      static_cast<char*>(buffer) + offset, len);
             LogAssertB(bytesRead == len, "Stream Read Unexpected Bytes Count");
@@ -68,9 +68,9 @@ namespace BitFunnel
         size_t offset = 0;  // number of bytes written.
         while (byteCount > 0)
         {
-            int len = (byteCount <= c_readWriteChunkSize) ?
-                (int)byteCount : c_readWriteChunkSize;
-            stream.write((char*)(buffer + offset), len);
+            size_t len = (byteCount <= c_readWriteChunkSize) ?
+                byteCount : c_readWriteChunkSize;
+            stream.write(static_cast<const char*>(buffer + offset), len);
             LogAssertB(!stream.bad(), "Stream Write Error");
             byteCount -= len;
             offset += len;
