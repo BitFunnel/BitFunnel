@@ -79,11 +79,11 @@ namespace BitFunnel
 
     void FileHeader::Write(std::ostream& out) const
     {
-        m_version.get()->Write(out);
-        m_time.get()->Write(out);
+        m_version->Write(out);
+        m_time->Write(out);
         char ch = '\n';
         StreamUtilities::WriteField<char>(out, ch);
-        m_userData.get()->Write(out);
+        m_userData->Write(out);
     }
 
     const Version& FileHeader::GetVersion() const
@@ -93,12 +93,12 @@ namespace BitFunnel
 
     const time_t& FileHeader::TimeStamp() const
     {
-        return m_time.get()->TimeStamp();
+        return m_time->TimeStamp();
     }
 
     const std::string& FileHeader::UserData() const
     {
-        return m_userData.get()->Data();
+        return m_userData->Data();
     }
 
     FileHeaderTime::FileHeaderTime()
