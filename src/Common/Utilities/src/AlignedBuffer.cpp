@@ -57,7 +57,7 @@ namespace BitFunnel
         // is sufficient.
         LogAssertB(alignment <= c_pageSize, "Alignment > 4096.\n");
         m_actualSize = m_requestedSize;
-        m_rawBuffer = mmap((caddr_t)0, size,
+        m_rawBuffer = mmap(nullptr, size,
                            PROT_READ | PROT_WRITE,
                            MAP_ANON | MAP_PRIVATE,
                            -1,  // No file descriptor.
