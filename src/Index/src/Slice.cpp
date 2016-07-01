@@ -20,14 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "LoggerInterfaces/Logging.h"
 #include "Slice.h"
 
+#define FAKE_SLICE_CAP 4
 
 namespace BitFunnel
 {
     Slice::Slice(Shard& shard)
         : m_shard(shard),
-          m_temporaryNextDocIndex(0U)
+          m_temporaryNextDocIndex(0U),
+          m_capacity(FAKE_SLICE_CAP),
+          m_unallocatedCount(FAKE_SLICE_CAP), // TODO: fix.
+          m_commitPendingCount(0),
+          m_expiredCount(0)
     {
     }
 
@@ -38,10 +44,56 @@ namespace BitFunnel
     }
 
 
-    bool Slice::TryAllocateDocument(DocIndex& index)
+    bool Slice::TryAllocateDocument(size_t& index)
     {
-        // TODO: Correct implementation.
-        index = m_temporaryNextDocIndex++;
+        std::lock_guard<std::mutex> lock(m_docIndexLock);
+
+        if (m_unallocatedCount == 0)
+        {
+                return false;
+        }
+
+        index = m_capacity - m_unallocatedCount;
+        m_unallocatedCount--;
+        m_commitPendingCount++;
+
         return true;
+    }
+
+    bool Slice::CommitDocument()
+    {
+        std::lock_guard<std::mutex> lock(m_docIndexLock);
+        LogAssertB(m_commitPendingCount > 0,
+                   "CommitDocument with m_commitPendingCount == 0");
+
+        --m_commitPendingCount;
+
+        return (m_unallocatedCount + m_commitPendingCount) == 0;
+    }
+
+
+    bool Slice::ExpireDocument()
+    {
+        std::lock_guard<std::mutex> lock(m_docIndexLock);
+
+        // Cannot expire more than what was committed.
+        const DocIndex committedCount =
+            m_capacity - m_unallocatedCount - m_commitPendingCount;
+        LogAssertB(m_expiredCount < committedCount,
+                   "Slice expired more documents than committed.");
+
+        m_expiredCount++;
+
+        return m_expiredCount == m_capacity;
+    }
+
+
+    bool Slice::IsExpired() const
+    {
+        // TODO: is this lock_guard  really necessary?
+        // It seems like this could be removed if m_expireCount were atomic.
+        std::lock_guard<std::mutex> lock(m_docIndexLock);
+
+        return m_expiredCount == m_capacity;
     }
 }

@@ -11,7 +11,9 @@ set(CPPFILES
     DocumentLengthHistogram.cpp
     IngestChunks.cpp
     Ingestor.cpp
+    PackedTermInfo.cpp
     Placeholder.cpp
+    RowId.cpp
     Shard.cpp
     Slice.cpp
     Term.cpp

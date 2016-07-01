@@ -1,27 +1,37 @@
-#include "stdafx.h"
+#include <stdexcept>
 
 #include "BitFunnel/PackedTermInfo.h"
+#include "BitFunnel/RowId.h"
 #include "EmptyTermTable.h"
 #include "LoggerInterfaces/Logging.h"
+#include "Term.h"
 
+
+// TODO: move this somewhere appropriate and make it a real value.
+#define c_maxRankValue 6
+#define c_systemRowCount 3
 
 namespace BitFunnel
 {
     EmptyTermTable::EmptyTermTable()
         : m_rowCounts(c_maxRankValue + 1, c_systemRowCount)
     {
-        LogAssertB(static_cast<Rank>(m_rowCounts.size()) == (c_maxRankValue + 1));
+        LogAssertB(static_cast<size_t>(m_rowCounts.size()) ==
+                   (c_maxRankValue + 1),
+                   "");
     }
 
 
-    EmptyTermTable::EmptyTermTable(std::vector<RowIndex> const & rowCounts)
+    EmptyTermTable::EmptyTermTable(std::vector<size_t> const & rowCounts)
         : m_rowCounts(rowCounts)
     {
-        LogAssertB(static_cast<Rank>(rowCounts.size()) == (c_maxRankValue + 1));
-    }    
+        LogAssertB(static_cast<size_t>(rowCounts.size()) ==
+                   (c_maxRankValue + 1),
+                   "");
+    }
 
 
-    RowIndex EmptyTermTable::GetTotalRowCount(Tier, Rank rank) const
+    size_t EmptyTermTable::GetTotalRowCount(size_t rank) const
     {
         return m_rowCounts[rank];
     }
@@ -29,33 +39,33 @@ namespace BitFunnel
 
     void EmptyTermTable::Write(std::ostream& /* stream */) const
     {
-        throw std::exception("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
 
 
     void EmptyTermTable::AddRowId(RowId /* id */)
     {
-        throw std::exception("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
 
 
     unsigned EmptyTermTable::GetRowIdCount() const
     {
-        throw std::exception("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
 
 
     RowId EmptyTermTable::GetRowId(unsigned /* rowOffset */) const
     {
-        throw std::exception("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
 
 
-    RowId EmptyTermTable::GetRowIdAdhoc(Term::Hash /* hash */, 
-                                        unsigned /* rowOffset */, 
+    RowId EmptyTermTable::GetRowIdAdhoc(uint64_t /* hash */,
+                                        unsigned /* rowOffset */,
                                         unsigned /* variant */)  const
     {
-        throw std::exception("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
 
 
@@ -65,43 +75,42 @@ namespace BitFunnel
                    "Rank 0 must contain at least c_systemRowCount rows when calling GetRowIdForFact()");
 
         // EmptyTermTable assumes rows for facts go first.
-        LogAssertB(rowOffset < c_systemRowCount);
-        return RowId(0, DDRTier, 0, rowOffset);
+        LogAssertB(rowOffset < c_systemRowCount,
+                   "rowOffset too large.");
+        return RowId(0, 0, rowOffset);
     }
 
 
-    void EmptyTermTable::AddTerm(Term::Hash /* hash */, 
-                                 unsigned /* rowIdOffset */, 
+    void EmptyTermTable::AddTerm(uint64_t /* hash */,
+                                 unsigned /* rowIdOffset */,
                                  unsigned /* rowIdLength */)
     {
-        throw std::exception("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
 
 
-    void EmptyTermTable::AddTermAdhoc(Stream::Classification /* classification */,
-                                      unsigned /* gramSize */,
-                                      Tier /* tierHint */,
-                                      IdfSumX10 /* idfSum */,
-                                      unsigned /* rowIdOffset */,
-                                      unsigned /* rowIdLength */)
-    {
-        throw std::exception("Not implemented");
-    }
+    // void EmptyTermTable::AddTermAdhoc(Stream::Classification /* classification */,
+    //                                   unsigned /* gramSize */,
+    //                                   Tier /* tierHint */,
+    //                                   IdfSumX10 /* idfSum */,
+    //                                   unsigned /* rowIdOffset */,
+    //                                   unsigned /* rowIdLength */)
+    // {
+    //     throw std::runtime_error("Not implemented");
+    // }
 
 
-    void EmptyTermTable::SetRowTableSize(Tier /* tier */,
-                                         Rank /* rank */,
+    void EmptyTermTable::SetRowTableSize(size_t /* rank */,
                                          unsigned /* rowCount */,
                                          unsigned /* sharedRowCount */)
     {
-        throw std::exception("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
 
 
-    RowIndex EmptyTermTable::GetMutableFactRowCount(Tier /* tier */, 
-                                                    Rank /* rank */) const
+    size_t EmptyTermTable::GetMutableFactRowCount(size_t /* rank */) const
     {
-        throw std::exception("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
 
 
@@ -118,7 +127,7 @@ namespace BitFunnel
         }
         else
         {
-            throw std::exception("Not implemented");
+            throw std::runtime_error("Not implemented");
         }
     }
 }

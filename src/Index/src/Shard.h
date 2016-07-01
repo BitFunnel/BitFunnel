@@ -65,13 +65,13 @@ namespace BitFunnel
     class Shard : private NonCopyable
     {
     public:
-        typedef size_t Id;
+        // typedef size_t Id;
 
         // Constructs an empty Shard with no slices. sliceBufferSize must be
         // sufficient to hold the minimum capacity Slice. The minimum capacity
         // is determined by a value returned by Row::DocumentsInRank0Row(1).
         Shard(IIngestor& ingestor,
-              Id id);
+              size_t id);
         //Shard(IngestionIndex& index,
         //      ShardId id,
         //      ITermTable const & termTable,
@@ -213,7 +213,7 @@ namespace BitFunnel
         IIngestor& m_ingestor;
 
         // Shard's ID.
-        Id m_id;
+        size_t m_id;
 
         // TermTable for this shard.
         //ITermTable const & m_termTable;

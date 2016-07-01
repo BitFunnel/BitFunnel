@@ -1,27 +1,61 @@
-#include "stdafx.h"
+// #include <set>
 
-#include <set>
+// #include "BitFunnel/Factories.h"
+// #include "BitFunnel/Row.h"
+// #include "BitFunnel/TermInfo.h"
+// #include "DocumentDataSchema.h"
+// #include "EmptyTermTable.h"
+// #include "ExpectException.h"
+// #include "IndexWrapper.h"
+// #include "LoggerInterfaces/Logging.h"
+// #include "Random.h"
+// #include "Slice.h"
+// #include "Shard.h"
+// #include "ThrowingLogger.h"
+// #include "TrackingSliceBufferAllocator.h"
 
-#include "BitFunnel/Factories.h"
-#include "BitFunnel/Row.h"
-#include "BitFunnel/TermInfo.h"
-#include "DocumentDataSchema.h"
-#include "EmptyTermTable.h"
-#include "ExpectException.h"
-#include "IndexWrapper.h"
-#include "LoggerInterfaces/Logging.h"
-#include "Random.h"
-#include "Slice.h"
+#include "gtest/gtest.h"
+
+#include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Index/IIngestor.h"
+#include "Mocks/EmptyTermTable.h"
+#include "BitFunnel/ITermTable.h"
+#include "Ingestor.h"
 #include "Shard.h"
-#include "SuiteCpp/UnitTest.h"
-#include "ThrowingLogger.h"
-#include "TrackingSliceBufferAllocator.h"
+#include "Slice.h"
 
 namespace BitFunnel
 {
     namespace SliceUnitTest
     {
-        size_t GetBufferSize(DocIndex capacity, 
+
+        TEST(Nothing, Trivial)
+        {
+            /*
+            std::unique_ptr<IIngestor> ingestor(Factories::CreateIngestor());
+            Shard* shard = new Shard(*ingestor, 0u);
+            throw shard;
+            */
+
+            // pSlice* slice = Slice(nullptr);
+
+            static const size_t c_systemRowCount = 3; // TODO: why is this 3?
+            // static const size_t c_sliceCapacity = 16;
+
+            // 1 row reserved for soft-deleted row.
+            // TODO: what does the above comment mean?
+            static const std::vector<size_t> rowCounts = { c_systemRowCount, 0, 0, 0, 0, 0, 0 };
+            std::shared_ptr<ITermTable const> termTable(new EmptyTermTable(rowCounts));
+
+            // DocumentDataSchema schema;
+            // IndexWrapper index(c_sliceCapacity, termTable, schema, c_blockAllocatorBlockCount);
+            // Shard& shard = index.GetShard();
+
+
+
+        }
+        /*
+        size_t GetBufferSize(DocIndex capacity,
                              std::vector<RowIndex> const & rowCounts,
                              IDocumentDataSchema const & schema)
         {
@@ -30,7 +64,7 @@ namespace BitFunnel
         }
 
 
-        TestCase(BufferSizeTest)
+        TEST(BufferSizeTest, Trivial)
         {
             static const DocIndex c_capacityQuanta = 4096;
             static const size_t c_sizeOfSlicePtr = sizeof(void*);
@@ -71,7 +105,7 @@ namespace BitFunnel
 
         const size_t c_blockAllocatorBlockCount = 10;
 
-        TestCase(DocIndexAllocation)
+        TEST(DocIndexAllocation, Trivial)
         {
             static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
 
@@ -148,7 +182,7 @@ namespace BitFunnel
 
                 DocIndex index;
                 TestAssert(slice.TryAllocateDocument(index));
-                    
+
                 ExpectException([&] () { slice.ExpireDocument(index); });
 
                 // Commit and now we can expire.
@@ -194,7 +228,7 @@ namespace BitFunnel
         }
 
 
-        TestCase(RefCountTest)
+        TEST(RefCountTest, Trivial)
         {
             static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
 
@@ -232,7 +266,7 @@ namespace BitFunnel
                 // The slice should not be recycled since there are 2 reference holders.
                 TestEqual(trackingAllocator.GetInUseBuffersCount(), 1);
 
-                // Decrement the ref count, at this point there should be 1 ref count and the 
+                // Decrement the ref count, at this point there should be 1 ref count and the
                 // Slice must not be recycled.
                 Slice::DecrementRefCount(slice);
 
@@ -246,7 +280,7 @@ namespace BitFunnel
         }
 
 
-        TestCase(BasicIntegration)
+        TEST(BasicIntegration, Trivial)
         {
             static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
 
@@ -347,12 +381,12 @@ namespace BitFunnel
 
 
         // Test serialization/deserialization of the Slice.
-        TestCase(RoundTripTest)
+        TEST(RoundTripTest, Trivial)
         {
             static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
 
             static const size_t c_fixedBlob0Size = 20;
-            
+
             // Number of rows to set bits in for each column during the test.
             static const unsigned c_testRowCount = 10;
 
@@ -369,7 +403,7 @@ namespace BitFunnel
             Slice slice(shard);
             void* sliceBuffer = slice.GetSliceBuffer();
 
-            RowIndex totalRowCount = 0; 
+            RowIndex totalRowCount = 0;
             for (const auto r : rowCounts)
             {
                 totalRowCount += r;
@@ -386,7 +420,7 @@ namespace BitFunnel
                     // Set randomly picked c_testRowCount bits.
                     for (unsigned j = 0; j < c_testRowCount; ++j)
                     {
-                        // Pick an absolute row index. Walk over the row counts for 
+                        // Pick an absolute row index. Walk over the row counts for
                         // each rank to determine the rank which this index belongs and
                         // a rank-relative RowIndex.
                         unsigned rowIndex = random() % totalRowCount;
@@ -407,7 +441,7 @@ namespace BitFunnel
                     unsigned blobSize = random() % 20;
                     varBlobSizes.push_back(blobSize);
 
-                    // Deliberately allow blobSize = 0 to simulate a case when no 
+                    // Deliberately allow blobSize = 0 to simulate a case when no
                     // blob is allocated for a document.
                     if (blobSize > 0)
                     {
@@ -436,7 +470,7 @@ namespace BitFunnel
             TestNotEqual(sliceBuffer, sliceBuffer1);
 
             // Make sure Slice is initialized as sealed.
-            { 
+            {
                 DocIndex index;
                 TestAssert(!slice1.TryAllocateDocument(index));
             }
@@ -460,7 +494,7 @@ namespace BitFunnel
 
                     void* varBlob0Slice0 = docTable.GetVariableSizeBlob(sliceBuffer, i, varBlobId0);
                     void* varBlob0Slice1 = docTable.GetVariableSizeBlob(sliceBuffer1, i, varBlobId0);
-                    
+
                     const size_t blobSize = varBlobSizes[i];
                     if (blobSize == 0)
                     {
@@ -472,7 +506,7 @@ namespace BitFunnel
                     }
 
                     TestEqual(memcmp(docTable.GetFixedSizeBlob(sliceBuffer, i, fixedBlobId0),
-                                     docTable.GetFixedSizeBlob(sliceBuffer1, i, fixedBlobId0), 
+                                     docTable.GetFixedSizeBlob(sliceBuffer1, i, fixedBlobId0),
                                      c_fixedBlob0Size), 0);
                 }
             }
@@ -493,5 +527,6 @@ namespace BitFunnel
                 ExpectException([&]() { Slice slice1(shard, ss); });
             }
         }
+        */
     }
 }

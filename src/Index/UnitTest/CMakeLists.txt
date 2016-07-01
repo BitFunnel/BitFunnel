@@ -6,6 +6,8 @@ set(CPPFILES
     DocumentLengthHistogramUnitTest.cpp
     EndToEndTests.cpp
     Placeholder.cpp
+    SliceUnitTest.cpp
+    Mocks/EmptyTermTable.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -16,6 +18,7 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     Mocks/ChunkEventTracer.h
+    Mocks/EmptyTermTable.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

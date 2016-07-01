@@ -29,7 +29,7 @@
 
 namespace BitFunnel
 {
-    Shard::Shard(IIngestor& ingestor, Id id)
+    Shard::Shard(IIngestor& ingestor, size_t id)
         : m_ingestor(ingestor),
           m_id(id),
           m_slice(new Slice(*this))
