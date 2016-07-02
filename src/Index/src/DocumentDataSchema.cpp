@@ -1,7 +1,6 @@
-#include "stdafx.h"
-
-#include "BitFunnel/BitFunnelTypes.h"    // For DocId.
-#include "BitFunnel/Factories.h"
+// #include "BitFunnel/BitFunnelTypes.h"    // For DocId.
+#include "BitFunnel/Index/DocumentHandle.h"  // For DocId.
+#include "BitFunnel/Index/Factories.h"
 #include "DocumentDataSchema.h"
 
 namespace BitFunnel
@@ -12,7 +11,7 @@ namespace BitFunnel
     }
 
 
-    static const size_t s_bytesPerDocId = sizeof(DocId);
+    // static const size_t s_bytesPerDocId = sizeof(DocId);
 
     DocumentDataSchema::DocumentDataSchema()
         : m_variableSizeBlobCount(0)

@@ -2,13 +2,13 @@
 
 #include <vector>
 
-#include "BitFunnel/IDocumentDataSchema.h"
+#include "BitFunnel/Index/IDocumentDataSchema.h"
 
 namespace BitFunnel
 {
     //*************************************************************************
     //
-    // DocumentDataSchema is an implementation of IDocumentDataSchema which 
+    // DocumentDataSchema is an implementation of IDocumentDataSchema which
     // gives out sequential numbers for blob IDs.
     //
     // Thread safety: thread safe for multiple readers. Not thread safe for

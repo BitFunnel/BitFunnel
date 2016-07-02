@@ -1,49 +1,49 @@
-#include "stdafx.h"
-
 #include <memory>
 
-#include "BitFunnel/BitFunnelTypes.h"    // For DocId.
+#include "gtest/gtest.h"
+
+// #include "BitFunnel/BitFunnelTypes.h"    // For DocId.
+#include "BitFunnel/Index/DocumentHandle.h"  // For DocId.
 #include "DocumentDataSchema.h"
-#include "SuiteCpp/UnitTest.h"
 
 namespace BitFunnel
 {
     namespace DocumentDataSchemaUnitTest
     {
-        TestCase(BasicTest)
+        TEST(BasicTest, Trivial)
         {
             DocumentDataSchema schema;
-            static const unsigned s_sizeOfDocId(sizeof(DocId));
+            // static const unsigned s_sizeOfDocId(sizeof(DocId));
 
-            TestAssert(schema.GetFixedSizeBlobSizes().empty());
-            TestEqual(schema.GetVariableSizeBlobCount(), 0u);
+            EXPECT_TRUE(schema.GetFixedSizeBlobSizes().empty());
+            EXPECT_EQ(schema.GetVariableSizeBlobCount(), 0u);
 
             const FixedSizeBlobId fixedBlob0 = schema.RegisterFixedSizeBlob(10);
 
             // fixedBlob0 is of size 10.
             {
                 std::vector<unsigned> const & sizes = schema.GetFixedSizeBlobSizes();
-                TestEqual(sizes.size(), 1u);
-                TestEqual(sizes[static_cast<unsigned>(fixedBlob0)], 10u);
+                EXPECT_EQ(sizes.size(), 1u);
+                EXPECT_EQ(sizes[static_cast<unsigned>(fixedBlob0)], 10u);
             }
 
             /* const VariableSizeBlobId variableBlob0 = */ schema.RegisterVariableSizeBlob();
-            TestEqual(schema.GetVariableSizeBlobCount(), 1u);
+            EXPECT_EQ(schema.GetVariableSizeBlobCount(), 1u);
 
             // Register another fixed size blob.
             const FixedSizeBlobId fixedBlob1 = schema.RegisterFixedSizeBlob(5);
-            TestEqual(schema.GetVariableSizeBlobCount(), 1u);
+            EXPECT_EQ(schema.GetVariableSizeBlobCount(), 1u);
             {
                 std::vector<unsigned> const & sizes = schema.GetFixedSizeBlobSizes();
 
-                TestEqual(sizes.size(), 2u);
-                TestEqual(sizes[static_cast<unsigned>(fixedBlob0)], 10u);
-                TestEqual(sizes[static_cast<unsigned>(fixedBlob1)], 5u);
+                EXPECT_EQ(sizes.size(), 2u);
+                EXPECT_EQ(sizes[static_cast<unsigned>(fixedBlob0)], 10u);
+                EXPECT_EQ(sizes[static_cast<unsigned>(fixedBlob1)], 5u);
             }
 
             // Register another variable size blob.
             /* const VariableSizeBlobId variableBlob1 = */ schema.RegisterVariableSizeBlob();
-            TestEqual(schema.GetVariableSizeBlobCount(), 2u);
+            EXPECT_EQ(schema.GetVariableSizeBlobCount(), 2u);
         }
     }
 }

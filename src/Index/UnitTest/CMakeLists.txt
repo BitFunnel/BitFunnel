@@ -3,6 +3,7 @@
 set(CPPFILES
     ChunkReaderUnitTest.cpp
     ChunkTaskProcessorUnitTest.cpp
+    DocumentDataSchemaUnitTest.cpp
     DocumentLengthHistogramUnitTest.cpp
     EndToEndTests.cpp
     Placeholder.cpp

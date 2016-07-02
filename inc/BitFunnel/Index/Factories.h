@@ -30,11 +30,13 @@
 namespace BitFunnel
 {
     class IConfiguration;
+    class IDocumentDataSchema;
     class IIngestor;
 
     namespace Factories
     {
         std::unique_ptr<IConfiguration> CreateConfiguration(size_t maxGramSize);
         std::unique_ptr<IIngestor> CreateIngestor();
+        std::unique_ptr<IDocumentDataSchema> CreateDocumentDataSchema();
     }
 }

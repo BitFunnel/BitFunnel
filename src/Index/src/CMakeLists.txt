@@ -7,6 +7,7 @@ set(CPPFILES
     ChunkTaskProcessor.cpp
     Configuration.cpp
     Document.cpp
+    DocumentDataSchema.cpp
     DocumentHandleInternal.cpp
     DocumentLengthHistogram.cpp
     IngestChunks.cpp
@@ -32,6 +33,7 @@ set(PRIVATE_HFILES
     ChunkTaskProcessor.h
     Configuration.h
     Document.h
+    DocumentDataSchema.h
     DocumentHandleInternal.h
     DocumentLengthHistogram.h
     Ingestor.h
