@@ -90,7 +90,7 @@ namespace BitFunnel
 
         // Returns capacity of a single Slice in the Shard. All Slices in the
         // Shard have the same capacity.
-        //virtual DocIndex GetSliceCapacity() const override;
+        virtual DocIndex GetSliceCapacity() const;
 
         // Returns a vector of slice buffers for this shard.
         // The callers needs to obtain a Token from ITokenManager to protect
@@ -258,7 +258,7 @@ namespace BitFunnel
         //std::vector<void*>* m_sliceBuffers;
 
         // Capacity of a Slice. All Slices in the shard have the same capacity.
-        //const DocIndex m_sliceCapacity;
+        const DocIndex m_sliceCapacity;
 
         // Size of the buffer for storing data for a single Slice. This member
         // is required for two reasons.

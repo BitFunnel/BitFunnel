@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include <sstream>
 
 #include "BitFunnelAllocatorInterfaces/IAllocatorFactory.h"
@@ -11,7 +9,7 @@
 #include "IndexWrapper.h"
 #include "PrivateHeapAllocator.h"
 #include "SingleShardDefinition.h"
-#include "SuiteCpp/UnitTest.h"
+// #include "SuiteCpp/UnitTest.h"
 
 
 namespace
@@ -26,11 +24,11 @@ namespace
 
 namespace BitFunnel
 {
-    // This value is used to pre-allocate space in DocumentMap in Index. 
+    // This value is used to pre-allocate space in DocumentMap in Index.
     // It can be made reasonably large.
     static const DocIndex c_maxIndexCapacity = 100 * 1000;
 
-    
+
     IndexWrapper::IndexWrapper(DocIndex sliceCapacity,
                                std::shared_ptr<ITermTable const> const & termTable,
                                IDocumentDataSchema const & docDataSchema,
@@ -51,7 +49,7 @@ namespace BitFunnel
                                FixedSizeBlobId offlinePerDocumentDataBlobId,
                                unsigned blockAllocatorBlockCount)
         : m_sliceBufferAllocator(CreateSliceBufferAllocator(sliceCapacity,
-                                                            docDataSchema, 
+                                                            docDataSchema,
                                                             *termTable,
                                                             blockAllocatorBlockCount)),
           m_offlinePerDocumentDataConfig(c_performOfflinePerDocumentDataIngestion,

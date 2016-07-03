@@ -40,14 +40,21 @@ namespace BitFunnel
             // pSlice* slice = Slice(nullptr);
 
             static const size_t c_systemRowCount = 3; // TODO: why is this 3?
-            // static const size_t c_sliceCapacity = 16;
 
             // 1 row reserved for soft-deleted row.
             // TODO: what does the above comment mean?
             static const std::vector<size_t> rowCounts = { c_systemRowCount, 0, 0, 0, 0, 0, 0 };
             std::shared_ptr<ITermTable const> termTable(new EmptyTermTable(rowCounts));
 
+            std::unique_ptr<IIngestor> ingestor(Factories::CreateIngestor());
+            Shard* shard = new Shard(*ingestor, 0u);
+
+            static const size_t c_sliceCapacity = 16;
+            Slice slice(*shard);
+            EXPECT_EQ(shard->GetSliceCapacity(), c_sliceCapacity);
+
             // DocumentDataSchema schema;
+            // static const size_t c_blockAllocatorBlockCount = 32; // TODO: what should this value be?
             // IndexWrapper index(c_sliceCapacity, termTable, schema, c_blockAllocatorBlockCount);
             // Shard& shard = index.GetShard();
 

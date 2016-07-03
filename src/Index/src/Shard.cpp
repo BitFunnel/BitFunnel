@@ -32,7 +32,8 @@ namespace BitFunnel
     Shard::Shard(IIngestor& ingestor, size_t id)
         : m_ingestor(ingestor),
           m_id(id),
-          m_slice(new Slice(*this))
+          m_slice(new Slice(*this)),
+          m_sliceCapacity(16) // TODO: use GetCapacityForByteSize.
     {
         m_activeSlice = m_slice.get();
     }
@@ -81,5 +82,10 @@ namespace BitFunnel
     IIngestor& Shard::GetIndex() const
     {
         return m_ingestor;
+    }
+
+    DocIndex Shard::GetSliceCapacity() const
+    {
+        return  m_sliceCapacity;
     }
 }
