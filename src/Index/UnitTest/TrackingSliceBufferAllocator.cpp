@@ -1,10 +1,10 @@
-#include "stdafx.h"
+#include <iostream> // TODO: remove.
+#include <mutex>
+#include <unordered_set>
 
-#include <set>
+#include "gtest/gtest.h"
 
-#include "LockGuard.h"
 #include "TrackingSliceBufferAllocator.h"
-#include "SuiteCpp/UnitTest.h"
 
 
 namespace BitFunnel
@@ -12,12 +12,13 @@ namespace BitFunnel
     TrackingSliceBufferAllocator::TrackingSliceBufferAllocator(size_t blockSize)
         : m_blockSize(blockSize)
     {
+        std::cout << "-----TrackingSliceBufferAllocator constructor " << blockSize << std::endl;
     }
 
 
     size_t TrackingSliceBufferAllocator::GetInUseBuffersCount() const
     {
-        LockGuard lock(m_lock);
+        std::lock_guard<std::mutex> lock(m_lock);
 
         return m_allocatedBuffers.size();
     }
@@ -25,9 +26,15 @@ namespace BitFunnel
 
     void* TrackingSliceBufferAllocator::Allocate(size_t byteSize)
     {
-        LockGuard lock(m_lock);
+        std::lock_guard<std::mutex> lock(m_lock);
 
-        TestAssert(byteSize == m_blockSize);
+        std::cout << "-----TrackingSliceBufferAllocator::Allocate " << byteSize << std::endl;
+        if (byteSize != m_blockSize)
+        {
+            // TODO: remove.
+            throw byteSize;
+        }
+        EXPECT_EQ(byteSize, m_blockSize);
 
         void* sliceBuffer = malloc(byteSize);
         m_allocatedBuffers.insert(sliceBuffer);
@@ -38,10 +45,11 @@ namespace BitFunnel
 
     void TrackingSliceBufferAllocator::Release(void* buffer)
     {
-        LockGuard lock(m_lock);
+        std::lock_guard<std::mutex> lock(m_lock);
 
+        std::cout << "-----TrackingSliceBufferAllocator::Release\n";
         auto it = m_allocatedBuffers.find(buffer);
-        TestAssert(it != m_allocatedBuffers.end());
+        EXPECT_NE(it, m_allocatedBuffers.end());
 
         free(buffer);
 

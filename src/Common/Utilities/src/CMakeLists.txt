@@ -42,7 +42,6 @@ set(PRIVATE_HFILES
     SimpleHashTable.h
     TaskDistributor.h
     TaskDistributorThread.h
-    Token.h
     TokenManager.h
     TokenTracker.h
     ThreadManager.h

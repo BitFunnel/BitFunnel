@@ -43,7 +43,7 @@ namespace BitFunnel
         bool IsEmpty() const;
 
         // Returns the offset of the first row in the TermTable's RowId table.
-        unsigned GetRowIdStart() const;
+        size_t GetRowIdStart() const;
 
         // Returns the number of consecutive rows in the TermTable's RowId table.
         unsigned GetRowIdCount() const;

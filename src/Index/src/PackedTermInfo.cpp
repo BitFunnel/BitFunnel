@@ -26,7 +26,7 @@ namespace BitFunnel
     }
 
 
-    unsigned PackedTermInfo::GetRowIdStart() const
+    size_t PackedTermInfo::GetRowIdStart() const
     {
         return m_rowIdStart;
     }

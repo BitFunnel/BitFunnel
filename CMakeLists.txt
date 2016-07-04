@@ -103,6 +103,7 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Token.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/IAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/Factories.h
 )

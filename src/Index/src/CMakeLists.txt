@@ -14,9 +14,11 @@ set(CPPFILES
     Ingestor.cpp
     PackedTermInfo.cpp
     Placeholder.cpp
+    Recycler.cpp
     RowId.cpp
     Shard.cpp
     Slice.cpp
+    SliceBufferAllocator.cpp
     Term.cpp
 )
 
@@ -37,8 +39,13 @@ set(PRIVATE_HFILES
     DocumentHandleInternal.h
     DocumentLengthHistogram.h
     Ingestor.h
+    IRecyclable.h
+    IRecycler.h
+    ISliceBufferAllocator.h
+    Recycler.h
     Shard.h
     Slice.h
+    SliceBufferAllocator.h
     Term.h
 )
 

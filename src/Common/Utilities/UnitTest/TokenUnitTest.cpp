@@ -25,7 +25,7 @@
 
 #include "gtest/gtest.h"
 
-#include "Token.h"
+#include "BitFunnel/Token.h"
 
 namespace BitFunnel
 {
@@ -33,8 +33,8 @@ namespace BitFunnel
     {
         static const unsigned c_maxTokenCount = 1000;
 
-        // A test implementation of ITokenListener which allows to check if a 
-        // token with particular serial number has been returned. For every 
+        // A test implementation of ITokenListener which allows to check if a
+        // token with particular serial number has been returned. For every
         // serial number it keeps a counter which is incremented when a token
         // with this number is issued, and decremented when it is returned.
         // At the end we can verify that all of the counters have a zero value
@@ -47,7 +47,7 @@ namespace BitFunnel
             // Record that a token with the given serial number is in flight.
             void RecordIssuedToken(SerialNumber serialNumber);
 
-            // Returns true if a token with the given serial number is 
+            // Returns true if a token with the given serial number is
             // in flight.
             bool IsInFlight(SerialNumber serialNumber) const;
 
@@ -60,7 +60,7 @@ namespace BitFunnel
             virtual void OnTokenComplete(SerialNumber serialNumber);
 
         private:
-            // An array of tokens counters. A value of 1 means the token was 
+            // An array of tokens counters. A value of 1 means the token was
             // issued and not returned. A value of 0 means the token was either
             // not issued, or issued and returned. A negative value means the
             // token was returned multiple times. At the end of the test, all
@@ -162,7 +162,7 @@ namespace BitFunnel
         }
 
 
-        // Generate a token and return it by value. A token with this 
+        // Generate a token and return it by value. A token with this
         // serial number should only be returned once - when it goes out of
         // scope in the calling context.
         /*
@@ -197,7 +197,7 @@ namespace BitFunnel
                 // in this scope.
                 ASSERT_TRUE(issuer.IsInFlight(lastSerialNumber));
 
-                // Try to move a token to a different object. It should still 
+                // Try to move a token to a different object. It should still
                 // notify the issuer with this serial number only once.
                 Token tokenCopy(std::move(token));
                 ASSERT_TRUE(issuer.IsInFlight(lastSerialNumber));

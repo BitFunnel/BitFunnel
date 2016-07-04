@@ -10,11 +10,19 @@ namespace BitFunnel
     }
 
 
+#ifdef _MSC_VER
+#pragma warning (push)
+#pragma warning (disable:4267)
+#endif
     RowId::RowId(size_t shard, size_t rank, size_t index)
         : m_shard(shard), m_rank(rank), m_index(index)
     {
         LogAssertB(index <= c_maxRowIndexValue, "Row index out of range.");
+        // TODO: assert that other values are in range.S
     }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 
     RowId::RowId(const RowId& other)

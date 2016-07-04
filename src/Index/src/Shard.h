@@ -44,7 +44,7 @@ namespace BitFunnel
 {
     //class IDocumentDataSchema;
     //class IngestionIndex;
-    //class ISliceBufferAllocator;
+    class ISliceBufferAllocator;
     //class ITermTable;
     class IIngestor;
     class Slice;
@@ -71,7 +71,9 @@ namespace BitFunnel
         // sufficient to hold the minimum capacity Slice. The minimum capacity
         // is determined by a value returned by Row::DocumentsInRank0Row(1).
         Shard(IIngestor& ingestor,
-              size_t id);
+              size_t id,
+              ISliceBufferAllocator& sliceBufferAllocator,
+              size_t sliceBufferSize);
         //Shard(IngestionIndex& index,
         //      ShardId id,
         //      ITermTable const & termTable,
@@ -145,7 +147,7 @@ namespace BitFunnel
         // Throws if the slice buffer being removed corresponds to a Slice
         // which is not fully expired. A slice which is removed, along with the
         // old copy of the vector of slices, is scheduled for recycling.
-        //void RecycleSlice(Slice& slice);
+        void RecycleSlice(Slice& slice);
 
         // Returns the IngestionIndex that owns the Shard.
         IIngestor& GetIndex() const;
@@ -163,7 +165,7 @@ namespace BitFunnel
 
         // Allocates memory for the slice buffer. The buffer has the size of
         // m_sliceBufferSize.
-        //void* AllocateSliceBuffer();
+        void* AllocateSliceBuffer();
 
         // Allocates and loads the contents of the slice buffer from the
         // stream. The stream has the size of the buffer embedded as the first
@@ -178,7 +180,7 @@ namespace BitFunnel
 
         // Releases the slice buffer and returns it to the
         // ISliceBufferAllocator.
-        //void ReleaseSliceBuffer(void* sliceBuffer);
+        void ReleaseSliceBuffer(void* sliceBuffer);
 
         // Returns the size in bytes of the used capacity in the Shard.
         //unsigned __int64 GetUsedCapacityInBytes() const;
@@ -207,7 +209,7 @@ namespace BitFunnel
         //   Slice* newSlice = new Slice(*this);
         //   newSlices.push_back(newSlice->GetBuffer());
         //   swap newSlices and m_sliceBuffers, schedule newSlices for recycling.
-        //void CreateNewActiveSlice();
+        void CreateNewActiveSlice();
 
         // Parent IngestionIndex that contains this Shard.
         IIngestor& m_ingestor;
@@ -219,7 +221,7 @@ namespace BitFunnel
         //ITermTable const & m_termTable;
 
         // Allocator that provides blocks of memory for Slice buffers.
-        //ISliceBufferAllocator& m_sliceBufferAllocator;
+        ISliceBufferAllocator& m_sliceBufferAllocator;
 
         // Row which is used to mark documents as soft deleted.
         // The value of 0 means the document in this column is soft deleted
@@ -233,13 +235,12 @@ namespace BitFunnel
         // AllocateDocument method.
         // This lock is used in const member functions, as a result, it is
         // declared as mutable.
-        //mutable Mutex m_slicesLock;
+        mutable std::mutex m_slicesLock;
 
         // Pointer to the current Slice where documents are being ingested to.
         // Initially set to nullptr. First call to AllocateDocument() will
         // allocate a new Slice via CreateNewActiveSlice().
         Slice* m_activeSlice;
-        std::unique_ptr<Slice> m_slice;
 
         // Vector of pointers to slice buffers.
         //
@@ -252,10 +253,11 @@ namespace BitFunnel
         //
         // DESIGN NOTE: We store a vector of void*, instead of Slice* in order
         // to provide an array of Slice buffer pointers to the matcher.
+        // TODO: add a more detailed comment to the above design note.
         //
         // TODO: make this std::vector<void*> const * when a thread safe swap
         // of vectors is implemented.
-        //std::vector<void*>* m_sliceBuffers;
+        std::atomic<std::vector<void*>*> m_sliceBuffers;
 
         // Capacity of a Slice. All Slices in the shard have the same capacity.
         const DocIndex m_sliceCapacity;
@@ -267,7 +269,7 @@ namespace BitFunnel
         // 2. This value will be passed to ISliceBufferAllocator in order to
         //    allow handling allocations of buffers of different byte sizes
         //    in future.
-        //const size_t m_sliceBufferSize;
+        const size_t m_sliceBufferSize;
 
         // Descriptors for RowTables and DocTable.
         // DESIGN NOTE: using pointers, rather than embedded instances to avoid

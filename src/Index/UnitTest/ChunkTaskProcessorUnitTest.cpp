@@ -7,7 +7,10 @@
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/IIngestor.h"
+#include "IRecycler.h"
 #include "ChunkTaskProcessor.h"
+#include "Recycler.h"
+#include "SliceBufferAllocator.h"
 #include "gtest/gtest.h"
 
 
@@ -27,12 +30,24 @@ namespace BitFunnel
         {
             const std::unique_ptr<IConfiguration>
                 configuration(Factories::CreateConfiguration(ngramSize));
+
+
+            std::unique_ptr<IRecycler> recycler =
+                std::unique_ptr<IRecycler>(new Recycler());
+
+            // Create dummy SliceBufferAllocator to satisfy interface.
+            // TODO: fix constants.
+            std::unique_ptr<ISliceBufferAllocator> sliceBufferAllocator =
+                std::unique_ptr<ISliceBufferAllocator>(
+                    new SliceBufferAllocator(384, 384*16));
             const std::unique_ptr<IIngestor> ingestor(
-                Factories::CreateIngestor());
+                Factories::CreateIngestor(*recycler, *sliceBufferAllocator));
 
             ChunkTaskProcessor processor(filePaths, *configuration, *ingestor);
 
             test(processor);
+
+            ingestor->Shutdown();
         }
 
 

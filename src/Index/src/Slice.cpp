@@ -20,18 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
+#include <iostream>
+
 #include "LoggerInterfaces/Logging.h"
+#include "Shard.h"
 #include "Slice.h"
 
-#define FAKE_SLICE_CAP 4
 
 namespace BitFunnel
 {
     Slice::Slice(Shard& shard)
         : m_shard(shard),
           m_temporaryNextDocIndex(0U),
-          m_capacity(FAKE_SLICE_CAP),
-          m_unallocatedCount(FAKE_SLICE_CAP), // TODO: fix.
+          m_capacity(shard.GetSliceCapacity()),
+          m_refCount(1),
+          m_buffer(shard.AllocateSliceBuffer()),
+          m_unallocatedCount(shard.GetSliceCapacity()),
           m_commitPendingCount(0),
           m_expiredCount(0)
     {
@@ -41,6 +46,20 @@ namespace BitFunnel
     Shard& Slice::GetShard() const
     {
         return m_shard;
+    }
+
+
+    Slice::~Slice()
+    {
+        try
+        {
+            // GetDocTable().Cleanup(m_buffer);
+            m_shard.ReleaseSliceBuffer(m_buffer);
+        }
+        catch (...)
+        {
+            LogB(Logging::Error, "Slice", "Exception caught in Slice::~Slice()","");
+        }
     }
 
 
@@ -72,6 +91,18 @@ namespace BitFunnel
     }
 
 
+    /* static */
+    void Slice::DecrementRefCount(Slice* slice)
+    {
+        const unsigned newRefCount = --(slice->m_refCount);
+        std::cout << "DecrementRefCount " << newRefCount << std::endl;
+        if (newRefCount == 0)
+        {
+            slice->GetShard().RecycleSlice(*slice);
+        }
+    }
+
+
     bool Slice::ExpireDocument()
     {
         std::lock_guard<std::mutex> lock(m_docIndexLock);
@@ -88,6 +119,13 @@ namespace BitFunnel
     }
 
 
+    /* static */
+    void Slice::IncrementRefCount(Slice* slice)
+    {
+        ++(slice->m_refCount);
+    }
+
+
     bool Slice::IsExpired() const
     {
         // TODO: is this lock_guard  really necessary?
@@ -95,5 +133,11 @@ namespace BitFunnel
         std::lock_guard<std::mutex> lock(m_docIndexLock);
 
         return m_expiredCount == m_capacity;
+    }
+
+
+    void* Slice::GetSliceBuffer() const
+    {
+        return m_buffer;
     }
 }

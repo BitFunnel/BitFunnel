@@ -140,12 +140,12 @@ namespace BitFunnel
 
         // Releases all heap-allocated data blobs, returns the slice buffer
         // back to its allocator and destroys the Slice.
-        //~Slice();
+        ~Slice();
 
         // Returns the slice buffer associated with this Slice. Slice buffer
         // is allocated by the Slice using ISliceBufferAllocator from its
         // parent Shard.
-        //void* GetSliceBuffer() const;
+        void* GetSliceBuffer() const;
 
         // Returns the shard which owns this slice.
         // DESIGN NOTE: Shard is required to get access to shared objects at either
@@ -227,8 +227,8 @@ namespace BitFunnel
         // while the current thread is still in the Slice code. Technically,
         // IncrementRefCount may be a regular method, but keeping it static for
         // symmetry.
-        //static void IncrementRefCount(Slice* slice);
-        //static void DecrementRefCount(Slice* slice);
+        static void IncrementRefCount(Slice* slice);
+        static void DecrementRefCount(Slice* slice);
 
     private:
 
@@ -260,7 +260,7 @@ namespace BitFunnel
         // by 1. When a Slice is recycled, its reference count is decreased
         // by 1. When reference count reaches 0, the Slice can be scheduled
         // for recycling.
-        //ThreadsafeCounter32 m_refCount;
+        std::atomic<uint32_t> m_refCount;
 
         // WARNING: The persistence format depends on the order in which the
         // following members are declared. If the order is changed, it is
@@ -268,7 +268,7 @@ namespace BitFunnel
 
         // Pointer to a buffer of data for RowTables and DocTable for this
         // Slice. See the class comment for more details on buffer layout.
-        //void* const m_buffer;
+        void* const m_buffer;
 
         // The number of unallocated DocIndex'es in the slice. When created,
         // Slice starts with the value of m_capacity in this field and gradually

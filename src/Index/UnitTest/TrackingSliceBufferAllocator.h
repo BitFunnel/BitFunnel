@@ -1,9 +1,9 @@
 #pragma once
 
-#include <set>
+#include <mutex>
+#include <unordered_set>
 
 #include "ISliceBufferAllocator.h"
-#include "Mutex.h"
 
 namespace BitFunnel
 {
@@ -21,8 +21,8 @@ namespace BitFunnel
         virtual size_t GetSliceBufferSize() const override;
 
     private:
-        mutable Mutex m_lock;
-        std::set<void*> m_allocatedBuffers;
+        mutable std::mutex m_lock;
+        std::unordered_set<void*> m_allocatedBuffers;
         const size_t m_blockSize;
     };
 }

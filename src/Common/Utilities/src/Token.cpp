@@ -21,13 +21,13 @@
 // THE SOFTWARE.
 
 
-#include "Token.h"
+#include "BitFunnel/Token.h"
 #include "LoggerInterfaces/Logging.h"
 
 namespace BitFunnel
 {
     Token::Token(ITokenListener& issuer, SerialNumber serialNumber)
-        : m_issuer(&issuer), 
+        : m_issuer(&issuer),
           m_serialNumber(serialNumber)
     {
     }
@@ -50,16 +50,16 @@ namespace BitFunnel
         }
 
         // It's most important to make sure every token that ends its lifetime
-        // reports to its issuer. We also need to try to avoid unhandled 
-        // exceptions in the destructor. 
+        // reports to its issuer. We also need to try to avoid unhandled
+        // exceptions in the destructor.
         try
         {
             m_issuer->OnTokenComplete(m_serialNumber);
         }
         catch (...)
         {
-            LogB(Logging::Error, 
-                 "Token", 
+            LogB(Logging::Error,
+                 "Token",
                  "Exception caught while destroying a Token",
                  "");
         }
