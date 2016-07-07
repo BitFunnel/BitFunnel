@@ -1,4 +1,4 @@
-#include "stdafx.h"
+// TODO: figure out correct location for this file.
 
 #include "BitFunnel/PackedTermInfo.h"
 #include "BitFunnel/Term.h"
@@ -21,9 +21,9 @@ namespace BitFunnel
         : m_hash(0),
           m_termTable(termTable)
     {
-        const Term term(static_cast<Term::Hash>(fact), 
-                        Stream::MetaWord, 
-                        static_cast<IdfX10>(0), 
+        const Term term(static_cast<Term::Hash>(fact),
+                        Stream::MetaWord,
+                        static_cast<IdfX10>(0),
                         DDRTier);
 
         const PackedTermInfo info = termTable.GetTermInfo(term, m_termKind);
@@ -54,7 +54,7 @@ namespace BitFunnel
     {
         LogAssertB(m_currentRow >= 0 && m_currentRow < static_cast<int>(m_rowIdCount));
 
-        // No special clause for ITermTable::Disposed as they return an empty 
+        // No special clause for ITermTable::Disposed as they return an empty
         // PackedTermInfo which does not support enumeration.
         if (m_termKind == ITermTable::Adhoc)
         {
