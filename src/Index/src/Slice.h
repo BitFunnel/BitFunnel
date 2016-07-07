@@ -215,8 +215,8 @@ namespace BitFunnel
         // Extracts Slice information from the buffer where its data is stored.
         // Slice places a pointer to itself at the offset which is controlled
         // by Shard.
-        //static Slice* GetSliceFromBuffer(void* sliceBuffer,
-        //                                 ptrdiff_t slicePtrOffset);
+        static Slice* GetSliceFromBuffer(void* sliceBuffer,
+                                         ptrdiff_t slicePtrOffset);
 
         // Operations on the reference count of the Slice. If the call to
         // DecrementRefCount results in the new value reaching 0, then the
@@ -233,10 +233,10 @@ namespace BitFunnel
     private:
 
         // Initializes the slice buffer and places the pointer to the Slice in the end of the SliceBuffer.
-        //void Initialize();
+        void Initialize();
 
         // Returns a reference to the Slice pointer which is placed inside a sliceBuffer.
-        //static Slice*& GetSlicePointer(void* sliceBuffer, ptrdiff_t slicePtrOffset);
+        static Slice*& GetSlicePointer(void* sliceBuffer, ptrdiff_t slicePtrOffset);
 
         // Shard which owns this slice.
         Shard& m_shard;

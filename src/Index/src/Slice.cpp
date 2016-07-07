@@ -40,6 +40,7 @@ namespace BitFunnel
           m_commitPendingCount(0),
           m_expiredCount(0)
     {
+        Initialize();
     }
 
 
@@ -120,9 +121,33 @@ namespace BitFunnel
 
 
     /* static */
+    // TODO: why do we have these two methods which are basically identical?
+    Slice* Slice::GetSliceFromBuffer(void* sliceBuffer, ptrdiff_t slicePtrOffset)
+    {
+        return Slice::GetSlicePointer(sliceBuffer, slicePtrOffset);
+    }
+
+
+    /* static */
+    Slice*& Slice::GetSlicePointer(void* sliceBuffer, ptrdiff_t slicePtrOffset)
+    {
+        char* slicePtr = reinterpret_cast<char*>(sliceBuffer) + slicePtrOffset;
+        return *reinterpret_cast<Slice**>(slicePtr);
+    }
+
+
+    /* static */
     void Slice::IncrementRefCount(Slice* slice)
     {
         ++(slice->m_refCount);
+    }
+
+
+    void Slice::Initialize()
+    {
+        // Place a pointer to a Slice in the last bytes of the SliceBuffer.
+        Slice*& slicePtr = GetSlicePointer(m_buffer, m_shard.GetSlicePtrOffset());
+        slicePtr = this;
     }
 
 

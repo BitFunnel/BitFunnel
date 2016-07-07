@@ -236,6 +236,103 @@ namespace BitFunnel
         }
 
 
+        TEST(BasicIntegration, Trivial)
+        {
+            //const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, rowCounts, schema);
+            static const size_t sliceBufferSize = 1024;
+
+            std::unique_ptr<IRecycler> recycler =
+                std::unique_ptr<IRecycler>(new Recycler());
+            auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
+
+            std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
+                new TrackingSliceBufferAllocator(sliceBufferSize));
+
+            std::unique_ptr<IIngestor> ingestor(Factories::CreateIngestor
+                                                (*recycler,
+                                                 *trackingAllocator));
+
+            Shard& shard = ingestor->GetShard(0);
+
+            Slice slice(shard);
+            void* sliceBuffer = slice.GetSliceBuffer();
+
+            EXPECT_EQ(&slice.GetShard(), &shard);
+            EXPECT_NE(sliceBuffer, nullptr);
+
+            // Test placement of Slice* in the last bytes of the slice buffer.
+            EXPECT_EQ(Slice::GetSliceFromBuffer(sliceBuffer, shard.GetSlicePtrOffset()), &slice);
+
+            // TermInfo termInfo(ITermTable::GetMatchAllTerm(), *termTable);
+            // LogAssertB(termInfo.MoveNext());
+            // const RowId matchAllRowId = termInfo.Current();
+            // LogAssertB(!termInfo.MoveNext());
+
+            // {
+            //     const ptrdiff_t offset = shard.GetRowTable(0).GetRowOffset(matchAllRowId.GetIndex());
+            //     unsigned __int8* matchAllRowData = reinterpret_cast<unsigned __int8*>(sliceBuffer) + offset;
+            //     for (unsigned i = 0; i < shard.GetSliceCapacity() / 8; ++i)
+            //     {
+            //         EXPECT_EQ(*matchAllRowData, 0xFF);
+            //         matchAllRowData++;
+            //     }
+            // }
+
+            // const DocId c_anyDocId = 1234;
+            // const DocId c_anyDocIndex = 32;
+            // const size_t c_anyBlobSize = 10;
+            // const char c_anyBlobValue = 32;
+
+            // // DocTable operations.
+            // slice.GetDocTable().SetDocId(sliceBuffer, c_anyDocIndex, c_anyDocId);
+            // EXPECT_EQ(slice.GetDocTable().GetDocId(sliceBuffer, c_anyDocIndex), c_anyDocId);
+
+            // void* blobValue = slice.GetDocTable().GetVariableSizeBlob(sliceBuffer, c_anyDocIndex, varBlobId0);
+            // TestAssert(blobValue == nullptr);
+
+            // blobValue = slice.GetDocTable().AllocateVariableSizeBlob(sliceBuffer, c_anyDocIndex, varBlobId0, c_anyBlobSize);
+            // TestAssert(blobValue != nullptr);
+            // memset(blobValue, c_anyBlobValue, c_anyBlobSize);
+
+            // // RowTable operations.
+            // for (DocIndex i = 0; i < c_sliceCapacity; ++i)
+            // {
+            //     for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
+            //     {
+            //         RowTableDescriptor const & rowTable = slice.GetRowTable(rank);
+
+            //         for (RowIndex row = 0; row < rowCounts[rank]; ++row)
+            //         {
+            //             if (row == matchAllRowId.GetIndex())
+            //             {
+            //                 TestAssert(rowTable.GetBit(sliceBuffer, row, i) == 1);
+            //             }
+            //             else
+            //             {
+            //                 TestAssert(rowTable.GetBit(sliceBuffer, row, i) == 0);
+            //             }
+            //         }
+            //     }
+            // }
+
+            // for (DocIndex i = 0; i < c_sliceCapacity; ++i)
+            // {
+            //     for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
+            //     {
+            //         RowTableDescriptor const & rowTable = slice.GetRowTable(rank);
+
+            //         for (RowIndex row = 0; row < rowCounts[rank]; ++row)
+            //         {
+            //             rowTable.SetBit(sliceBuffer, row, i);
+            //             TestAssert(rowTable.GetBit(sliceBuffer, row, i) > 0);
+            //         }
+            //     }
+            // }
+
+            ingestor->Shutdown();
+            recycler->Shutdown();
+        }
+
         /*
         size_t GetBufferSize(DocIndex capacity,
                              std::vector<RowIndex> const & rowCounts,

@@ -105,7 +105,7 @@ namespace BitFunnel
 
         // Returns the offset in the slice buffer where a pointer to the Slice
         // is stored. This is the same offset for all slices in the Shard.
-        //virtual ptrdiff_t GetSlicePtrOffset() const override;
+        virtual ptrdiff_t GetSlicePtrOffset() const;
 
         //
         // Shard exclusive members.

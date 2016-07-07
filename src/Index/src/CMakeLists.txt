@@ -6,6 +6,7 @@ set(CPPFILES
     ChunkReader.cpp
     ChunkTaskProcessor.cpp
     Configuration.cpp
+    DocTableDescriptor.cpp
     Document.cpp
     DocumentDataSchema.cpp
     DocumentHandleInternal.cpp
@@ -34,6 +35,7 @@ set(PRIVATE_HFILES
     ChunkReader.h
     ChunkTaskProcessor.h
     Configuration.h
+    DocTableDescriptor.h
     Document.h
     DocumentDataSchema.h
     DocumentHandleInternal.h

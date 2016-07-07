@@ -150,6 +150,13 @@ namespace BitFunnel
     }
 
 
+    ptrdiff_t Shard::GetSlicePtrOffset() const
+    {
+        // A pointer to a Slice is placed in the end of the slice buffer.
+        return m_sliceBufferSize - sizeof(void*);
+    }
+
+
     void Shard::RecycleSlice(Slice& slice)
     {
         std::vector<void*>* oldSlices = nullptr;
