@@ -1,4 +1,5 @@
 #include <unordered_set>
+#include <future>
 
 // #include "BitFunnel/Factories.h"
 // #include "BitFunnel/Row.h"
@@ -177,8 +178,13 @@ namespace BitFunnel
             //const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, rowCounts, schema);
             static const size_t sliceBufferSize = 1024;
 
+            // Totally arbitrary time to allow recycler thread to recycle in time.
+            static const auto c_sleepTime = std::chrono::milliseconds(2);
+
             std::unique_ptr<IRecycler> recycler =
                 std::unique_ptr<IRecycler>(new Recycler());
+            auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
+
             std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
@@ -195,6 +201,8 @@ namespace BitFunnel
                 EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 1u);
 
                 Slice::DecrementRefCount(slice);
+                // Wait to make sure other thread has recycled.
+                std::this_thread::sleep_for(c_sleepTime);
                 EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 0u);
             }
 
@@ -206,6 +214,7 @@ namespace BitFunnel
                 Slice::IncrementRefCount(slice);
 
                 // The slice should not be recycled since there are 2 reference holders.
+                std::this_thread::sleep_for(c_sleepTime);
                 EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 1u);
 
                 // Decrement the ref count, at this point there should be 1 ref count and the
@@ -213,14 +222,17 @@ namespace BitFunnel
                 Slice::DecrementRefCount(slice);
 
                 // Slice should still be alive.
+                std::this_thread::sleep_for(c_sleepTime);
                 EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 1u);
 
                 // Decrement the last ref count, Slice should be scheduled for recycling.
                 Slice::DecrementRefCount(slice);
+                std::this_thread::sleep_for(c_sleepTime);
                 EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 0u);
             }
 
             ingestor->Shutdown();
+            recycler->Shutdown();
         }
 
 

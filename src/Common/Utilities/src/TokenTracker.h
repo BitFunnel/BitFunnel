@@ -40,7 +40,7 @@ namespace BitFunnel
     // decrements the remaining token count. When remaining token count reaches
     // zero, tracker has finished tracking the tokens of interest.
     // Consumers will consult this class whether the tracking is complete via
-    // IsComplete(non blocking) or WaitForCompletiong(blocking).
+    // IsComplete(non blocking) or WaitForCompletion(blocking).
     //
     // Potentially there can be multiple trackers which track an overlapping
     // set of tokens. Even though the tokens can be returned in a different
