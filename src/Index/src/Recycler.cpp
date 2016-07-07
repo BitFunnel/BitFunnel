@@ -35,6 +35,9 @@ namespace BitFunnel
             }
             LogAssertB(item, "null IRecycable item.");
             item->Recycle();
+            // TODO: fix leak. Items inside destructing queue will get leaked.
+            // Should probably manage this with a unique_ptr.
+            delete item;
         }
     }
 

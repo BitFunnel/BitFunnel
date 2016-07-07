@@ -1,8 +1,9 @@
-
 #include <functional>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "gtest/gtest.h"
 
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IConfiguration.h"
@@ -11,7 +12,6 @@
 #include "ChunkTaskProcessor.h"
 #include "Recycler.h"
 #include "SliceBufferAllocator.h"
-#include "gtest/gtest.h"
 
 
 namespace BitFunnel

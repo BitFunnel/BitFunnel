@@ -1,15 +1,18 @@
-#include "stdafx.h"
+#include "gtest/gtest.h"
 
 #include "AlignedBuffer.h"
 #include "DocTableDescriptor.h"
 #include "DocumentDataSchema.h"
 #include "Rounding.h"
-#include "SuiteCpp/UnitTest.h"
+
 
 namespace BitFunnel
 {
     namespace DocTableDescriptorUnitTest
     {
+        // TODO: figure out what to do with this.
+        static const size_t c_docTableByteAlignment = 8;
+
         struct FixedSizeBlob0
         {
             unsigned m_field1;
@@ -27,7 +30,7 @@ namespace BitFunnel
         struct FixedSizeBlob1
         {
             double m_field1;
-            unsigned __int64 m_field2;
+            uint64_t m_field2;
         };
 
 
@@ -42,24 +45,24 @@ namespace BitFunnel
         {
             void* blobData = docTable.GetVariableSizeBlob(buffer, index, blob);
 
-            TestAssert(blobData == nullptr);
+            EXPECT_EQ(blobData, nullptr);
 
             blobData = docTable.AllocateVariableSizeBlob(buffer, index, blob, blobSize);
 
-            TestAssert(blobData != nullptr);
+            EXPECT_NE(blobData, nullptr);
 
             void* blobDataTest = docTable.GetVariableSizeBlob(buffer, index, blob);
 
-            TestAssert(blobData == blobDataTest);
+            EXPECT_EQ(blobData, blobDataTest);
 
             memset(blobData, fill, blobSize);
         }
 
 
-        TestCase(BasicTest)
+        TEST(BasicTest, Trivial)
         {
             static const DocIndex c_capacity = 1000;
-            static const ptrdiff_t c_anyDocTableBufferOffset 
+            static const ptrdiff_t c_anyDocTableBufferOffset
                 = RoundUp(1234, c_docTableByteAlignment);
 
             DocumentDataSchema schema;
@@ -76,17 +79,17 @@ namespace BitFunnel
             AlignedBuffer buffer(sliceBufferSize, c_docTableByteAlignment);
             void* alignedBuffer = buffer.GetBuffer();
 
-            // Fill the allocated buffer with random byte value.
+            // Fill the allocated buffer with arbitrary byte value.
             memset(alignedBuffer, 10, sliceBufferSize);
             for (unsigned i = 0; i < sliceBufferSize; ++i)
             {
-                TestEqual(*(reinterpret_cast<char*>(alignedBuffer) + i), 10);
+                EXPECT_EQ(*(reinterpret_cast<char*>(alignedBuffer) + i), 10);
             }
 
             DocTableDescriptor docTable(c_capacity, schema, c_anyDocTableBufferOffset);
             for (unsigned i = 0; i < sliceBufferSize; ++i)
             {
-                TestEqual(*(reinterpret_cast<char*>(alignedBuffer) + i), 10);
+                EXPECT_EQ(*(reinterpret_cast<char*>(alignedBuffer) + i), 10);
             }
 
             // Range [c_anyDocTableBufferOffset, c_anyDocTableBufferOffset + expectedBufferSize)
@@ -97,11 +100,11 @@ namespace BitFunnel
             {
                 if (i >= c_anyDocTableBufferOffset && i < c_anyDocTableBufferOffset + sliceBufferSize)
                 {
-                    TestEqual(*(reinterpret_cast<char*>(alignedBuffer) + i), 0);
+                    EXPECT_EQ(*(reinterpret_cast<char*>(alignedBuffer) + i), 0);
                 }
                 else
                 {
-                    TestEqual(*(reinterpret_cast<char*>(alignedBuffer) + i), 10);
+                    EXPECT_EQ(*(reinterpret_cast<char*>(alignedBuffer) + i), 10);
                 }
             }
 
@@ -109,38 +112,38 @@ namespace BitFunnel
 
             for (DocIndex i = 0; i < c_capacity; ++i)
             {
-                const unsigned __int8 blob0Value = (i + 1) % 0xFF;
+                const uint8_t blob0Value = (i + 1) % 0xFF;
                 TestAllocateBlob(docTable, alignedBuffer, i, variableBlob0, blobSizes[0], blob0Value);
 
-                const unsigned __int8 blob1Value = (i + 2) % 0xFF;
+                const uint8_t blob1Value = (i + 2) % 0xFF;
                 TestAllocateBlob(docTable, alignedBuffer, i, variableBlob1, blobSizes[1], blob1Value);
 
                 const DocId docId = static_cast<DocId>(i) + 10;
                 docTable.SetDocId(alignedBuffer, i, docId);
-                TestEqual(docTable.GetDocId(alignedBuffer, i), docId);
+                EXPECT_EQ(docTable.GetDocId(alignedBuffer, i), docId);
             }
 
 
             for (DocIndex i = 0; i < c_capacity; ++i)
             {
                 // Expected values in the blobs.
-                const unsigned __int8 blob0Value = (i + 1) % 0xFF;
-                const unsigned __int8 blob1Value = (i + 2) % 0xFF;
+                const uint8_t blob0Value = (i + 1) % 0xFF;
+                const uint8_t blob1Value = (i + 2) % 0xFF;
 
                 void* blob0 = docTable.GetVariableSizeBlob(alignedBuffer, i, variableBlob0);
                 void* blob1 = docTable.GetVariableSizeBlob(alignedBuffer, i, variableBlob1);
 
-                unsigned __int8* ptr = reinterpret_cast<unsigned __int8*>(blob0);
+                uint8_t* ptr = reinterpret_cast<uint8_t*>(blob0);
                 for (size_t j = 0; j < blobSizes[0]; ++j)
                 {
-                    TestEqual(*ptr, blob0Value);
+                    EXPECT_EQ(*ptr, blob0Value);
                     ptr++;
                 }
 
-                ptr = reinterpret_cast<unsigned __int8*>(blob1);
+                ptr = reinterpret_cast<uint8_t*>(blob1);
                 for (size_t j = 0; j < blobSizes[1]; ++j)
                 {
-                    TestEqual(*ptr, blob1Value);
+                    EXPECT_EQ(*ptr, blob1Value);
                     ptr++;
                 }
 
@@ -162,7 +165,7 @@ namespace BitFunnel
                     void* fixedSizeBlobData0 = docTable.GetFixedSizeBlob(alignedBuffer, i, fixedSizeBlob0);
 
                     FixedSizeBlob0& blobData0 = *static_cast<FixedSizeBlob0*>(fixedSizeBlobData0);
-                    TestAssert(blobData0 == testBlob0);
+                    EXPECT_EQ(blobData0, testBlob0);
                 }
 
                 // Test fixed size blob 1.
@@ -172,7 +175,7 @@ namespace BitFunnel
 
                     FixedSizeBlob1& blobData1 = *static_cast<FixedSizeBlob1*>(fixedSizeBlobData1);
                     blobData1.m_field1 = static_cast<double>(i + 1);
-                    blobData1.m_field2 = static_cast<unsigned __int64>(i + 2);
+                    blobData1.m_field2 = static_cast<uint64_t>(i + 2);
                 }
 
                 {
@@ -180,8 +183,8 @@ namespace BitFunnel
                     void* fixedSizeBlobData1 = docTable.GetFixedSizeBlob(alignedBuffer, i, fixedSizeBlob1);
 
                     FixedSizeBlob1& blobData1 = *static_cast<FixedSizeBlob1*>(fixedSizeBlobData1);
-                    TestAssert(blobData1.m_field1 == static_cast<double>(i + 1));
-                    TestAssert(blobData1.m_field2 == static_cast<unsigned __int64>(i + 2));
+                    EXPECT_EQ(blobData1.m_field1, static_cast<double>(i + 1));
+                    EXPECT_EQ(blobData1.m_field2, static_cast<uint64_t>(i + 2));
                 }
             }
 
@@ -189,25 +192,25 @@ namespace BitFunnel
             for (DocIndex i = 0; i < c_capacity; ++i)
             {
                 void* blob0 = docTable.GetVariableSizeBlob(alignedBuffer, i, variableBlob0);
-                TestAssert(blob0 == nullptr);
+                EXPECT_EQ(blob0, nullptr);
 
                 void* blob1 = docTable.GetVariableSizeBlob(alignedBuffer, i, variableBlob1);
-                TestAssert(blob1 == nullptr);
+                EXPECT_EQ(blob1, nullptr);
             }
         }
 
 
-        void TestBufferSize(DocIndex capacity, 
-                            IDocumentDataSchema const & schema, 
+        void TestBufferSize(DocIndex capacity,
+                            IDocumentDataSchema const & schema,
                             unsigned expectedBufferSize)
         {
             const size_t actualBufferSize = DocTableDescriptor::GetBufferSize(capacity, schema);
             const size_t expectedBufferSizeRounded = RoundUp(expectedBufferSize, c_docTableByteAlignment);
-            TestEqual(actualBufferSize, expectedBufferSizeRounded);
+            EXPECT_EQ(actualBufferSize, expectedBufferSizeRounded);
         }
 
 
-        TestCase(BufferSizeTest)
+        TEST(BufferSizeTest, Trivial)
         {
             static const DocIndex c_capacity = 1000;
 
