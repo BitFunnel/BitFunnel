@@ -11,6 +11,7 @@ set(CPPFILES
     MurmurHash2.cpp
     NullLogger.cpp
     Rounding.cpp
+    Row.cpp
     SimpleHashPolicy.cpp
     SimpleHashSet.cpp
     SimpleHashSetBase.cpp

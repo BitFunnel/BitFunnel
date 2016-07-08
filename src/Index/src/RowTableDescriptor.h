@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BitFunnel/BitFunnelTypes.h"      // DocIndex, Rank parameters.
+// #include "BitFunnel/BitFunnelTypes.h"      // DocIndex, Rank parameters.
 #include "BitFunnel/RowId.h"               // RowIndex parameter.
 
 namespace BitFunnel
@@ -10,9 +10,9 @@ namespace BitFunnel
     //*************************************************************************
     //
     // RowTableDescriptor is a helper class which exposes bit operations over a
-    // row buffer which is embedded within a larger slice buffer with regions 
-    // for other RowTable buffers and the DocTable buffer. RowTableDescriptor 
-    // knows where in the buffer its RowTable starts and what dimensions it has 
+    // row buffer which is embedded within a larger slice buffer with regions
+    // for other RowTable buffers and the DocTable buffer. RowTableDescriptor
+    // knows where in the buffer its RowTable starts and what dimensions it has
     // and is able to perform bit operations over that data.
     // See Slice.h for more info about the layout of the data buffer.
     //
@@ -24,7 +24,7 @@ namespace BitFunnel
     {
     public:
         // Constructs a RowTableDescriptor with given dimensions.
-        // rowTableBufferOffset represents the offset where this RowTable's 
+        // rowTableBufferOffset represents the offset where this RowTable's
         // data starts within a larger slice buffer which is passed to other
         // methods.
         RowTableDescriptor(DocIndex capacity,
@@ -37,12 +37,12 @@ namespace BitFunnel
         // create a cached copy of the RowTableDescriptor from Shard.
         RowTableDescriptor(RowTableDescriptor const & other);
 
-        // Zero out row buffer. May not be required if buffers come out of 
-        // allocator zero initialized. Expected to be called one per 
+        // Zero out row buffer. May not be required if buffers come out of
+        // allocator zero initialized. Expected to be called one per
         // sliceBuffer. All rows are initialized with zero in all bits except
         // for the "match-all" row. ITermTable determines where this row is
         // located.
-        // Not thread safe with respect to calling *Bit methods at the same 
+        // Not thread safe with respect to calling *Bit methods at the same
         // time.
         void Initialize(void* sliceBuffer, ITermTable const & termTable) const;
 
@@ -57,7 +57,7 @@ namespace BitFunnel
         // Clears a bit in the given row and column.
         void ClearBit(void* sliceBuffer, RowIndex rowIndex, DocIndex docIndex) const;
 
-        // Returns the offset of a row with the given index, relative to the 
+        // Returns the offset of a row with the given index, relative to the
         // start of the sliceBuffer.
         ptrdiff_t GetRowOffset(RowIndex rowIndex) const;
 
@@ -66,7 +66,7 @@ namespace BitFunnel
         bool IsCompatibleWith(RowTableDescriptor const & other) const;
 
         // Returns the byte size of the buffer required to host a RowTable with
-        // given dimensions. This assists the caller in allocating large enough 
+        // given dimensions. This assists the caller in allocating large enough
         // buffer for all RowTables.
         static size_t GetBufferSize(DocIndex capacity,
                                     RowIndex rowCount,
@@ -77,9 +77,12 @@ namespace BitFunnel
         // use a copy constructor instead of assignment operator.
         RowTableDescriptor& operator=(RowTableDescriptor const & other);
 
-        // Helper method to seek to the data for the row with the given 
+        // Helper method to seek to the data for the row with the given
         // RowIndex.
-        __int64* GetRowData(void* sliceBuffer, RowIndex rowIndex) const;
+        uint64_t* GetRowData(void* sliceBuffer, RowIndex rowIndex) const;
+
+        // Returns the QWORD number for the given DocIndex.
+        unsigned QwordPositionFromDocIndex(DocIndex docIndex) const;
 
         // Returns the bit number for the given DocIndex.
         unsigned BitPositionFromDocIndex(DocIndex docIndex) const;

@@ -26,7 +26,7 @@
 
 #include "BitFunnel/Index/IDocument.h"      // Inherits from IDocument.
 #include "BitFunnel/Utilities/RingBuffer.h" // RingBuffer member.
-#include "Term.h"                           // Term template parameter.
+#include "BitFunnel/Term.h"                 // Term template parameter.
 
 
 namespace BitFunnel

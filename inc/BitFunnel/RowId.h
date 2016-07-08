@@ -6,6 +6,8 @@
 
 namespace BitFunnel
 {
+    typedef uint32_t RowIndex;
+
     //*************************************************************************
     //
     // RowId is a unique identifier for a row in an index.

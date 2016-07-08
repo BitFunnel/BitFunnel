@@ -1,6 +1,3 @@
-#include "stdafx.h"
-
-#include <intrin.h>
 #include <memory>                       // For memset.
 
 #include "BitFunnel/ITermTable.h"
@@ -23,10 +20,11 @@ namespace BitFunnel
           m_bytesPerRow(Row::BytesInRow(capacity, rank))
     {
         // Make sure capacity is properly rounded already.
-        LogAssertB(capacity == Row::DocumentsInRank0Row(capacity));
+        LogAssertB(capacity == Row::DocumentsInRank0Row(capacity),
+                   "capacity not evenly rounded.");
 
-        // Make sure offset of this RowTable is properly aligned.
-        LogAssertB((rowTableBufferOffset % c_rowTableByteAlignment) == 0);
+        // // Make sure offset of this RowTable is properly aligned.
+        // LogAssertB((rowTableBufferOffset % c_rowTableByteAlignment) == 0);
     }
 
 
@@ -47,51 +45,69 @@ namespace BitFunnel
 
         // The "match-all" row needs to be initialized differently.
         TermInfo termInfo(ITermTable::GetMatchAllTerm(), termTable);
-        LogAssertB(termInfo.MoveNext());
+        LogAssertB(termInfo.MoveNext(),""); // TODO: error message.
 
         const RowId matchAllRowId = termInfo.Current();
-        LogAssertB(matchAllRowId.GetTier() == DDRTier);
-
-        LogAssertB(!termInfo.MoveNext());
+        LogAssertB(!termInfo.MoveNext(), ""); // TODO: error message.
 
         if (matchAllRowId.GetRank() == m_rank)
         {
             // Fill up the match-all row with all ones.
-            __int64 * rowData = GetRowData(sliceBuffer, matchAllRowId.GetIndex());
+            uint64_t * rowData = GetRowData(sliceBuffer, matchAllRowId.GetIndex());
             memset(rowData, 0xFF, m_bytesPerRow);
         }
     }
 
 
     char RowTableDescriptor::GetBit(void* sliceBuffer,
-                                    RowIndex rowIndex, 
+                                    RowIndex rowIndex,
                                     DocIndex docIndex) const
     {
-        __int64* const row = GetRowData(sliceBuffer, rowIndex);
-        const unsigned offset = BitPositionFromDocIndex(docIndex);
+        uint64_t* const row = GetRowData(sliceBuffer, rowIndex);
+        const size_t offset = QwordPositionFromDocIndex(docIndex);
 
-        return _bittest64(row + (offset >> 6), offset & 0x3F);
+        // Note that the offset here is shifted left by 6.
+        // return _bittest64(row + (offset >> 6), offset & 0x3F);
+
+        uint64_t bitPos = offset & 0x3F;
+        uint64_t bitMask = 1 << bitPos;
+        uint64_t maskedVal = *(row + offset) & bitMask;
+        // TODO: check if we need to shift the result down.
+        return maskedVal;
     }
 
 
-    void RowTableDescriptor::SetBit(void* sliceBuffer, 
-                                    RowIndex rowIndex, 
+    void RowTableDescriptor::SetBit(void* sliceBuffer,
+                                    RowIndex rowIndex,
                                     DocIndex docIndex) const
     {
-        __int64* const row = GetRowData(sliceBuffer, rowIndex);
-        const unsigned offset = BitPositionFromDocIndex(docIndex);
+        uint64_t* const row = GetRowData(sliceBuffer, rowIndex);
+        const size_t offset = QwordPositionFromDocIndex(docIndex);
 
-        _interlockedbittestandset64(row + (offset >> 6), offset & 0x3F);
+        // Note that the offset here is shifted left by 6.
+        // _interlockedbittestandset64(row + (offset >> 6), offset & 0x3F);
+
+        uint64_t bitPos = offset & 0x3F;
+        uint64_t bitMask = 1 << bitPos;
+        uint64_t newVal = *(row + offset) | bitMask;
+        *(row + offset) = newVal;
     }
 
 
-    void RowTableDescriptor::ClearBit(void* sliceBuffer, 
-                                      RowIndex rowIndex, 
+    void RowTableDescriptor::ClearBit(void* sliceBuffer,
+                                      RowIndex rowIndex,
                                       DocIndex docIndex) const
     {
-        __int64* const row = GetRowData(sliceBuffer, rowIndex);
-        const unsigned offset = BitPositionFromDocIndex(docIndex);
-        _interlockedbittestandreset64(row + (offset >> 6), offset & 0x3F);
+        uint64_t* const row = GetRowData(sliceBuffer, rowIndex);
+        const size_t offset = QwordPositionFromDocIndex(docIndex);
+
+        // Note that the offset here is shifted left by 6.
+        // _interlockedbittestandreset64(row + (offset >> 6), offset & 0x3F);
+
+        uint64_t bitPos = offset & 0x3F;
+        uint64_t bitMask = ~(1 << bitPos);
+        uint64_t newVal = *(row + offset) & bitMask;
+        *(row + offset) = newVal;
     }
 
 
@@ -107,26 +123,38 @@ namespace BitFunnel
                                              Rank rank)
     {
         // Make sure capacity is properly rounded already.
-        LogAssertB(capacity == Row::DocumentsInRank0Row(capacity));
+        LogAssertB(capacity == Row::DocumentsInRank0Row(capacity),
+                   "capacity not evenly rounded.");
 
         return static_cast<unsigned>(Row::BytesInRow(capacity, rank) * rowCount);
     }
 
 
-    __int64* RowTableDescriptor::GetRowData(void* sliceBuffer, 
+    uint64_t* RowTableDescriptor::GetRowData(void* sliceBuffer,
                                             RowIndex rowIndex) const
     {
         char* rowData = reinterpret_cast<char*>(sliceBuffer) + GetRowOffset(rowIndex);
-        return reinterpret_cast<__int64*>(rowData);
+        return reinterpret_cast<uint64_t*>(rowData);
+    }
+
+
+    unsigned RowTableDescriptor::QwordPositionFromDocIndex(DocIndex docIndex) const
+    {
+        LogAssertB(docIndex < m_capacity, "docIndex out of range");
+
+        // Shifting by 6 gives the rank0Word.
+        // Shifting by an additional m_rank gives the rankRWord.
+        return docIndex >> (6 + m_rank);
     }
 
 
     unsigned RowTableDescriptor::BitPositionFromDocIndex(DocIndex docIndex) const
     {
-        LogAssertB(docIndex < m_capacity);
+        LogAssertB(docIndex < m_capacity, "docIndex out of range");
 
         int rank0Word = docIndex >> 6;
         int rankRWord = rank0Word >> m_rank;
+        // TODO: check if compiler is smart enough to avoid doing a % here.
         int bitInWord = docIndex % 64;
         return (rankRWord << 6) + bitInWord;
     }

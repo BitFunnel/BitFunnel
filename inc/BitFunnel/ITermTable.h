@@ -4,7 +4,7 @@
 
 // #include "BitFunnel/BitFunnelTypes.h"         // IdfX10, ShardId, Tier, and Rank parameters.
 // #include "BitFunnel/RowId.h"                  // Typpedef RowId is a parameter.
-// #include "BitFunnel/Term.h"                   // Term::Hash is a parameter.
+#include "BitFunnel/Term.h"                   // Term::Hash is a parameter.
 
 
 namespace BitFunnel

@@ -36,7 +36,7 @@
 #include "DocumentHandleInternal.h"          // Return value.
 //#include "Mutex.h"
 //#include "RowTableDescriptor.h"              // Required for embedded std::vector.
-#include "Term.h"                               // TODO: Remove this temporary include. Added for unordered_map.
+#include "BitFunnel/Term.h"
 #include "Slice.h"                              // std::unique_ptr template parameter.
 
 

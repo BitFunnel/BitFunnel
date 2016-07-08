@@ -2,9 +2,9 @@
 
 #include "BitFunnel/IEnumerator.h"        // TermInfo inherits from IEnumerator.
 #include "BitFunnel/ITermTable.h"         // Embeds ITermTable::TermKind.
-#include "BitFunnel/IFactSet.h"           // FactHandle is used as a parameter.
+#include "BitFunnel/Index/IFactSet.h"           // FactHandle is used as a parameter.
 #include "BitFunnel/NonCopyable.h"        // TermInfo inherits from NonCopyable.
-#include "BitFunnel/Term.h"               // Embeds Term::Hash.
+#include "Term.h"               // Embeds Term::Hash.
 
 
 namespace BitFunnel
@@ -24,11 +24,11 @@ namespace BitFunnel
     {
     public:
         // Constructs a TermInfo for a specified hash, based on information in
-        // the supplied ITermTable. 
+        // the supplied ITermTable.
         TermInfo(Term const& term, ITermTable const & termTable);
 
-        // Constructs a TermInfo for a fact based on information in the 
-        // supplied ITermTable. 
+        // Constructs a TermInfo for a fact based on information in the
+        // supplied ITermTable.
         TermInfo(FactHandle fact,  ITermTable const & termTable);
 
         // Returns true if there are no associated RowIds.
@@ -41,7 +41,7 @@ namespace BitFunnel
 
     private:
 
-        // Initializes TermInfo based on the PackedTermInfo returned from the 
+        // Initializes TermInfo based on the PackedTermInfo returned from the
         // ITermTable.
         void Initialize(PackedTermInfo const & info);
 

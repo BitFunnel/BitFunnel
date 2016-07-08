@@ -17,6 +17,7 @@ set(CPPFILES
     Placeholder.cpp
     Recycler.cpp
     RowId.cpp
+    RowTableDescriptor.cpp
     Shard.cpp
     Slice.cpp
     SliceBufferAllocator.cpp
@@ -45,6 +46,7 @@ set(PRIVATE_HFILES
     IRecycler.h
     ISliceBufferAllocator.h
     Recycler.h
+    RowTableDescriptor.h
     Shard.h
     Slice.h
     SliceBufferAllocator.h

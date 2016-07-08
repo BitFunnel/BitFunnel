@@ -1,6 +1,7 @@
 #include <stdexcept>
 
 #include "BitFunnel/PackedTermInfo.h"
+#include "BitFunnel/Row.h"  // For c_maxRankValue.
 #include "BitFunnel/RowId.h"
 #include "EmptyTermTable.h"
 #include "LoggerInterfaces/Logging.h"
@@ -8,7 +9,6 @@
 
 
 // TODO: move this somewhere appropriate and make it a real value.
-#define c_maxRankValue 6
 #define c_systemRowCount 3
 
 namespace BitFunnel

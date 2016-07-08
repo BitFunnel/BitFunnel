@@ -26,7 +26,7 @@
 #include <ostream>          // Print() uses std::ostream.
 
 #include "BitFunnel/Exceptions.h"
-#include "Term.h"
+#include "BitFunnel/Term.h"
 #include "LoggerInterfaces/Logging.h"
 #include "MurmurHash2.h"
 
