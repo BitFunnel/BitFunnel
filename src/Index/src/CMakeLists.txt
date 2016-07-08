@@ -50,7 +50,6 @@ set(PRIVATE_HFILES
     Shard.h
     Slice.h
     SliceBufferAllocator.h
-    Term.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

@@ -1,4 +1,3 @@
-#include <iostream> // TODO: remove.
 #include <mutex>
 #include <unordered_set>
 
@@ -12,7 +11,6 @@ namespace BitFunnel
     TrackingSliceBufferAllocator::TrackingSliceBufferAllocator(size_t blockSize)
         : m_blockSize(blockSize)
     {
-        std::cout << "-----TrackingSliceBufferAllocator constructor " << blockSize << std::endl;
     }
 
 
@@ -28,7 +26,6 @@ namespace BitFunnel
     {
         std::lock_guard<std::mutex> lock(m_lock);
 
-        std::cout << "-----TrackingSliceBufferAllocator::Allocate " << byteSize << std::endl;
         if (byteSize != m_blockSize)
         {
             // TODO: remove.
@@ -47,7 +44,6 @@ namespace BitFunnel
     {
         std::lock_guard<std::mutex> lock(m_lock);
 
-        std::cout << "-----TrackingSliceBufferAllocator::Release\n";
         auto it = m_allocatedBuffers.find(buffer);
         EXPECT_NE(it, m_allocatedBuffers.end());
 

@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>     // TODO: Remove this temporary header.
-
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "IRecyclable.h"
@@ -30,7 +28,7 @@
 #include "LoggerInterfaces/Logging.h"
 #include "Recycler.h"
 #include "Shard.h"
-#include "Term.h"       // TODO: Remove this temporary include.
+#include "BitFunnel/Term.h"       // TODO: Remove this temporary include.
 
 
 namespace BitFunnel
@@ -48,17 +46,12 @@ namespace BitFunnel
           m_sliceCapacity(16), // TODO: use GetCapacityForByteSize.
           m_sliceBufferSize(sliceBufferSize)
     {
-        std::cout << "Shard constructor with m_sliceBufferSize " << m_sliceBufferSize << std::endl;
         // m_activeSlice = m_slice.get();
     }
 
 
-    void Shard::TemporaryAddPosting(Term const & term, DocIndex index)
+    void Shard::TemporaryAddPosting(Term const & term, DocIndex /*index*/)
     {
-        std::cout << "  " << index << ": ";
-        term.Print(std::cout);
-        std::cout << std::endl;
-
         {
             // TODO: Remove this lock once it is incorporated into the frequency table class.
             std::lock_guard<std::mutex> lock(m_temporaryFrequencyTableMutex);
@@ -99,7 +92,6 @@ namespace BitFunnel
 
     void* Shard::AllocateSliceBuffer()
     {
-        std::cout << "AllocateSliceBuffer " << m_sliceBufferSize << std::endl;
         return m_sliceBufferAllocator.Allocate(m_sliceBufferSize);
     }
 

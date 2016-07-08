@@ -1,5 +1,4 @@
 #include <chrono> // Used for temporary blocking recycle.
-#include <iostream> // TODO: remove.
 #include <thread> // Used for temporary blocking recycle.
 
 #include "BitFunnel/Token.h"
@@ -72,9 +71,7 @@ namespace BitFunnel
 
     void SliceListChangeRecyclable::Recycle()
     {
-        std::cout << "Recycle: waiting for token tracker completion.\n";
         m_tokenTracker->WaitForCompletion();
-        std::cout << "Recycle: Recycling.\n";
         if (m_slice != nullptr)
         {
             // Deleting a Slice invokes its destructor which returns its

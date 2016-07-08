@@ -48,8 +48,10 @@ namespace BitFunnel
 
         // No cleanup method required.
 
-        // Sets a bit in the given row and column.
-        char GetBit(void* sliceBuffer, RowIndex rowIndex, DocIndex docIndex) const;
+        // Gets a bit in the given row and column.
+        // WARNING: this returns a value with *any* bit set if that bit is set.
+        // TODO: look at how this is used to see if that's acceptable.
+        uint64_t GetBit(void* sliceBuffer, RowIndex rowIndex, DocIndex docIndex) const;
 
         // Sets a bit in the given row and column.
         void SetBit(void* sliceBuffer, RowIndex rowIndex, DocIndex docIndex) const;
@@ -82,10 +84,10 @@ namespace BitFunnel
         uint64_t* GetRowData(void* sliceBuffer, RowIndex rowIndex) const;
 
         // Returns the QWORD number for the given DocIndex.
-        unsigned QwordPositionFromDocIndex(DocIndex docIndex) const;
+        size_t QwordPositionFromDocIndex(DocIndex docIndex) const;
 
         // Returns the bit number for the given DocIndex.
-        unsigned BitPositionFromDocIndex(DocIndex docIndex) const;
+        size_t BitPositionFromDocIndex(DocIndex docIndex) const;
 
         // Dimensions of the RowTable.
         const DocIndex m_capacity;

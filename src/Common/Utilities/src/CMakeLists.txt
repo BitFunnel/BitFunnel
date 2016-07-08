@@ -10,15 +10,20 @@ set(CPPFILES
     LogLevel.cpp
     MurmurHash2.cpp
     NullLogger.cpp
+    PackedArray.cpp
     Rounding.cpp
     Row.cpp
+    SimpleBuffer.cpp
     SimpleHashPolicy.cpp
     SimpleHashSet.cpp
     SimpleHashSetBase.cpp
     StandardInputStream.cpp
+    Stream.cpp
     StreamUtilities.cpp
     TaskDistributor.cpp
     TaskDistributorThread.cpp
+    TermInfo.cpp
+    TermTable.cpp
     ThreadManager.cpp
     Token.cpp
     TokenManager.cpp
@@ -37,7 +42,9 @@ set(PRIVATE_HFILES
     BlockAllocator.h
     BlockingQueue.h
     MurmurHash2.h
+    PackedArray.h
     Rounding.h
+    SimpleBuffer.h
     SimpleHashPolicy.h
     SimpleHashSet.h
     SimpleHashSetBase.h

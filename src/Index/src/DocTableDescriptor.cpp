@@ -1,3 +1,4 @@
+#include <cstring>
 #include <iostream>
 
 #include "BitFunnel/Utilities/StreamUtilities.h"

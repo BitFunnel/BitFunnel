@@ -22,7 +22,7 @@
 
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IDocument.h"
-#include "Term.h"
+#include "BitFunnel/Term.h"
 
 // Temporary file used during port to force some headers to be compiled.
 

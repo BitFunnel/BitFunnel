@@ -11,6 +11,9 @@ namespace BitFunnel
 
     static constexpr unsigned c_maxRankValue = 6;
 
+    // Soft-deleted, match-all, and match-none rows.
+    static constexpr unsigned c_systemRowCount = 3;
+
     // The Row class holds a pointer to the data in a bit-vector row.
     // Note that the matching engine may exhibit greater performnce if rows
     // are aligned to quadword (8 byte) boundaries or cache line (64 byte)
@@ -35,7 +38,7 @@ namespace BitFunnel
 
         // Returns the number of bytes allocated to a row that holds at least
         // documentCount documents.
-        static unsigned BytesInRow(DocIndex documentCount, Rank rowRank);
+        static size_t BytesInRow(DocIndex documentCount, Rank rowRank);
 
         // Returns the actual document capacity of a rank 0 row that has space for
         // at least documentCount documents. The actual capacity will never be less

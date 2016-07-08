@@ -6,7 +6,7 @@
 
 namespace BitFunnel
 {
-    typedef uint32_t RowIndex;
+    typedef size_t RowIndex;
 
     //*************************************************************************
     //

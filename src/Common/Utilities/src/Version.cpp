@@ -119,7 +119,7 @@ namespace BitFunnel
         std::stringstream buf;
         buf << m_versionMajor
             << "."
-            << m_versionMajor
+            << m_versionMiddle
             << "."
             << m_versionMinor
             << " ";

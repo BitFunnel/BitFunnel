@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>     // TODO: Remove this temporary header.
-
 #include "BitFunnel/Exceptions.h"
 #include "Configuration.h"
 #include "Document.h"
@@ -46,18 +44,10 @@ namespace BitFunnel
     void Document::Ingest(DocumentHandle handle) const
     {
         // TODO: convert unique terms into postings.
-        std::cout << "Document::Ingest()" << std::endl;
-        std::cout << "  "
-                  << GetPostingCount()
-                  << " postings"
-                  << std::endl;
-
         for (auto it = m_postings.begin(); it != m_postings.end(); ++it)
         {
             handle.AddPosting(*it);
         }
-
-        std::cout << "=====================" << std::endl;
     }
 
 
@@ -149,8 +139,6 @@ namespace BitFunnel
 
     void Document::AddPosting(Term term)
     {
-        term.Print(std::cout);
-        std::cout << std::endl;
         m_postings.insert(term);
     }
 }

@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #include <fstream>
-#include <iostream>     // TODO: Remove this temporary header.
 #include <sstream>
 
 #include "BitFunnel/Exceptions.h"
@@ -51,11 +50,11 @@ namespace BitFunnel
             throw FatalError(message.str());
         }
 
-        // TODO: Replace stream to cout with calls to the logger.
-        std::cout << "ChunkTaskProcessor::ProcessTask: taskId:" << taskId
-                  << std::endl;
-        std::cout << "ChunkTaskProcessor::ProcessTask: filePath:"
-                  << m_filePaths[taskId] << std::endl;
+        // // TODO: Replace stream to cout with calls to the logger.
+        // std::cout << "ChunkTaskProcessor::ProcessTask: taskId:" << taskId
+        //           << std::endl;
+        // std::cout << "ChunkTaskProcessor::ProcessTask: filePath:"
+        //           << m_filePaths[taskId] << std::endl;
 
         std::ifstream inputStream(m_filePaths[taskId], std::ios::binary);
         if (!inputStream.is_open())

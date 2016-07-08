@@ -5,7 +5,7 @@
 #include "BitFunnel/RowId.h"
 #include "EmptyTermTable.h"
 #include "LoggerInterfaces/Logging.h"
-#include "Term.h"
+#include "BitFunnel/Term.h"
 
 
 // TODO: move this somewhere appropriate and make it a real value.
@@ -22,7 +22,7 @@ namespace BitFunnel
     }
 
 
-    EmptyTermTable::EmptyTermTable(std::vector<size_t> const & rowCounts)
+    EmptyTermTable::EmptyTermTable(std::vector<RowIndex> const & rowCounts)
         : m_rowCounts(rowCounts)
     {
         LogAssertB(static_cast<size_t>(rowCounts.size()) ==
@@ -49,27 +49,27 @@ namespace BitFunnel
     }
 
 
-    unsigned EmptyTermTable::GetRowIdCount() const
+    size_t EmptyTermTable::GetRowIdCount() const
     {
         throw std::runtime_error("Not implemented");
     }
 
 
-    RowId EmptyTermTable::GetRowId(unsigned /* rowOffset */) const
+    RowId EmptyTermTable::GetRowId(size_t /* rowOffset */) const
     {
         throw std::runtime_error("Not implemented");
     }
 
 
     RowId EmptyTermTable::GetRowIdAdhoc(uint64_t /* hash */,
-                                        unsigned /* rowOffset */,
-                                        unsigned /* variant */)  const
+                                        size_t /* rowOffset */,
+                                        size_t /* variant */)  const
     {
         throw std::runtime_error("Not implemented");
     }
 
 
-    RowId EmptyTermTable::GetRowIdForFact(unsigned rowOffset) const
+    RowId EmptyTermTable::GetRowIdForFact(size_t rowOffset) const
     {
         LogAssertB(m_rowCounts[0] >= c_systemRowCount,
                    "Rank 0 must contain at least c_systemRowCount rows when calling GetRowIdForFact()");
@@ -82,8 +82,8 @@ namespace BitFunnel
 
 
     void EmptyTermTable::AddTerm(uint64_t /* hash */,
-                                 unsigned /* rowIdOffset */,
-                                 unsigned /* rowIdLength */)
+                                 size_t /* rowIdOffset */,
+                                 size_t /* rowIdLength */)
     {
         throw std::runtime_error("Not implemented");
     }
@@ -101,8 +101,8 @@ namespace BitFunnel
 
 
     void EmptyTermTable::SetRowTableSize(size_t /* rank */,
-                                         unsigned /* rowCount */,
-                                         unsigned /* sharedRowCount */)
+                                         size_t /* rowCount */,
+                                         size_t /* sharedRowCount */)
     {
         throw std::runtime_error("Not implemented");
     }

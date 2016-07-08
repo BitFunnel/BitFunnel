@@ -1,4 +1,5 @@
-#include <memory>                       // For memset.
+#include <cstring>
+#include <memory>
 
 #include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Row.h"
@@ -59,7 +60,7 @@ namespace BitFunnel
     }
 
 
-    char RowTableDescriptor::GetBit(void* sliceBuffer,
+    uint64_t RowTableDescriptor::GetBit(void* sliceBuffer,
                                     RowIndex rowIndex,
                                     DocIndex docIndex) const
     {
@@ -70,10 +71,11 @@ namespace BitFunnel
         // return _bittest64(row + (offset >> 6), offset & 0x3F);
 
         uint64_t bitPos = offset & 0x3F;
-        uint64_t bitMask = 1 << bitPos;
+        uint64_t bitMask = 1ull << bitPos;
         uint64_t maskedVal = *(row + offset) & bitMask;
-        // TODO: check if we need to shift the result down.
-        return maskedVal;
+        // TODO: check if the usage of this actually requires shifting the bit
+        // back down.
+        return maskedVal >> bitPos;
     }
 
 
@@ -88,7 +90,7 @@ namespace BitFunnel
         // _interlockedbittestandset64(row + (offset >> 6), offset & 0x3F);
 
         uint64_t bitPos = offset & 0x3F;
-        uint64_t bitMask = 1 << bitPos;
+        uint64_t bitMask = 1ull << bitPos;
         uint64_t newVal = *(row + offset) | bitMask;
         *(row + offset) = newVal;
     }
@@ -105,7 +107,7 @@ namespace BitFunnel
         // _interlockedbittestandreset64(row + (offset >> 6), offset & 0x3F);
 
         uint64_t bitPos = offset & 0x3F;
-        uint64_t bitMask = ~(1 << bitPos);
+        uint64_t bitMask = ~(1ull << bitPos);
         uint64_t newVal = *(row + offset) & bitMask;
         *(row + offset) = newVal;
     }
@@ -138,7 +140,7 @@ namespace BitFunnel
     }
 
 
-    unsigned RowTableDescriptor::QwordPositionFromDocIndex(DocIndex docIndex) const
+    size_t RowTableDescriptor::QwordPositionFromDocIndex(DocIndex docIndex) const
     {
         LogAssertB(docIndex < m_capacity, "docIndex out of range");
 
@@ -148,14 +150,14 @@ namespace BitFunnel
     }
 
 
-    unsigned RowTableDescriptor::BitPositionFromDocIndex(DocIndex docIndex) const
+    size_t RowTableDescriptor::BitPositionFromDocIndex(DocIndex docIndex) const
     {
         LogAssertB(docIndex < m_capacity, "docIndex out of range");
 
-        int rank0Word = docIndex >> 6;
-        int rankRWord = rank0Word >> m_rank;
+        size_t rank0Word = docIndex >> 6;
+        size_t rankRWord = rank0Word >> m_rank;
         // TODO: check if compiler is smart enough to avoid doing a % here.
-        int bitInWord = docIndex % 64;
+        size_t bitInWord = docIndex % 64;
         return (rankRWord << 6) + bitInWord;
     }
 }

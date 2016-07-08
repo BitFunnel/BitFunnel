@@ -149,8 +149,15 @@ namespace BitFunnel
 
 
                 FixedSizeBlob0 testBlob0;
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4267)
+#endif
                 testBlob0.m_field1 = i + 1;
                 testBlob0.m_field2 = static_cast<float>(i + 2);
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
                 {
                     // Populate the fixed size blob 0.

@@ -35,11 +35,11 @@ namespace BitFunnel
     //
     // Class Term
     //
-    // A term represents a word or phrase from a document along with a 
+    // A term represents a word or phrase from a document along with a
     // classification that specifies how the term should be used in matching
-    // and scoring. The term stores a 64-bit hash of its text instead of the 
-    // actual text. Since the text is not retained, phrases cannot be 
-    // inspected to determine n-gram size. For this reason, terms explicitly 
+    // and scoring. The term stores a 64-bit hash of its text instead of the
+    // actual text. Since the text is not retained, phrases cannot be
+    // inspected to determine n-gram size. For this reason, terms explicitly
     // store their n-gram sizes.
     //
     // IMPORTANT NOTE: In order for the index to work correctly, it is
@@ -69,6 +69,10 @@ namespace BitFunnel
         Term(char const * text,
              StreamId stream,
              IDocumentFrequencyTable const & docFreqTable);
+
+        Term(Hash rawHash,
+             StreamId stream,
+             IdfX10 idf);
 
         void AddTerm(Term const & term);
 
@@ -125,7 +129,7 @@ namespace BitFunnel
         static Hash ComputeGeneralHash(Hash hash,
                                        StreamId stream);
 
-        // Computes the raw hash (based on term characters only) for the specified term text. 
+        // Computes the raw hash (based on term characters only) for the specified term text.
         static Hash ComputeRawHash(const char* text);
 
         // Hasher for std::unordered_set.
@@ -158,7 +162,7 @@ namespace BitFunnel
         // If gram size is 1, it is the real IDF value of the term.
         IdfX10 m_idfSum;
 
-        // Max IDF value of all words in this term. 
+        // Max IDF value of all words in this term.
         // The real IDF value of this term should be bigger than this value.
         IdfX10 m_idfMax;
     };

@@ -37,10 +37,10 @@ namespace BitFunnel
         // Returns the total number of RowIds currently in the table.
         // Typically used to get record a term's first RowId offset before
         // adding its rows.
-        virtual unsigned GetRowIdCount() const = 0;
+        virtual size_t GetRowIdCount() const = 0;
 
         // Returns the RowId at the specified offset in the TermTable.
-        virtual RowId GetRowId(unsigned rowOffset) const = 0;
+        virtual RowId GetRowId(size_t rowOffset) const = 0;
 
         // Returns a RowId for an adhoc term. The resulting RowId takes its
         // shard and tier from the RowId at the specified rowOffset. Its
@@ -50,34 +50,34 @@ namespace BitFunnel
         // TODO: is the variant parameter really necessary? Isn't it sufficient
         // for the TermTableBuilder to create a set of adhoc RowIds that all
         // have different RowIndex values?
-        virtual RowId GetRowIdAdhoc(uint64_t hash, unsigned rowOffset, unsigned variant)  const= 0;
+        virtual RowId GetRowIdAdhoc(uint64_t hash, size_t rowOffset, size_t variant)  const= 0;
 
         // Returns a RowId for a fact term. rowOffset specifies an index of the
         // fact in the list of configured facts.
-        virtual RowId GetRowIdForFact(unsigned rowOffset) const = 0;
+        virtual RowId GetRowIdForFact(size_t rowOffset) const = 0;
 
         // Adds a term to the term table. The term's rows must be added first
         // by calling AddRowId().
-        virtual void AddTerm(uint64_t hash, unsigned rowIdOffset, unsigned rowIdLength) = 0;
+        virtual void AddTerm(uint64_t hash, size_t rowIdOffset, size_t rowIdLength) = 0;
 
         // Adds an adhoc term to the term table. The design intent is that this
         // method will be called during term table build to supply the set of
         // RowIds that will be used as a pattern for adhoc terms.
         /*
         virtual void AddTermAdhoc(Stream::Classification classification,
-                                  unsigned gramSize,
+                                  size_t gramSize,
                                   Tier tierHint,
                                   IdfSumX10 idfSum,
-                                  unsigned rowIdOffset,
-                                  unsigned rowIdLength) = 0;
+                                  size_t rowIdOffset,
+                                  size_t rowIdLength) = 0;
         */
 
         // Specifies the total number of rows and the number of shared rows in
         // the row table associated with the specified (tier, rank)
         // values.
         virtual void SetRowTableSize(size_t rank,
-                                     unsigned rowCount,
-                                     unsigned sharedRowCount) = 0;
+                                     size_t rowCount,
+                                     size_t sharedRowCount) = 0;
 
         // Returns the total number of rows (private + shared) associated with
         // the row table for (rank). This includes rows allocated for

@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
-#include <iostream>
-
 #include "LoggerInterfaces/Logging.h"
 #include "Shard.h"
 #include "Slice.h"
@@ -96,7 +93,6 @@ namespace BitFunnel
     void Slice::DecrementRefCount(Slice* slice)
     {
         const unsigned newRefCount = --(slice->m_refCount);
-        std::cout << "DecrementRefCount " << newRefCount << std::endl;
         if (newRefCount == 0)
         {
             slice->GetShard().RecycleSlice(*slice);

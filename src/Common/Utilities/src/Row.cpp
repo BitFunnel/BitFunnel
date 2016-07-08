@@ -8,7 +8,8 @@
 namespace BitFunnel
 {
     // Helper method.
-    static unsigned RoundUp(unsigned value, unsigned quanta)
+    template <typename T>
+    static T RoundUp(T value, T quanta)
     {
         return ((value + quanta - 1) / quanta) * quanta;
     }
@@ -43,9 +44,9 @@ namespace BitFunnel
     }
 
 
-    unsigned Row::BytesInRow(DocIndex documentCount, Rank rowRank)
+    size_t Row::BytesInRow(DocIndex documentCount, Rank rowRank)
     {
-        return DocumentsInRank0Row(documentCount) >> (3 + rowRank);
+        return DocumentsInRank0Row(documentCount) >> (3ull + rowRank);
     }
 
 
@@ -57,6 +58,6 @@ namespace BitFunnel
         static const unsigned c_documentsPerByte = 8;
         unsigned rowQuanta = (c_byteAlignment * c_documentsPerByte) << c_maxRankValue;
 
-        return RoundUp(documentCount, rowQuanta);
+        return RoundUp<size_t>(documentCount, rowQuanta);
     }
 }

@@ -58,6 +58,18 @@ namespace BitFunnel
     }
 
 
+    Term::Term(Hash rawHash,
+               StreamId stream,
+               IdfX10 /*idf*/)
+        : m_rawHash(rawHash),
+          m_stream(stream),
+          m_gramSize(1),
+          m_idfSum(0),      // TODO: use correct value
+          m_idfMax(0)       // TODO: use correct value
+    {
+    }
+
+
     void Term::AddTerm(Term const & term)
     {
         if (m_stream != term.m_stream)

@@ -1,6 +1,7 @@
 // TODO: figure out correct location for this file.
 
 #include "BitFunnel/PackedTermInfo.h"
+#include "BitFunnel/RowId.h"
 #include "BitFunnel/Term.h"
 #include "BitFunnel/TermInfo.h"
 #include "LoggerInterfaces/Logging.h"
@@ -8,8 +9,9 @@
 
 namespace BitFunnel
 {
+    // TODO: should GetRawHash be GetClassifiedHash or GetGeneralHash?
     TermInfo::TermInfo(Term const & term, ITermTable const & termTable)
-        : m_hash(term.GetClassifiedHash()),
+        : m_hash(term.GetRawHash()),
           m_termTable(termTable)
     {
         const PackedTermInfo info = termTable.GetTermInfo(term, m_termKind);
@@ -17,18 +19,17 @@ namespace BitFunnel
     }
 
 
-    TermInfo::TermInfo(FactHandle fact, ITermTable const & termTable)
-        : m_hash(0),
-          m_termTable(termTable)
-    {
-        const Term term(static_cast<Term::Hash>(fact),
-                        Stream::MetaWord,
-                        static_cast<IdfX10>(0),
-                        DDRTier);
+    // TermInfo::TermInfo(FactHandle fact, ITermTable const & termTable)
+    //     : m_hash(0),
+    //       m_termTable(termTable)
+    // {
+    //     const Term term(static_cast<Term::Hash>(fact),
+    //                     Stream::MetaWord,
+    //                     static_cast<IdfX10>(0));
 
-        const PackedTermInfo info = termTable.GetTermInfo(term, m_termKind);
-        Initialize(info);
-    }
+    //     const PackedTermInfo info = termTable.GetTermInfo(term, m_termKind);
+    //     Initialize(info);
+    // }
 
 
     bool TermInfo::IsEmpty() const
@@ -39,7 +40,8 @@ namespace BitFunnel
 
     bool TermInfo::MoveNext()
     {
-        LogAssertB(m_currentRow < static_cast<int>(m_rowIdCount));
+        LogAssertB(m_currentRow < static_cast<int>(m_rowIdCount),
+                   "MoveNext overflows row range.");
         return (++m_currentRow < static_cast<int>(m_rowIdCount));
     }
 
@@ -52,7 +54,9 @@ namespace BitFunnel
 
     RowId TermInfo::Current() const
     {
-        LogAssertB(m_currentRow >= 0 && m_currentRow < static_cast<int>(m_rowIdCount));
+        LogAssertB(m_currentRow >= 0 &&
+                   m_currentRow < static_cast<int>(m_rowIdCount),
+                   "m_currentRow out of range.");
 
         // No special clause for ITermTable::Disposed as they return an empty
         // PackedTermInfo which does not support enumeration.
