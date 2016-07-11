@@ -19,11 +19,13 @@
 
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
-#include "Mocks/EmptyTermTable.h"
 #include "BitFunnel/ITermTable.h"
+#include "BitFunnel/Row.h"
+#include "BitFunnel/TermInfo.h"
 #include "Ingestor.h"
 #include "IRecycler.h"
 #include "ISliceBufferAllocator.h"
+#include "Mocks/EmptyTermTable.h"
 #include "Recycler.h"
 #include "Shard.h"
 #include "Slice.h"
@@ -263,14 +265,19 @@ namespace BitFunnel
             // Test placement of Slice* in the last bytes of the slice buffer.
             EXPECT_EQ(Slice::GetSliceFromBuffer(sliceBuffer, shard.GetSlicePtrOffset()), &slice);
 
-            // TermInfo termInfo(ITermTable::GetMatchAllTerm(), *termTable);
-            // LogAssertB(termInfo.MoveNext());
+
+            static const std::vector<RowIndex> rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
+            std::shared_ptr<ITermTable const> termTable(new EmptyTermTable(rowCounts));
+            TermInfo termInfo(ITermTable::GetMatchAllTerm(), *termTable);
+            ASSERT_TRUE(termInfo.MoveNext());
             // const RowId matchAllRowId = termInfo.Current();
-            // LogAssertB(!termInfo.MoveNext());
+            ASSERT_TRUE(!termInfo.MoveNext());
 
             // {
-            //     const ptrdiff_t offset = shard.GetRowTable(0).GetRowOffset(matchAllRowId.GetIndex());
-            //     unsigned __int8* matchAllRowData = reinterpret_cast<unsigned __int8*>(sliceBuffer) + offset;
+            //     const ptrdiff_t offset = shard.GetRowTable(0).
+            //         GetRowOffset(matchAllRowId.GetIndex());
+            //     unsigned __int8* matchAllRowData =
+            //         reinterpret_cast<uint8_t*>(sliceBuffer) + offset;
             //     for (unsigned i = 0; i < shard.GetSliceCapacity() / 8; ++i)
             //     {
             //         EXPECT_EQ(*matchAllRowData, 0xFF);
