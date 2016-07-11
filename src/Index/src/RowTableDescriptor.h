@@ -1,7 +1,7 @@
 #pragma once
 
-// #include "BitFunnel/BitFunnelTypes.h"      // DocIndex, Rank parameters.
-#include "BitFunnel/RowId.h"               // RowIndex parameter.
+#include "BitFunnel/Row.h"    // Rank.
+#include "BitFunnel/RowId.h"  // RowIndex.
 
 namespace BitFunnel
 {

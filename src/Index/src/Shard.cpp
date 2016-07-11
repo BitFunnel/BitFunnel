@@ -35,18 +35,26 @@ namespace BitFunnel
 {
     Shard::Shard(IIngestor& ingestor,
                  size_t id,
+                 ITermTable const & termTable,
+                 IDocumentDataSchema const & docDataSchema,
                  ISliceBufferAllocator& sliceBufferAllocator,
                  size_t sliceBufferSize)
         : m_ingestor(ingestor),
           m_id(id),
           m_sliceBufferAllocator(sliceBufferAllocator),
           m_activeSlice(nullptr),
-          // m_slice(new Slice(*this)),
           m_sliceBuffers(new std::vector<void*>()),
           m_sliceCapacity(16), // TODO: use GetCapacityForByteSize.
           m_sliceBufferSize(sliceBufferSize)
     {
-        // m_activeSlice = m_slice.get();
+        const size_t bufferSize =
+            InitializeDescriptors(this,
+                                  m_sliceCapacity,
+                                  docDataSchema,
+                                  termTable);
+
+        LogAssertB(bufferSize <= sliceBufferSize,
+                   "Shard sliceBufferSize too small.");
     }
 
 
@@ -130,9 +138,21 @@ namespace BitFunnel
     }
 
 
+    DocTableDescriptor const & Shard::GetDocTable() const
+    {
+        return *m_docTable;
+    }
+
+
     IIngestor& Shard::GetIndex() const
     {
         return m_ingestor;
+    }
+
+
+    RowTableDescriptor const & Shard::GetRowTable(Rank rank) const
+    {
+        return m_rowTables.at(rank);
     }
 
 
@@ -146,6 +166,48 @@ namespace BitFunnel
     {
         // A pointer to a Slice is placed in the end of the slice buffer.
         return m_sliceBufferSize - sizeof(void*);
+    }
+
+
+    /* static */
+    size_t Shard::InitializeDescriptors(Shard* shard,
+                                        DocIndex sliceCapacity,
+                                        IDocumentDataSchema const & docDataSchema,
+                                        ITermTable const & termTable)
+    {
+        ptrdiff_t currentOffset = 0;
+
+        // Start of the DocTable is at offset 0.
+        if (shard != nullptr)
+            {
+                shard->m_docTable.reset(new DocTableDescriptor(sliceCapacity,
+                                                               docDataSchema,
+                                                               currentOffset));
+            }
+
+        currentOffset += DocTableDescriptor::GetBufferSize(sliceCapacity, docDataSchema);
+
+        for (Rank r = 0; r <= c_maxRankValue; ++r)
+        {
+            // TODO: see if this alignment matters.
+            // currentOffset = RoundUp(currentOffset, c_rowTableByteAlignment);
+
+            const RowIndex rowCount = termTable.GetTotalRowCount(r);
+
+            if (shard != nullptr)
+            {
+                shard->m_rowTables.emplace_back(sliceCapacity, rowCount, r, currentOffset);
+            }
+
+            currentOffset += RowTableDescriptor::GetBufferSize(sliceCapacity, rowCount, r);
+        }
+
+        // A pointer to a Slice is placed at the end of the slice buffer.
+        currentOffset += sizeof(void*);
+
+        const size_t sliceBufferSize = static_cast<size_t>(currentOffset);
+
+        return sliceBufferSize;
     }
 
 

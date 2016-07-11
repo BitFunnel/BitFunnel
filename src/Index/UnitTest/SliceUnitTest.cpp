@@ -1,19 +1,10 @@
 #include <unordered_set>
 #include <future>
 
-// #include "BitFunnel/Factories.h"
-// #include "BitFunnel/Row.h"
-// #include "BitFunnel/TermInfo.h"
-// #include "DocumentDataSchema.h"
-// #include "EmptyTermTable.h"
-// #include "ExpectException.h"
 // #include "IndexWrapper.h"
 // #include "LoggerInterfaces/Logging.h"
 // #include "Random.h"
-// #include "Slice.h"
-// #include "Shard.h"
 // #include "ThrowingLogger.h"
-// #include "TrackingSliceBufferAllocator.h"
 
 #include "gtest/gtest.h"
 
@@ -22,6 +13,7 @@
 #include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/TermInfo.h"
+#include "DocumentDataSchema.h"
 #include "Ingestor.h"
 #include "IRecycler.h"
 #include "ISliceBufferAllocator.h"
@@ -35,6 +27,15 @@ namespace BitFunnel
 {
     namespace SliceUnitTest
     {
+
+        size_t GetBufferSize(DocIndex capacity,
+                             std::vector<RowIndex> const & rowCounts,
+                             IDocumentDataSchema const & schema)
+        {
+            EmptyTermTable termTable(rowCounts);
+            return Shard::InitializeDescriptors(nullptr, capacity, schema, termTable);
+        }
+
 
         TEST(SliceAllocateCommitExpire, Trivial)
         {
@@ -56,13 +57,23 @@ namespace BitFunnel
                 std::unique_ptr<IRecycler>(new Recycler());
 
             // TODO: figure out what this should be.
-            static const size_t sliceBufferSize = 32;
+            static const size_t sliceBufferSize = 3072;
             std::unique_ptr<ISliceBufferAllocator> trackingAllocator(
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
-            std::unique_ptr<IIngestor> ingestor(Factories::CreateIngestor
-                                                (*recycler,
-                                                 *trackingAllocator));
+            static const std::vector<RowIndex>
+                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
+            std::shared_ptr<ITermTable const>
+                termTable(new EmptyTermTable(rowCounts));
+
+            DocumentDataSchema schema;
+
+            std::unique_ptr<IIngestor>
+                ingestor(Factories::CreateIngestor(schema,
+                                                   *recycler,
+                                                   *termTable,
+                                                   *trackingAllocator));
+
             Shard& shard = ingestor->GetShard(0);
 
             static const size_t c_sliceCapacity = 16;
@@ -177,22 +188,32 @@ namespace BitFunnel
             // static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
             static const size_t c_sliceCapacity = 16;
 
-            //const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, rowCounts, schema);
-            static const size_t sliceBufferSize = 1024;
+            // static const size_t sliceBufferSize = 2048;
 
             // Totally arbitrary time to allow recycler thread to recycle in time.
             static const auto c_sleepTime = std::chrono::milliseconds(2);
+
+            DocumentDataSchema schema;
 
             std::unique_ptr<IRecycler> recycler =
                 std::unique_ptr<IRecycler>(new Recycler());
             auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
 
+            static const std::vector<RowIndex>
+                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
+            std::shared_ptr<ITermTable const>
+                termTable(new EmptyTermTable(rowCounts));
+
+            const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, rowCounts, schema);
+
             std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
-            std::unique_ptr<IIngestor> ingestor(Factories::CreateIngestor
-                                                (*recycler,
-                                                 *trackingAllocator));
+            const std::unique_ptr<IIngestor>
+                ingestor(Factories::CreateIngestor(schema,
+                                                   *recycler,
+                                                   *termTable,
+                                                   *trackingAllocator));
 
             Shard& shard = ingestor->GetShard(0);
 
@@ -240,19 +261,28 @@ namespace BitFunnel
 
         TEST(BasicIntegration, Trivial)
         {
-            //const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, rowCounts, schema);
-            static const size_t sliceBufferSize = 1024;
+            DocumentDataSchema schema;
 
             std::unique_ptr<IRecycler> recycler =
                 std::unique_ptr<IRecycler>(new Recycler());
             auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
 
+            static const std::vector<RowIndex>
+                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
+            std::shared_ptr<ITermTable const>
+                termTable(new EmptyTermTable(rowCounts));
+
+            static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
+            const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, rowCounts, schema);
+
             std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
-            std::unique_ptr<IIngestor> ingestor(Factories::CreateIngestor
-                                                (*recycler,
-                                                 *trackingAllocator));
+            const std::unique_ptr<IIngestor>
+                ingestor(Factories::CreateIngestor(schema,
+                                                   *recycler,
+                                                   *termTable,
+                                                   *trackingAllocator));
 
             Shard& shard = ingestor->GetShard(0);
 
@@ -265,9 +295,6 @@ namespace BitFunnel
             // Test placement of Slice* in the last bytes of the slice buffer.
             EXPECT_EQ(Slice::GetSliceFromBuffer(sliceBuffer, shard.GetSlicePtrOffset()), &slice);
 
-
-            static const std::vector<RowIndex> rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
-            std::shared_ptr<ITermTable const> termTable(new EmptyTermTable(rowCounts));
             TermInfo termInfo(ITermTable::GetMatchAllTerm(), *termTable);
             ASSERT_TRUE(termInfo.MoveNext());
             // const RowId matchAllRowId = termInfo.Current();
@@ -341,15 +368,6 @@ namespace BitFunnel
         }
 
         /*
-        size_t GetBufferSize(DocIndex capacity,
-                             std::vector<RowIndex> const & rowCounts,
-                             IDocumentDataSchema const & schema)
-        {
-            EmptyTermTable termTable(rowCounts);
-            return Shard::InitializeDescriptors(nullptr, capacity, schema, termTable);
-        }
-
-
         TEST(BufferSizeTest, Trivial)
         {
             static const DocIndex c_capacityQuanta = 4096;

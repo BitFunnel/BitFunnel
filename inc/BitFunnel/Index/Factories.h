@@ -33,13 +33,16 @@ namespace BitFunnel
     class IDocumentDataSchema;
     class IIngestor;
     class IRecycler;
+    class ITermTable;
     class ISliceBufferAllocator;
 
     namespace Factories
     {
         std::unique_ptr<IConfiguration> CreateConfiguration(size_t maxGramSize);
         std::unique_ptr<IIngestor>
-            CreateIngestor(IRecycler& recycler,
+            CreateIngestor(IDocumentDataSchema const & docDataSchema,
+                           IRecycler& recycler,
+                           ITermTable const & termTable,
                            ISliceBufferAllocator& sliceBufferAllocator);
         std::unique_ptr<IDocumentDataSchema> CreateDocumentDataSchema();
     }

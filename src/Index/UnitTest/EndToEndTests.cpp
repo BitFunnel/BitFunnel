@@ -4,11 +4,16 @@
 
 #include "gtest/gtest.h"
 
+#include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Row.h"
+#include "BitFunnel/RowId.h"
 #include "ChunkEnumerator.h"
 #include "Configuration.h"
+#include "DocumentDataSchema.h"
 #include "Ingestor.h"
 #include "IRecycler.h"
 #include "ISliceBufferAllocator.h"
+#include "Mocks/EmptyTermTable.h"
 #include "Recycler.h"
 #include "SliceBufferAllocator.h"
 // #include "DocumentLengthHistogram.h"
@@ -78,10 +83,21 @@ namespace BitFunnel
             // TODO: fix constants.
             std::unique_ptr<ISliceBufferAllocator> sliceBufferAllocator =
                 std::unique_ptr<ISliceBufferAllocator>(
-                    new SliceBufferAllocator(256, 256*16));
-            const std::unique_ptr<IIngestor> ingestor =
-                std::unique_ptr<IIngestor>(new Ingestor(*recycler,
-                                                        *sliceBufferAllocator));
+                    new SliceBufferAllocator(4096, 4096*4));
+
+            static const std::vector<RowIndex>
+                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
+            std::shared_ptr<ITermTable const>
+                termTable(new EmptyTermTable(rowCounts));
+
+            DocumentDataSchema schema;
+
+            const std::unique_ptr<IIngestor>
+                ingestor(Factories::CreateIngestor(schema,
+                                                   *recycler,
+                                                   *termTable,
+                                                   *sliceBufferAllocator));
+
             ChunkEnumerator chunkEnumerator(filePaths, config, *ingestor, 1);
             chunkEnumerator.WaitForCompletion();
 

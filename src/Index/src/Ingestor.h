@@ -40,7 +40,10 @@ namespace BitFunnel
     class Ingestor : public IIngestor
     {
     public:
-        Ingestor(IRecycler& recycle, ISliceBufferAllocator& sliceBufferAllocator);
+        Ingestor(IDocumentDataSchema const & docDataSchema,
+                 IRecycler& recycle,
+                 ITermTable const & termTable,
+                 ISliceBufferAllocator& sliceBufferAllocator);
 
         // TODO: Remove this temporary method.
         virtual void PrintStatistics() const override;

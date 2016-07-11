@@ -36,24 +36,35 @@
 namespace BitFunnel
 {
     std::unique_ptr<IIngestor>
-    Factories::CreateIngestor(IRecycler& recycler,
+    Factories::CreateIngestor(IDocumentDataSchema const & docDataSchema,
+                              IRecycler& recycler,
+                              ITermTable const & termTable,
                               ISliceBufferAllocator& sliceBufferAllocator)
     {
-        return std::unique_ptr<IIngestor>(new Ingestor(recycler,
+        return std::unique_ptr<IIngestor>(new Ingestor(docDataSchema,
+                                                       recycler,
+                                                       termTable,
                                                        sliceBufferAllocator));
     }
 
-    Ingestor::Ingestor(IRecycler& recycler, ISliceBufferAllocator& sliceBufferAllocator)
+    Ingestor::Ingestor(IDocumentDataSchema const & docDataSchema,
+                       IRecycler& recycler,
+                       ITermTable const & termTable,
+                       ISliceBufferAllocator& sliceBufferAllocator)
         : m_recycler(recycler),
           m_documentCount(0),
           m_tokenManager(Factories::CreateTokenManager()),
           m_sliceBufferAllocator(sliceBufferAllocator)
     {
         // Initialize histogram and frequency tables here.
+        // TODO: make order of parameters in Shard as similar as possible to
+        // order of parameters in Ingestor.
         m_shards.push_back(
             std::unique_ptr<Shard>(
                 new Shard(*this,
                           123,
+                          termTable,
+                          docDataSchema,
                           m_sliceBufferAllocator,
                           m_sliceBufferAllocator.GetSliceBufferSize())));
     }

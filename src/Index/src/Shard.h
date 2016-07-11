@@ -30,14 +30,16 @@
 //#include <vector>
 //
 //#include "BitFunnel/Internal/IShardIndex.h"  // Inherits from IShardIndex.
-#include "BitFunnel/NonCopyable.h"
 //#include "BitFunnel/RowId.h"                 // Embeds RowId.
-//#include "DocTableDescriptor.h"              // Required for embedded std::unique_ptr.
-#include "DocumentHandleInternal.h"          // Return value.
 //#include "Mutex.h"
-//#include "RowTableDescriptor.h"              // Required for embedded std::vector.
+
+#include "BitFunnel/ITermTable.h"
+#include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/Term.h"
-#include "Slice.h"                              // std::unique_ptr template parameter.
+#include "DocTableDescriptor.h"              // Required for embedded std::unique_ptr.
+#include "DocumentHandleInternal.h"          // Return value.
+#include "RowTableDescriptor.h"              // Required for embedded std::vector.
+#include "Slice.h"                           // std::unique_ptr template parameter.
 
 
 namespace BitFunnel
@@ -72,14 +74,10 @@ namespace BitFunnel
         // is determined by a value returned by Row::DocumentsInRank0Row(1).
         Shard(IIngestor& ingestor,
               size_t id,
+              ITermTable const & termTable,
+              IDocumentDataSchema const & docDataSchema,
               ISliceBufferAllocator& sliceBufferAllocator,
               size_t sliceBufferSize);
-        //Shard(IngestionIndex& index,
-        //      ShardId id,
-        //      ITermTable const & termTable,
-        //      IDocumentDataSchema const & docDataSchema,
-        //      ISliceBufferAllocator& sliceBufferAllocator,
-        //      size_t sliceBufferSize);
 
         void TemporaryAddPosting(Term const & term, DocIndex index);
         void TemporaryPrintFrequencies(std::ostream& out);
@@ -156,8 +154,8 @@ namespace BitFunnel
         //ITermTable const & GetTermTable() const;
 
         // Descriptor for RowTables and DocTable.
-        //DocTableDescriptor const & GetDocTable() const;
-        //RowTableDescriptor const & GetRowTable(Rank) const;
+        DocTableDescriptor const & GetDocTable() const;
+        RowTableDescriptor const & GetRowTable(Rank) const;
 
         // Returns the RowId which corresponds to a row used to mark documents
         // as soft-deleted.
@@ -191,10 +189,10 @@ namespace BitFunnel
         // The same function combines both actions in order to avoid code
         // for the two scenarios.
         // DESIGN NOTE: This is made public in order to be used in unit tests.
-        //static size_t InitializeDescriptors(Shard* shard,
-        //                                    DocIndex sliceCapacity,
-        //                                    IDocumentDataSchema const & docDataSchema,
-        //                                    ITermTable const & termTable);
+        static size_t InitializeDescriptors(Shard* shard,
+                                           DocIndex sliceCapacity,
+                                           IDocumentDataSchema const & docDataSchema,
+                                           ITermTable const & termTable);
 
         // Calculates the number of documents which can be hosted in a slice
         // buffer of the given byte size.
@@ -274,8 +272,8 @@ namespace BitFunnel
         // Descriptors for RowTables and DocTable.
         // DESIGN NOTE: using pointers, rather than embedded instances to avoid
         // initializer order dependencies in constructor list.
-        //std::unique_ptr<DocTableDescriptor> m_docTable;
-        //std::vector<RowTableDescriptor> m_rowTables;
+        std::unique_ptr<DocTableDescriptor> m_docTable;
+        std::vector<RowTableDescriptor> m_rowTables;
 
         std::mutex m_temporaryFrequencyTableMutex;
         std::unordered_map<Term, size_t, Term::Hasher> m_temporaryFrequencyTable;
