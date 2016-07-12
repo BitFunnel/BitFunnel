@@ -31,7 +31,6 @@ namespace BitFunnel
         : m_rowIdStart(rowIdStart),
           m_rowIdCount(static_cast<const uint8_t>(rowIdCount))
     {
-        // Check for overflow in cast to uint8_t.
         LogAssertB(m_rowIdCount == rowIdCount, "overflow in cast to uint8_t");
     }
 

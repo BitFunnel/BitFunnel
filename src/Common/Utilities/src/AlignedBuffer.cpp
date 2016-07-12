@@ -65,9 +65,9 @@ namespace BitFunnel
         if (m_rawBuffer == MAP_FAILED)
         {
             std::stringstream errorMessage;
-            errorMessage << "AlignedBuffer Failed to mmap: " <<
-                std::strerror(errno) <<
-                std::endl;
+            errorMessage << "AlignedBuffer Failed to mmap: "
+                         << std::strerror(errno)
+                         << std::endl;
             // TODO: replace this with BitFunnel specific error when that gets
             // committed.
             throw std::runtime_error(errorMessage.str());
@@ -86,9 +86,9 @@ namespace BitFunnel
             if (munmap(m_rawBuffer, m_actualSize) == -1)
             {
                 std::stringstream errorMessage;
-                errorMessage << "AlignedBuffer Failed to mmap: " <<
-                    std::strerror(errno) <<
-                    std::endl;
+                errorMessage << "AlignedBuffer Failed to mmap: "
+                             << std::strerror(errno)
+                             << std::endl;
                 // TODO: replace this with BitFunnel specific error when that gets
                 // committed.
                 throw std::runtime_error(errorMessage.str());

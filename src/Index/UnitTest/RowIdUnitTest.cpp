@@ -20,12 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// TODO: port this test.
+#include "gtest/gtest.h"
 
 #include "LoggerInterfaces/Logging.h"
 #include "BitFunnel/RowId.h"
 #include "PackedArray.h"
-#include "SuiteCpp/UnitTest.h"
 
 namespace BitFunnel
 {
@@ -35,7 +34,6 @@ namespace BitFunnel
         {
         public:
             static unsigned GetShardBitCount();
-            static unsigned GetTierBitCount();
             static unsigned GetRankBitCount();
             static unsigned GetIndexBitCount();
         };
@@ -44,12 +42,6 @@ namespace BitFunnel
         unsigned UnitTestRowId::GetShardBitCount()
         {
             return c_bitsOfShard;
-        }
-
-
-        unsigned UnitTestRowId::GetTierBitCount()
-        {
-            return c_bitsOfTier;
         }
 
 
@@ -66,70 +58,59 @@ namespace BitFunnel
 
 
         // Verify that the bit fields in RowId are large enough to hold all legal
-        // ShardId, Tier, Rank, and RowIndex values.
-        TestCase(Limits)
+        // ShardId, Rank, and RowIndex values.
+        TEST(Limits, Trivial)
         {
-            TestAssert(c_maxShardCount <= (1ul << UnitTestRowId::GetShardBitCount()));
-            TestAssert(TierCount <= (1ul << UnitTestRowId::GetTierBitCount()));
-            TestAssert(c_maxRankValue <= (1ul << UnitTestRowId::GetRankBitCount()) - 1);
-            TestAssert(RowId::c_maxRowIndexValue <= (1ul << UnitTestRowId::GetIndexBitCount()) - 1);
-            TestAssert(RowId::GetPackedRepresentationBitCount() <= PackedArray::GetMaxBitsPerEntry());
+            EXPECT_LE(c_maxShardCount, (1ul << UnitTestRowId::GetShardBitCount()));
+            EXPECT_LE(c_maxRankValue, (1ul << UnitTestRowId::GetRankBitCount()) - 1);
+            EXPECT_LE(RowId::c_maxRowIndexValue, (1ul << UnitTestRowId::GetIndexBitCount()) - 1);
+            EXPECT_LE(RowId::GetPackedRepresentationBitCount(), PackedArray::GetMaxBitsPerEntry());
         }
 
 
         // Verify that field getters return field values passed to constructor.
-        TestCase(Fields)
+        TEST(Fields, Trivial)
         {
             for (ShardId shard = 0; shard < c_maxShardCount; ++ shard)
             {
-                for (unsigned t = 0; t < TierCount; ++t)
-                {
                     for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
                     {
                         for (int i = -1; i <= 1; ++i)
                         {
-                            Tier tier = Tier(t);
                             RowIndex index = static_cast<unsigned>(i) & (1ul << UnitTestRowId::GetIndexBitCount()) - 1;
 
-                            RowId rowId(shard, tier, rank, index);
+                            RowId rowId(shard, rank, index);
 
-                            TestAssert(rowId.GetShard() == shard);
-                            TestAssert(rowId.GetTier() == tier);
-                            TestAssert(rowId.GetRank() == rank);
-                            TestAssert(rowId.GetIndex() == index);
+                            EXPECT_EQ(rowId.GetShard(), shard);
+                            EXPECT_EQ(rowId.GetRank(), rank);
+                            EXPECT_EQ(rowId.GetIndex(), index);
                         }
                     }
-                }
             }
         }
 
 
         // Verify packed representation round-tripping.
-        TestCase(PackedFormat)
+        TEST(PackedFormat, Trivial)
         {
             for (ShardId shard = 0; shard < c_maxShardCount; ++ shard)
             {
-                for (unsigned t = 0; t < TierCount; ++t)
-                {
                     for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
                     {
                         for (int i = -1; i <= 1; ++i)
                         {
-                            Tier tier = Tier(t);
                             RowIndex index = static_cast<unsigned>(i) & (1ul << UnitTestRowId::GetIndexBitCount()) - 1;
 
-                            RowId rowId1(shard, tier, rank, index);
-                            unsigned __int64 packed = rowId1.GetPackedRepresentation();
+                            RowId rowId1(shard, rank, index);
+                            uint64_t packed = rowId1.GetPackedRepresentation();
 
                             RowId rowId2(packed);
 
-                            TestAssert(rowId2.GetShard() == shard);
-                            TestAssert(rowId2.GetTier() == tier);
-                            TestAssert(rowId2.GetRank() == rank);
-                            TestAssert(rowId2.GetIndex() == index);
+                            EXPECT_EQ(rowId2.GetShard(), shard);
+                            EXPECT_EQ(rowId2.GetRank(), rank);
+                            EXPECT_EQ(rowId2.GetIndex(), index);
                         }
                     }
-                }
             }
         }
     }

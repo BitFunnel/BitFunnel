@@ -22,7 +22,6 @@
 
 
 #include <inttypes.h>
-#include <iostream>  // TODO: remove.
 
 #include "BitFunnel/Utilities/Factories.h"
 #include "LoggerInterfaces/Logging.h"

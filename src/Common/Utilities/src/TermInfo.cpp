@@ -87,9 +87,10 @@ namespace BitFunnel
         // PackedTermInfo which does not support enumeration.
         if (m_termKind == ITermTable::Adhoc)
         {
-            return m_termTable.GetRowIdAdhoc(m_hash,
-                                             m_rowIdStart + m_currentRow,
-                                             static_cast<unsigned>(m_currentRow));
+            return m_termTable.
+                GetRowIdAdhoc(m_hash,
+                              m_rowIdStart + m_currentRow,
+                              static_cast<unsigned>(m_currentRow));
         }
         else if (m_termKind == ITermTable::Fact)
         {

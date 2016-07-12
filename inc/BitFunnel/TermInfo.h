@@ -25,7 +25,7 @@
 
 #include "BitFunnel/IEnumerator.h"        // TermInfo inherits from IEnumerator.
 #include "BitFunnel/ITermTable.h"         // Embeds ITermTable::TermKind.
-#include "BitFunnel/Index/IFactSet.h"           // FactHandle is used as a parameter.
+#include "BitFunnel/Index/IFactSet.h"     // FactHandle is used as a parameter.
 #include "BitFunnel/NonCopyable.h"        // TermInfo inherits from NonCopyable.
 #include "BitFunnel/Term.h"               // Embeds Term::Hash.
 

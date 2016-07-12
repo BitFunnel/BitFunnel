@@ -106,11 +106,13 @@ namespace BitFunnel
     bool BlockingQueue<T>::TryEnqueue(T value)
     {
         std::unique_lock<std::mutex> lock(m_lock);
-        // TODO: get rid of lambda. Mhop looked at this at one point and VC++
-        // generates a lot of allocations when we use the lambda.
-        m_enqueueCond.wait
-            (lock,
-             [&]{ return m_queue.size() < m_capacity || m_shutdown; });
+        // DESIGN NOTE: we don't use wait with a lambda here because, on older
+        // versions of VC++, it generates a lot of allocations. It's possible
+        // that's been fixed on newer versions but we haven't checked.
+        while (m_queue.size() >= m_capacity && !m_shutdown)
+        {
+            m_enqueueCond.wait(lock);
+        }
         if (m_shutdown)
         {
             return false;
@@ -125,9 +127,10 @@ namespace BitFunnel
     bool BlockingQueue<T>::TryDequeue(T& value)
     {
         std::unique_lock<std::mutex> lock(m_lock);
-        m_dequeueCond.wait
-            (lock,
-             [&]{ return !m_queue.empty() || m_shutdown; });
+        while (m_queue.empty() && !m_shutdown)
+        {
+            m_dequeueCond.wait(lock);
+        }
         if (m_shutdown)
         {
             return false;

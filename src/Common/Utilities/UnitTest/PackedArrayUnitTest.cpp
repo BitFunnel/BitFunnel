@@ -39,7 +39,7 @@ namespace BitFunnel
             RunTest1(5, false);
             RunTest1(100, false);
 
-            // Try one run with VirtualAlloc().
+            // Try one run with mmap/VirtualAlloc().
             RunTest1(100, true);
         }
 

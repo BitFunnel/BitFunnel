@@ -37,7 +37,8 @@ namespace BitFunnel
     {
         // DocId is added to the fixed size storage.
         unsigned totalSize = sizeof(DocId);
-        std::vector<unsigned> const & fixedSizeBlobSizes = schema.GetFixedSizeBlobSizes();
+        std::vector<unsigned> const & fixedSizeBlobSizes =
+            schema.GetFixedSizeBlobSizes();
         for (const auto size : fixedSizeBlobSizes)
         {
             totalSize += size;
@@ -52,28 +53,35 @@ namespace BitFunnel
     // from the heap).
     size_t GetItemByteCount(IDocumentDataSchema const & schema)
     {
-        const unsigned fixedSizeTotalByteCount = GetFixedSizeTotalByteCount(schema);
+        const unsigned fixedSizeTotalByteCount =
+            GetFixedSizeTotalByteCount(schema);
 
         // A single item consists of pointers to variable size blobs and the
         // fixed sized data.
-        unsigned bufferSize = sizeof(DocTableDescriptor::VariableSizeBlob) * schema.GetVariableSizeBlobCount()
-                              + fixedSizeTotalByteCount;
+        unsigned bufferSize =
+            sizeof(DocTableDescriptor::VariableSizeBlob) *
+            schema.GetVariableSizeBlobCount() +
+            fixedSizeTotalByteCount;
 
-        // Round up to the closest power of 2 to make sure no two DocInfos span cache-line.
+        // Round up to the closest power of 2 to make sure no two DocInfos span
+        // cache-line.
         return RoundUpPowerOf2(bufferSize);
     }
 
 
     // Creates a vector of fixed size blob offsets from their sizes.
-    std::vector<unsigned> CreateFixedSizeBlobOffsets(IDocumentDataSchema const & schema)
+    std::vector<unsigned>
+        CreateFixedSizeBlobOffsets(IDocumentDataSchema const & schema)
     {
         // DocId is placed first in the fixed size storage.
         unsigned currentOffset = sizeof(DocId);
 
         // Skip variable size blobs.
-        currentOffset += schema.GetVariableSizeBlobCount() * sizeof(DocTableDescriptor::VariableSizeBlob);
+        currentOffset += schema.GetVariableSizeBlobCount() *
+            sizeof(DocTableDescriptor::VariableSizeBlob);
 
-        std::vector<unsigned> const & fixedSizeBlobSizes = schema.GetFixedSizeBlobSizes();
+        std::vector<unsigned> const & fixedSizeBlobSizes =
+            schema.GetFixedSizeBlobSizes();
 
         std::vector<unsigned> offsets;
         offsets.reserve(fixedSizeBlobSizes.size());
@@ -88,8 +96,8 @@ namespace BitFunnel
 
 
     // Returns the size in bytes that each record of the DocTable occupies
-    // (excluding data allocated for variable size blobs which is allocated
-    // from the heap).
+    // (excluding data allocated for variable size blobs which is allocated from
+    // the heap).
     /* static */
     size_t DocTableDescriptor::GetBufferSize(DocIndex capacity,
                                              IDocumentDataSchema const & schema)
@@ -128,12 +136,14 @@ namespace BitFunnel
 
     void DocTableDescriptor::Initialize(void* sliceBuffer) const
     {
-        char* const buffer = reinterpret_cast<char*>(sliceBuffer) + m_bufferOffset;
+        char* const buffer = reinterpret_cast<char*>(sliceBuffer) +
+            m_bufferOffset;
         memset(buffer, 0, m_bytesPerItem * m_capacity);
     }
 
 
-    void DocTableDescriptor::LoadVariableSizeBlobs(void* sliceBuffer, std::istream& input) const
+    void DocTableDescriptor::
+        LoadVariableSizeBlobs(void* sliceBuffer, std::istream& input) const
     {
         if (m_variableSizeBlobCount > 0)
         {
@@ -141,13 +151,17 @@ namespace BitFunnel
             {
                 for (unsigned blob = 0; blob < m_variableSizeBlobCount; ++blob)
                 {
-                    VariableSizeBlob& blobData = GetVariableBlobRef(sliceBuffer, i, blob);
-                    blobData.m_size = StreamUtilities::ReadField<uint32_t>(input);
+                    VariableSizeBlob& blobData =
+                        GetVariableBlobRef(sliceBuffer, i, blob);
+                    blobData.m_size =
+                        StreamUtilities::ReadField<uint32_t>(input);
 
                     if (blobData.m_size > 0)
                     {
                         blobData.m_data = malloc(blobData.m_size);
-                        StreamUtilities::ReadBytes(input, blobData.m_data, blobData.m_size);
+                        StreamUtilities::ReadBytes(input,
+                                                   blobData.m_data,
+                                                   blobData.m_size);
                     }
                     else
                     {
@@ -159,7 +173,8 @@ namespace BitFunnel
     }
 
 
-    void DocTableDescriptor::WriteVariableSizeBlobs(void* sliceBuffer, std::ostream& output) const
+    void DocTableDescriptor::
+        WriteVariableSizeBlobs(void* sliceBuffer, std::ostream& output) const
     {
         if (m_variableSizeBlobCount > 0)
         {
@@ -167,14 +182,17 @@ namespace BitFunnel
             {
                 for (unsigned blob = 0; blob < m_variableSizeBlobCount; ++blob)
                 {
-                    VariableSizeBlob const & blobData = GetVariableBlobRef(sliceBuffer, i, blob);
+                    VariableSizeBlob const & blobData =
+                        GetVariableBlobRef(sliceBuffer, i, blob);
 
-                    StreamUtilities::WriteField<uint32_t>(output, blobData.m_size);
+                    StreamUtilities::WriteField<uint32_t>(output,
+                                                          blobData.m_size);
                     if (blobData.m_size > 0)
                     {
-                        StreamUtilities::WriteBytes(output,
-                                                    reinterpret_cast<char*>(blobData.m_data),
-                                                    blobData.m_size);
+                        StreamUtilities::
+                            WriteBytes(output,
+                                       reinterpret_cast<char*>(blobData.m_data),
+                                       blobData.m_size);
                     }
                 }
             }
@@ -190,7 +208,8 @@ namespace BitFunnel
             {
                 for (unsigned blob = 0; blob < m_variableSizeBlobCount; ++blob)
                 {
-                    VariableSizeBlob& blobData = GetVariableBlobRef(sliceBuffer, i, blob);
+                    VariableSizeBlob& blobData =
+                        GetVariableBlobRef(sliceBuffer, i, blob);
 
                     if (blobData.m_data != nullptr)
                     {
@@ -211,7 +230,9 @@ namespace BitFunnel
     }
 
 
-    void DocTableDescriptor::SetDocId(void* sliceBuffer, DocIndex index, DocId id) const
+    void DocTableDescriptor::SetDocId(void* sliceBuffer,
+                                      DocIndex index,
+                                      DocId id) const
     {
         void* item = GetItem(sliceBuffer, index);
         *reinterpret_cast<DocId*>(item) = id;
@@ -223,7 +244,8 @@ namespace BitFunnel
                                                        VariableSizeBlobId blob,
                                                        size_t byteCount) const
     {
-        VariableSizeBlob& blobPtr = GetVariableBlobRef(sliceBuffer, index, blob);
+        VariableSizeBlob& blobPtr =
+            GetVariableBlobRef(sliceBuffer, index, blob);
 
         // Make sure it hasn't been allocated before.
         if (blobPtr.m_data != nullptr)
@@ -260,13 +282,18 @@ namespace BitFunnel
                                            DocIndex index,
                                            VariableSizeBlobId blob) const
     {
-        void* blobPtr = GetItem(sliceBuffer, index) + sizeof(DocId) + blob * sizeof(VariableSizeBlob);
+        void* blobPtr = GetItem(sliceBuffer, index) +
+            sizeof(DocId) +
+            blob * sizeof(VariableSizeBlob);
+
         return *reinterpret_cast<VariableSizeBlob*>(blobPtr);
     }
 
 
     char* DocTableDescriptor::GetItem(void* sliceBuffer, DocIndex index) const
     {
-        return reinterpret_cast<char*>(sliceBuffer) + m_bufferOffset + m_bytesPerItem * index;
+        return reinterpret_cast<char*>(sliceBuffer) +
+            m_bufferOffset +
+            m_bytesPerItem * index;
     }
 }

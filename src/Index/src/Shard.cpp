@@ -108,8 +108,7 @@ namespace BitFunnel
     {
         Slice* newSlice = new Slice(*this);
 
-        // TODO: recycle oldSlice.
-        // std::vector<void*>* oldSlice = m_sliceBuffers;
+        std::vector<void*>* oldSlices = m_sliceBuffers;
         std::vector<void*>* const newSlices = new std::vector<void*>(*m_sliceBuffers);
         newSlices->push_back(newSlice->GetSliceBuffer());
 
@@ -130,11 +129,12 @@ namespace BitFunnel
         m_activeSlice = newSlice;
 
         // TODO: think if this can be done outside of the lock.
+        std::unique_ptr<IRecyclable>
+            recyclableSliceList(new SliceListChangeRecyclable(nullptr,
+                                                              oldSlices,
+                                                              GetIndex().GetTokenManager()));
 
-        // TODO: implement recycler.
-        // std::unique_ptr<IRecyclable> recyclable(
-        //                                         new SliceListChangeRecyclable(nullptr, oldSlices, GetIndex().GetTokenManager()));
-        // GetIndex().GetRecycler().ScheduleRecyling(recyclable);
+        GetIndex().GetRecycler().ScheduleRecyling(recyclableSliceList);
     }
 
 

@@ -59,6 +59,6 @@ namespace BitFunnel
 
         bool m_usedVirtualAlloc;
         char* m_buffer;
-        size_t m_capacity;
+        size_t m_capacity;  // Tracked so we can munmap.
     };
 }

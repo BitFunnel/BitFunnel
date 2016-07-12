@@ -67,7 +67,7 @@ namespace BitFunnel
             RunTest1(1, 2, 10000, 10, false);           // length-1 queue, many readers
             RunTest1(1, 10, 1000, 1, false);            // length-1 queue, many writers
             RunTest1(100000, 10, 1000, 10, false);      // Try a case where enqueue will never block.
-            RunTest1(1, 1, 1000001, 1003, true);        // Shutdown before finished.
+            RunTest1(1, 1, 100001, 103, true);          // Shutdown before finished.
             RunTest1(1, 1003, 1000, 1, true);           // Shutdown before finished.
         }
 

@@ -63,7 +63,10 @@ namespace BitFunnel
 
     uint64_t* Row::Align(void* address)
     {
-        return reinterpret_cast<uint64_t*>((reinterpret_cast<size_t>(address) + static_cast<size_t>(c_byteAlignment) - 1) & ~(static_cast<size_t>(c_byteAlignment) - 1));
+        return reinterpret_cast<uint64_t*>
+            ((reinterpret_cast<size_t>(address) +
+              static_cast<size_t>(c_byteAlignment) - 1) &
+             ~(static_cast<size_t>(c_byteAlignment) - 1));
     }
 
 
@@ -79,7 +82,8 @@ namespace BitFunnel
         // is necessary that c_byteAlignment be at least 8 so that
         // DocumentsInRank0Row() correctly pads the row length.
         static const unsigned c_documentsPerByte = 8;
-        unsigned rowQuanta = (c_byteAlignment * c_documentsPerByte) << c_maxRankValue;
+        unsigned rowQuanta =
+            (c_byteAlignment * c_documentsPerByte) << c_maxRankValue;
 
         return RoundUp<size_t>(documentCount, rowQuanta);
     }

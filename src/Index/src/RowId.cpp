@@ -41,7 +41,7 @@ namespace BitFunnel
         : m_shard(shard), m_rank(rank), m_index(index)
     {
         LogAssertB(index <= c_maxRowIndexValue, "Row index out of range.");
-        // TODO: assert that other values are in range.S
+        // TODO: assert that other values are in range.
     }
 #ifdef _MSC_VER
 #pragma warning(pop)
@@ -125,9 +125,10 @@ namespace BitFunnel
 
     bool RowId::IsValid() const
     {
-        // TODO: fix, remove tier.
+        // TODO: wait, do we need the concept of tier so we can mark things
+        // invalid?
         // return m_tier !=  InvalidTier;
-        return false;
+        return true;
     }
 
 

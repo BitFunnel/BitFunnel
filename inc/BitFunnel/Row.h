@@ -30,6 +30,7 @@
 namespace BitFunnel
 {
     // TODO: should this be a size_t? Although its value is always quite small.
+    // If it's not a size_t, why shouldn't it be a uint8_t or something?
     typedef uint32_t Rank;
 
     static constexpr unsigned c_maxRankValue = 6;

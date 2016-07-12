@@ -72,26 +72,24 @@ namespace BitFunnel
     class DocTableDescriptor
     {
     public:
-        // Initializes items in the allocated buffer and sets their pointers
-        // for variable sized blobs to nullptr. bufferOffset represents the
-        // offset where DocTable data starts in the larger sliceBuffer. The
-        // address of the sliceBuffer is passed to other methods of this class
-        // and there has to be enough space starting at
-        // sliceBuffer + bufferOffset, as determined by a call to
-        // GetBufferSize().
+        // Initializes items in the allocated buffer and sets their pointers for
+        // variable sized blobs to nullptr. bufferOffset represents the offset
+        // where DocTable data starts in the larger sliceBuffer. The address of
+        // the sliceBuffer is passed to other methods of this class and there
+        // has to be enough space starting at sliceBuffer + bufferOffset, as
+        // determined by a call to GetBufferSize().
         DocTableDescriptor(DocIndex capacity,
                            IDocumentDataSchema const & schema,
                            ptrdiff_t bufferOffset);
 
-        // Copy constructor from another DocTableDescriptor. Required so that
-        // a Slice can create a cached copy of the DocTableDescriptor from
-        // Shard.
+        // Copy constructor from another DocTableDescriptor. Required so that a
+        // Slice can create a cached copy of the DocTableDescriptor from Shard.
         DocTableDescriptor(DocTableDescriptor const & other);
 
-        // Initializes the DocTable in the block of memory at
-        // sliceBuffer + bufferOffset, where bufferOffset was the value passed
-        // to the constructor. This block must be large enough to hold the
-        // DocTable, as determined by GetBufferSize().
+        // Initializes the DocTable in the block of memory at sliceBuffer +
+        // bufferOffset, where bufferOffset was the value passed to the
+        // constructor. This block must be large enough to hold the DocTable, as
+        // determined by GetBufferSize().
         void Initialize(void* sliceBuffer) const;
 
         // Loads the contents of the variable size blobs from the stream.

@@ -49,13 +49,12 @@ namespace BitFunnel
     {
     public:
         // Allocates a buffer for a Slice and returns a pointer to it.
-        // Implementors may restrict byteSize to a pre-defined set of values,
-        // or even require a single value to be used for all slices in the
-        // Index.
+        // Implementors may restrict byteSize to a pre-defined set of values, or
+        // even require a single value to be used for all slices in the Index.
         virtual void* Allocate(size_t byteSize) = 0;
 
-        // Returns the allocator when a Slice is being recycled back to the
-        // pool for re-use. Buffer is zero initialized upon return.
+        // Returns the allocator when a Slice is being recycled back to the pool
+        // for re-use. Buffer is zero initialized upon return.
         virtual void Release(void* buffer) = 0;
 
         // Returns the size of the single slice buffer.

@@ -79,7 +79,8 @@ namespace BitFunnel
     // c_systemRowCount.
     Term CreateSystemInternalTerm(Term::Hash rawHash)
     {
-        LogAssertB(rawHash < c_systemRowCount, "Hash out of range.");
+        LogAssertB(rawHash < c_systemRowCount,
+                   "Hash out of internal row range.");
 
         const Term term(rawHash,
                         StreamId::MetaWord,

@@ -77,7 +77,4 @@ namespace BitFunnel
         : FatalError()
     {
     }
-
-
-
 }

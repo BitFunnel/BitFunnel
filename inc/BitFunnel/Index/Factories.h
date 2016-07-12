@@ -39,11 +39,13 @@ namespace BitFunnel
     namespace Factories
     {
         std::unique_ptr<IConfiguration> CreateConfiguration(size_t maxGramSize);
+
         std::unique_ptr<IIngestor>
             CreateIngestor(IDocumentDataSchema const & docDataSchema,
                            IRecycler& recycler,
                            ITermTable const & termTable,
                            ISliceBufferAllocator& sliceBufferAllocator);
+
         std::unique_ptr<IDocumentDataSchema> CreateDocumentDataSchema();
     }
 }

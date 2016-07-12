@@ -48,10 +48,11 @@ namespace BitFunnel
     // intended to be passed and returned as a value type.
     //
     //*************************************************************************
-    // TODO: packing.
-    //#pragma pack(push, 1)
-      // maximally compact object, optimize size over performance.
-    //    __declspec (align(1))
+#pragma pack(push, 1)
+// maximally compact object, optimize size over performance.
+#ifdef _MSC_VER
+__declspec (align(1))
+#endif
     class PackedTermInfo
     {
     public:
@@ -82,5 +83,5 @@ namespace BitFunnel
         uint8_t m_rowIdCount;
     };
     // TODO: packing.
-    // #pragma pack(pop)
+#pragma pack(pop)
 }
