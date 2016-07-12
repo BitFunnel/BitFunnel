@@ -281,7 +281,7 @@ namespace BitFunnel
         }
 
 
-        unsigned GetRowTableSize(DocIndex capacity, RowIndex rowCount, Rank rank)
+        size_t GetRowTableSize(DocIndex capacity, RowIndex rowCount, Rank rank)
         {
             return Row::DocumentsInRank0Row(capacity) * rowCount / (2 << (3 + rank));
         }
