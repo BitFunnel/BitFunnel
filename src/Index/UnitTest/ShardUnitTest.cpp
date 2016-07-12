@@ -1,3 +1,28 @@
+// The MIT License (MIT)
+
+// Copyright (c) 2016, Microsoft
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+
+// TODO: port this test.
+
 #include "stdafx.h"
 
 #include <set>
@@ -91,8 +116,8 @@ namespace BitFunnel
 
 
         // A thread that simulates query thread activity. This thread simulates bits operations in
-        // the RowTables across all ranks and DocTable operations in all DocIndex values in all 
-        // slice buffers in the Shard. Design intent is to simulate highly intense query thread 
+        // the RowTables across all ranks and DocTable operations in all DocIndex values in all
+        // slice buffers in the Shard. Design intent is to simulate highly intense query thread
         // activity which would test the slice buffers with high frequency, while performing adding
         // or removing of slice buffers. Adding/removing os slice buffers has to be thread safe and
         // a query thread should never access the memory which has been deallocated.
@@ -164,7 +189,7 @@ namespace BitFunnel
 
 
         // Returns the buffer size required to host a Slice with given schema properties.
-        size_t GetRequiredBufferSize(DocIndex capacity, 
+        size_t GetRequiredBufferSize(DocIndex capacity,
                                      IDocumentDataSchema const & docDataSchema,
                                      ITermTable const & termTable)
         {
@@ -364,7 +389,7 @@ namespace BitFunnel
             // Min buffer size for DocTable is 32 * 4096 = 131072.
 
             const std::vector<RowIndex> rowCounts = { 100, 0, 0, 200, 0, 0, 0 };
-            // 100 rows in rank 0 and 200 rows at rank 3 for 4096 documents make it 
+            // 100 rows in rank 0 and 200 rows at rank 3 for 4096 documents make it
             // 100 * 4096 / 8 + 200 / 8 * 4096 / 8 = 51200 + 12800 = 64000.
 
             EmptyTermTable termTable(rowCounts);
