@@ -227,6 +227,7 @@ namespace BitFunnel
 
             EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 0u);
 
+            // TODO: replace sleeps with polling forever?
             {
                 Slice* const slice = FillUpAndExpireSlice(shard, c_sliceCapacity);
                 EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 1u);

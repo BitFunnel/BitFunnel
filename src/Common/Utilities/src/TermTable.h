@@ -182,6 +182,19 @@ namespace BitFunnel
 
     //     std::auto_ptr<AdhocTermInfoArray> m_adhocTermInfos[c_maxIdfSumX10Value + 1];
 
+        // TermInfo has an offset. Offset foo is where the 6 rows are. So you go
+        // into the PackedArray and pull out the rows. You have hash table full
+        // of payloads. But because the payloads are weirdly sized, the payload
+        // is really an index into this structure that stores the actual data.
+
+        // We could have a hash table that maps from TermHash to pointer to blob
+        // of data, and the first element in the blob could be how many rows it
+        // has.
+
+        // In the past, the Term Table took up a higher percentage of memory
+        // than it does now. Also, it seems like we can squeeze Rows down to 32
+        // bits, so might not need PackedArray at all.
+
     //     // Storage for RowIds referenced by PackedTermInfo structure.
     //     // PackedTermInfo structures reference contiguous sequences of RowIds
     //     // stored in m_rowIdBuffer. m_rowIdCount holds the total number of

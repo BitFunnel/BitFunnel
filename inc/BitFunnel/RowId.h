@@ -89,12 +89,12 @@ namespace BitFunnel
         static unsigned GetPackedRepresentationBitCount();
 
     protected:
-        // The following constants define the 40 bits of RowId assigned to
+        // The following constants define the 32-bits of RowId assigned to
         // Tier, Rank, ShardId, Index. Constants are protected to allow access
         // from the unit test.
         static const unsigned c_bitsOfShard = 4;
         static const unsigned c_bitsOfRank = 3;
-        static const unsigned c_bitsOfIndex = 31;
+        static const unsigned c_bitsOfIndex = 32 - c_bitsOfShard - c_bitsOfRank;
 
     public:
         static const size_t c_maxRowIndexValue = (1ul << c_bitsOfIndex) - 1;
