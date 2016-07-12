@@ -303,7 +303,7 @@ namespace BitFunnel
             // {
             //     const ptrdiff_t offset = shard.GetRowTable(0).
             //         GetRowOffset(matchAllRowId.GetIndex());
-            //     unsigned __int8* matchAllRowData =
+            //     uint8_t* matchAllRowData =
             //         reinterpret_cast<uint8_t*>(sliceBuffer) + offset;
             //     for (unsigned i = 0; i < shard.GetSliceCapacity() / 8; ++i)
             //     {
