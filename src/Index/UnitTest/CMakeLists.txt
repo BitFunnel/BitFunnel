@@ -9,7 +9,6 @@ set(CPPFILES
     EndToEndTests.cpp
     Mocks/EmptyTermTable.cpp
     # RecyclerUnitTest.cpp
-    # RowIdUnitTest.cpp
     RowTableDescriptorUnitTest.cpp
     # ShardUnitTest.cpp
     SliceUnitTest.cpp
