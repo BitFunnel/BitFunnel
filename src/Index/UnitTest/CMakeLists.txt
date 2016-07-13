@@ -6,7 +6,6 @@ set(CPPFILES
     DocTableDescriptorUnitTest.cpp
     DocumentDataSchemaUnitTest.cpp
     DocumentLengthHistogramUnitTest.cpp
-    EndToEndTests.cpp
     Mocks/EmptyTermTable.cpp
     # RecyclerUnitTest.cpp
     RowTableDescriptorUnitTest.cpp
