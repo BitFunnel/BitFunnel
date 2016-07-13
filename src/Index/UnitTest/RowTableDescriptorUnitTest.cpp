@@ -161,7 +161,6 @@ namespace BitFunnel
                     {
                         if (i >= matchAllStart && i < matchAllEnd)
                         {
-                            // -1 = 0xFF.
                             EXPECT_EQ(*(buffer + i), '\xFF');
                         }
                         else

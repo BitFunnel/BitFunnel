@@ -8,7 +8,6 @@ set(CPPFILES
     DocumentLengthHistogramUnitTest.cpp
     EndToEndTests.cpp
     Mocks/EmptyTermTable.cpp
-    Placeholder.cpp
     # RecyclerUnitTest.cpp
     # RowIdUnitTest.cpp
     RowTableDescriptorUnitTest.cpp

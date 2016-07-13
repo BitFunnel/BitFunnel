@@ -29,17 +29,20 @@
 
 namespace BitFunnel
 {
-    SliceBufferAllocator::SliceBufferAllocator(size_t blockSize, size_t blockCount)
-        : m_blockAllocator(Factories::CreateBlockAllocator(blockSize, blockCount))
+    SliceBufferAllocator::SliceBufferAllocator(size_t blockSize,
+                                               size_t blockCount)
+        : m_blockAllocator(Factories::CreateBlockAllocator(blockSize,
+                                                           blockCount))
     {
     }
 
 
     void* SliceBufferAllocator::Allocate(size_t byteSize)
     {
-        // TODO: should this be more strict and allow only exactly sized blocks?
-        LogAssertB(m_blockAllocator->GetBlockSize() <= byteSize,
-                   "Allocate byteSize < block size.");
+        // Other implementations of IBlockAllocator may not have this
+        // restriction.
+        LogAssertB(m_blockAllocator->GetBlockSize() == byteSize,
+                   "Allocate byteSize != block size.");
 
         return m_blockAllocator->AllocateBlock();
     }

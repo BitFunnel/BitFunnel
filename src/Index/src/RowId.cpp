@@ -27,12 +27,6 @@
 
 namespace BitFunnel
 {
-    RowId::RowId()
-    //        : m_tier(static_cast<unsigned>(InvalidTier))
-    {
-    }
-
-
 #ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable:4267)
@@ -123,20 +117,20 @@ namespace BitFunnel
     }
 
 
-    bool RowId::IsValid() const
-    {
-        // DESIGN NOTE: this needs to change once we pass the query plan. We
-        // wanted to use the same JIT'ed code on each shard. But not all shards
-        // have the same number of rows. The way that's done is by duplicating
-        // rows so that every shard ends up as long as the longest
-        // shard. IsValid was used to find the boundary where things need to be
-        // duplicated.
+    // bool RowId::IsValid() const
+    // {
+    //     // DESIGN NOTE: this needs to change once we pass the query plan. We
+    //     // wanted to use the same JIT'ed code on each shard. But not all shards
+    //     // have the same number of rows. The way that's done is by duplicating
+    //     // rows so that every shard ends up as long as the longest
+    //     // shard. IsValid was used to find the boundary where things need to be
+    //     // duplicated.
 
-        // It's not clear that we need to do this for the ported BitFunnel. We
-        // should conduct the experiment before really porting this over because
-        // it adds a significant amount of complexity.
-        return true;
-    }
+    //     // It's not clear that we need to do this for the ported BitFunnel. We
+    //     // should conduct the experiment before really porting this over because
+    //     // it adds a significant amount of complexity.
+    //     return true;
+    // }
 
 
     unsigned RowId::GetPackedRepresentationBitCount()

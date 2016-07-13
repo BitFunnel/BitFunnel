@@ -50,17 +50,26 @@ namespace BitFunnel
         while (!m_shutdown)
         {
             IRecyclable* item;
-            // false indicates queue shutdown.
             if (!m_queue->TryDequeue(item))
             {
-                return;
+                // false indicates queue shutdown.
+                break;
             }
             LogAssertB(item, "null IRecycable item.");
             item->Recycle();
-            // TODO: fix leak. Items inside destructing queue will get leaked.
-            // Should probably manage this with a unique_ptr.
             delete item;
         }
+        // TODO: fix leak. Items inside destructing queue will get leaked.  The
+        // leak can be fixed by popping items off the queue here. However, the
+        // queue will need to be modified to make this work.  An alternative
+        // would be to try to dequeue items in Shutdown, but we still need to
+        // modify the queue to prevent new items from getting inserted in the
+        // queue.
+
+        // This is relatively unlikely to be a problem in practice because our
+        // model is to start a Recycler when the system starts and run it
+        // forever. If that changes or people want to use this as a stand-alone
+        // module, this should be fixed.
     }
 
     void Recycler::ScheduleRecyling(std::unique_ptr<IRecyclable>& resource)
@@ -79,12 +88,12 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    // SliceListChangeRecyclable.
+    // DeferredSliceListDelete.
     //
     //*************************************************************************
-    SliceListChangeRecyclable::SliceListChangeRecyclable(Slice* slice,
-                                                         std::vector<void*> const * sliceBuffers,
-                                                         ITokenManager& tokenManager)
+    DeferredSliceListDelete::DeferredSliceListDelete(Slice* slice,
+                                                     std::vector<void*> const * sliceBuffers,
+                                                     ITokenManager& tokenManager)
         : m_slice(slice),
           m_sliceBuffers(sliceBuffers),
           m_tokenTracker(tokenManager.StartTracker())
@@ -92,7 +101,7 @@ namespace BitFunnel
     }
 
 
-    void SliceListChangeRecyclable::Recycle()
+    void DeferredSliceListDelete::Recycle()
     {
         m_tokenTracker->WaitForCompletion();
         if (m_slice != nullptr)

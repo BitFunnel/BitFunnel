@@ -58,13 +58,11 @@ namespace BitFunnel
     // Uses token system to determine when the consumers of the resource have
     // exited.
     //
-    // TODO: Other naming ideas:
-    // RecyclingSlice, RecyclingSlices, SliceBeingRecycled, SlicePendingRecycle.
     // TODO: Consider moving to Shard.cpp, as it is the only consumer of the class.
-    class SliceListChangeRecyclable : public IRecyclable
+    class DeferredSliceListDelete : public IRecyclable
     {
     public:
-        SliceListChangeRecyclable(Slice* slice,
+        DeferredSliceListDelete(Slice* slice,
                                   std::vector<void*> const * sliceBuffers,
                                   ITokenManager& tokenManager);
 
@@ -102,12 +100,12 @@ namespace BitFunnel
 
         void Run() override;
 
-        // TODO: call on destruction?
         void Shutdown() override;
 
         // Adds a resource to the list for recycling.
         // Recycler takes ownership of the resource.
-        virtual void ScheduleRecyling(std::unique_ptr<IRecyclable>& resource) override;
+        virtual void
+            ScheduleRecyling(std::unique_ptr<IRecyclable>& resource) override;
     private:
         // TODO: we should log of this queue fills to the point of blocking on
         // enqueue. That's an unexpected condition.

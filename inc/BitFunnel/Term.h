@@ -50,7 +50,7 @@ namespace BitFunnel
     {
     public:
         typedef uint8_t GramSize;
-        typedef size_t Hash;
+        typedef uint64_t Hash;
         typedef uint8_t IdfX10;
         typedef uint8_t StreamId;
 

@@ -14,7 +14,6 @@ set(CPPFILES
     IngestChunks.cpp
     Ingestor.cpp
     PackedTermInfo.cpp
-    Placeholder.cpp
     Recycler.cpp
     RowId.cpp
     RowTableDescriptor.cpp

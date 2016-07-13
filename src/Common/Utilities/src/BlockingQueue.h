@@ -131,6 +131,9 @@ namespace BitFunnel
         {
             m_dequeueCond.wait(lock);
         }
+        // TODO: consider making this condition m_shutdown && m_queue.empty().
+        // Then, when the queue has recv'd a shutdown, no more items can be
+        // enqueued, but the queue will still drain out correctly.
         if (m_shutdown)
         {
             return false;

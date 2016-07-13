@@ -31,6 +31,7 @@
 #include "SliceBufferAllocator.h"
 #include "SynchronousRecycler.h"
 
+
 namespace BitFunnel
 {
     namespace Allocators
@@ -41,6 +42,9 @@ namespace BitFunnel
     class IShardDefinition;
     class PostingDocumentBlobs;
 
+    // This is a factory that creates an Index, plus things an Index depends on. The
+    // intent is to use this for tests so that tests don't need a lot of scaffolding
+    // to create an Index. TODO: port this to Ingestor.
     class IndexWrapper
     {
     public:

@@ -25,7 +25,6 @@
 
 #include <string>
 
-// TODO: fix obsolete comments (e.g., comment that RowId is <= 32 bits).
 
 namespace BitFunnel
 {
@@ -56,15 +55,15 @@ namespace BitFunnel
         // TermAllocator::ExportTermTable.
         RowId(const RowId& other);
 
-        // Constructs a RowId from a 40-bit packed representation.
+        // Constructs a RowId from a 32-bit packed representation.
         // DESIGN NOTE: The packed representation provides more compact storage
         // for the RowId fields than can be accomplished in the RowId class.
         // The layout of the bit fields in RowId is compiler dependent and in
         // the case of the compiler, the fields occupy 64 bits of space, even
-        // though only 40 bits are defined.
+        // though only 32 bits are defined.
         RowId(uint64_t packedRepresentation);
 
-        // Returns the 40-bit packed representation of the RowId.
+        // Returns the 32-bit packed representation of the RowId.
         uint64_t GetPackedRepresentation() const;
 
         // Return's the row's Rank.
@@ -85,7 +84,7 @@ namespace BitFunnel
         bool IsValid() const;
 
         // Returns the number of significant bits in the packed representation
-        // of a RowId. Currently this method returns the value 40.
+        // of a RowId. Currently this method returns the value 32.
         static unsigned GetPackedRepresentationBitCount();
 
     protected:

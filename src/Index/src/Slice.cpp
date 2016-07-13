@@ -67,7 +67,7 @@ namespace BitFunnel
 
         if (m_unallocatedCount == 0)
         {
-                return false;
+            return false;
         }
 
         index = m_capacity - m_unallocatedCount;
@@ -117,13 +117,14 @@ namespace BitFunnel
 
 
     /* static */
-    // TODO: why do we have these two methods which are basically identical?
     Slice* Slice::GetSliceFromBuffer(void* sliceBuffer, ptrdiff_t slicePtrOffset)
     {
         return Slice::GetSlicePointer(sliceBuffer, slicePtrOffset);
     }
 
 
+    // We have GetSlicePointer, which is private, so that the constructor can
+    // get a reference and modify the pointer.
     /* static */
     Slice*& Slice::GetSlicePointer(void* sliceBuffer, ptrdiff_t slicePtrOffset)
     {
@@ -149,10 +150,6 @@ namespace BitFunnel
 
     bool Slice::IsExpired() const
     {
-        // TODO: is this lock_guard  really necessary?
-        // It seems like this could be removed if m_expireCount were atomic.
-        std::lock_guard<std::mutex> lock(m_docIndexLock);
-
         return m_expiredCount == m_capacity;
     }
 

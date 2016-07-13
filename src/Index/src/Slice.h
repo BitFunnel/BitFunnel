@@ -192,11 +192,11 @@ namespace BitFunnel
         bool CommitDocument();
 
         // Hides document from future matching operations. May only be called
-        // once per DocIndex value.
-        // DocIndex value must have been successfully allocated by TryAllocateDocument().
-        // Returns true if the entire capacity of the Slice is now expired, in
-        // which case the caller is responsible of recycling the Slice. Returns
-        // false otherwise.
+        // once per DocIndex value.  DocIndex value must have been successfully
+        // allocated by TryAllocateDocument().  Returns true if the entire
+        // capacity of the Slice is now expired, in which case the caller is
+        // responsible of recycling the Slice. Returns false otherwise.
+        //
         // Thread safe.
         //
         // Implementation:
@@ -281,6 +281,6 @@ namespace BitFunnel
 
         // The number of DocIndex'es that have been expired from the slice.
         // When this value reaches m_capacity, the slice can be recycled.
-        size_t m_expiredCount;
+        std::atomic<size_t> m_expiredCount;
     };
 }

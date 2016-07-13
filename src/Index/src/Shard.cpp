@@ -130,9 +130,9 @@ namespace BitFunnel
 
         // TODO: think if this can be done outside of the lock.
         std::unique_ptr<IRecyclable>
-            recyclableSliceList(new SliceListChangeRecyclable(nullptr,
-                                                              oldSlices,
-                                                              GetIndex().GetTokenManager()));
+            recyclableSliceList(new DeferredSliceListDelete(nullptr,
+                                                            oldSlices,
+                                                            GetIndex().GetTokenManager()));
 
         GetIndex().GetRecycler().ScheduleRecyling(recyclableSliceList);
     }
@@ -263,9 +263,9 @@ namespace BitFunnel
         // Scheduling the Slice and the old list of slice buffers can be
         // done outside of the lock.
         std::unique_ptr<IRecyclable>
-            recyclableSliceList(new SliceListChangeRecyclable(&slice,
-                                                              oldSlices,
-                                                              GetIndex().GetTokenManager()));
+            recyclableSliceList(new DeferredSliceListDelete(&slice,
+                                                            oldSlices,
+                                                            GetIndex().GetTokenManager()));
 
         GetIndex().GetRecycler().ScheduleRecyling(recyclableSliceList);
     }

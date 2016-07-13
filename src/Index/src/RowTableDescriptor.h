@@ -72,8 +72,6 @@ namespace BitFunnel
         // No cleanup method required.
 
         // Gets a bit in the given row and column.
-        // WARNING: this returns a value with *any* bit set if that bit is set.
-        // TODO: look at how this is used to see if that's acceptable.
         uint64_t GetBit(void* sliceBuffer, RowIndex rowIndex, DocIndex docIndex) const;
 
         // Sets a bit in the given row and column.

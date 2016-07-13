@@ -60,12 +60,12 @@ namespace BitFunnel
 
     Term::Term(Hash rawHash,
                StreamId stream,
-               IdfX10 /*idf*/)
+               IdfX10 idf)
         : m_rawHash(rawHash),
           m_stream(stream),
           m_gramSize(1),
-          m_idfSum(0),      // TODO: use correct value
-          m_idfMax(0)       // TODO: use correct value
+          m_idfSum(idf),
+          m_idfMax(idf)
     {
     }
 

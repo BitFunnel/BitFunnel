@@ -73,7 +73,7 @@ namespace BitFunnel
         // TODO: is the variant parameter really necessary? Isn't it sufficient
         // for the TermTableBuilder to create a set of adhoc RowIds that all
         // have different RowIndex values?
-        virtual RowId GetRowIdAdhoc(uint64_t hash, size_t rowOffset, size_t variant)  const= 0;
+        virtual RowId GetRowIdAdhoc(uint64_t hash, size_t rowOffset, size_t variant)  const = 0;
 
         // Returns a RowId for a fact term. rowOffset specifies an index of the
         // fact in the list of configured facts.
