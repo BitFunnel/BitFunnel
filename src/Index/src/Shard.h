@@ -150,7 +150,7 @@ namespace BitFunnel
         IIngestor& GetIndex() const;
 
         // Returns term table associated with this shard.
-        //ITermTable const & GetTermTable() const;
+        ITermTable const & GetTermTable() const;
 
         // Descriptor for RowTables and DocTable.
         DocTableDescriptor const & GetDocTable() const;
@@ -195,9 +195,10 @@ namespace BitFunnel
 
         // Calculates the number of documents which can be hosted in a slice
         // buffer of the given byte size.
-        //static DocIndex GetCapacityForByteSize(size_t bufferByteSize,
-        //                                       IDocumentDataSchema const & schema,
-        //                                       ITermTable const & termTable);
+        static DocIndex
+            GetCapacityForByteSize(size_t bufferByteSize,
+                                   IDocumentDataSchema const & schema,
+                                   ITermTable const & termTable);
 
     private:
         // Tries to add a new slice. Throws if no memory in the allocator.
@@ -215,7 +216,7 @@ namespace BitFunnel
         size_t m_id;
 
         // TermTable for this shard.
-        //ITermTable const & m_termTable;
+        ITermTable const & m_termTable;
 
         // Allocator that provides blocks of memory for Slice buffers.
         ISliceBufferAllocator& m_sliceBufferAllocator;

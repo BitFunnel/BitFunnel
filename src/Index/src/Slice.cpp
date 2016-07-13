@@ -38,6 +38,14 @@ namespace BitFunnel
           m_expiredCount(0)
     {
         Initialize();
+
+        // Perform start up initialization of the DocTable and RowTables after
+        // the buffer has been allocated.
+        GetDocTable().Initialize(m_buffer);
+        for (Rank r = 0; r <= c_maxRankValue; ++r)
+        {
+            GetRowTable(r).Initialize(m_buffer, m_shard.GetTermTable());
+        }
     }
 
 
@@ -113,6 +121,18 @@ namespace BitFunnel
         m_expiredCount++;
 
         return m_expiredCount == m_capacity;
+    }
+
+
+    DocTableDescriptor const & Slice::GetDocTable() const
+    {
+        return m_shard.GetDocTable();
+    }
+
+
+    RowTableDescriptor const & Slice::GetRowTable(Rank rank) const
+    {
+        return m_shard.GetRowTable(rank);
     }
 
 

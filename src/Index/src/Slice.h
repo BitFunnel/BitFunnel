@@ -27,15 +27,16 @@
 //#include <iosfwd>
 //#include <vector>
 //
-#include "BitFunnel/Index/DocumentHandle.h"     // For DocIndex.
-#include "BitFunnel/NonCopyable.h"              // Inherits from NonCopyable.
+#include "BitFunnel/Index/DocumentHandle.h"  // For DocIndex.
+#include "BitFunnel/NonCopyable.h"  // Inherits from NonCopyable.
+#include "BitFunnel/Row.h"  // For Rank.
 //#include "BitFunnel/BitFunnelTypes.h"                // DocIndex is a member variable.
 //#include "BitFunnel/ThreadsafeCounter.h"             // Member variable.
 
 namespace BitFunnel
 {
-    //class DocTableDescriptor;
-    //class RowTableDescriptor;
+    class DocTableDescriptor;
+    class RowTableDescriptor;
     class Shard;
 
     //*************************************************************************
@@ -153,8 +154,8 @@ namespace BitFunnel
         Shard& GetShard() const;
 
         // Returns the RowTable or DocTable descriptors from the parent Shard.
-        //DocTableDescriptor const & GetDocTable() const;
-        //RowTableDescriptor const & GetRowTable(Rank rank) const;
+        DocTableDescriptor const & GetDocTable() const;
+        RowTableDescriptor const & GetRowTable(Rank rank) const;
 
         // Serializes the slice to a given output stream. Only slices that are
         // full (all columns are allocated and committed) may be serialized.

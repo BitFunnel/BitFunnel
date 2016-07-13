@@ -41,10 +41,13 @@ namespace BitFunnel
                  size_t sliceBufferSize)
         : m_ingestor(ingestor),
           m_id(id),
+          m_termTable(termTable),
           m_sliceBufferAllocator(sliceBufferAllocator),
           m_activeSlice(nullptr),
           m_sliceBuffers(new std::vector<void*>()),
-          m_sliceCapacity(16), // TODO: use GetCapacityForByteSize.
+          m_sliceCapacity(GetCapacityForByteSize(sliceBufferSize,
+                                                 docDataSchema,
+                                                 termTable)),
           m_sliceBufferSize(sliceBufferSize)
     {
         const size_t bufferSize =
@@ -156,6 +159,35 @@ namespace BitFunnel
     }
 
 
+    /* static */
+    DocIndex Shard::GetCapacityForByteSize(size_t bufferSizeInBytes,
+                                           IDocumentDataSchema const & schema,
+                                           ITermTable const & termTable)
+    {
+        DocIndex capacity = 0;
+        for (;;)
+        {
+            const DocIndex newSuggestedCapacity = capacity +
+                Row::DocumentsInRank0Row(1);
+            const size_t newBufferSize =
+                InitializeDescriptors(nullptr,
+                                      newSuggestedCapacity,
+                                      schema,
+                                      termTable);
+            if (newBufferSize > bufferSizeInBytes)
+            {
+                break;
+            }
+
+            capacity = newSuggestedCapacity;
+        }
+
+        LogAssertB(capacity > 0, "Shard with 0 capacity.");
+
+        return capacity;
+    }
+
+
     DocIndex Shard::GetSliceCapacity() const
     {
         return  m_sliceCapacity;
@@ -169,6 +201,12 @@ namespace BitFunnel
     }
 
 
+    ITermTable const & Shard::GetTermTable() const
+    {
+        return m_termTable;
+    }
+
+
     /* static */
     size_t Shard::InitializeDescriptors(Shard* shard,
                                         DocIndex sliceCapacity,
@@ -179,11 +217,11 @@ namespace BitFunnel
 
         // Start of the DocTable is at offset 0.
         if (shard != nullptr)
-            {
-                shard->m_docTable.reset(new DocTableDescriptor(sliceCapacity,
-                                                               docDataSchema,
-                                                               currentOffset));
-            }
+        {
+            shard->m_docTable.reset(new DocTableDescriptor(sliceCapacity,
+                                                           docDataSchema,
+                                                           currentOffset));
+        }
 
         currentOffset += DocTableDescriptor::GetBufferSize(sliceCapacity, docDataSchema);
 
