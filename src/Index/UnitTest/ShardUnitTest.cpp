@@ -20,26 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream>  // TODO: remove.
 
-// TODO: port this test.
+#include <future>
 
-#include "stdafx.h"
+#include "gtest/gtest.h"
 
-#include <set>
-
-#include "BitFunnel/Factories.h"
-#include "BitFunnel/IThreadManager.h"
+#include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Row.h"
+#include "BitFunnel/TermInfo.h"
 #include "DocumentDataSchema.h"
-#include "EmptyTermTable.h"
-#include "ExpectException.h"
-#include "IngestionIndex.h"
-#include "IndexWrapper.h"
-#include "Rounding.h"
-#include "Slice.h"
+#include "Ingestor.h"
+#include "IRecycler.h"
+#include "ISliceBufferAllocator.h"
+#include "Mocks/EmptyTermTable.h"
+#include "Recycler.h"
 #include "Shard.h"
-#include "SuiteCpp/UnitTest.h"
+#include "Slice.h"
 #include "TrackingSliceBufferAllocator.h"
+
 
 namespace BitFunnel
 {
@@ -47,37 +48,62 @@ namespace BitFunnel
     {
         const size_t c_blockAllocatorBlockCount = 10;
 
+
+        size_t GetBufferSize(DocIndex capacity,
+                             std::vector<RowIndex> const & rowCounts,
+                             IDocumentDataSchema const & schema)
+        {
+            EmptyTermTable termTable(rowCounts);
+            return Shard::InitializeDescriptors(nullptr, capacity, schema, termTable);
+        }
+
+
         void TestSliceBuffers(Shard const & shard, std::vector<Slice*> const & allocatedSlices)
         {
             std::vector<void*> const & sliceBuffers = shard.GetSliceBuffers();
-            TestEqual(sliceBuffers.size(), allocatedSlices.size());
+            EXPECT_EQ(sliceBuffers.size(), allocatedSlices.size());
 
             for (size_t i = 0; i < sliceBuffers.size(); ++i)
             {
-                TestEqual(allocatedSlices[i]->GetSliceBuffer(), sliceBuffers[i]);
+                EXPECT_EQ(allocatedSlices[i]->GetSliceBuffer(), sliceBuffers[i]);
 
                 // Slice buffer should contain a pointer to a Slice at the offset indicated by Shard.
                 char* sliceBuffer = reinterpret_cast<char*>(sliceBuffers[i]);
                 void** slicePtrInSliceBuffer = reinterpret_cast<void**>(sliceBuffer + shard.GetSlicePtrOffset());
-                TestEqual(allocatedSlices[i], *slicePtrInSliceBuffer);
+                EXPECT_EQ(allocatedSlices[i], *slicePtrInSliceBuffer);
             }
         }
 
 
-        TestCase(BasicTest)
+        TEST(BasicShardTest, Trivial)
         {
-            static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
-
-            static const std::vector<RowIndex> rowCounts = { 100, 0, 0, 200, 0, 0, 300 };
-            std::shared_ptr<ITermTable const> termTable(new EmptyTermTable(rowCounts));
-
             DocumentDataSchema schema;
 
-            IndexWrapper index(c_sliceCapacity, termTable, schema, c_blockAllocatorBlockCount);
-            Shard& shard = index.GetShard();
+            std::unique_ptr<IRecycler> recycler =
+                std::unique_ptr<IRecycler>(new Recycler());
+            auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
 
-            TestEqual(&shard.GetIndex(), &index.GetIndex());
-            TestEqual(shard.GetSliceCapacity(), c_sliceCapacity);
+            static const std::vector<RowIndex>
+                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
+            std::shared_ptr<ITermTable const>
+                termTable(new EmptyTermTable(rowCounts));
+
+            static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
+            const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, rowCounts, schema);
+
+            std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
+                new TrackingSliceBufferAllocator(sliceBufferSize));
+
+            const std::unique_ptr<IIngestor>
+                ingestor(Factories::CreateIngestor(schema,
+                                                   *recycler,
+                                                   *termTable,
+                                                   *trackingAllocator));
+
+            Shard& shard = ingestor->GetShard(0);
+
+            // EXPECT_EQ(&shard.GetIndex(), &index->GetIndex());
+            EXPECT_EQ(shard.GetSliceCapacity(), c_sliceCapacity);
 
             Slice* currentSlice = nullptr;
             std::vector<Slice*> allocatedSlices;
@@ -95,7 +121,7 @@ namespace BitFunnel
                     {
                         // We must have advanced to another slice, so should have a new value
                         // of the Slice*.
-                        TestNotEqual(handle.GetSlice(), currentSlice);
+                        EXPECT_NE(handle.GetSlice(), currentSlice);
                     }
 
                     currentSlice = handle.GetSlice();
@@ -106,85 +132,16 @@ namespace BitFunnel
                                                      i % c_sliceCapacity,
                                                      docId);
 
-                TestEqual(handle.GetDocId(), docId);
-                TestEqual(handle.GetIndex(), i % c_sliceCapacity);
-                TestEqual(handle.GetSlice(), currentSlice);
+                // TODO: fix this after docId is implemented.
+                // EXPECT_EQ(handle.GetDocId(), docId);
+                EXPECT_EQ(handle.GetIndex(), i % c_sliceCapacity);
+                EXPECT_EQ(handle.GetSlice(), currentSlice);
 
                 TestSliceBuffers(shard, allocatedSlices);
             }
-        }
 
-
-        // A thread that simulates query thread activity. This thread simulates bits operations in
-        // the RowTables across all ranks and DocTable operations in all DocIndex values in all
-        // slice buffers in the Shard. Design intent is to simulate highly intense query thread
-        // activity which would test the slice buffers with high frequency, while performing adding
-        // or removing of slice buffers. Adding/removing os slice buffers has to be thread safe and
-        // a query thread should never access the memory which has been deallocated.
-        class QueryThread : public IThreadBase
-        {
-        public:
-            QueryThread(Shard& shard, volatile bool& isExiting);
-
-            virtual void EntryPoint() override;
-
-        private:
-            Shard& m_shard;
-            volatile bool& m_isExiting;
-        };
-
-
-        QueryThread::QueryThread(Shard& shard, volatile bool& isExiting)
-            : m_shard(shard),
-              m_isExiting(isExiting)
-        {
-        }
-
-
-        void QueryThread::EntryPoint()
-        {
-            for (;;)
-            {
-                if (m_isExiting)
-                {
-                    return;
-                }
-
-                ITermTable const & termTable(m_shard.GetTermTable());
-
-                const Token token = m_shard.GetIndex().GetTokenManager().RequestToken();
-
-                std::vector<void*> const & sliceBuffers = m_shard.GetSliceBuffers();
-                for (const auto sliceBuffer : sliceBuffers)
-                {
-                    for (Rank r = 0; r <= c_maxRankValue; ++r)
-                    {
-                        RowTableDescriptor const & rowTable = m_shard.GetRowTable(r);
-                        const unsigned quadwordCount = m_shard.GetSliceCapacity() / (1 << (6 + r));
-
-                        const RowIndex rowCount = termTable.GetTotalRowCount(DDRTier, r);
-                        for (RowIndex row = 0; row < rowCount; ++row)
-                        {
-                            unsigned __int64 *quadword = reinterpret_cast<unsigned __int64*>(
-                                reinterpret_cast<char*>(sliceBuffer) + rowTable.GetRowOffset(row));
-
-                            for (unsigned i = 0; i < quadwordCount; ++i)
-                            {
-                                // Don't need the value of the quadword, just need to simulate access to it.
-                                *quadword;
-                                ++quadword;
-                            }
-                        }
-                    }
-
-                    // Simulate access to DocTable.
-                    DocTableDescriptor const & docTable = m_shard.GetDocTable();
-                    for (DocIndex i = 0; i < m_shard.GetSliceCapacity(); ++i)
-                    {
-                        docTable.GetDocId(sliceBuffer, i);
-                    }
-                }
-            }
+            ingestor->Shutdown();
+            recycler->Shutdown();
         }
 
 
@@ -197,41 +154,32 @@ namespace BitFunnel
         }
 
 
-        TestCase(AddRemoveSliceTest)
+        TEST(AddRemoveSliceTest, Trivial)
         {
-            // A number of thread that simulate querying activity.
-            static const unsigned c_threadCount = 10;
-
-            // Timeout for query threads to exit after they have been signaled to.
-            static const unsigned c_queryThreadsExitTimeoutMS = 10000;
-
-            static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
-
-            static const std::vector<RowIndex> rowCounts = { 100, 0, 0, 200, 0, 0, 300 };
-            std::shared_ptr<ITermTable const> termTable(new EmptyTermTable(rowCounts));
-
             DocumentDataSchema schema;
 
-            const size_t sliceBufferSize = GetRequiredBufferSize(c_sliceCapacity, schema, *termTable);
-            std::unique_ptr<ISliceBufferAllocator> sliceBufferAllocator(
+            std::unique_ptr<IRecycler> recycler =
+                std::unique_ptr<IRecycler>(new Recycler());
+            auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
+
+            static const std::vector<RowIndex>
+                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
+            std::shared_ptr<ITermTable const>
+                termTable(new EmptyTermTable(rowCounts));
+
+            static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
+            const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, rowCounts, schema);
+
+            std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
                 new TrackingSliceBufferAllocator(sliceBufferSize));
-            TrackingSliceBufferAllocator& trackingAllocator
-                = dynamic_cast<TrackingSliceBufferAllocator&>(*sliceBufferAllocator);
 
-            IndexWrapper index(c_sliceCapacity, termTable, schema, sliceBufferAllocator);
-            Shard& shard = index.GetShard();
+            const std::unique_ptr<IIngestor>
+                ingestor(Factories::CreateIngestor(schema,
+                                                   *recycler,
+                                                   *termTable,
+                                                   *trackingAllocator));
 
-            // A signal for query threads to exit.
-            volatile bool isExiting = false;
-
-            // Create query threads.
-            std::vector<IThreadBase*> queryThreads;
-            for (unsigned i = 0; i < c_threadCount; ++i)
-            {
-                queryThreads.push_back(new QueryThread(shard, isExiting));
-            }
-
-            std::unique_ptr<IThreadManager> threadManager(Factories::CreateThreadManager(queryThreads));
+            Shard& shard = ingestor->GetShard(0);
 
             Slice* currentSlice = nullptr;
             std::vector<Slice*> allocatedSlices;
@@ -249,26 +197,27 @@ namespace BitFunnel
                     {
                         // We must have advanced to another slice, so should have a new value
                         // of the Slice*.
-                        TestNotEqual(handle.GetSlice(), currentSlice);
+                        EXPECT_NE(handle.GetSlice(), currentSlice);
                     }
 
                     currentSlice = handle.GetSlice();
                     allocatedSlices.push_back(currentSlice);
-                    TestEqual(trackingAllocator.GetInUseBuffersCount(), allocatedSlices.size());
+                    EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), allocatedSlices.size());
                 }
 
                 currentSlice->GetDocTable().SetDocId(currentSlice->GetSliceBuffer(),
                                                      i % c_sliceCapacity,
                                                      docId);
 
-                currentSlice->CommitDocument(handle.GetIndex());
+                currentSlice->CommitDocument();
 
-                TestEqual(handle.GetDocId(), docId);
-                TestEqual(handle.GetIndex(), i % c_sliceCapacity);
-                TestEqual(handle.GetSlice(), currentSlice);
+                // TODO: restore after DocId is implemented.
+                // EXPECT_EQ(handle.GetDocId(), docId);
+                EXPECT_EQ(handle.GetIndex(), i % c_sliceCapacity);
+                EXPECT_EQ(handle.GetSlice(), currentSlice);
 
                 TestSliceBuffers(shard, allocatedSlices);
-                TestEqual(shard.GetUsedCapacityInBytes(), allocatedSlices.size() * sliceBufferSize);
+                EXPECT_EQ(shard.GetUsedCapacityInBytes(), allocatedSlices.size() * sliceBufferSize);
             }
 
             // Start removing slices one by one.
@@ -281,13 +230,10 @@ namespace BitFunnel
                     if (i == c_sliceCapacity - 1)
                     {
                         // Trying to recycle non-expired slice buffer - expect exception.
-                        ExpectException([&]()
-                        {
-                            shard.RecycleSlice(*slice);
-                        });
+                        EXPECT_ANY_THROW(shard.RecycleSlice(*slice));
                     }
 
-                    slice->ExpireDocument(i);
+                    slice->ExpireDocument();
                 }
 
                 TestSliceBuffers(shard, allocatedSlices);
@@ -296,15 +242,13 @@ namespace BitFunnel
                 allocatedSlices.pop_back();
 
                 TestSliceBuffers(shard, allocatedSlices);
-                TestEqual(shard.GetUsedCapacityInBytes(), allocatedSlices.size() * sliceBufferSize);
+                EXPECT_EQ(shard.GetUsedCapacityInBytes(), allocatedSlices.size() * sliceBufferSize);
             }
 
-            isExiting = true;
-
-            const bool hasQueryThreadsExited = threadManager->WaitForThreads(c_queryThreadsExitTimeoutMS);
-            TestAssert(hasQueryThreadsExited);
-
-            TestEqual(trackingAllocator.GetInUseBuffersCount(), 0);
+            // Totally arbitrary time to allow recycler thread to recycle in time.
+            static const auto c_sleepTime = std::chrono::milliseconds(2);
+            std::this_thread::sleep_for(c_sleepTime);
+            EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 0u);
 
             // Trying to recycle a Slice which is not known to Shard - expect exception.
             // First add at least one Slice.
@@ -314,102 +258,94 @@ namespace BitFunnel
             for (DocIndex i = 0; i < shard.GetSliceCapacity(); ++i)
             {
                 DocIndex docIndex = 0;
-                TestAssert(slice.TryAllocateDocument(docIndex));
-                slice.CommitDocument(docIndex);
+                EXPECT_TRUE(slice.TryAllocateDocument(docIndex));
+                slice.CommitDocument();
 
-                const bool isExpired = slice.ExpireDocument(docIndex);
-                TestAssert(isExpired == (i == shard.GetSliceCapacity() - 1));
+                const bool isExpired = slice.ExpireDocument();
+                EXPECT_TRUE(isExpired == (i == shard.GetSliceCapacity() - 1));
             }
 
-            ExpectException([&] ()
-            {
-                shard.RecycleSlice(slice);
-            });
+            EXPECT_ANY_THROW(shard.RecycleSlice(slice));
+
+            ingestor->Shutdown();
+            recycler->Shutdown();
         }
 
 
-        size_t GetBufferSize(DocIndex capacity,
-                             std::vector<RowIndex> const & rowCounts,
-                             IDocumentDataSchema const & schema)
-        {
-            EmptyTermTable termTable(rowCounts);
-            return Shard::InitializeDescriptors(nullptr, capacity, schema, termTable);
-        }
+    //     TEST(BufferSizeTest, Trivial)
+    //     {
+    //         static const DocIndex c_capacityQuanta = 4096;
+    //         static const size_t c_sizeOfSlicePtr = sizeof(void*);
+    //         DocumentDataSchema schema;
+    //         schema.RegisterVariableSizeBlob();
+    //         schema.RegisterFixedSizeBlob(10);
+
+    //         {
+    //             // When there are no rows, buffer size is driven only by DocTable.
+    //             const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + c_sizeOfSlicePtr;
+    //             EXPECT_EQ(GetBufferSize(c_capacityQuanta * 1, { 0, 0, 0, 0, 0, 0, 0 }, schema), expectedBufferSize);
+    //         }
+
+    //         {
+    //             // 1 row at rank 0.
+    //             const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + 4096 / 8 + c_sizeOfSlicePtr;
+    //             EXPECT_EQ(GetBufferSize(c_capacityQuanta * 1, { 1, 0, 0, 0, 0, 0, 0 }, schema), expectedBufferSize);
+    //         }
+
+    //         {
+    //             // 10 row at rank 0.
+    //             const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + 4096 / 8 * 10 + c_sizeOfSlicePtr;
+    //             EXPECT_EQ(GetBufferSize(c_capacityQuanta * 1, { 10, 0, 0, 0, 0, 0, 0 }, schema), expectedBufferSize);
+    //         }
+
+    //         {
+    //             // 1 row at rank 0, 10 rows at rank 3.
+    //             const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + 4096 / 8 + 4096 / 8 / 8 * 10 + c_sizeOfSlicePtr;
+    //             EXPECT_EQ(GetBufferSize(c_capacityQuanta * 1, { 1, 0, 0, 10, 0, 0, 0 }, schema), expectedBufferSize);
+    //         }
+
+    //         {
+    //             // 20 rows at rank 6.
+    //             const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 2, schema) + 2 * 4096 / 8 / 64 * 20 + c_sizeOfSlicePtr;
+    //             EXPECT_EQ(GetBufferSize(c_capacityQuanta * 2, { 0, 0, 0, 0, 0, 0, 20 }, schema), expectedBufferSize);
+    //         }
+    //     }
 
 
-        TestCase(BufferSizeTest)
-        {
-            static const DocIndex c_capacityQuanta = 4096;
-            static const size_t c_sizeOfSlicePtr = sizeof(void*);
-            DocumentDataSchema schema;
-            schema.RegisterVariableSizeBlob();
-            schema.RegisterFixedSizeBlob(10);
+    //     TEST(CapacityForBufferSizeTest, Trivial)
+    //     {
+    //         static const DocIndex c_capacityQuanta = 4096;
+    //         static const size_t c_sizeOfSlicePtr = sizeof(void*);
+    //         DocumentDataSchema schema;
+    //         schema.RegisterVariableSizeBlob();
+    //         schema.RegisterFixedSizeBlob(10);
 
-            {
-                // When there are no rows, buffer size is driven only by DocTable.
-                const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + c_sizeOfSlicePtr;
-                TestEqual(GetBufferSize(c_capacityQuanta * 1, { 0, 0, 0, 0, 0, 0, 0 }, schema), expectedBufferSize);
-            }
+    //         // Size of the DocTable entry is 8 + 8 + 10, rounded up to power of 2 is 32.
+    //         // Min buffer size for DocTable is 32 * 4096 = 131072.
 
-            {
-                // 1 row at rank 0.
-                const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + 4096 / 8 + c_sizeOfSlicePtr;
-                TestEqual(GetBufferSize(c_capacityQuanta * 1, { 1, 0, 0, 0, 0, 0, 0 }, schema), expectedBufferSize);
-            }
+    //         const std::vector<RowIndex> rowCounts = { 100, 0, 0, 200, 0, 0, 0 };
+    //         // 100 rows in rank 0 and 200 rows at rank 3 for 4096 documents make it
+    //         // 100 * 4096 / 8 + 200 / 8 * 4096 / 8 = 51200 + 12800 = 64000.
 
-            {
-                // 10 row at rank 0.
-                const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + 4096 / 8 * 10 + c_sizeOfSlicePtr;
-                TestEqual(GetBufferSize(c_capacityQuanta * 1, { 10, 0, 0, 0, 0, 0, 0 }, schema), expectedBufferSize);
-            }
+    //         EmptyTermTable termTable(rowCounts);
 
-            {
-                // 1 row at rank 0, 10 rows at rank 3.
-                const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + 4096 / 8 + 4096 / 8 / 8 * 10 + c_sizeOfSlicePtr;
-                TestEqual(GetBufferSize(c_capacityQuanta * 1, { 1, 0, 0, 10, 0, 0, 0 }, schema), expectedBufferSize);
-            }
+    //         const size_t progressiveBufferSize = 131072 + 64000;
+    //         const size_t minSliceBufferSize = progressiveBufferSize + c_sizeOfSlicePtr;
 
-            {
-                // 20 rows at rank 6.
-                const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 2, schema) + 2 * 4096 / 8 / 64 * 20 + c_sizeOfSlicePtr;
-                TestEqual(GetBufferSize(c_capacityQuanta * 2, { 0, 0, 0, 0, 0, 0, 20 }, schema), expectedBufferSize);
-            }
-        }
+    //         EXPECT_EQ(Shard::GetCapacityForByteSize(minSliceBufferSize, schema, termTable), c_capacityQuanta);
 
+    //         // Doubling the progressiveBufferSize is not enough to have 2 * c_capacityQuanta
+    //         // since it does not accomodate the space for Slice*
+    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 2, schema, termTable), c_capacityQuanta);
+    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 2 + c_sizeOfSlicePtr, schema, termTable), c_capacityQuanta * 2);
 
-        TestCase(CapacityForBufferSizeTest)
-        {
-            static const DocIndex c_capacityQuanta = 4096;
-            static const size_t c_sizeOfSlicePtr = sizeof(void*);
-            DocumentDataSchema schema;
-            schema.RegisterVariableSizeBlob();
-            schema.RegisterFixedSizeBlob(10);
+    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 3, schema, termTable), c_capacityQuanta * 2);
+    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 3 + c_sizeOfSlicePtr, schema, termTable), c_capacityQuanta * 3);
 
-            // Size of the DocTable entry is 8 + 8 + 10, rounded up to power of 2 is 32.
-            // Min buffer size for DocTable is 32 * 4096 = 131072.
-
-            const std::vector<RowIndex> rowCounts = { 100, 0, 0, 200, 0, 0, 0 };
-            // 100 rows in rank 0 and 200 rows at rank 3 for 4096 documents make it
-            // 100 * 4096 / 8 + 200 / 8 * 4096 / 8 = 51200 + 12800 = 64000.
-
-            EmptyTermTable termTable(rowCounts);
-
-            const size_t progressiveBufferSize = 131072 + 64000;
-            const size_t minSliceBufferSize = progressiveBufferSize + c_sizeOfSlicePtr;
-
-            TestEqual(Shard::GetCapacityForByteSize(minSliceBufferSize, schema, termTable), c_capacityQuanta);
-
-            // Doubling the progressiveBufferSize is not enough to have 2 * c_capacityQuanta
-            // since it does not accomodate the space for Slice*
-            TestEqual(Shard::GetCapacityForByteSize(progressiveBufferSize * 2, schema, termTable), c_capacityQuanta);
-            TestEqual(Shard::GetCapacityForByteSize(progressiveBufferSize * 2 + c_sizeOfSlicePtr, schema, termTable), c_capacityQuanta * 2);
-
-            TestEqual(Shard::GetCapacityForByteSize(progressiveBufferSize * 3, schema, termTable), c_capacityQuanta * 2);
-            TestEqual(Shard::GetCapacityForByteSize(progressiveBufferSize * 3 + c_sizeOfSlicePtr, schema, termTable), c_capacityQuanta * 3);
-
-            // Same rule applies to any multiple of c_capacityQuanta.
-            TestEqual(Shard::GetCapacityForByteSize(progressiveBufferSize * 123, schema, termTable), c_capacityQuanta * 122);
-            TestEqual(Shard::GetCapacityForByteSize(progressiveBufferSize * 123 + c_sizeOfSlicePtr, schema, termTable), c_capacityQuanta * 123);
-        }
+    //         // Same rule applies to any multiple of c_capacityQuanta.
+    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 123, schema, termTable), c_capacityQuanta * 122);
+    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 123 + c_sizeOfSlicePtr, schema, termTable), c_capacityQuanta * 123);
+    //     }
+    // }
     }
 }

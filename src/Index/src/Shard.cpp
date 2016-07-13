@@ -115,20 +115,7 @@ namespace BitFunnel
         std::vector<void*>* const newSlices = new std::vector<void*>(*m_sliceBuffers);
         newSlices->push_back(newSlice->GetSliceBuffer());
 
-        // LogB(Logging::Info,
-        //      "Shard",
-        //      "Create new slice for shard %u. New slice count is %u.",
-        //      m_id,
-        //      newSlices->size());
-
-        // Interlocked operation is used because query threads do not take the lock.
-        // For query threads, the operation of swapping the list of slice buffers
-        // must be atomic.
         m_sliceBuffers = newSlices;
-
-        // newSlices now contains the old list of slice buffers which needs to
-        // be scheduled for recycling.
-
         m_activeSlice = newSlice;
 
         // TODO: think if this can be done outside of the lock.
@@ -185,6 +172,20 @@ namespace BitFunnel
         LogAssertB(capacity > 0, "Shard with 0 capacity.");
 
         return capacity;
+    }
+
+
+    size_t Shard::GetUsedCapacityInBytes() const
+    {
+        // TODO: does this really need to be locked?
+        std::lock_guard<std::mutex> lock(m_slicesLock);
+        return m_sliceBuffers.load()->size() * m_sliceBufferSize;
+    }
+
+
+    std::vector<void*> const & Shard::GetSliceBuffers() const
+    {
+        return *m_sliceBuffers;
     }
 
 

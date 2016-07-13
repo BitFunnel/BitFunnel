@@ -9,7 +9,7 @@ set(CPPFILES
     Mocks/EmptyTermTable.cpp
     # RecyclerUnitTest.cpp
     RowTableDescriptorUnitTest.cpp
-    # ShardUnitTest.cpp
+    ShardUnitTest.cpp
     SliceUnitTest.cpp
     TrackingSliceBufferAllocator.cpp
 )

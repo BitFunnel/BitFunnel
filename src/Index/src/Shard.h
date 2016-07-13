@@ -95,7 +95,7 @@ namespace BitFunnel
         // The callers needs to obtain a Token from ITokenManager to protect
         // the pointer to the list of slice buffers, as well as the buffers
         // themselves.
-        //virtual std::vector<void*> const & GetSliceBuffers() const override;
+        virtual std::vector<void*> const & GetSliceBuffers() const;
 
         // Returns the offset of the row in the slice buffer in a shard.
         //virtual ptrdiff_t GetRowOffset(RowId rowId) const override;
@@ -180,7 +180,7 @@ namespace BitFunnel
         void ReleaseSliceBuffer(void* sliceBuffer);
 
         // Returns the size in bytes of the used capacity in the Shard.
-        //unsigned __int64 GetUsedCapacityInBytes() const;
+        size_t GetUsedCapacityInBytes() const;
 
         // Returns the buffer size required to store a single Slice based on
         // the capacity and schema. If the optional Shard argument is provided,

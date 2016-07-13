@@ -45,6 +45,7 @@
 #include "Slice.h"
 #include "TrackingSliceBufferAllocator.h"
 
+
 namespace BitFunnel
 {
     namespace SliceUnitTest
@@ -365,7 +366,7 @@ namespace BitFunnel
                     for (RowIndex row = 0; row < rowCounts[rank]; ++row)
                     {
                         rowTable.SetBit(sliceBuffer, row, i);
-                        EXPECT_GT(rowTable.GetBit(sliceBuffer, row, i), 0);
+                        EXPECT_GT(rowTable.GetBit(sliceBuffer, row, i), 0u);
                     }
                 }
             }
