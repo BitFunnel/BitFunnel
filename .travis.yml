@@ -53,7 +53,7 @@ script:
   - ./Configure_Make.sh
   - cd build-make
   - make -j4
-  - make test -j4
+  - make check
 
 notifications:
   email:
