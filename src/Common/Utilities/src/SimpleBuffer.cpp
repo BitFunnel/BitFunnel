@@ -7,6 +7,8 @@
 #include <sys/mman.h>  // For mmap/munmap.
 #endif
 
+#include <stdexcept>
+
 #include "LoggerInterfaces/Logging.h"
 #include "SimpleBuffer.h"
 
