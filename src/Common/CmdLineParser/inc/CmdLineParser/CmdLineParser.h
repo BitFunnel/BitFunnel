@@ -28,7 +28,7 @@
 
 #include "Parameter.h"
 
-// C4505 must be enabled for the entire header file and everything that comes 
+// C4505 must be enabled for the entire header file and everything that comes
 // after because the compiler generates C4505 after parsing all files.
 #ifdef _MSC_VER
 #pragma warning(disable:4505)

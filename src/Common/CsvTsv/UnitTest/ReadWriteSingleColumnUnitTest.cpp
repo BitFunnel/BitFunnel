@@ -42,7 +42,7 @@ namespace CsvTsv
 
         std::stringstream outputStream;
         WriteCsvColumn(outputStream, values);
-        
+
         bool success = (inputStream.str().compare(outputStream.str()) == 0);
 
         return success;

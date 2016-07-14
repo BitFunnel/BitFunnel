@@ -85,7 +85,7 @@ namespace CmdLine
 
     void CmdLineParser::AddConstraint(std::unique_ptr<IConstraint> constraint)
     {
-        // Release the unique_ptr since its internal pointer will now be stored 
+        // Release the unique_ptr since its internal pointer will now be stored
         // in an std::vector<> and released in ArgumentParser::~ArgumentParser().
         m_constraints.push_back(constraint.release());
     }
@@ -94,7 +94,7 @@ namespace CmdLine
     // Attempts to parse an optional parameter starting at argv[currentArg].
     // Returns false if argv[currentArg] matches an optional parameter, but
     // but there are errors parsing the parameter. Otherwise returns true.
-    bool CmdLineParser::ParseOptionalParameter(std::ostream& error, unsigned& currentArg, 
+    bool CmdLineParser::ParseOptionalParameter(std::ostream& error, unsigned& currentArg,
                                                 unsigned argc, char const* const* argv)
     {
         bool success = true;

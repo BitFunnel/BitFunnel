@@ -34,7 +34,7 @@ namespace CsvTsv
     // CsvTableParser
     //
     // CsvTableParser is an ITableParser for use with TableReader. The class
-    // handles the CSV file format as specified by 
+    // handles the CSV file format as specified by
     //      http://tools.ietf.org/html/rfc4180.
     //
     // CsvTableParser also supports Bing header comments of the form
@@ -159,7 +159,7 @@ namespace CsvTsv
     void WriteCsvColumn(std::ostream& output, const std::vector<T>& values)
     {
         CsvTableFormatter formatter(output);
-        
+
         for (unsigned i = 0 ; i < values.size(); ++i)
         {
             formatter.WriteField(values[i]);

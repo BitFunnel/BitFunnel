@@ -132,7 +132,7 @@ namespace CmdLine
         bool success = true;
 
         // Check to make sure the input actually represents an integer.
-        // This check is necessary because the >> operator will accept 
+        // This check is necessary because the >> operator will accept
         // floating point numbers like 2.1.
         const char* current = input;
         if (*current == '-')

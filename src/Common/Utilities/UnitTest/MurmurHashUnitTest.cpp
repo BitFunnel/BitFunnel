@@ -35,7 +35,7 @@ namespace BitFunnel
             // TODO: go find reference implementation and generate some tests.
             // The real TODO is probably to use Murmur3 or something newer
             // like FarmHash or SipHash.
-            
+
         }
     }
 }

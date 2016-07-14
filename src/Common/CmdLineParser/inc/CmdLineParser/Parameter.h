@@ -29,7 +29,7 @@
 #include "Constraint.h"  // Template definitions call members of IConstraint.
 #include "Validator.h"   // Template definitions call members of IValidator.
 
-// C4505 must be enabled for the entire header file and everything that comes 
+// C4505 must be enabled for the entire header file and everything that comes
 // after because the compiler generates C4505 after parsing all files.
 #ifdef _MSC_VER
 #pragma warning(disable:4505)
@@ -57,7 +57,7 @@ namespace CmdLine
         // and optional parameter flags.
         virtual const std::string& GetName() const = 0;
 
-        // Used for laying out the help message. Returns width required for a 
+        // Used for laying out the help message. Returns width required for a
         // column that contains the name of this parameter and all of its sub
         // parameters (e.g. for an optional parameter list).
         virtual unsigned GetWidth() const = 0;
@@ -70,11 +70,11 @@ namespace CmdLine
         // If successful, currentArg will point to the position after this parameter
         // in the command line and the return value will be true. Otherwise the
         // return value will be false.
-        virtual bool TryParse(std::ostream& error, 
-                              unsigned& currentArg, 
+        virtual bool TryParse(std::ostream& error,
+                              unsigned& currentArg,
                               unsigned argc, char const* const* argv) = 0;
 
-        // Prints the usage message for this parameter to out. The name of this 
+        // Prints the usage message for this parameter to out. The name of this
         // parameter and its sub-parameters will appear in a first column with
         // width == left. The descriptions will appear as blocks of text in a second
         // column that targets width == targetWidth (the actual formatted width may
@@ -88,7 +88,7 @@ namespace CmdLine
     //
     // IRequiredParameter
     //
-    // Abstract base class for required parameters. Not specialized to any 
+    // Abstract base class for required parameters. Not specialized to any
     // particular parameter value type.
     //
     //*************************************************************************
@@ -102,7 +102,7 @@ namespace CmdLine
     //
     // IOptionalParameter
     //
-    // Abstract base class for optional parameters. Not specialized to any 
+    // Abstract base class for optional parameters. Not specialized to any
     // particular parameter value type.
     //
     //*************************************************************************
@@ -160,8 +160,8 @@ namespace CmdLine
     //
     // RequiredParameter<T>
     //
-    // Represents a required (non-optional) command line parameter of type T 
-    // with an optional validator for the value. Note that T is restricted to 
+    // Represents a required (non-optional) command line parameter of type T
+    // with an optional validator for the value. Note that T is restricted to
     // int, bool, double, or const char*.
     //
     // Boolean values on the command line are represented by the strings,
@@ -172,7 +172,7 @@ namespace CmdLine
     class RequiredParameter : public IRequiredParameter, public ParameterBase
     {
     public:
-        RequiredParameter(const char* name, const char* description, 
+        RequiredParameter(const char* name, const char* description,
                           std::unique_ptr<IValidator<T>> validator = nullptr);
         ~RequiredParameter();
 
@@ -195,11 +195,11 @@ namespace CmdLine
     // OptionalParameter<T>
     //
     // Represents an optional command line parameter of type T. On the command
-    // line, optional parameters start with a flag which consists of a '-' or 
+    // line, optional parameters start with a flag which consists of a '-' or
     // '/' followed by the name of the parameter. The value of the parameter
     // follows the flag. (e.g. -width 5).
     //
-    // As with RequiredParameter<T>, type T is restricted to int, bool, double, 
+    // As with RequiredParameter<T>, type T is restricted to int, bool, double,
     // or const char*.
     //
     // Boolean values on the command line are represented by the strings,
@@ -257,7 +257,7 @@ namespace CmdLine
     // OptionalParameterList
     //
     // Represents an optional list of parameters. On the command
-    // line, an optional parameters list starts with a flag which consists of 
+    // line, an optional parameters list starts with a flag which consists of
     // a '-' or '/' followed by the name of the parameter. A list of parameter
     // values follow the flag (e.g. -dimensions 5 10).
     //
@@ -323,7 +323,7 @@ namespace CmdLine
     }
 
     template <class T>
-    bool RequiredParameter<T>::TryParse(std::ostream& error, unsigned& currentArg, 
+    bool RequiredParameter<T>::TryParse(std::ostream& error, unsigned& currentArg,
                                         unsigned argc, char const* const* argv)
     {
         bool success = false;
@@ -395,7 +395,7 @@ namespace CmdLine
     template <class T>
     OptionalParameter<T>::OptionalParameter(const char* name,
                                             const char* description,
-                                            const T& defaultValue, 
+                                            const T& defaultValue,
                                             std::unique_ptr<IValidator<T>> validator)
         : ParameterBase(name, description),
           m_value(defaultValue),
@@ -474,11 +474,11 @@ namespace CmdLine
         return success;
     }
 
-    template <class T> 
+    template <class T>
     bool OptionalParameter<T>::TryParse(std::ostream& error, unsigned& currentArg, unsigned argc, char const* const* argv)
     {
         bool success = false;
-        
+
         // Skip over the parameter flag.
         ++currentArg;
 

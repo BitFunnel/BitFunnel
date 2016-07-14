@@ -44,7 +44,7 @@ namespace BitFunnel
 
         // Returns an IDocumentFrequenyTable that is representative of the
         // distribution of terms in the corpus.
-        virtual IDocumentFrequencyTable const & 
+        virtual IDocumentFrequencyTable const &
             GetDocumentFrequencyTable() const = 0;
     };
 }

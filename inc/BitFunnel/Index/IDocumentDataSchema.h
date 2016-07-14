@@ -33,12 +33,12 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    // Abstract class or interface for classes that allow the host to register 
-    // storage in the DocTable for variable sized or fixed sized fields in the 
+    // Abstract class or interface for classes that allow the host to register
+    // storage in the DocTable for variable sized or fixed sized fields in the
     // per document data.
     //
     // Host of the BitFunnel index uses this class to declare a number of
-    // blobs of variable and fixed size that they can later fill in with the 
+    // blobs of variable and fixed size that they can later fill in with the
     // per document data during document ingestion. Blobs are referenced
     // using their ids that are returned from the RegisterVariableSizeBlob()
     // and RegisterFixedSizeBlob() functions.
@@ -61,7 +61,7 @@ namespace BitFunnel
     class IDocumentDataSchema : public IInterface
     {
     public:
-        // Registers a blob of variable size for host specific per document 
+        // Registers a blob of variable size for host specific per document
         // data and returns its index.
         virtual VariableSizeBlobId RegisterVariableSizeBlob() = 0;
 
@@ -69,7 +69,7 @@ namespace BitFunnel
         // data and returns its id for future use.
         virtual FixedSizeBlobId RegisterFixedSizeBlob(unsigned byteCount) = 0;
 
-        // Returns the number of variable size blobs of per document data defined 
+        // Returns the number of variable size blobs of per document data defined
         // in the schema.
         virtual unsigned GetVariableSizeBlobCount() const = 0;
 

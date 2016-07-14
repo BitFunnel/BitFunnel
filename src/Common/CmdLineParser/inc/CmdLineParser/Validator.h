@@ -79,7 +79,7 @@ namespace CmdLine
     //
     // PairValidator<T>
     //
-    // Represents a pair of validators that must both be satisfied. 
+    // Represents a pair of validators that must both be satisfied.
     // Created to validate parameter values lie within a range.
     //*************************************************************************
     template <class T>

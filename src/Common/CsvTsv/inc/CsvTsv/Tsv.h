@@ -57,7 +57,7 @@ namespace CsvTsv
 
         // Attempt to parse the next field as a string, int, double or bool.
         // If successful, the value of the field will be stored in value and the
-        // functionwill return true. On return the current position will be 
+        // functionwill return true. On return the current position will be
         // immediately after the field just returned.
         bool TryReadField(std::string& value);
     };

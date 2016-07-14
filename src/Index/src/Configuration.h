@@ -37,7 +37,7 @@ namespace BitFunnel
 
         virtual size_t GetMaxGramSize() const override;
 
-        virtual IDocumentFrequencyTable const & 
+        virtual IDocumentFrequencyTable const &
             GetDocumentFrequencyTable() const override;
 
     private:

@@ -41,14 +41,14 @@ namespace BitFunnel
         TEST(TokenTrackerBasicTest, Trivial)
         {
             static const SerialNumber c_anyCutoffSerialNumber = 10;
-            static_assert(c_anyCutoffSerialNumber > 1, 
+            static_assert(c_anyCutoffSerialNumber > 1,
             "For test purposes c_anyCutoffSerialNumber must be greater than 1");
 
             static const unsigned c_anyInFlightTokenCount = 5;
-            static_assert(c_anyInFlightTokenCount > 1, 
+            static_assert(c_anyInFlightTokenCount > 1,
             "For test purposes c_anyInFlightTokenCount must be greater than 1");
 
-            TokenTracker tracker(c_anyCutoffSerialNumber, 
+            TokenTracker tracker(c_anyCutoffSerialNumber,
                                  c_anyInFlightTokenCount);
 
             ASSERT_TRUE(!tracker.IsComplete());
@@ -74,15 +74,15 @@ namespace BitFunnel
         }
 
 
-        // A wrapper class which is responsible of issuing multiple calls to 
+        // A wrapper class which is responsible of issuing multiple calls to
         // the passed in's ITracker::OnTokenComplete.
         class TokenDistributor : private NonCopyable
         {
         public:
             // Creates tokenCount tasks for treadCount task processors and
             // waits for all tasks to finish.
-            TokenDistributor(TokenTracker& tracker, 
-                             unsigned threadCount, 
+            TokenDistributor(TokenTracker& tracker,
+                             unsigned threadCount,
                              unsigned tokenCount);
 
             ~TokenDistributor();
@@ -143,8 +143,8 @@ namespace BitFunnel
         // TokenDistributor.
         //
         //*********************************************************************
-        TokenDistributor::TokenDistributor(TokenTracker& tracker, 
-                                           unsigned threadCount, 
+        TokenDistributor::TokenDistributor(TokenTracker& tracker,
+                                           unsigned threadCount,
                                            unsigned tokenCount)
         {
             for (unsigned i = 0; i < threadCount; ++i)
@@ -181,7 +181,7 @@ namespace BitFunnel
             static const unsigned c_anyThreadCount = 20;
 
             // Since serial numbers are monotonically increasing starting from 1,
-            // the number of tokens in flight is the same as the cutoff serial 
+            // the number of tokens in flight is the same as the cutoff serial
             // number.
             TokenTracker tracker(c_anyCutoffSerialNumber,  c_anyCutoffSerialNumber);
             ASSERT_TRUE(!tracker.IsComplete());

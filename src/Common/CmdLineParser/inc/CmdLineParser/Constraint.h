@@ -53,7 +53,7 @@ namespace CmdLine
     //
     // CoexistenceConstraint
     //
-    // Constraint relating to the coexistence of two parameters (e.g. mutally 
+    // Constraint relating to the coexistence of two parameters (e.g. mutally
     // exclusive, mutually required, one depends upon the other, etc.).
     //
     //*************************************************************************

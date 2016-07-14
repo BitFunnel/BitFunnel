@@ -72,7 +72,7 @@ namespace BitFunnel
         // If there are no tokens in flight, then the tracker is already
         // complete. There is no point in adding it to the list of active
         // trackers. Returns it to the client so that they can check its
-        // completion status, but from the TokenManager's perspective, this 
+        // completion status, but from the TokenManager's perspective, this
         // tracker is not of interest.
         if (!(tracker->IsComplete()))
         {
@@ -115,7 +115,7 @@ namespace BitFunnel
             m_trackers.pop_front();
         }
 
-        // Then notify the remaining trackers, starting with index 1, since we 
+        // Then notify the remaining trackers, starting with index 1, since we
         // have already notified the first one in the while loop above.
         for (unsigned i = 1; i < m_trackers.size(); ++i)
         {
@@ -123,7 +123,7 @@ namespace BitFunnel
                        "Tracker completed when older tracker didn't complete.");
         }
         m_lock.unlock();
-    
+
         if (m_tokensInFlight == 0 && m_isShuttingDown)
         {
             m_shutdownCondition.notify_all();

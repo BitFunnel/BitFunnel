@@ -48,7 +48,7 @@ namespace BitFunnel
         // Adds a term to the currently opened stream.
         virtual void AddTerm(char const * term) = 0;
 
-        // Closes the current stream. 
+        // Closes the current stream.
         virtual void CloseStream() = 0;
     };
 }

@@ -26,11 +26,11 @@ namespace CmdLine
 {
     void CmdLineParserUnitTest::InitializeCases()
     {
-        AddCase("required", 
+        AddCase("required",
                 "Expected <p1>.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("required -help", 
+        AddCase("required -help",
                 "RequiredParameterTest\n"
                 "Test for required parameters.\n"
                 "\n"
@@ -59,7 +59,7 @@ namespace CmdLine
                 "\n"
                 "\n"
                 "Parse failure.\n");
-        AddCase("required 1 2.0 three true -help", 
+        AddCase("required 1 2.0 three true -help",
                 "RequiredParameterTest\n"
                 "Test for required parameters.\n"
                 "\n"
@@ -88,35 +88,35 @@ namespace CmdLine
                 "\n"
                 "\n"
                 "Parse failure.\n");
-        AddCase("required 1 2.0 three true", 
+        AddCase("required 1 2.0 three true",
                 "p1 = 1\n"
                 "p2 = 2\n"
                 "p3 = \"three\"\n"
                 "p4 = true\n");
-        AddCase("required -1 -2.0 -three true", 
+        AddCase("required -1 -2.0 -three true",
                 "p1 = -1\n"
                 "p2 = -2\n"
                 "p3 = \"-three\"\n"
                 "p4 = true\n");
-        AddCase("required 2.0", 
+        AddCase("required 2.0",
                 "Expected integer parameter <p1>.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("required 2.1", 
+        AddCase("required 2.1",
                 "Expected integer parameter <p1>.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("required foobar", 
+        AddCase("required foobar",
                 "Expected integer parameter <p1>.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional", 
+        AddCase("optional",
                 "int = 0\n"
                 "double = 0\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -help", 
+        AddCase("optional -help",
                 "OptionalParameterTest\n"
                 "Test for optional parameters.\n"
                 "\n"
@@ -156,167 +156,167 @@ namespace CmdLine
                 "\n"
                 "\n"
                 "Parse failure.\n");
-        AddCase("optional -int 1", 
+        AddCase("optional -int 1",
                 "int = 1\n"
                 "double = 0\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -int 0", 
+        AddCase("optional -int 0",
                 "int = 0\n"
                 "double = 0\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -int -9", 
+        AddCase("optional -int -9",
                 "int = -9\n"
                 "double = 0\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -int +5", 
+        AddCase("optional -int +5",
                 "int = 5\n"
                 "double = 0\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -int 007", 
+        AddCase("optional -int 007",
                 "int = 7\n"
                 "double = 0\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -int 123456", 
+        AddCase("optional -int 123456",
                 "int = 123456\n"
                 "double = 0\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -int", 
+        AddCase("optional -int",
                 "Expected integer value for optional parameter -int.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -int 2.1", 
+        AddCase("optional -int 2.1",
                 "Expected integer value for optional parameter -int.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -int foobar", 
+        AddCase("optional -int foobar",
                 "Expected integer value for optional parameter -int.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -double 0.1", 
+        AddCase("optional -double 0.1",
                 "int = 0\n"
                 "double = 0.1\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -double .1", 
+        AddCase("optional -double .1",
                 "int = 0\n"
                 "double = 0.1\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -double -10", 
+        AddCase("optional -double -10",
                 "int = 0\n"
                 "double = -10\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -double -1.2345e5", 
+        AddCase("optional -double -1.2345e5",
                 "int = 0\n"
                 "double = -123450\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -double", 
+        AddCase("optional -double",
                 "Expected floating point value for optional parameter -double.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -double e", 
+        AddCase("optional -double e",
                 "Expected floating point value for optional parameter -double.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -string -string", 
+        AddCase("optional -string -string",
                 "int = 0\n"
                 "double = 0\n"
                 "string = \"-string\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -string -bool", 
+        AddCase("optional -string -bool",
                 "int = 0\n"
                 "double = 0\n"
                 "string = \"-bool\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -string text", 
+        AddCase("optional -string text",
                 "int = 0\n"
                 "double = 0\n"
                 "string = \"text\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -string 123", 
+        AddCase("optional -string 123",
                 "int = 0\n"
                 "double = 0\n"
                 "string = \"123\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -string ", 
+        AddCase("optional -string ",
                 "Expected string value for optional parameter -string.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -bool true", 
+        AddCase("optional -bool true",
                 "int = 0\n"
                 "double = 0\n"
                 "string = \"<default>\"\n"
                 "bool = true\n"
                 "multi = false\n");
-        AddCase("optional -bool false", 
+        AddCase("optional -bool false",
                 "int = 0\n"
                 "double = 0\n"
                 "string = \"<default>\"\n"
                 "bool = false\n"
                 "multi = false\n");
-        AddCase("optional -bool foobar", 
+        AddCase("optional -bool foobar",
                 "Expected boolean value for optional parameter -bool.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -bool 1234", 
+        AddCase("optional -bool 1234",
                 "Expected boolean value for optional parameter -bool.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -bool TRUE", 
+        AddCase("optional -bool TRUE",
                 "Expected boolean value for optional parameter -bool.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -bool FALSE", 
+        AddCase("optional -bool FALSE",
                 "Expected boolean value for optional parameter -bool.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -bool yes", 
+        AddCase("optional -bool yes",
                 "Expected boolean value for optional parameter -bool.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -bool no", 
+        AddCase("optional -bool no",
                 "Expected boolean value for optional parameter -bool.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -bool 1", 
+        AddCase("optional -bool 1",
                 "Expected boolean value for optional parameter -bool.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -bool 0", 
+        AddCase("optional -bool 0",
                 "Expected boolean value for optional parameter -bool.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -bool ", 
+        AddCase("optional -bool ",
                 "Expected boolean value for optional parameter -bool.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -int 1 -int 2", 
+        AddCase("optional -int 1 -int 2",
                 "Found second instance of optional argument [-int <integer>].\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -multi 1 2.0 true", 
+        AddCase("optional -multi 1 2.0 true",
                 "int = 0\n"
                 "double = 0\n"
                 "string = \"<default>\"\n"
@@ -325,15 +325,15 @@ namespace CmdLine
                 "first = 1\n"
                 "second = 2\n"
                 "third = true\n");
-        AddCase("optional -multi 1 2.0", 
+        AddCase("optional -multi 1 2.0",
                 "Expected boolean parameter <third>.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("optional -multi true 1 2.0", 
+        AddCase("optional -multi true 1 2.0",
                 "Expected integer parameter <first>.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -help", 
+        AddCase("constraint -help",
                 "ConstraintTest\n"
                 "Test for parameter validation and constraints.\n"
                 "\n"
@@ -399,85 +399,85 @@ namespace CmdLine
                 "  Optional parameter -a is incompatible with -c.\n"
                 "  Optional parameters -d and -e must be used together..\n"
                 "Parse failure.\n");
-        AddCase("constraint -lt 5", 
+        AddCase("constraint -lt 5",
                 "All parameters valid.\n");
-        AddCase("constraint -lt 10", 
+        AddCase("constraint -lt 10",
                 "Validation error: lt must be less than 10.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -lt 20", 
+        AddCase("constraint -lt 20",
                 "Validation error: lt must be less than 10.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -gt 5", 
+        AddCase("constraint -gt 5",
                 "Validation error: gt must be greater than 10.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -gt 10", 
+        AddCase("constraint -gt 10",
                 "Validation error: gt must be greater than 10.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -gt 20", 
+        AddCase("constraint -gt 20",
                 "All parameters valid.\n");
-        AddCase("constraint -lte 5", 
+        AddCase("constraint -lte 5",
                 "All parameters valid.\n");
-        AddCase("constraint -lte 10", 
+        AddCase("constraint -lte 10",
                 "All parameters valid.\n");
-        AddCase("constraint -lte 20", 
+        AddCase("constraint -lte 20",
                 "Validation error: lte must be less than or equal to 10.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -gte 5", 
+        AddCase("constraint -gte 5",
                 "Validation error: gte must be greater than or equal to 10.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -gte 10", 
+        AddCase("constraint -gte 10",
                 "All parameters valid.\n");
-        AddCase("constraint -gte 20", 
+        AddCase("constraint -gte 20",
                 "All parameters valid.\n");
-        AddCase("constraint -eq 5", 
+        AddCase("constraint -eq 5",
                 "Validation error: eq must be equal 10.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -eq 10", 
+        AddCase("constraint -eq 10",
                 "All parameters valid.\n");
-        AddCase("constraint -eq 20", 
+        AddCase("constraint -eq 20",
                 "Validation error: eq must be equal 10.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -neq 5", 
+        AddCase("constraint -neq 5",
                 "All parameters valid.\n");
-        AddCase("constraint -neq 10", 
+        AddCase("constraint -neq 10",
                 "Validation error: neq cannot equal 10.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -neq 20", 
+        AddCase("constraint -neq 20",
                 "All parameters valid.\n");
-        AddCase("constraint -a", 
+        AddCase("constraint -a",
                 "All parameters valid.\n");
-        AddCase("constraint -b", 
+        AddCase("constraint -b",
                 "Constraint not satisfied: Optional parameter -b requires -a.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -b -a", 
+        AddCase("constraint -b -a",
                 "All parameters valid.\n");
-        AddCase("constraint -c", 
+        AddCase("constraint -c",
                 "All parameters valid.\n");
-        AddCase("constraint -a -c", 
+        AddCase("constraint -a -c",
                 "Constraint not satisfied: Optional parameter -a is incompatible with -c.\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -e", 
+        AddCase("constraint -e",
                 "Constraint not satisfied: Optional parameters -d and -e must be used together..\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -d", 
+        AddCase("constraint -d",
                 "Constraint not satisfied: Optional parameters -d and -e must be used together..\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");
-        AddCase("constraint -d -e", 
+        AddCase("constraint -d -e",
                 "All parameters valid.\n");
-        AddCase("constraint -a -a", 
+        AddCase("constraint -a -a",
                 "Found second instance of optional argument [-a].\n"
                 "Use -help for more information.\n"
                 "Parse failure.\n");

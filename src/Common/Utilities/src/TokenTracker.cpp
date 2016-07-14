@@ -28,7 +28,7 @@
 
 namespace BitFunnel
 {
-    TokenTracker::TokenTracker(SerialNumber cutoffSerialNumber, 
+    TokenTracker::TokenTracker(SerialNumber cutoffSerialNumber,
                                unsigned remainingTokenCount)
         : m_cutoffSerialNumber(cutoffSerialNumber),
           m_remainingTokenCount(remainingTokenCount)
@@ -47,8 +47,8 @@ namespace BitFunnel
         // this method, it will be continuously called even for serial numbers
         // greater or equal to the cutoff value. This is because tokens issued
         // later (with greater serial number) may be returned earlier than the
-        // "older" ones. TokenManager does not sort out returned tokens, and 
-        // simply calls all of its registered trackers. Therefore it is 
+        // "older" ones. TokenManager does not sort out returned tokens, and
+        // simply calls all of its registered trackers. Therefore it is
         // important to compare the serial number with the cutoff value.
         if (serialNumber < m_cutoffSerialNumber)
         {
