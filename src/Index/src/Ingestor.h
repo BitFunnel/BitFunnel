@@ -26,6 +26,7 @@
 #include <stddef.h>                     // size_t template parameter.
 
 #include "BitFunnel/Index/IIngestor.h"  // Inherits from IIngestor.
+#include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/Token.h"
 #include "DocumentLengthHistogram.h"    // Embeds DocumentLengthHistogram.
 #include "Shard.h"                      // std::unique_ptr template parameter.
@@ -37,7 +38,7 @@ namespace BitFunnel
     class ISliceBufferAllocator;
 
 
-    class Ingestor : public IIngestor
+    class Ingestor : public IIngestor, NonCopyable
     {
     public:
         Ingestor(IDocumentDataSchema const & docDataSchema,
