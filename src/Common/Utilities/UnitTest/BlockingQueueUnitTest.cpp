@@ -58,17 +58,17 @@ namespace BitFunnel
 
 
         //*********************************************************************
-        TEST(BlockingQueueUnitTest, Comprehensive)
+        TEST(BlockingQueueUnitTest, Trivial)
         {
-            RunTest1(100, 10, 1000, 10, false);         // Lots of readers and writers.
-            RunTest1(100, 10, 869, 3, false);           // Reader:Writer ratio not integer.
-            RunTest1(100, 10, 867, 1, false);           // Many writers, one reader.
-            RunTest1(100, 2, 10000, 10, false);         // Few writers, many readers.
-            RunTest1(1, 2, 10000, 10, false);           // length-1 queue, many readers
-            RunTest1(1, 10, 1000, 1, false);            // length-1 queue, many writers
-            RunTest1(100000, 10, 1000, 10, false);      // Try a case where enqueue will never block.
-            RunTest1(1, 1, 100001, 103, true);          // Shutdown before finished.
-            RunTest1(1, 1003, 1000, 1, true);           // Shutdown before finished.
+            RunTest1(100, 10, 100, 10, false);         // Lots of readers and writers.
+            // RunTest1(100, 10, 869, 3, false);           // Reader:Writer ratio not integer.
+            RunTest1(100, 10, 86, 1, false);           // Many writers, one reader.
+            RunTest1(100, 2, 99, 10, false);         // Few writers, many readers.
+            // RunTest1(1, 2, 10000, 10, false);           // length-1 queue, many readers
+            RunTest1(1, 10, 78, 1, false);            // length-1 queue, many writers
+            // RunTest1(100000, 10, 1000, 10, false);      // Try a case where enqueue will never block.
+            RunTest1(1, 1, 101, 103, true);          // Shutdown before finished.
+            RunTest1(1, 1003, 100, 1, true);           // Shutdown before finished.
         }
 
         //*********************************************************************

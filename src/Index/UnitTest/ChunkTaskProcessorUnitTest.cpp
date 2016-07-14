@@ -66,7 +66,7 @@ namespace BitFunnel
             // TODO: fix constants.
             std::unique_ptr<ISliceBufferAllocator> sliceBufferAllocator =
                 std::unique_ptr<ISliceBufferAllocator>(
-                    new SliceBufferAllocator(2048*24, 2048*24));
+                    new SliceBufferAllocator(2048*24, 1));
 
             static const std::vector<RowIndex>
                 rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };

@@ -58,9 +58,9 @@ namespace BitFunnel
             TokenManager tokenManager;
 
             // Starting a tracker when there are no tokens in flight.
-            const std::shared_ptr<ITokenTracker> noTokensTracker 
+            const std::shared_ptr<ITokenTracker> noTokensTracker
                 = tokenManager.StartTracker();
-            
+
             ASSERT_TRUE(noTokensTracker->IsComplete());
 
             // Tracker with token[0] in flight.
@@ -73,7 +73,7 @@ namespace BitFunnel
                 ASSERT_TRUE(!(token0Tracker->IsComplete()));
             }
 
-            // token0 goes out of scope, which should make the token0Tracker 
+            // token0 goes out of scope, which should make the token0Tracker
             // complete.
             ASSERT_TRUE(token0Tracker->IsComplete());
 
@@ -96,7 +96,7 @@ namespace BitFunnel
                     ASSERT_TRUE(!(token1Tracker->IsComplete()));
                 }
 
-                // token1Tracker is still not complete since token1 has not 
+                // token1Tracker is still not complete since token1 has not
                 // been returned.
                 ASSERT_TRUE(!(token1Tracker->IsComplete()));
             }
@@ -180,8 +180,8 @@ namespace BitFunnel
 
         //*********************************************************************
         //
-        // Represents a thread which gets a token from a token manager, holds it 
-        // for a random amount of time, and releases it. 
+        // Represents a thread which gets a token from a token manager, holds it
+        // for a random amount of time, and releases it.
         //
         //*********************************************************************
         class TokenRequestorThread : public IThreadBase
@@ -267,8 +267,8 @@ namespace BitFunnel
             while (m_isRunning)
             {
                 TrackTokens();
-                // 151 is an arbitrary prime number.
-                std::this_thread::sleep_for(std::chrono::milliseconds(151));
+                // 51 is an aribtrary number
+                std::this_thread::sleep_for(std::chrono::milliseconds(51));
             }
         }
 
@@ -277,7 +277,7 @@ namespace BitFunnel
         {
             const std::shared_ptr<ITokenTracker> tracker = m_tokenManager.StartTracker();
 
-            // There are 2 holders of the tracker - token manager and this 
+            // There are 2 holders of the tracker - token manager and this
             // function.
             const long useCount = tracker.use_count();
             // This check was disabled because it can spuriously fail due to
@@ -288,9 +288,9 @@ namespace BitFunnel
             tracker->WaitForCompletion();
 
             // Give the manager some time to de-register a tracker.
-            // This is to accommodate the fact that WaitForCompletion() call 
-            // here and token manager checking the status of the tracker 
-            // happening on different threads and potentially one can be 
+            // This is to accommodate the fact that WaitForCompletion() call
+            // here and token manager checking the status of the tracker
+            // happening on different threads and potentially one can be
             // a little faster than the other.
             // 3 is an arbitrary prime number.
             std::this_thread::sleep_for(std::chrono::milliseconds(3));
@@ -307,7 +307,7 @@ namespace BitFunnel
 
         //*********************************************************************
         //
-        // TokenThreadHolder - class which simulates multiple threads which 
+        // TokenThreadHolder - class which simulates multiple threads which
         // request and return tokens from a manager, and optionally, a thread(s)
         // which periodically asks the token manager to start tracking tokens
         // at an arbitraty time.
@@ -412,8 +412,8 @@ namespace BitFunnel
             // number of executions possible per unit time, and that we should
             // really have a seperate test that's designed for overnight use
             // that can be more comprehensive.
-            // 281 is an arbitrary prime number.
-            std::this_thread::sleep_for(std::chrono::milliseconds(281));
+            // 104 is an arbitrary number that's > 2x 15.
+            std::this_thread::sleep_for(std::chrono::milliseconds(104));
 
             isRunning = false;
             tokenDistributor.Stop();
@@ -424,9 +424,9 @@ namespace BitFunnel
                 // Sanity check that some tokens have actually been issued.
                 ASSERT_TRUE(lastToken.GetSerialNumber() > 0);
 
-                LogB(Logging::Info, 
-                     "TokenManagerWithTrackersTest", 
-                     "Last serial num: %u", 
+                LogB(Logging::Info,
+                     "TokenManagerWithTrackersTest",
+                     "Last serial num: %u",
                      lastToken.GetSerialNumber());
             }
 
