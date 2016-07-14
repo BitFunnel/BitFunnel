@@ -34,7 +34,7 @@ namespace BitFunnel
     {
         TEST(Manual, Trivial)
         {
-            Version version(1, 1, 0);
+            Version version(1, 2, 3);
 
             std::stringstream output;
             version.Write(output);
@@ -45,10 +45,10 @@ namespace BitFunnel
             EXPECT_EQ(version.VersionMiddle(), version2.VersionMiddle());
             EXPECT_EQ(version.VersionMinor(), version2.VersionMinor());
 
-            Version version3(1, 1, 1);
+            Version version3(1, 2, 4);
             EXPECT_TRUE(version.IsCompatibleWith(version3));
 
-            Version version4(1, 2, 0);
+            Version version4(1, 3, 0);
             EXPECT_TRUE(!version.IsCompatibleWith(version4));
 
             Version version5(2, 1, 0);
@@ -61,13 +61,13 @@ namespace BitFunnel
 
             Version version7 = version.IncrementMiddle();
             EXPECT_EQ(version7.VersionMajor(), 1);
-            EXPECT_EQ(version7.VersionMiddle(), 2);
+            EXPECT_EQ(version7.VersionMiddle(), 3);
             EXPECT_EQ(version7.VersionMinor(), 0);
 
             Version version8 = version.IncrementMinor();
             EXPECT_EQ(version8.VersionMajor(), 1);
-            EXPECT_EQ(version8.VersionMiddle(), 1);
-            EXPECT_EQ(version8.VersionMinor(), 1);
+            EXPECT_EQ(version8.VersionMiddle(), 2);
+            EXPECT_EQ(version8.VersionMinor(), 4);
         }
     }
 }
