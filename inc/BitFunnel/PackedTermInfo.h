@@ -50,9 +50,6 @@ namespace BitFunnel
     //*************************************************************************
 #pragma pack(push, 1)
 // maximally compact object, optimize size over performance.
-#ifdef _MSC_VER
-__declspec (align(1))
-#endif
     class PackedTermInfo
     {
     public:
