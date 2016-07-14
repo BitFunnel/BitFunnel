@@ -61,31 +61,6 @@ namespace BitFunnel
     }
 
 
-    void Shard::TemporaryAddPosting(Term const & term, DocIndex /*index*/)
-    {
-        {
-            // TODO: Remove this lock once it is incorporated into the frequency table class.
-            std::lock_guard<std::mutex> lock(m_temporaryFrequencyTableMutex);
-            m_temporaryFrequencyTable[term]++;
-        }
-    }
-
-
-    void Shard::TemporaryPrintFrequencies(std::ostream& out)
-    {
-        out << "Term frequency table for shard " << m_id << ":" << std::endl;
-        for (auto it = m_temporaryFrequencyTable.begin(); it != m_temporaryFrequencyTable.end(); ++it)
-        {
-            out << "  ";
-            it->first.Print(out);
-            out << ": "
-                << it->second
-                << std::endl;
-        }
-        out << std::endl;
-    }
-
-
     DocumentHandleInternal Shard::AllocateDocument()
     {
         std::lock_guard<std::mutex> lock(m_slicesLock);
@@ -128,24 +103,6 @@ namespace BitFunnel
     }
 
 
-    DocTableDescriptor const & Shard::GetDocTable() const
-    {
-        return *m_docTable;
-    }
-
-
-    IIngestor& Shard::GetIndex() const
-    {
-        return m_ingestor;
-    }
-
-
-    RowTableDescriptor const & Shard::GetRowTable(Rank rank) const
-    {
-        return m_rowTables.at(rank);
-    }
-
-
     /* static */
     DocIndex Shard::GetCapacityForByteSize(size_t bufferSizeInBytes,
                                            IDocumentDataSchema const & schema,
@@ -175,11 +132,21 @@ namespace BitFunnel
     }
 
 
-    size_t Shard::GetUsedCapacityInBytes() const
+    DocTableDescriptor const & Shard::GetDocTable() const
     {
-        // TODO: does this really need to be locked?
-        std::lock_guard<std::mutex> lock(m_slicesLock);
-        return m_sliceBuffers.load()->size() * m_sliceBufferSize;
+        return *m_docTable;
+    }
+
+
+    IIngestor& Shard::GetIndex() const
+    {
+        return m_ingestor;
+    }
+
+
+    RowTableDescriptor const & Shard::GetRowTable(Rank rank) const
+    {
+        return m_rowTables.at(rank);
     }
 
 
@@ -205,6 +172,14 @@ namespace BitFunnel
     ITermTable const & Shard::GetTermTable() const
     {
         return m_termTable;
+    }
+
+
+    size_t Shard::GetUsedCapacityInBytes() const
+    {
+        // TODO: does this really need to be locked?
+        std::lock_guard<std::mutex> lock(m_slicesLock);
+        return m_sliceBuffers.load()->size() * m_sliceBufferSize;
     }
 
 
@@ -309,8 +284,37 @@ namespace BitFunnel
         GetIndex().GetRecycler().ScheduleRecyling(recyclableSliceList);
     }
 
+
     void Shard::ReleaseSliceBuffer(void* sliceBuffer)
     {
         m_sliceBufferAllocator.Release(sliceBuffer);
+    }
+
+
+    void Shard::TemporaryAddPosting(Term const & term, DocIndex /*index*/)
+    {
+        {
+            // TODO: Remove this lock once it is incorporated into the frequency
+            // table class.
+            std::lock_guard<std::mutex> lock(m_temporaryFrequencyTableMutex);
+            m_temporaryFrequencyTable[term]++;
+        }
+    }
+
+
+    void Shard::TemporaryPrintFrequencies(std::ostream& out)
+    {
+        out << "Term frequency table for shard " << m_id << ":" << std::endl;
+        for (auto it = m_temporaryFrequencyTable.begin();
+             it != m_temporaryFrequencyTable.end();
+             ++it)
+        {
+            out << "  ";
+            it->first.Print(out);
+            out << ": "
+                << it->second
+                << std::endl;
+        }
+        out << std::endl;
     }
 }

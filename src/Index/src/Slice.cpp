@@ -49,12 +49,6 @@ namespace BitFunnel
     }
 
 
-    Shard& Slice::GetShard() const
-    {
-        return m_shard;
-    }
-
-
     Slice::~Slice()
     {
         try
@@ -69,21 +63,11 @@ namespace BitFunnel
     }
 
 
-    bool Slice::TryAllocateDocument(size_t& index)
+    Shard& Slice::GetShard() const
     {
-        std::lock_guard<std::mutex> lock(m_docIndexLock);
-
-        if (m_unallocatedCount == 0)
-        {
-            return false;
-        }
-
-        index = m_capacity - m_unallocatedCount;
-        m_unallocatedCount--;
-        m_commitPendingCount++;
-
-        return true;
+        return m_shard;
     }
+
 
     bool Slice::CommitDocument()
     {
@@ -136,6 +120,12 @@ namespace BitFunnel
     }
 
 
+    void* Slice::GetSliceBuffer() const
+    {
+        return m_buffer;
+    }
+
+
     /* static */
     Slice* Slice::GetSliceFromBuffer(void* sliceBuffer, ptrdiff_t slicePtrOffset)
     {
@@ -174,8 +164,19 @@ namespace BitFunnel
     }
 
 
-    void* Slice::GetSliceBuffer() const
+    bool Slice::TryAllocateDocument(size_t& index)
     {
-        return m_buffer;
+        std::lock_guard<std::mutex> lock(m_docIndexLock);
+
+        if (m_unallocatedCount == 0)
+        {
+            return false;
+        }
+
+        index = m_capacity - m_unallocatedCount;
+        m_unallocatedCount--;
+        m_commitPendingCount++;
+
+        return true;
     }
 }
