@@ -7,7 +7,6 @@ set(CPPFILES
     DocumentDataSchemaUnitTest.cpp
     DocumentLengthHistogramUnitTest.cpp
     Mocks/EmptyTermTable.cpp
-    # RecyclerUnitTest.cpp
     RowTableDescriptorUnitTest.cpp
     ShardUnitTest.cpp
     SliceUnitTest.cpp
