@@ -104,7 +104,14 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IInterface.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerator.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermDisposeDefinition.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/PackedTermInfo.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Row.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowId.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Stream.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/TermInfo.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Token.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/IAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/Factories.h
@@ -118,6 +125,7 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocumentDataSchema.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IFactSet.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IIngestor.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IngestChunks.h
 )
 
 set(UTILITIES_HFILES
