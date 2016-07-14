@@ -1,4 +1,4 @@
-# BitFunnel/src/Common/Utilities/UnitTest
+# BitFunnel/src/Common/Utilities/test
 
 # TODO: move ThrowingLogger to some shared folder?
 
@@ -47,9 +47,9 @@ COMBINE_FILE_LISTS()
 include_directories(${CMAKE_SOURCE_DIR}/src/Common/Utilities/src)
 
 
-add_executable(UtilitiesUnitTest ${CPPFILES} ${PRIVATE_HFILES} ${PUBLIC_HFILES})
-set_property(TARGET UtilitiesUnitTest PROPERTY FOLDER "src/Common/Utilities")
-set_property(TARGET UtilitiesUnitTest PROPERTY PROJECT_LABEL "UnitTest")
-target_link_libraries (UtilitiesUnitTest Utilities gtest gtest_main)
+add_executable(UtilitiesTest ${CPPFILES} ${PRIVATE_HFILES} ${PUBLIC_HFILES})
+set_property(TARGET UtilitiesTest PROPERTY FOLDER "src/Common/Utilities")
+set_property(TARGET UtilitiesTest PROPERTY PROJECT_LABEL "Test")
+target_link_libraries (UtilitiesTest Utilities gtest gtest_main)
 
-add_test(NAME UtilitiesUnitTest COMMAND UtilitiesUnitTest)
+add_test(NAME UtilitiesTest COMMAND UtilitiesTest)

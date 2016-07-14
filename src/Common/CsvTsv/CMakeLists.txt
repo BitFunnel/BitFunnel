@@ -1,7 +1,7 @@
 # BitFunnel/src/Common/CsvTsv
 
 add_subdirectory(src)
-add_subdirectory(UnitTest)
+add_subdirectory(test)
 
 set(PUBLIC_HFILES
    ${CMAKE_SOURCE_DIR}/src/Common/CsvTsv/inc/CsvTsv/Csv.h

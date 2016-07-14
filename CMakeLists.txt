@@ -79,7 +79,7 @@ if(LINUX)
 endif()
 
 
-# This allows the solution to group projects into folders like src and UnitTest.
+# This allows the solution to group projects into folders like src and test.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 macro(COMBINE_FILE_LISTS)
