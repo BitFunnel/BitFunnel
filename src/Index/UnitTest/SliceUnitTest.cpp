@@ -196,8 +196,9 @@ namespace BitFunnel
         {
             static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
 
-            // Totally arbitrary time to allow recycler thread to recycle in time.
-            static const auto c_sleepTime = std::chrono::milliseconds(2);
+            // Arbitrary amount of time to sleep in order to wait for Recycler.
+            static const auto c_sleepTime = std::chrono::milliseconds(1);
+
 
             DocumentDataSchema schema;
 
@@ -222,18 +223,19 @@ namespace BitFunnel
                                                    *trackingAllocator));
 
             Shard& shard = ingestor->GetShard(0);
-
+            std::this_thread::sleep_for(c_sleepTime);
             EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 0u);
 
-            // TODO: replace sleeps with polling forever?
             {
                 Slice* const slice = FillUpAndExpireSlice(shard, c_sliceCapacity);
                 EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 1u);
 
                 Slice::DecrementRefCount(slice);
-                // Wait to make sure other thread has recycled.
-                std::this_thread::sleep_for(c_sleepTime);
-                EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 0u);
+                // Wait to make sure other thread has recycled. This is sort of
+                // heinous because it hangs the test instead of reporting a
+                // failure, but it prevents non-determistic pass/fail
+                // results. We should probably add a timeout.
+                while (trackingAllocator->GetInUseBuffersCount() != 0u) {}
             }
 
             {
@@ -244,7 +246,6 @@ namespace BitFunnel
                 Slice::IncrementRefCount(slice);
 
                 // The slice should not be recycled since there are 2 reference holders.
-                std::this_thread::sleep_for(c_sleepTime);
                 EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 1u);
 
                 // Decrement the ref count, at this point there should be 1 ref count and the
@@ -257,8 +258,7 @@ namespace BitFunnel
 
                 // Decrement the last ref count, Slice should be scheduled for recycling.
                 Slice::DecrementRefCount(slice);
-                std::this_thread::sleep_for(c_sleepTime);
-                EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 0u);
+                while(trackingAllocator->GetInUseBuffersCount() != 0u) {}
             }
 
             ingestor->Shutdown();

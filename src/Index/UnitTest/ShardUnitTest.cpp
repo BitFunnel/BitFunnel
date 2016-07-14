@@ -245,10 +245,11 @@ namespace BitFunnel
                 EXPECT_EQ(shard.GetUsedCapacityInBytes(), allocatedSlices.size() * sliceBufferSize);
             }
 
-            // Totally arbitrary time to allow recycler thread to recycle in time.
-            static const auto c_sleepTime = std::chrono::milliseconds(2);
-            std::this_thread::sleep_for(c_sleepTime);
-            EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), 0u);
+            // Wait to make sure other thread has recycled. This is sort of
+            // heinous because it hangs the test instead of reporting a failure,
+            // but it prevents non-determistic pass/fail results. We should
+            // probably add a timeout.
+            while(trackingAllocator->GetInUseBuffersCount() != 0u) {}
 
             // Trying to recycle a Slice which is not known to Shard - expect exception.
             // First add at least one Slice.
