@@ -50,7 +50,8 @@ addons:
 
 # The build scripts.
 script:
-  -  ulimit -a
+  - uname -a
+  - ulimit -a
   - ./Configure_Make.sh
   - cd build-make
   - make -j4
