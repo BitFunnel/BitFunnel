@@ -28,6 +28,7 @@
 #include "BitFunnel/ITermTable.h"
 #include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/RowId.h"
+#include "BitFunnel/Term.h"  // For Term::Hash.
 
 namespace BitFunnel
 {
@@ -44,9 +45,9 @@ namespace BitFunnel
         virtual void AddRowId(RowId id) override;
         virtual size_t GetRowIdCount() const override;
         virtual RowId GetRowId(size_t rowOffset) const override;
-        virtual RowId GetRowIdAdhoc(uint64_t hash, size_t rowOffset, size_t variant)  const override;
+        virtual RowId GetRowIdAdhoc(Term::Hash hash, size_t rowOffset, size_t variant)  const override;
         virtual RowId GetRowIdForFact(size_t rowOffset) const override;
-        virtual void AddTerm(uint64_t hash, size_t rowIdOffset, size_t rowIdLength) override;
+        virtual void AddTerm(Term::Hash hash, size_t rowIdOffset, size_t rowIdLength) override;
         /*
         virtual void AddTermAdhoc(Stream::Classification classification,
                                   unsigned gramSize,

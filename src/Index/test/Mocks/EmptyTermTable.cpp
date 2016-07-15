@@ -84,7 +84,7 @@ namespace BitFunnel
     }
 
 
-    RowId EmptyTermTable::GetRowIdAdhoc(uint64_t /* hash */,
+    RowId EmptyTermTable::GetRowIdAdhoc(Term::Hash /* hash */,
                                         size_t /* rowOffset */,
                                         size_t /* variant */)  const
     {
@@ -104,7 +104,7 @@ namespace BitFunnel
     }
 
 
-    void EmptyTermTable::AddTerm(uint64_t /* hash */,
+    void EmptyTermTable::AddTerm(Term::Hash /* hash */,
                                  size_t /* rowIdOffset */,
                                  size_t /* rowIdLength */)
     {
