@@ -49,7 +49,7 @@ namespace BitFunnel
     class ITermTable
     {
     public:
-        virtual ~ITermTable() {};
+        virtual ~ITermTable() {}
 
         // Writes the TermTable to a stream.
         virtual void Write(std::ostream& stream) const = 0;

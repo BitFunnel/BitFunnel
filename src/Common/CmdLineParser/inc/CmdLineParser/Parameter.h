@@ -51,7 +51,7 @@ namespace CmdLine
     class IParameter
     {
     public:
-        virtual ~IParameter() {};
+        virtual ~IParameter() {}
 
         // Returns the name of the parameter. The name is used for documentation
         // and optional parameter flags.
@@ -95,7 +95,7 @@ namespace CmdLine
     class IRequiredParameter : public virtual IParameter
     {
     public:
-        virtual ~IRequiredParameter() {};
+        virtual ~IRequiredParameter() {}
     };
 
     //*************************************************************************
@@ -109,7 +109,7 @@ namespace CmdLine
     class IOptionalParameter : public virtual IParameter
     {
     public:
-        virtual ~IOptionalParameter() {};
+        virtual ~IOptionalParameter() {}
 
         virtual bool MatchesFlag(const char* name) const = 0;
         virtual bool HasValue() const = 0;

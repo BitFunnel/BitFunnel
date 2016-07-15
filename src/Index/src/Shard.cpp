@@ -61,6 +61,9 @@ namespace BitFunnel
     }
 
 
+    Shard::~Shard() {}
+
+
     DocumentHandleInternal Shard::AllocateDocument()
     {
         std::lock_guard<std::mutex> lock(m_slicesLock);

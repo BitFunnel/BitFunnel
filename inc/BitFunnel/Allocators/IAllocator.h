@@ -35,7 +35,7 @@ namespace BitFunnel
     class IAllocator
     {
     public:
-        virtual ~IAllocator() {};
+        virtual ~IAllocator() {}
 
         // Allocates a block of a specified byte size.
         virtual void* Allocate(size_t size) = 0;
@@ -51,5 +51,3 @@ namespace BitFunnel
         virtual void Reset() = 0;
     };
 }
-
-

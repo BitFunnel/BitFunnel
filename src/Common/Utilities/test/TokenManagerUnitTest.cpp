@@ -240,7 +240,7 @@ namespace BitFunnel
             TokenTrackerThread(ITokenManager& tokenManager,
                                std::atomic<bool> & isRunning);
 
-            ~TokenTrackerThread() {};
+            ~TokenTrackerThread() {}
 
             virtual void EntryPoint() override;
 

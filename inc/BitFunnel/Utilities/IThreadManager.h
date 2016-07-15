@@ -30,7 +30,7 @@ namespace BitFunnel
     class IThreadBase : NonCopyable
     {
     public:
-        virtual ~IThreadBase() {};
+        virtual ~IThreadBase() {}
 
         virtual void EntryPoint() = 0;
     };
@@ -39,7 +39,7 @@ namespace BitFunnel
     class IThreadManager
     {
     public:
-        virtual ~IThreadManager() {};
+        virtual ~IThreadManager() {}
 
         // Wait for all threads to exit.
         virtual void WaitForThreads() = 0;

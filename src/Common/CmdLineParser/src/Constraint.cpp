@@ -34,9 +34,9 @@ namespace CmdLine
     CoexistenceConstraint::CoexistenceConstraint(CoexistenceTypeEnum t,
                                                  const IOptionalParameter& a,
                                                  const IOptionalParameter& b)
-        : m_type(t),
-          m_parameter1(a),
-          m_parameter2(b)
+        : m_parameter1(a),
+          m_parameter2(b),
+          m_type(t)
     {
         if (m_type != MutuallyExclusive &&
             m_type != MutuallyRequired &&
@@ -83,9 +83,6 @@ namespace CmdLine
             break;
         case Implies:
             out << "Optional parameter -" << m_parameter1.GetName() << " requires -" << m_parameter2.GetName();
-            break;
-        default:
-            // Do nothing.
             break;
         }
     }

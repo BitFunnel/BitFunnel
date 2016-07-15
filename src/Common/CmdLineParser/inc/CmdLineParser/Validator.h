@@ -35,7 +35,7 @@ namespace CmdLine
     class IValidator
     {
     public:
-        virtual ~IValidator() {};
+        virtual ~IValidator() {}
         virtual bool IsValid(const T& value) const = 0;
         virtual void Description(std::ostream& out) const = 0;
     };

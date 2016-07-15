@@ -36,7 +36,7 @@ namespace Logging
     class ILogger
     {
     public:
-        virtual ~ILogger() {};
+        virtual ~ILogger() {}
 
         // Log a message associated with a specific level, title, file name, function, and line number.
         virtual void Write(char const * filename,

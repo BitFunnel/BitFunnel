@@ -41,7 +41,7 @@ namespace BitFunnel
     {
     public:
 
-        virtual ~ITokenListener() {};
+        virtual ~ITokenListener() {}
 
         // Notification of the SerialNumber of a Token that was just destroyed.
         virtual void OnTokenComplete(SerialNumber serialNumber) = 0;
@@ -62,7 +62,7 @@ namespace BitFunnel
     {
     public:
 
-        virtual ~ITokenTracker() {};
+        virtual ~ITokenTracker() {}
 
         // Returns true if all of the Tokens in the set have been destroyed.
         // This method is thread-safe.
@@ -145,7 +145,7 @@ namespace BitFunnel
     {
     public:
 
-        virtual ~ITokenManager() {};
+        virtual ~ITokenManager() {}
 
         // Requests a new token from the manager.
         virtual Token RequestToken() = 0;

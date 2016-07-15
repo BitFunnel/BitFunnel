@@ -29,7 +29,7 @@ namespace BitFunnel
     class IEnumeratorBase
     {
     public:
-        virtual ~IEnumeratorBase() {};
+        virtual ~IEnumeratorBase() {}
 
         // Advances the enumerator to the next item in the collection. Note
         // that MoveNext() must be called at the beginning of the enumeration
@@ -50,7 +50,7 @@ namespace BitFunnel
     class IEnumerator : public virtual IEnumeratorBase
     {
     public:
-        virtual ~IEnumerator() {};
+        virtual ~IEnumerator() {}
 
         // Returns the item at the current position in the enumerator. Only
         // legal if the most recent call to MoveNext() returned true.

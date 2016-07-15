@@ -54,7 +54,7 @@ namespace BitFunnel
     class IFactSet
     {
     public:
-        virtual ~IFactSet() {};
+        virtual ~IFactSet() {}
 
         // Allocates a fact with sequentially numbered FactHandles starting
         // at 1.

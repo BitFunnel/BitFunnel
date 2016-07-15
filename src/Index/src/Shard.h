@@ -78,6 +78,8 @@ namespace BitFunnel
               ISliceBufferAllocator& sliceBufferAllocator,
               size_t sliceBufferSize);
 
+        virtual ~Shard();
+
         void TemporaryAddPosting(Term const & term, DocIndex index);
         void TemporaryPrintFrequencies(std::ostream& out);
 

@@ -45,7 +45,7 @@ namespace BitFunnel
     class IBlockAllocator
     {
     public:
-        virtual ~IBlockAllocator() {};
+        virtual ~IBlockAllocator() {}
 
         // Allocates a block of memory from a pool. If no block is available
         // for allocation, this method throws.

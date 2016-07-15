@@ -50,7 +50,7 @@ namespace BitFunnel
     class ITaskDistributor
     {
     public:
-        virtual ~ITaskDistributor() {};
+        virtual ~ITaskDistributor() {}
 
         // TaskDistributorThreads call TryAllocateTask() to get their next task
         // assignment. If there is work remaining, taskId will be set to the id

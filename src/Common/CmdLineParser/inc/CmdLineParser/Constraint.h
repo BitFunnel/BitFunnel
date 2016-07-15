@@ -44,7 +44,7 @@ namespace CmdLine
     class IConstraint
     {
     public:
-        virtual ~IConstraint() {};
+        virtual ~IConstraint() {}
         virtual bool IsSatisfied() const = 0;
         virtual void Description(std::ostream& out) const = 0;
     };
@@ -67,9 +67,9 @@ namespace CmdLine
         void Description(std::ostream& out) const;
 
     private:
-        CoexistenceTypeEnum m_type;
         const IOptionalParameter& m_parameter1;
         const IOptionalParameter& m_parameter2;
+        CoexistenceTypeEnum m_type;
     };
 
 

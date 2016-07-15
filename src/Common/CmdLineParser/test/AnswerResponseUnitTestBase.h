@@ -41,7 +41,7 @@ namespace CmdLine
                                    bool createBaseline,
                                    bool ignoreWhiteSpace);
 
-        ~AnswerResponseUnitTestBase();
+        virtual ~AnswerResponseUnitTestBase();
 
         bool RunTest();
 

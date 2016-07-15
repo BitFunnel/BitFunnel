@@ -149,7 +149,7 @@ namespace CsvTsv
     class IFieldParser
     {
     public:
-        virtual ~IFieldParser() {};
+        virtual ~IFieldParser() {}
 
         // Attempt to read the next field.
         // If successful, the value of the field will be stored in value and
@@ -182,7 +182,7 @@ namespace CsvTsv
     class ITableParser : public IFieldParser
     {
     public:
-        virtual ~ITableParser() {};
+        virtual ~ITableParser() {}
 
         // Returns true if the current position is immediately before the end
         // of a line (or the end of file).
@@ -230,7 +230,7 @@ namespace CsvTsv
     class IFieldFormatter
     {
     public:
-        virtual ~IFieldFormatter() {};
+        virtual ~IFieldFormatter() {}
 
         // When in hex mode, fields of type int, unsigned int, long, and
         // unsigned long long will be formatted as hexidecimal. This formatting
@@ -261,7 +261,7 @@ namespace CsvTsv
     class ITableFormatter : public IFieldFormatter
     {
     public:
-        virtual ~ITableFormatter() {};
+        virtual ~ITableFormatter() {}
 
         virtual void WritePrologue(const std::vector<const char*>& columns) = 0;
         virtual void WriteRowEnd() = 0;
@@ -272,7 +272,7 @@ namespace CsvTsv
     class Column
     {
     public:
-        virtual ~Column() {};
+        virtual ~Column() {}
 
         virtual const char* Name() const = 0;
         virtual const char* HelpMessage() const = 0;
@@ -844,4 +844,3 @@ namespace CsvTsv
         return true;
     }
 }
-

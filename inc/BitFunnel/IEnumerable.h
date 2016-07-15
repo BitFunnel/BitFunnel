@@ -31,7 +31,7 @@ namespace BitFunnel
     class IEnumerable
     {
     public:
-        virtual ~IEnumerable() {};
+        virtual ~IEnumerable() {}
 
         virtual IEnumerator<T>* GetEnumerator() const = 0;
     };
