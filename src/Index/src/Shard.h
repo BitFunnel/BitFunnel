@@ -57,8 +57,8 @@ namespace BitFunnel
     // a partition of the index where documents share common properties. The
     // Shard maintains a collection of Slices, each of which holds set of
     // documents. The Shard may add or remove Slices as needed to adjust its
-    // capacity. All Slices in the shard share the same characteristics such
-    // as capacity and size of their memory buffer.
+    // capacity. All Slices in the shard share the same characteristics such as
+    // capacity and size of their memory buffer.
     //
     // Thread safety: all public methods are thread safe.
     //
@@ -93,10 +93,9 @@ namespace BitFunnel
         // Shard have the same capacity.
         virtual DocIndex GetSliceCapacity() const;
 
-        // Returns a vector of slice buffers for this shard.
-        // The callers needs to obtain a Token from ITokenManager to protect
-        // the pointer to the list of slice buffers, as well as the buffers
-        // themselves.
+        // Returns a vector of slice buffers for this shard.  The callers needs
+        // to obtain a Token from ITokenManager to protect the pointer to the
+        // list of slice buffers, as well as the buffers themselves.
         virtual std::vector<void*> const & GetSliceBuffers() const;
 
         // Returns the offset of the row in the slice buffer in a shard.
@@ -111,10 +110,10 @@ namespace BitFunnel
         //
 
         // Allocates storage for a new document. Creates a new slice if
-        // required. Returns a handle to the document storage for the caller
-        // to use to populate document's contents. When there is no space in
-        // the current slice and no memory available in the
-        // SliceBufferAllocator, this method throws.
+        // required. Returns a handle to the document storage for the caller to
+        // use to populate document's contents. When there is no space in the
+        // current slice and no memory available in the SliceBufferAllocator,
+        // this method throws.
         //
         // Implementation:
         // with (m_slicesLock)
@@ -129,23 +128,24 @@ namespace BitFunnel
 
         // Loads a Slice from a previously serialized state and adds it to the
         // list of Slices. As part of deserialization, LoadSlice loads
-        // RowTable/DocTable descriptors from the stream and verifies that it
-        // is compatible with the current descriptors. Uses descriptor's
+        // RowTable/DocTable descriptors from the stream and verifies that it is
+        // compatible with the current descriptors. Uses descriptor's
         // IsCompatibleWith methods for verification, and if not passed, this
         // function throws.
-        // Design intent is that the serialized files act as a cache, and it
-        // is expected that the index may not be able to restore some or all
-        // slices from the cache, and the host will re-ingest the documents
-        // which were not restored.
+        //
+        // Design intent is that the serialized files act as a cache, and it is
+        // expected that the index may not be able to restore some or all slices
+        // from the cache, and the host will re-ingest the documents which were
+        // not restored.
         //void LoadSlice(std::istream& input);
 
         // TODO: WriteSlice here or in Slice?
 
         // Remove slice buffer and its Slice from the list of slices. Throws if
         // slice buffer wasn't found in the list of active slice buffers.
-        // Throws if the slice buffer being removed corresponds to a Slice
-        // which is not fully expired. A slice which is removed, along with the
-        // old copy of the vector of slices, is scheduled for recycling.
+        // Throws if the slice buffer being removed corresponds to a Slice which
+        // is not fully expired. A slice which is removed, along with the old
+        // copy of the vector of slices, is scheduled for recycling.
         void RecycleSlice(Slice& slice);
 
         // Returns the IngestionIndex that owns the Shard.
@@ -184,11 +184,11 @@ namespace BitFunnel
         // Returns the size in bytes of the used capacity in the Shard.
         size_t GetUsedCapacityInBytes() const;
 
-        // Returns the buffer size required to store a single Slice based on
-        // the capacity and schema. If the optional Shard argument is provided,
-        // then it also initializes its DocTable and RowTable descriptors.
-        // The same function combines both actions in order to avoid code
-        // for the two scenarios.
+        // Returns the buffer size required to store a single Slice based on the
+        // capacity and schema. If the optional Shard argument is provided, then
+        // it also initializes its DocTable and RowTable descriptors.  The same
+        // function combines both actions in order to avoid code for the two
+        // scenarios.
         // DESIGN NOTE: This is made public in order to be used in unit tests.
         static size_t InitializeDescriptors(Shard* shard,
                                            DocIndex sliceCapacity,
@@ -223,12 +223,11 @@ namespace BitFunnel
         // Allocator that provides blocks of memory for Slice buffers.
         ISliceBufferAllocator& m_sliceBufferAllocator;
 
-        // Row which is used to mark documents as soft deleted.
-        // The value of 0 means the document in this column is soft deleted
-        // and excluded from matching. Typically this is a private rank 0 row in
-        // DDR. During the AddDocument workflow, the bit in this row is set
-        // to 1 as the last step and this effectively makes the document
-        // "serving".
+        // Row which is used to mark documents as soft deleted.  The value of 0
+        // means the document in this column is soft deleted and excluded from
+        // matching. Typically this is a private rank 0 row in DDR. During the
+        // AddDocument workflow, the bit in this row is set to 1 as the last
+        // step and this effectively makes the document "serving".
         //const RowId m_softDeletedRowId;
 
         // Lock protecting operations on the list of slices. Protects the
@@ -245,15 +244,36 @@ namespace BitFunnel
         // Vector of pointers to slice buffers.
         //
         // DESIGN NOTE: We store a pointer to an std::vector here instead of
-        // embedding the vector in order to support lock free vector replacement.
-        // A vector modification is implemented as a copy, followed by an
-        // interlocked exchange of vector pointers. This approach allows query
-        // processing to run lock free at full speed while another thread adds
-        // and removes slices.
+        // embedding the vector in order to support lock free vector
+        // replacement.  A vector modification is implemented as a copy,
+        // followed by an interlocked exchange of vector pointers. This approach
+        // allows query processing to run lock free at full speed while another
+        // thread adds and removes slices.
         //
         // DESIGN NOTE: We store a vector of void*, instead of Slice* in order
         // to provide an array of Slice buffer pointers to the matcher.
-        // TODO: add a more detailed comment to the above design note.
+        //
+        // The reason for this goes back to DocHandle. A DocHandle has a ptr and
+        // a DocIndex. The ptr should pointer to a big buffer that has stuff
+        // like row tables, etc. At the end of that buffer is a Slice*, which
+        // points to a Slice which has an m_buffer. The m_buffer points to the
+        // big buffer.
+        //
+        // When we make a matching and scoring plan, in the "middle" loop in the
+        // matcher, the parameter is a void*, which is one of these buffers. The
+        // inner loop searches the buffer for candidate docs and puts them into
+        // a priority queue. The matching plan was created so that the offsets
+        // are the same -- if we have an array of void*, we can just loop over
+        // it. To get to the next row, you just take the difference between the
+        // two void* and subtract one row (to reset to the beginning of the
+        // row). So that's DocHandle.
+        //
+        // In Shard, we also have an array of ptrs to those buffers. The vector
+        // of void* is the input to the matcher. The reason that's void* is that
+        // NativeJIT can't currently deal with virtual function calls of
+        // anything that's not POD. Shard can easily convert from the void* to
+        // the Slice*, but the matcher can't easily get the void* from the
+        // Slice*. DocHandle has void* in it for the same reason.
         //
         // TODO: make this std::vector<void*> const * when a thread safe swap
         // of vectors is implemented.
