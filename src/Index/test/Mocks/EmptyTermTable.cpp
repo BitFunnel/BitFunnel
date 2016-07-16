@@ -54,7 +54,7 @@ namespace BitFunnel
     }
 
 
-    size_t EmptyTermTable::GetTotalRowCount(size_t rank) const
+    size_t EmptyTermTable::GetTotalRowCount(Rank rank) const
     {
         return m_rowCounts[rank];
     }
@@ -72,7 +72,7 @@ namespace BitFunnel
     }
 
 
-    size_t EmptyTermTable::GetRowIdCount() const
+    uint32_t EmptyTermTable::GetRowIdCount() const
     {
         throw std::runtime_error("Not implemented");
     }
@@ -123,7 +123,7 @@ namespace BitFunnel
     // }
 
 
-    void EmptyTermTable::SetRowTableSize(size_t /* rank */,
+    void EmptyTermTable::SetRowTableSize(Rank /* rank */,
                                          size_t /* rowCount */,
                                          size_t /* sharedRowCount */)
     {
@@ -131,7 +131,7 @@ namespace BitFunnel
     }
 
 
-    size_t EmptyTermTable::GetMutableFactRowCount(size_t /* rank */) const
+    size_t EmptyTermTable::GetMutableFactRowCount(Rank /* rank */) const
     {
         throw std::runtime_error("Not implemented");
     }

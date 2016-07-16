@@ -1,9 +1,13 @@
-#include "stdafx.h"
+#include "gtest/gtest.h"
 
-#include "BitFunnel/IFactSet.h"
+#include "BitFunnel/BitFunnelTypes.h"  // For ShardId.
+#include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/IFactSet.h"
+#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/PackedTermInfo.h"
+#include "BitFunnel/RowId.h"  // For RowIndex.
+#include "BitFunnel/Stream.h"
 #include "MockTermTable.h"
-#include "SuiteCpp/UnitTest.h"
 
 
 namespace BitFunnel
@@ -13,8 +17,10 @@ namespace BitFunnel
     // MockTermTable
     //
     //*************************************************************************
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4351)
+#endif
     MockTermTable::MockTermTable(ShardId shard)
         : m_shard(shard),
           m_privateRowCount(),
@@ -44,12 +50,14 @@ namespace BitFunnel
         AddPrivateRowTerm(ITermTable::GetMatchAllTerm(), 0);
         AddPrivateRowTerm(ITermTable::GetMatchNoneTerm(), 0);
     }
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 
     void MockTermTable::Write(std::ostream& /*stream*/) const
     {
-        TestFail("MockTermTable::Write() not supported.");
+        throw NotImplemented();
     }
 
 
@@ -65,71 +73,59 @@ namespace BitFunnel
     }
 
 
-    RowId MockTermTable::GetRowId(unsigned rowOffset) const
+    RowId MockTermTable::GetRowId(size_t rowOffset) const
     {
         return m_rowIds[rowOffset];
     }
 
 
     RowId MockTermTable::GetRowIdAdhoc(Term::Hash /*hash*/,
-                                       unsigned /*rowOffset*/,
-                                       unsigned /*variant*/)  const
+                                       size_t /*rowOffset*/,
+                                       size_t /*variant*/)  const
     {
-        TestFail("MockTermTable::GetRowIdAdhoc() not supported.");
-
         #ifdef _DEBUG
         return RowId();
         #endif /* _DEBUG */
+
+        throw NotImplemented();
     }
 
 
-    RowId MockTermTable::GetRowIdForFact(unsigned /* rowOffset */) const
+    RowId MockTermTable::GetRowIdForFact(size_t /* rowOffset */) const
     {
-        TestFail("MockTermTable::GetRowIdForFact() not supported.");
-
         #ifdef _DEBUG
         return RowId();
         #endif /* _DEBUG */
+
+        throw NotImplemented();
     }
 
 
     void MockTermTable::AddTerm(Term::Hash hash,
-                                unsigned rowIdOffset,
-                                unsigned rowIdLength)
+                                size_t rowIdOffset,
+                                size_t rowIdLength)
     {
-        TestAssert(m_entries.find(hash) == m_entries.end());
+        EXPECT_EQ(m_entries.find(hash), m_entries.end());
 
         m_entries[hash] = Entry(rowIdOffset, rowIdLength);
     }
 
 
-    void MockTermTable::AddTermAdhoc(Stream::Classification /*classification*/,
-                                     unsigned /*gramSize*/,
-                                     Tier /*tierHint*/,
-                                     IdfSumX10 /*idfSum*/,
-                                     unsigned /*rowIdOffset*/,
-                                     unsigned /*rowIdLength*/)
+    void MockTermTable::SetRowTableSize(Rank /*rank*/,
+                                        size_t /*rowCount*/,
+                                        size_t /*sharedRowCount*/)
     {
-        TestFail("MockTermTable::AddTermAdhoc() not supported.");
+        throw NotImplemented();
     }
 
 
-    void MockTermTable::SetRowTableSize(Tier /*tier*/,
-                                        Rank /*rank*/,
-                                        unsigned /*rowCount*/,
-                                        unsigned /*sharedRowCount*/)
+    RowIndex MockTermTable::GetTotalRowCount(Rank rank) const
     {
-        TestFail("MockTermTable::SetRowTableSize() not supported.");
+        return m_privateRowCount[rank];
     }
 
 
-    RowIndex MockTermTable::GetTotalRowCount(Tier tier, Rank rank) const
-    {
-        return m_privateRowCount[tier][rank];
-    }
-
-
-    RowIndex MockTermTable::GetMutableFactRowCount(Tier /*tier*/, Rank /*rank*/) const
+    RowIndex MockTermTable::GetMutableFactRowCount(Rank /*rank*/) const
     {
         return 0;
     }
@@ -138,7 +134,8 @@ namespace BitFunnel
     PackedTermInfo MockTermTable::GetTermInfo(const Term& term,
                                               TermKind& termKind) const
     {
-        EntryMap::const_iterator it = m_entries.find(term.GetClassifiedHash());
+        // TODO: do we need to use GetClassifiedHash here?
+        EntryMap::const_iterator it = m_entries.find(term.GetRawHash());
 
         if (it == m_entries.end())
         {
@@ -153,14 +150,12 @@ namespace BitFunnel
 
             unsigned rowIdOffset = GetRowIdCount();
 
-            const Tier tier = term.GetTierHint();
             Rank rank = 0;
             for (unsigned i = 0; i < rank0RowCount; ++i)
             {
                 m_rowIds.push_back(RowId(m_shard,
-                                   tier,
                                    rank,
-                                   m_privateRowCount[tier][rank]++));
+                                   m_privateRowCount[rank]++));
             }
 
 
@@ -168,9 +163,8 @@ namespace BitFunnel
             for (unsigned i = 0; i < rank3RowCount; ++i)
             {
                 m_rowIds.push_back(RowId(m_shard,
-                                   tier,
                                    rank,
-                                   m_privateRowCount[tier][rank]++));
+                                   m_privateRowCount[rank]++));
             }
 
 
@@ -178,17 +172,16 @@ namespace BitFunnel
             for (unsigned i = 0; i < rank6RowCount; ++i)
             {
                 m_rowIds.push_back(RowId(m_shard,
-                                   tier,
                                    rank,
-                                   m_privateRowCount[tier][rank]++));
+                                   m_privateRowCount[rank]++));
             }
 
             // Then add the term.
             unsigned rowIdLength = GetRowIdCount() - rowIdOffset;
-            m_entries[term.GetClassifiedHash()] = Entry(rowIdOffset, rowIdLength);
+            m_entries[term.GetRawHash()] = Entry(rowIdOffset, rowIdLength);
 
             // Update the iterator to point to the newly added entry.
-            it = m_entries.find(term.GetClassifiedHash());
+            it = m_entries.find(term.GetRawHash());
         }
 
         termKind = Explicit;
@@ -202,11 +195,10 @@ namespace BitFunnel
     {
         const unsigned currentRowOffset = GetRowIdCount();
         m_rowIds.push_back(RowId(m_shard,
-                                 DDRTier,
                                  rank,
-                                 m_privateRowCount[DDRTier][rank]++));
+                                 m_privateRowCount[rank]++));
 
-        AddTerm(term.GetClassifiedHash(), currentRowOffset, 1);
+        AddTerm(term.GetRawHash(), currentRowOffset, 1);
     }
 
 
@@ -216,9 +208,8 @@ namespace BitFunnel
         {
             // c_systemRowCount rows are reserved as internal.
             const Term term(static_cast<Term::Hash>(i + c_systemRowCount),
-                            Stream::MetaWord,
-                            0,
-                            DDRTier);
+                            StreamId::MetaWord,
+                            0);
 
             const Rank rankForFact = 0;
             AddPrivateRowTerm(term, rankForFact);
@@ -232,15 +223,15 @@ namespace BitFunnel
     //
     //*************************************************************************
     MockTermTable::Entry::Entry()
-        : m_rowIdLength(0),
-          m_rowIdOffset(0)
+        : m_rowIdOffset(0),
+          m_rowIdLength(0)
     {
     }
 
 
     MockTermTable::Entry::Entry(unsigned rowIdOffset, unsigned rowIdLength)
-        : m_rowIdLength(rowIdLength),
-          m_rowIdOffset(rowIdOffset)
+        : m_rowIdOffset(rowIdOffset),
+          m_rowIdLength(rowIdLength)
     {
     }
 

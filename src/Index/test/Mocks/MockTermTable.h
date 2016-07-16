@@ -3,7 +3,10 @@
 #include <map>
 #include <vector>
 
+#include "BitFunnel/BitFunnelTypes.h"  // For Rank, ShardId
 #include "BitFunnel/ITermTable.h"
+#include "BitFunnel/Row.h"  // For c_maxRankValue.
+#include "BitFunnel/RowId.h"  // For RowIndex.
 #include "Random.h"
 
 
@@ -45,53 +48,53 @@ namespace BitFunnel
         virtual unsigned GetRowIdCount() const override;
 
         // Returns the RowId at the specified offset in the TermTable.
-        virtual RowId GetRowId(unsigned rowOffset) const override;
+        virtual RowId GetRowId(size_t rowOffset) const override;
 
         // Not supported. Throws an exception.
         // This method is not necessary because the MockTermTable does not
         // return adhoc terms. All calls to GetTermInfo() will result in the
         // term being added to the TermTable.
-        virtual RowId GetRowIdAdhoc(Term::Hash hash, 
-                                    unsigned rowOffset, 
-                                    unsigned variant)  const override;
+        virtual RowId GetRowIdAdhoc(Term::Hash hash,
+                                    size_t rowOffset,
+                                    size_t variant)  const override;
 
         // Not supported. Throws an exception.
-        virtual RowId GetRowIdForFact(unsigned rowOffset) const override;
+        virtual RowId GetRowIdForFact(size_t rowOffset) const override;
 
         // Adds a term to the term table. The term's rows must be added first
         // by calling AddRowId().
-        virtual void AddTerm(Term::Hash hash, 
-                             unsigned rowIdOffset, 
-                             unsigned rowIdLength) override;
+        virtual void AddTerm(Term::Hash hash,
+                             size_t rowIdOffset,
+                             size_t rowIdLength) override;
 
+        /*
         // Not supported. Throws an exception.
         virtual void AddTermAdhoc(Stream::Classification classification,
                                   unsigned gramSize,
-                                  Tier tierHint,
                                   IdfSumX10 idfSum,
                                   unsigned rowIdOffset,
                                   unsigned rowIdLength) override;
+        */
 
         // Not supported. Throws an exception.
         // RowTable sizes are updated each time an explicit term is added.
-        virtual void SetRowTableSize(Tier tier,
-                                     Rank rank,
-                                     unsigned rowCount,
-                                     unsigned sharedRowCount) override;
+        virtual void SetRowTableSize(Rank rank,
+                                     size_t rowCount,
+                                     size_t sharedRowCount) override;
 
-        // Returns the total number of rows (private + shared) associated with 
+        // Returns the total number of rows (private + shared) associated with
         // the row table for (tier, rank).
-        virtual RowIndex GetTotalRowCount(Tier tier, Rank rank) const override;
+        virtual RowIndex GetTotalRowCount(Rank rank) const override;
 
-        // Returns the number of rows associated with the mutable facts for 
+        // Returns the number of rows associated with the mutable facts for
         // RowTables with (tier, rank).
-        virtual RowIndex GetMutableFactRowCount(Tier tier, Rank rank) const override;
+        virtual RowIndex GetMutableFactRowCount(Rank rank) const override;
 
         // Returns a PackedTermInfo structure associated with the specified
         // term. The PackedTermInfo structure contains information about the
         // term's rows. PackedTermInfo is used by TermInfo to implement RowId
         // enumeration for regular and adhoc terms.
-        virtual PackedTermInfo GetTermInfo(const Term& term, 
+        virtual PackedTermInfo GetTermInfo(const Term& term,
                                            TermKind& termKind) const override;
 
     private:
@@ -117,8 +120,8 @@ namespace BitFunnel
         typedef std::map<Term::Hash, Entry> EntryMap;
         mutable EntryMap m_entries;
 
-        typedef unsigned TierRankArray[TierCount][c_maxRankValue + 1];
-        mutable TierRankArray m_privateRowCount;
+        typedef unsigned RankArray[c_maxRankValue + 1];
+        mutable RankArray m_privateRowCount;
 
         mutable RandomInt<unsigned> m_random0;
         mutable RandomInt<unsigned> m_random3;

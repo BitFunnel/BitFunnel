@@ -25,10 +25,11 @@
 
 #include <vector>
 
+#include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/ITermTable.h"
 #include "BitFunnel/NonCopyable.h"
-#include "BitFunnel/RowId.h"
-#include "BitFunnel/Term.h"  // For Term::Hash.
+#include "BitFunnel/RowId.h"  // For RowIndex.
+// #include "BitFunnel/Term.h"  // For Term::Hash.
 
 namespace BitFunnel
 {
@@ -38,12 +39,12 @@ namespace BitFunnel
         EmptyTermTable();
         EmptyTermTable(std::vector<RowIndex> const & rowCounts);
 
-        virtual size_t GetTotalRowCount(size_t) const override;
+        virtual size_t GetTotalRowCount(Rank) const override;
 
         // These methods are not applicable for the tests and throw if called.
         virtual void Write(std::ostream& stream) const override;
         virtual void AddRowId(RowId id) override;
-        virtual size_t GetRowIdCount() const override;
+        virtual uint32_t GetRowIdCount() const override;
         virtual RowId GetRowId(size_t rowOffset) const override;
         virtual RowId GetRowIdAdhoc(Term::Hash hash, size_t rowOffset, size_t variant)  const override;
         virtual RowId GetRowIdForFact(size_t rowOffset) const override;
@@ -56,10 +57,10 @@ namespace BitFunnel
                                   unsigned rowIdOffset,
                                   unsigned rowIdLength) override;
         */
-        virtual void SetRowTableSize(size_t rank,
+        virtual void SetRowTableSize(Rank rank,
                                      size_t rowCount,
                                      size_t sharedRowCount) override;
-        virtual size_t GetMutableFactRowCount(size_t rank) const override;
+        virtual size_t GetMutableFactRowCount(Rank rank) const override;
         virtual PackedTermInfo GetTermInfo(const Term& term, TermKind& termKind) const override;
 
     private:

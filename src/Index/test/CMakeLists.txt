@@ -7,6 +7,7 @@ set(CPPFILES
     DocumentDataSchemaUnitTest.cpp
     DocumentLengthHistogramUnitTest.cpp
     Mocks/EmptyTermTable.cpp
+    Mocks/MockTermTable.cpp
     RowTableDescriptorUnitTest.cpp
     ShardUnitTest.cpp
     SliceUnitTest.cpp
@@ -22,6 +23,7 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     Mocks/ChunkEventTracer.h
     Mocks/EmptyTermTable.h
+    Mocks/MockTermTable.h
     TrackingSliceBufferAllocator.h
 )
 

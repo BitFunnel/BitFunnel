@@ -25,7 +25,7 @@
 
 #include <ostream>
 
-// #include "BitFunnel/BitFunnelTypes.h"         // IdfX10, ShardId, Tier, and Rank parameters.
+#include "BitFunnel/BitFunnelTypes.h"         // For Rank.
 // #include "BitFunnel/RowId.h"                  // Typpedef RowId is a parameter.
 #include "BitFunnel/Term.h"                   // Term::Hash is a parameter.
 
@@ -60,7 +60,7 @@ namespace BitFunnel
         // Returns the total number of RowIds currently in the table.
         // Typically used to get record a term's first RowId offset before
         // adding its rows.
-        virtual size_t GetRowIdCount() const = 0;
+        virtual uint32_t GetRowIdCount() const = 0;
 
         // Returns the RowId at the specified offset in the TermTable.
         virtual RowId GetRowId(size_t rowOffset) const = 0;
@@ -98,18 +98,18 @@ namespace BitFunnel
         // Specifies the total number of rows and the number of shared rows in
         // the row table associated with the specified (tier, rank)
         // values.
-        virtual void SetRowTableSize(size_t rank,
+        virtual void SetRowTableSize(Rank rank,
                                      size_t rowCount,
                                      size_t sharedRowCount) = 0;
 
         // Returns the total number of rows (private + shared) associated with
         // the row table for (rank). This includes rows allocated for
         // facts, if applicable.
-        virtual size_t GetTotalRowCount(size_t rank) const = 0;
+        virtual size_t GetTotalRowCount(Rank rank) const = 0;
 
         // Returns the number of rows associated with the mutable facts for
         // RowTables with (tier, rank).
-        virtual size_t GetMutableFactRowCount(size_t rank) const = 0;
+        virtual size_t GetMutableFactRowCount(Rank rank) const = 0;
 
         // Enumeration to represent the type of the term - explicitly stored
         // term, adhoc term or a term which represents a specific fact.
