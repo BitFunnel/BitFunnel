@@ -94,11 +94,10 @@ namespace BitFunnel
         // Note that the offset here is shifted left by 6.
         // return _bittest64(row + (offset >> 6), offset & 0x3F);
 
-        uint64_t bitPos = offset & 0x3F;
+        uint64_t bitPos = docIndex & 0x3F;
         uint64_t bitMask = 1ull << bitPos;
         uint64_t maskedVal = *(row + offset) & bitMask;
-        // TODO: check if the usage of this actually requires shifting the bit
-        // back down.
+        // TODO: we probably don't need to shift the bit back down.
         return maskedVal >> bitPos;
     }
 
@@ -113,7 +112,7 @@ namespace BitFunnel
         // Note that the offset here is shifted left by 6.
         // _interlockedbittestandset64(row + (offset >> 6), offset & 0x3F);
 
-        uint64_t bitPos = offset & 0x3F;
+        uint64_t bitPos = docIndex & 0x3F;
         uint64_t bitMask = 1ull << bitPos;
         uint64_t newVal = *(row + offset) | bitMask;
         *(row + offset) = newVal;
@@ -130,7 +129,7 @@ namespace BitFunnel
         // Note that the offset here is shifted left by 6.
         // _interlockedbittestandreset64(row + (offset >> 6), offset & 0x3F);
 
-        uint64_t bitPos = offset & 0x3F;
+        uint64_t bitPos = docIndex & 0x3F;
         uint64_t bitMask = ~(1ull << bitPos);
         uint64_t newVal = *(row + offset) & bitMask;
         *(row + offset) = newVal;

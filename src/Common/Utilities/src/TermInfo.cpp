@@ -25,8 +25,10 @@
 // TODO: for that matter, figure out correction location for everything that
 // used to be in Core.
 
+#include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
 #include "BitFunnel/PackedTermInfo.h"
 #include "BitFunnel/RowId.h"
+#include "BitFunnel/Stream.h"  // For StreamId.
 #include "BitFunnel/Term.h"
 #include "BitFunnel/TermInfo.h"
 #include "LoggerInterfaces/Logging.h"
@@ -44,17 +46,17 @@ namespace BitFunnel
     }
 
 
-    // TermInfo::TermInfo(FactHandle fact, ITermTable const & termTable)
-    //     : m_hash(0),
-    //       m_termTable(termTable)
-    // {
-    //     const Term term(static_cast<Term::Hash>(fact),
-    //                     Stream::MetaWord,
-    //                     static_cast<IdfX10>(0));
+    TermInfo::TermInfo(FactHandle fact, ITermTable const & termTable)
+        : m_hash(0),
+          m_termTable(termTable)
+    {
+        const Term term(static_cast<Term::Hash>(fact),
+                        StreamId::MetaWord,
+                        static_cast<Term::IdfX10>(0));
 
-    //     const PackedTermInfo info = termTable.GetTermInfo(term, m_termKind);
-    //     Initialize(info);
-    // }
+        const PackedTermInfo info = termTable.GetTermInfo(term, m_termKind);
+        Initialize(info);
+    }
 
 
     bool TermInfo::IsEmpty() const

@@ -17,42 +17,24 @@ namespace BitFunnel
     // MockTermTable
     //
     //*************************************************************************
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable:4351)
-#endif
+// #ifdef _MSC_VER
+// #pragma warning(push)
+// #pragma warning(disable:4351)
+// #endif
     MockTermTable::MockTermTable(ShardId shard)
-        : m_shard(shard),
+        : m_factsCount(0),
           m_privateRowCount(),
-          m_random0(1234567, 1, 2),
-          m_random3(7654321, 0, 4),
-          m_random6(1122334, 0, 4)
+          m_shard(shard)
+
     {
         // Automatically add system internal rows.
         AddPrivateRowTerm(ITermTable::GetSoftDeletedTerm(), 0);
         AddPrivateRowTerm(ITermTable::GetMatchAllTerm(), 0);
         AddPrivateRowTerm(ITermTable::GetMatchNoneTerm(), 0);
     }
-
-
-    MockTermTable::MockTermTable(ShardId shard,
-        unsigned rank0RowCount,
-        unsigned rank3RowCount,
-        unsigned rank6RowCount)
-        : m_shard(shard),
-        m_privateRowCount(),
-        m_random0(1234567, rank0RowCount, rank0RowCount),
-        m_random3(7654321, rank3RowCount, rank3RowCount),
-        m_random6(1122334, rank6RowCount, rank6RowCount)
-    {
-        // Automatically add system internal rows.
-        AddPrivateRowTerm(ITermTable::GetSoftDeletedTerm(), 0);
-        AddPrivateRowTerm(ITermTable::GetMatchAllTerm(), 0);
-        AddPrivateRowTerm(ITermTable::GetMatchNoneTerm(), 0);
-    }
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
+// #ifdef _MSC_VER
+// #pragma warning(pop)
+// #endif
 
 
     void MockTermTable::Write(std::ostream& /*stream*/) const
@@ -83,32 +65,48 @@ namespace BitFunnel
                                        size_t /*rowOffset*/,
                                        size_t /*variant*/)  const
     {
-        #ifdef _DEBUG
-        return RowId();
-        #endif /* _DEBUG */
-
         throw NotImplemented();
     }
 
 
-    RowId MockTermTable::GetRowIdForFact(size_t /* rowOffset */) const
+    RowId MockTermTable::GetRowIdForFact(size_t rowOffset) const
     {
-        #ifdef _DEBUG
-        return RowId();
-        #endif /* _DEBUG */
-
-        throw NotImplemented();
+        EXPECT_LT(rowOffset, m_factsCount);
+        return RowId(m_shard, 0, rowOffset);
     }
 
 
+// TODO: fix sizes.
+// TODO: allow non-private rows. All rows are private for now.
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4267)
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#endif
     void MockTermTable::AddTerm(Term::Hash hash,
-                                size_t rowIdOffset,
+                                size_t /*rowIdOffset*/,
                                 size_t rowIdLength)
     {
         EXPECT_EQ(m_entries.find(hash), m_entries.end());
+        EXPECT_EQ(rowIdLength, 1u);
 
-        m_entries[hash] = Entry(rowIdOffset, rowIdLength);
+        Rank rank = 0;
+        m_rowIds.push_back(RowId(m_shard,
+                                 rank,
+                                 m_privateRowCount[rank]));
+
+        m_entries[hash] = PackedTermInfo(m_privateRowCount[rank], rowIdLength);
+        ++m_privateRowCount[rank];
     }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 
     void MockTermTable::SetRowTableSize(Rank /*rank*/,
@@ -134,71 +132,27 @@ namespace BitFunnel
     PackedTermInfo MockTermTable::GetTermInfo(const Term& term,
                                               TermKind& termKind) const
     {
-        // TODO: do we need to use GetClassifiedHash here?
-        EntryMap::const_iterator it = m_entries.find(term.GetRawHash());
-
-        if (it == m_entries.end())
+        // m_factsCount = count from IFactSet + c_systemRowCount for system
+        // internal rows, hence deliberately using "less than" here.
+        if (term.GetRawHash() < m_factsCount)
         {
-            //
-            // Add any term not already in the term table.
-            //
-
-            // First generate some RowIds and add them to the term table.
-            unsigned rank0RowCount = m_random0();
-            unsigned rank3RowCount = m_random3();
-            unsigned rank6RowCount = (rank3RowCount > 0) ? m_random6() : 0;
-
-            unsigned rowIdOffset = GetRowIdCount();
-
-            Rank rank = 0;
-            for (unsigned i = 0; i < rank0RowCount; ++i)
-            {
-                m_rowIds.push_back(RowId(m_shard,
-                                   rank,
-                                   m_privateRowCount[rank]++));
-            }
-
-
-            rank = 3;
-            for (unsigned i = 0; i < rank3RowCount; ++i)
-            {
-                m_rowIds.push_back(RowId(m_shard,
-                                   rank,
-                                   m_privateRowCount[rank]++));
-            }
-
-
-            rank = 6;
-            for (unsigned i = 0; i < rank6RowCount; ++i)
-            {
-                m_rowIds.push_back(RowId(m_shard,
-                                   rank,
-                                   m_privateRowCount[rank]++));
-            }
-
-            // Then add the term.
-            unsigned rowIdLength = GetRowIdCount() - rowIdOffset;
-            m_entries[term.GetRawHash()] = Entry(rowIdOffset, rowIdLength);
-
-            // Update the iterator to point to the newly added entry.
-            it = m_entries.find(term.GetRawHash());
+            // Facts are private rank 0 rows with the special row offsets.
+            termKind = Fact;
+            const unsigned factIndex = static_cast<unsigned>(term.GetRawHash());
+            return PackedTermInfo(factIndex, 1);
         }
-
-        termKind = Explicit;
-
-        return PackedTermInfo(it->second.GetRowIdOffset(),
-                              it->second.GetRowIdLength());
+        else
+        {
+            auto it = m_entries.find(term.GetRawHash());
+            EXPECT_NE(it, m_entries.end());
+            return it->second;
+        }
     }
 
 
-    void MockTermTable::AddPrivateRowTerm(Term term, Rank rank)
+    void MockTermTable::AddPrivateRowTerm(Term term, Rank /*rank*/)
     {
-        const unsigned currentRowOffset = GetRowIdCount();
-        m_rowIds.push_back(RowId(m_shard,
-                                 rank,
-                                 m_privateRowCount[rank]++));
-
-        AddTerm(term.GetRawHash(), currentRowOffset, 1);
+        AddTerm(term.GetRawHash(), -1, 1);
     }
 
 
@@ -212,40 +166,8 @@ namespace BitFunnel
                             0);
 
             const Rank rankForFact = 0;
+            ++m_factsCount;
             AddPrivateRowTerm(term, rankForFact);
         }
     }
-
-
-    //*************************************************************************
-    //
-    // MockTermTable::Entry
-    //
-    //*************************************************************************
-    MockTermTable::Entry::Entry()
-        : m_rowIdOffset(0),
-          m_rowIdLength(0)
-    {
-    }
-
-
-    MockTermTable::Entry::Entry(unsigned rowIdOffset, unsigned rowIdLength)
-        : m_rowIdOffset(rowIdOffset),
-          m_rowIdLength(rowIdLength)
-    {
-    }
-
-
-    unsigned MockTermTable::Entry::GetRowIdOffset() const
-    {
-        return m_rowIdOffset;
-    }
-
-
-
-    unsigned MockTermTable::Entry::GetRowIdLength() const
-    {
-        return m_rowIdLength;
-    }
-
 }

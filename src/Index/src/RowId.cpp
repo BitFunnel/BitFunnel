@@ -31,6 +31,10 @@ namespace BitFunnel
 #pragma warning (push)
 #pragma warning (disable:4267)
 #endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#endif
     RowId::RowId(size_t shard, size_t rank, size_t index)
         : m_shard(shard), m_rank(rank), m_index(index)
     {
@@ -40,6 +44,9 @@ namespace BitFunnel
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 
     RowId::RowId(const RowId& other)
@@ -48,7 +55,7 @@ namespace BitFunnel
     }
 
 
-    RowId::RowId(uint64_t packedRepresentation)
+    RowId::RowId(uint32_t packedRepresentation)
     {
         m_index = packedRepresentation;
         packedRepresentation >>= c_bitsOfIndex;
@@ -58,9 +65,9 @@ namespace BitFunnel
     }
 
 
-    uint64_t RowId::GetPackedRepresentation() const
+    uint32_t RowId::GetPackedRepresentation() const
     {
-        uint64_t packedRepresentation = m_shard;
+        uint32_t packedRepresentation = m_shard;
         packedRepresentation <<= c_bitsOfRank;
         packedRepresentation |= m_rank;
         packedRepresentation <<= c_bitsOfIndex;
@@ -69,19 +76,19 @@ namespace BitFunnel
     }
 
 
-    size_t RowId::GetRank() const
+    Rank RowId::GetRank() const
     {
         return m_rank;
     }
 
 
-    size_t RowId::GetShard() const
+    ShardId RowId::GetShard() const
     {
         return m_shard;
     }
 
 
-    size_t RowId::GetIndex() const
+    RowIndex RowId::GetIndex() const
     {
         return m_index;
     }

@@ -46,7 +46,7 @@ namespace BitFunnel
     {
         const size_t c_blockAllocatorBlockCount = 10;
 
-
+        // TODO: move this duplicated code into a shared file for tests.
         size_t GetBufferSize(DocIndex capacity,
                              std::vector<RowIndex> const & rowCounts,
                              IDocumentDataSchema const & schema)

@@ -11,6 +11,7 @@ set(CPPFILES
     DocumentDataSchema.cpp
     DocumentHandleInternal.cpp
     DocumentLengthHistogram.cpp
+    FactSetBase.cpp
     IngestChunks.cpp
     Ingestor.cpp
     PackedTermInfo.cpp
@@ -40,6 +41,7 @@ set(PRIVATE_HFILES
     DocumentDataSchema.h
     DocumentHandleInternal.h
     DocumentLengthHistogram.h
+    FactSetBase.h
     Ingestor.h
     IRecyclable.h
     IRecycler.h

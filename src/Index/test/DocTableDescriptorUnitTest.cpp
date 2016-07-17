@@ -176,12 +176,18 @@ namespace BitFunnel
 #pragma warning(push)
 #pragma warning(disable: 4267)
 #endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#endif
                 testBlob0.m_field1 = i + 1;
                 testBlob0.m_field2 = static_cast<float>(i + 2);
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
-
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
                 {
                     // Populate the fixed size blob 0.
                     void* fixedSizeBlobData0 = docTable.GetFixedSizeBlob(alignedBuffer, i, fixedSizeBlob0);

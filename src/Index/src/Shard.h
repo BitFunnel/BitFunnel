@@ -160,7 +160,7 @@ namespace BitFunnel
 
         // Returns the RowId which corresponds to a row used to mark documents
         // as soft-deleted.
-        //RowId GetSoftDeletedRowId() const;
+        RowId GetSoftDeletedRowId() const;
 
         // Allocates memory for the slice buffer. The buffer has the size of
         // m_sliceBufferSize.
@@ -225,10 +225,11 @@ namespace BitFunnel
 
         // Row which is used to mark documents as soft deleted.  The value of 0
         // means the document in this column is soft deleted and excluded from
-        // matching. Typically this is a private rank 0 row in DDR. During the
+        // matching. Typically this is a private rank 0 row. During the
         // AddDocument workflow, the bit in this row is set to 1 as the last
         // step and this effectively makes the document "serving".
-        //const RowId m_softDeletedRowId;
+        const RowId m_softDeletedRowId;
+
 
         // Lock protecting operations on the list of slices. Protects the
         // AllocateDocument method.

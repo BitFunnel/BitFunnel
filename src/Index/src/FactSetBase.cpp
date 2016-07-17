@@ -1,8 +1,9 @@
-#include "stdafx.h"
-
+#include <cstring>
 #include <memory>
 
-#include "BitFunnel/Factories.h"
+#include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Row.h"  // For c_systemRowCount.
 #include "FactSetBase.h"
 
 
@@ -17,16 +18,16 @@ namespace BitFunnel
                                     bool isMutable,
                                     FactHandle handle)
         : m_friendlyName(friendlyName),
-          m_isMutable(isMutable),
-          m_handle(handle)
+          m_handle(handle),
+          m_isMutable(isMutable)
     {
     }
 
 
     FactSetBase::FactInfo::FactInfo(FactInfo const & other)
         : m_friendlyName(other.m_friendlyName),
-          m_isMutable(other.m_isMutable),
-          m_handle(other.m_handle)
+          m_handle(other.m_handle),
+          m_isMutable(other.m_isMutable)
     {
     }
 
@@ -65,14 +66,14 @@ namespace BitFunnel
     }
 
 
-    FactHandle FactSetBase::DefineFact(char const * friendlyName, 
+    FactHandle FactSetBase::DefineFact(char const * friendlyName,
                                        bool isMutable)
     {
         for (size_t i = 0; i < m_facts.size(); ++i)
         {
             if (0 == strcmp(m_facts[i].GetFriendlyName(), friendlyName))
             {
-                throw std::exception("A fact with this name is already defined");
+                throw RecoverableError("Duplicate fact name definition.");
             }
         }
 
@@ -114,8 +115,8 @@ namespace BitFunnel
 
     FactSetBase::FactInfo const & FactSetBase::GetFactInfoByHandle(FactHandle handle) const
     {
-        // Facts are assigned sequential handles starting at c_systemRowCount. 
-        // To avoid O(n) complexity in looking up a fact in the list, obtain an index of a 
+        // Facts are assigned sequential handles starting at c_systemRowCount.
+        // To avoid O(n) complexity in looking up a fact in the list, obtain an index of a
         // fact from its handle.
         const unsigned factIndex = static_cast<unsigned>(handle) - c_systemRowCount;
         return m_facts.at(factIndex);

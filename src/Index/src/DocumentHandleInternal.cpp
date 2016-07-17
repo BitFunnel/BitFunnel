@@ -21,7 +21,10 @@
 // THE SOFTWARE.
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/TermInfo.h"
 #include "DocumentHandleInternal.h"
+#include "DocTableDescriptor.h"
+#include "LoggerInterfaces/Logging.h"
 #include "Shard.h"                      // TODO: Remove this temporary include.
 #include "Slice.h"
 
@@ -33,39 +36,97 @@ namespace BitFunnel
     // DocumentHandle
     //
     //*************************************************************************
-    void* DocumentHandle::AllocateVariableSizeBlob(VariableSizeBlobId /*id*/, size_t /*byteSize*/)
+    void* DocumentHandle::AllocateVariableSizeBlob(VariableSizeBlobId id, size_t byteSize)
     {
-        throw NotImplemented();
+        return m_slice->GetDocTable().
+            AllocateVariableSizeBlob(m_slice->GetSliceBuffer(),
+                                     m_index,
+                                     id,
+                                     byteSize);
     }
 
 
-    void* DocumentHandle::GetVariableSizeBlob(VariableSizeBlobId /*id*/) const
+    void* DocumentHandle::GetVariableSizeBlob(VariableSizeBlobId id) const
     {
-        throw NotImplemented();
+        return m_slice->GetDocTable().
+            GetVariableSizeBlob(m_slice->GetSliceBuffer(),
+                                m_index,
+                                id);
     }
 
 
-    void* DocumentHandle::GetFixedSizeBlob(FixedSizeBlobId /*id*/) const
+    void* DocumentHandle::GetFixedSizeBlob(FixedSizeBlobId id) const
     {
-        throw NotImplemented();
+        return m_slice->GetDocTable().
+            GetFixedSizeBlob(m_slice->GetSliceBuffer(),
+                             m_index,
+                             id);
     }
 
 
-    void DocumentHandle::AssertFact(FactHandle /*fact*/, bool /*value*/)
+    void DocumentHandle::AssertFact(FactHandle fact, bool value)
     {
-        throw NotImplemented();
+        ITermTable const & termTable = m_slice->GetShard().GetTermTable();
+
+        TermInfo termInfo(fact, termTable);
+
+        LogAssertB(termInfo.MoveNext(),"Invalid FactHandle.");
+        const RowId rowIdForFact = termInfo.Current();
+
+        LogAssertB(!termInfo.MoveNext(),
+                   "Fact must correspond to a single row.");
+
+        RowTableDescriptor const & rowTable =
+            m_slice->GetRowTable(rowIdForFact.GetRank());
+
+        if (value)
+        {
+            rowTable.SetBit(m_slice->GetSliceBuffer(),
+                            rowIdForFact.GetIndex(),
+                            m_index);
+        }
+        else
+        {
+            rowTable.ClearBit(m_slice->GetSliceBuffer(),
+                              rowIdForFact.GetIndex(),
+                              m_index);
+        }
     }
 
 
     void DocumentHandle::AddPosting(Term const & term)
     {
-        m_slice->GetShard().TemporaryAddPosting(term, m_index);
+        // TODO: move the instrumentation that was in TemporaryAddPosting.
+        // m_slice->GetShard().TemporaryAddPosting(term, m_index);
+
+        ITermTable const & termTable = m_slice->GetShard().GetTermTable();
+        TermInfo termInfo(term, termTable);
+        while (termInfo.MoveNext())
+        {
+            const RowId row = termInfo.Current();
+            m_slice->GetRowTable(row.GetRank()).
+                SetBit(m_slice->GetSliceBuffer(),
+                       row.GetIndex(),
+                       m_index);
+        }
     }
 
 
     void DocumentHandle::Expire()
     {
-        throw NotImplemented();
+        const RowId softDeletedRow = m_slice->GetShard().GetSoftDeletedRowId();
+
+        RowTableDescriptor const & rowTable = m_slice->GetRowTable(softDeletedRow.GetRank());
+        rowTable.ClearBit(m_slice->GetSliceBuffer(), softDeletedRow.GetIndex(), m_index);
+
+        const bool isSliceExpired = m_slice->ExpireDocument();
+        if (isSliceExpired)
+        {
+            // All documents are expired in the Slice and the index is
+            // abandoning its reference to this Slice. If this was the only
+            // reference, then the Slice is scheduled for backup.
+            Slice::DecrementRefCount(m_slice);
+        }
     }
 
 

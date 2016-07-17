@@ -24,13 +24,11 @@
 
 #include <memory>
 
-// TODO: Do we need to include headers for IConfiguration and IIngestor?
-// It seems that std::unique_ptr<> needs them.
-
 namespace BitFunnel
 {
     class IConfiguration;
     class IDocumentDataSchema;
+    class IFactSet;
     class IIngestor;
     class IRecycler;
     class ITermTable;
@@ -39,6 +37,8 @@ namespace BitFunnel
     namespace Factories
     {
         std::unique_ptr<IConfiguration> CreateConfiguration(size_t maxGramSize);
+
+        std::unique_ptr<IFactSet> CreateFactSet();
 
         std::unique_ptr<IIngestor>
             CreateIngestor(IDocumentDataSchema const & docDataSchema,

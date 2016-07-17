@@ -18,6 +18,7 @@ set(CPPFILES
     SimpleHashTableUnitTest.cpp
     StreamUtilitiesUnitTest.cpp
     TaskDistributorUnitTest.cpp
+    # TermTableUnitTest.cpp
     ThrowingLogger.cpp
     TokenManagerUnitTest.cpp
     TokenTrackerUnitTest.cpp

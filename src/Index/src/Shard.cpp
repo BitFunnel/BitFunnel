@@ -20,8 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/TermInfo.h"
 #include "IRecyclable.h"
 #include "IRecycler.h"
 #include "ISliceBufferAllocator.h"
@@ -33,6 +35,24 @@
 
 namespace BitFunnel
 {
+    // Extracts a RowId used to mark documents as active/soft-deleted.
+    static RowId RowIdForDeletedDocument(ITermTable const & termTable)
+    {
+        TermInfo termInfo(ITermTable::GetSoftDeletedTerm(), termTable);
+
+        LogAssertB(termInfo.MoveNext(), "Invalid row.");
+        const RowId rowId = termInfo.Current();
+
+        LogAssertB(rowId.GetRank() == 0,
+                   "Soft deleted row must be rank 0.");
+
+        LogAssertB(!termInfo.MoveNext(),
+                   "Soft deleted row must correspond to a single row.");
+
+        return rowId;
+    }
+
+
     Shard::Shard(IIngestor& ingestor,
                  size_t id,
                  ITermTable const & termTable,
@@ -43,6 +63,7 @@ namespace BitFunnel
           m_id(id),
           m_termTable(termTable),
           m_sliceBufferAllocator(sliceBufferAllocator),
+          m_softDeletedRowId(RowIdForDeletedDocument(termTable)),
           m_activeSlice(nullptr),
           m_sliceBuffers(new std::vector<void*>()),
           m_sliceCapacity(GetCapacityForByteSize(sliceBufferSize,
@@ -169,6 +190,12 @@ namespace BitFunnel
     {
         // A pointer to a Slice is placed in the end of the slice buffer.
         return m_sliceBufferSize - sizeof(void*);
+    }
+
+
+    RowId Shard::GetSoftDeletedRowId() const
+    {
+        return m_softDeletedRowId;
     }
 
 

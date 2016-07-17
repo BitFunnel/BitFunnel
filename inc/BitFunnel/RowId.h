@@ -25,6 +25,8 @@
 
 #include <string>
 
+#include "BitFunnel/BitFunnelTypes.h"  // For Rank, RowIndex, ShardId.
+
 
 namespace BitFunnel
 {
@@ -61,19 +63,19 @@ namespace BitFunnel
         // The layout of the bit fields in RowId is compiler dependent and in
         // the case of the compiler, the fields occupy 64 bits of space, even
         // though only 32 bits are defined.
-        RowId(uint64_t packedRepresentation);
+        RowId(uint32_t packedRepresentation);
 
         // Returns the 32-bit packed representation of the RowId.
-        uint64_t GetPackedRepresentation() const;
+        uint32_t GetPackedRepresentation() const;
 
         // Return's the row's Rank.
-        size_t GetRank() const;
+        Rank GetRank() const;
 
         // Returns the row's Index.
-        size_t GetIndex() const;
+        RowIndex GetIndex() const;
 
         // Returns the row's ShardId.
-        size_t GetShard() const;
+        ShardId GetShard() const;
 
         // Equality operators used in unit tests.
         bool operator==(const RowId& other) const;

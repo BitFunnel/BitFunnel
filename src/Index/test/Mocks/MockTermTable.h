@@ -1,10 +1,11 @@
 #pragma once
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "BitFunnel/BitFunnelTypes.h"  // For Rank, ShardId
 #include "BitFunnel/ITermTable.h"
+#include "BitFunnel/PackedTermInfo.h"  // For PackedTermInfo.
 #include "BitFunnel/Row.h"  // For c_maxRankValue.
 #include "BitFunnel/RowId.h"  // For RowIndex.
 #include "Random.h"
@@ -19,12 +20,12 @@ namespace BitFunnel
     public:
         MockTermTable(ShardId shard);
 
-        // Create a term table which always allocate
-        // a fixed number of rows for various ranks.
-        MockTermTable(ShardId shard,
-            unsigned rank0RowCount,
-            unsigned rank3RowCount,
-            unsigned rank6RowCount);
+        // // Create a term table which always allocate
+        // // a fixed number of rows for various ranks.
+        // MockTermTable(ShardId shard,
+        //     unsigned rank0RowCount,
+        //     unsigned rank3RowCount,
+        //     unsigned rank6RowCount);
 
         // Add a term and reserves a private row for it.
         void AddPrivateRowTerm(Term term, Rank rank);
@@ -98,33 +99,13 @@ namespace BitFunnel
                                            TermKind& termKind) const override;
 
     private:
-
-        class Entry
-        {
-        public:
-            Entry();
-            Entry(unsigned rowIdOffset, unsigned rowIdLength);
-
-            unsigned GetRowIdOffset() const;
-            unsigned GetRowIdLength() const;
-
-        private:
-            unsigned m_rowIdOffset;
-            unsigned m_rowIdLength;
-        };
+        mutable std::unordered_map<Term::Hash, PackedTermInfo> m_entries;
+        DocIndex m_factsCount;
+        mutable unsigned m_privateRowCount[c_maxRankValue + 1];
+        mutable std::vector<RowId> m_rowIds;
 
         ShardId m_shard;
 
-        mutable std::vector<RowId> m_rowIds;
 
-        typedef std::map<Term::Hash, Entry> EntryMap;
-        mutable EntryMap m_entries;
-
-        typedef unsigned RankArray[c_maxRankValue + 1];
-        mutable RankArray m_privateRowCount;
-
-        mutable RandomInt<unsigned> m_random0;
-        mutable RandomInt<unsigned> m_random3;
-        mutable RandomInt<unsigned> m_random6;
     };
 }

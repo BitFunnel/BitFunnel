@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <stddef.h>
+#include <inttypes.h>
 
 namespace BitFunnel
 {
@@ -49,7 +49,7 @@ namespace BitFunnel
     //   Should FactHandle be a member of IFactSet?
     //   Should IIngestionIndex provide a DefineFact() method?
     //   Should IFactSet be publicly visible?
-    typedef size_t FactHandle;
+    typedef uint64_t FactHandle;
 
     class IFactSet
     {

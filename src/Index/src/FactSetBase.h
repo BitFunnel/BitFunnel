@@ -3,22 +3,22 @@
 #include <vector>
 #include <string>       // FactInfo embeds std::string.
 
-#include "BitFunnel/IFactSet.h"
+#include "BitFunnel/Index/IFactSet.h"
 
 namespace BitFunnel
 {
     //*************************************************************************
     //
     // FactSetBase provides a base implementation of IFactSet. Consumers can
-    // override this class if they want to automatically add facts applicable
-    // to their use cases to the set.
+    // override this class if they want to automatically add facts applicable to
+    // their use cases to the set.
     //
     // This class is not thread-safe.
     //
-    // DESIGN NOTE: Internally FactHandle is being treated as a Term::Hash. 
+    // DESIGN NOTE: Internally FactHandle is being treated as a Term::Hash.
     // Various classes can detect that certain values of Term::Hash correspond
     // to facts and treat them appropriately, for example TermTable. We are not
-    // using Term::Hash instead of FactHandle intentionally because the end 
+    // using Term::Hash instead of FactHandle intentionally because the end
     // users should not know this implementation detail.
     //
     //*************************************************************************
@@ -40,12 +40,12 @@ namespace BitFunnel
         virtual char const * GetFriendlyName(FactHandle fact) const override;
 
     private:
-        // Descriptor of a fact. Consumers of the facts use FactHandle in the 
+        // Descriptor of a fact. Consumers of the facts use FactHandle in the
         // ingestion API and PlanDescriptor.
         class FactInfo
         {
         public:
-            // Constructs a fact with the given friendly name, handle and a 
+            // Constructs a fact with the given friendly name, handle and a
             // mutable flag.
             FactInfo(char const * friendlyName,
                      bool isMutable,
@@ -63,16 +63,15 @@ namespace BitFunnel
             bool IsMutable() const;
 
         private:
-            // Define but refuse to implement a private assignment operator
-            // to force std::vector to use the copy constructor.
+            // Define but refuse to implement a private assignment operator to
+            // force std::vector to use the copy constructor.
             FactInfo const & operator=(FactInfo const &);
 
             const std::string m_friendlyName;
             const FactHandle m_handle;
             const bool m_isMutable;
-            // All facts are now private rank 0 rows in DDR. In the future, 
-            // this class may have other fields such as rank, number of rows, 
-            // etc.
+            // All facts are now private rank 0 rows. In the future, this class
+            // may have other fields such as rank, number of rows, etc.
         };
 
         // Finds a FactInfo for a given handle. If a fact with this handle is
