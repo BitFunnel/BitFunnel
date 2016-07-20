@@ -51,7 +51,7 @@ namespace BitFunnel
     }
 
 
-    void Document::OpenStream(char const * /*name*/)
+    void Document::OpenStream(Term::StreamId id)
     {
         if (m_streamIsOpen)
         {
@@ -61,8 +61,7 @@ namespace BitFunnel
         {
             m_streamIsOpen = true;
 
-            // TODO: set m_streamId correctly.
-            m_currentStreamId = 0;
+            m_currentStreamId = id;
 
             // Reset ring buffer just in case.
             m_ringBuffer.Reset();

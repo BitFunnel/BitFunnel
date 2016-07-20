@@ -28,10 +28,14 @@
 
 namespace BitFunnel
 {
+    static const uint64_t c_docIdDigitCount = 16;
+    static const uint64_t c_streamIdDigitCount = 2;
+
+
     ChunkReader::ChunkReader(std::vector<char> const & input, IEvents& processor)
-      : m_processor(processor),
-        m_next(&input[0]),
-        m_end(&input[0] + input.size())
+        : m_processor(processor),
+          m_next(&input[0]),
+          m_end(&input[0] + input.size())
     {
         if (m_next == m_end) {
             throw FatalError("Attempt to read empty chunk.");
@@ -49,8 +53,8 @@ namespace BitFunnel
 
     void ChunkReader::ProcessDocument()
     {
-        // TODO: Get doc id.
-        m_processor.OnDocumentEnter(0);
+        uint64_t id = GetDocId();
+        m_processor.OnDocumentEnter(id);
         while (PeekChar() != 0) {
             ProcessStream();
         }
@@ -63,7 +67,8 @@ namespace BitFunnel
 
     void ChunkReader::ProcessStream()
     {
-        m_processor.OnStreamEnter(GetToken());
+        Term::StreamId id = GetStreamId();
+        m_processor.OnStreamEnter(id);
         while (PeekChar() != 0) {
             m_processor.OnTerm(GetToken());
         }
@@ -85,6 +90,48 @@ namespace BitFunnel
         Consume(0);
 
         return begin;
+    }
+
+    DocId ChunkReader::GetDocId()
+    {
+        static_assert(sizeof(DocId) * 2 == c_docIdDigitCount,
+                      "DocId type is not equivalent to two hex digits.");
+        return static_cast<DocId>(GetHexValue(c_docIdDigitCount));
+    }
+
+
+    Term::StreamId ChunkReader::GetStreamId()
+    {
+        static_assert(sizeof(Term::StreamId) * 2 == c_streamIdDigitCount,
+                      "Term::StreamId type is not equivalent to two hex digits.");
+        return static_cast<Term::StreamId>(GetHexValue(c_streamIdDigitCount));
+    }
+
+
+    uint64_t ChunkReader::GetHexValue(uint64_t digitCount)
+    {
+        uint64_t value = 0;
+        for (unsigned i = 0; i < digitCount; ++i)
+        {
+            value <<= 4;
+            char c = PeekChar();
+            if (c >= '0' && c <= '9')
+            {
+                value |= (c - '0');
+            }
+            else if (c >= 'a' && c <= 'f')
+            {
+                value |= (c - 'a' + 10);
+            }
+            else
+            {
+                throw FatalError("Expected hexidecimal digit from {0123456789abcdef}.");
+            }
+            GetChar();
+        }
+        Consume('\0');
+
+        return value;
     }
 
 

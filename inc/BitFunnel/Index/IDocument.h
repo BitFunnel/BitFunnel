@@ -24,6 +24,7 @@
 
 #include "BitFunnel/Index/DocumentHandle.h"     // DocumentHandle parameter.
 #include "BitFunnel/IInterface.h"               // Inherits from IInterface.
+#include "BitFunnel/Term.h"                     // Term::StreamId parameter.
 
 
 namespace BitFunnel
@@ -43,7 +44,7 @@ namespace BitFunnel
 
         // Opens a named stream for term additions. Subsequent calls to
         // AddTerm() will add terms to this stream.
-        virtual void OpenStream(char const * name) = 0;
+        virtual void OpenStream(Term::StreamId id) = 0;
 
         // Adds a term to the currently opened stream.
         virtual void AddTerm(char const * term) = 0;

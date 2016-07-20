@@ -25,9 +25,11 @@
 #include <iosfwd>
 #include <vector>
 
-#include "BitFunnel/IInterface.h"
-#include "BitFunnel/Index/DocumentHandle.h"
-#include "BitFunnel/NonCopyable.h"
+#include "BitFunnel/IInterface.h"               // Base class.
+#include "BitFunnel/Index/DocumentHandle.h"     // DocId parameter.
+#include "BitFunnel/NonCopyable.h"              // Base class.
+#include "BitFunnel/Term.h"                     // Term::StreamId parameter.
+
 
 namespace BitFunnel
 {
@@ -44,7 +46,7 @@ namespace BitFunnel
         public:
             virtual void OnFileEnter() = 0;
             virtual void OnDocumentEnter(DocId id) = 0;
-            virtual void OnStreamEnter(char const * name) = 0;
+            virtual void OnStreamEnter(Term::StreamId id) = 0;
             virtual void OnTerm(char const * term) = 0;
             virtual void OnStreamExit() = 0;
             virtual void OnDocumentExit() = 0;
@@ -58,6 +60,10 @@ namespace BitFunnel
         void ProcessStream();
         char const * GetToken();
 
+        DocId GetDocId();
+        Term::StreamId GetStreamId();
+
+        uint64_t GetHexValue(uint64_t digitCount);
         void Consume(char c);
         char GetChar();
         char PeekChar();

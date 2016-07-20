@@ -50,9 +50,9 @@ namespace BitFunnel
     }
 
 
-    void ChunkIngestor::OnStreamEnter(char const * name)
+    void ChunkIngestor::OnStreamEnter(Term::StreamId id)
     {
-        m_currentDocument->OpenStream(name);
+        m_currentDocument->OpenStream(id);
     }
 
 

@@ -62,8 +62,9 @@ namespace BitFunnel
         {
             std::vector<char> const zeroTermStream = ToCharVector(
                 // First document.
-                "Title\0\0"
-                "Body\0Dogs\0\0"
+                "000000000000000a\0"
+                "00\0\0"
+                "01\0Dogs\0\0"
                 "\0"
 
                 // End of corpus.
@@ -76,10 +77,10 @@ namespace BitFunnel
                     std::stringstream trace;
                     trace
                         << "OnFileEnter" << std::endl
-                        << "OnDocumentEnter;DocId: '0'" << std::endl
-                        << "OnStreamEnter;streamName: 'Title'" << std::endl
+                        << "OnDocumentEnter;DocId: 10" << std::endl
+                        << "OnStreamEnter;streamId: 0" << std::endl
                         << "OnStreamExit" << std::endl
-                        << "OnStreamEnter;streamName: 'Body'" << std::endl
+                        << "OnStreamEnter;streamId: 1" << std::endl
                         << "OnTerm;term: 'Dogs'" << std::endl
                         << "OnStreamExit" << std::endl
                         << "OnDocumentExit" << std::endl
@@ -95,8 +96,9 @@ namespace BitFunnel
         {
             std::vector<char> const zeroTermDocument = ToCharVector(
                 // First docuement.
-                "Title\0\0"
-                "Body\0\0"
+                "00000000abcdef12\0"
+                "20\0\0"
+                "30\0\0"
                 "\0"
 
                 // End of corpus.
@@ -109,41 +111,12 @@ namespace BitFunnel
                     std::stringstream trace;
                     trace
                         << "OnFileEnter" << std::endl
-                        << "OnDocumentEnter;DocId: '0'" << std::endl
-                        << "OnStreamEnter;streamName: 'Title'" << std::endl
+                        << "OnDocumentEnter;DocId: 2882400018" << std::endl
+                        << "OnStreamEnter;streamId: 32" << std::endl
                         << "OnStreamExit" << std::endl
-                        << "OnStreamEnter;streamName: 'Body'" << std::endl
+                        << "OnStreamEnter;streamId: 48" << std::endl
                         << "OnStreamExit" << std::endl
                         << "OnDocumentExit" << std::endl
-                        << "OnFileExit" << std::endl;
-
-                    EXPECT_EQ(trace.str(), tracer.Trace());
-                });
-        }
-
-
-        // Parse chunk with 1 document, 2 streams, and a missing title on the
-        // first stream. Notably this causes us to fail to parse any terms from
-        // the document.
-        TEST(ChunkReaderUnitTest, StreamWithEmptyTitle)
-        {
-            std::vector<char> const zeroTermDocument = ToCharVector(
-                "\0Dogs\0\0"
-                "Body\0Dogs\0\0"
-                "\0"
-
-                // End of corpus.
-                "\0");
-
-            // Parse chunk with 1 document and 0 terms.
-            RunEventTracerTest(
-                zeroTermDocument,
-                [](Mocks::ChunkEventTracer & tracer)
-                {
-                    std::stringstream trace;
-                    trace
-                        // Missing title
-                        << "OnFileEnter" << std::endl
                         << "OnFileExit" << std::endl;
 
                     EXPECT_EQ(trace.str(), tracer.Trace());
@@ -156,18 +129,21 @@ namespace BitFunnel
         {
             std::vector<char> const chunk = ToCharVector(
                 // First document
-                "Title\0Dogs\0\0"
-                "Body\0Dogs\0are\0man's\0best\0friend.\0\0"
+                "00000000000000f0\0"
+                "20\0Dogs\0\0"
+                "30\0Dogs\0are\0man's\0best\0friend.\0\0"
                 "\0"
 
                 // Second document
-                "Title\0Cat\0Facts\0\0"
-                "Body\0The\0internet\0is\0made\0of\0cats.\0\0"
+                "00000000000000f1\0"
+                "20\0Cat\0Facts\0\0"
+                "30\0The\0internet\0is\0made\0of\0cats.\0\0"
                 "\0"
 
                 // Third document
-                "Title\0More\0Cat\0Facts\0\0"
-                "Body\0The\0internet\0really\0is\0made\0of\0cats.\0\0"
+                "00000000000000f2\0"
+                "20\0More\0Cat\0Facts\0\0"
+                "30\0The\0internet\0really\0is\0made\0of\0cats.\0\0"
                 "\0"
 
                 // End of corpus
@@ -180,11 +156,11 @@ namespace BitFunnel
                 trace
                     << "OnFileEnter" << std::endl
                     // TODO: The DocId here is always 0. We should fix this.
-                    << "OnDocumentEnter;DocId: '0'" << std::endl
-                    << "OnStreamEnter;streamName: 'Title'" << std::endl
+                    << "OnDocumentEnter;DocId: 240" << std::endl
+                    << "OnStreamEnter;streamId: 32" << std::endl
                     << "OnTerm;term: 'Dogs'" << std::endl
                     << "OnStreamExit" << std::endl
-                    << "OnStreamEnter;streamName: 'Body'" << std::endl
+                    << "OnStreamEnter;streamId: 48" << std::endl
                     << "OnTerm;term: 'Dogs'" << std::endl
                     << "OnTerm;term: 'are'" << std::endl
                     << "OnTerm;term: 'man's'" << std::endl
@@ -192,12 +168,12 @@ namespace BitFunnel
                     << "OnTerm;term: 'friend.'" << std::endl
                     << "OnStreamExit" << std::endl
                     << "OnDocumentExit" << std::endl
-                    << "OnDocumentEnter;DocId: '0'" << std::endl
-                    << "OnStreamEnter;streamName: 'Title'" << std::endl
+                    << "OnDocumentEnter;DocId: 241" << std::endl
+                    << "OnStreamEnter;streamId: 32" << std::endl
                     << "OnTerm;term: 'Cat'" << std::endl
                     << "OnTerm;term: 'Facts'" << std::endl
                     << "OnStreamExit" << std::endl
-                    << "OnStreamEnter;streamName: 'Body'" << std::endl
+                    << "OnStreamEnter;streamId: 48" << std::endl
                     << "OnTerm;term: 'The'" << std::endl
                     << "OnTerm;term: 'internet'" << std::endl
                     << "OnTerm;term: 'is'" << std::endl
@@ -206,13 +182,13 @@ namespace BitFunnel
                     << "OnTerm;term: 'cats.'" << std::endl
                     << "OnStreamExit" << std::endl
                     << "OnDocumentExit" << std::endl
-                    << "OnDocumentEnter;DocId: '0'" << std::endl
-                    << "OnStreamEnter;streamName: 'Title'" << std::endl
+                    << "OnDocumentEnter;DocId: 242" << std::endl
+                    << "OnStreamEnter;streamId: 32" << std::endl
                     << "OnTerm;term: 'More'" << std::endl
                     << "OnTerm;term: 'Cat'" << std::endl
                     << "OnTerm;term: 'Facts'" << std::endl
                     << "OnStreamExit" << std::endl
-                    << "OnStreamEnter;streamName: 'Body'" << std::endl
+                    << "OnStreamEnter;streamId: 48" << std::endl
                     << "OnTerm;term: 'The'" << std::endl
                     << "OnTerm;term: 'internet'" << std::endl
                     << "OnTerm;term: 'really'" << std::endl

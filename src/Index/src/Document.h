@@ -51,7 +51,7 @@ namespace BitFunnel
 
         // Opens a named stream for term additions. Subsequent calls to
         // AddTerm() will add terms to this stream.
-        virtual void OpenStream(char const * name) override;
+        virtual void OpenStream(Term::StreamId id) override;
 
         // Adds a term to the currently opened stream.
         virtual void AddTerm(char const * term) override;

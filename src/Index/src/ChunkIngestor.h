@@ -60,7 +60,7 @@ namespace BitFunnel
         //
         virtual void OnFileEnter() override;
         virtual void OnDocumentEnter(DocId id) override;
-        virtual void OnStreamEnter(char const * name) override;
+        virtual void OnStreamEnter(Term::StreamId id) override;
         virtual void OnTerm(char const * term) override;
         virtual void OnStreamExit() override;
         virtual void OnDocumentExit() override;

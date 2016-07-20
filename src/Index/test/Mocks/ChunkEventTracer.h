@@ -60,18 +60,16 @@ namespace BitFunnel
 
             void OnDocumentEnter(DocId id) override
             {
-                m_trace << "OnDocumentEnter;DocId: '"
+                m_trace << "OnDocumentEnter;DocId: "
                         << id
-                        << "'"
                         << std::endl;
             }
 
 
-            void OnStreamEnter(char const * streamName) override
+            void OnStreamEnter(Term::StreamId id) override
             {
-                m_trace << "OnStreamEnter;streamName: '"
-                        << streamName
-                        << "'"
+                m_trace << "OnStreamEnter;streamId: "
+                        << static_cast<uint64_t>(id)        // Cast so that operator<< won't treat uin8_t a char.
                         << std::endl;
             }
 
