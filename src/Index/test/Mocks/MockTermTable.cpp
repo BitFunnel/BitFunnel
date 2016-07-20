@@ -152,7 +152,8 @@ namespace BitFunnel
 
     void MockTermTable::AddPrivateRowTerm(Term term, Rank /*rank*/)
     {
-        AddTerm(term.GetRawHash(), -1, 1);
+        // TODO: 0 is arbitrary.
+        AddTerm(term.GetRawHash(), 0ull, 1);
     }
 
 

@@ -159,7 +159,8 @@ namespace BitFunnel
         void AddTerm(MockTermTable& termTable, char const * termText)
         {
             const Term term(CreateTestTerm(termText));
-            termTable.AddTerm(term.GetRawHash(), -1, 1);
+            // TODO: 0 is arbitrary.
+            termTable.AddTerm(term.GetRawHash(), 0, 1);
         }
 
 
