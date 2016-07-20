@@ -196,6 +196,7 @@ add_custom_target(TOPLEVEL SOURCES
 )
 
 set(ENV{GTEST_COLOR} 1)
+set(ENV{GTEST_CATCH_EXCEPTIONS} 0)
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
 
 # TODO: CMake is making this directory, which the tests require, but we should
