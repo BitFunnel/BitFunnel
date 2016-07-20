@@ -434,12 +434,13 @@ namespace BitFunnel
         }
 
         void GetAndHoldToken(ITokenManager& tokenManager,
-                             bool& hasRequested, bool& isExiting)
+                             std::atomic<bool>& hasRequested,
+                             std::atomic<bool>& isExiting)
         {
             const Token token = tokenManager.RequestToken();
             hasRequested = true;
-            // 47 is an arbitrary prime number.
-            std::this_thread::sleep_for(std::chrono::milliseconds(47));
+            // 17 is an arbitrary number.
+            std::this_thread::sleep_for(std::chrono::milliseconds(17));
             isExiting = true;
         }
 
@@ -448,14 +449,18 @@ namespace BitFunnel
         {
             TokenManager tokenManager;
 
-            bool thread1Requested = false;
-            bool thread1Exiting = false;
+            std::atomic<bool> thread1Requested;
+            thread1Requested = false;
+            std::atomic<bool> thread1Exiting;
+            thread1Exiting = false;
             std::thread t1(GetAndHoldToken,
                            std::ref(tokenManager),
                            std::ref(thread1Requested),
                            std::ref(thread1Exiting));
-            bool thread2Requested = false;
-            bool thread2Exiting = false;
+            std::atomic<bool> thread2Requested;
+            thread2Requested = false;
+            std::atomic<bool> thread2Exiting;
+            thread2Exiting = false;
             std::thread t2(GetAndHoldToken,
                            std::ref(tokenManager),
                            std::ref(thread2Requested),
@@ -463,16 +468,16 @@ namespace BitFunnel
 
             // Give threads a chance to get tokens. Check that threads have
             // started but not yet exited.
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            ASSERT_TRUE(thread1Requested);
-            ASSERT_TRUE(thread2Requested);
+            while (!thread1Requested) {}
+            while (!thread2Requested) {}
             ASSERT_TRUE(!thread1Exiting);
             ASSERT_TRUE(!thread2Exiting);
 
             tokenManager.Shutdown();
 
-            ASSERT_TRUE(thread1Exiting);
-            ASSERT_TRUE(thread2Exiting);
+            // TODO: add timeout.
+            while (!thread1Exiting) {}
+            while (!thread2Exiting) {}
 
             t1.join();
             t2.join();
