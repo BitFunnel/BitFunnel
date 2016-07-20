@@ -95,6 +95,7 @@ endmacro()
 # TODO: add missing .h files from recent change.
 
 set(BITFUNNEL_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/BitFunnelTypes.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Exceptions.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IFileManager.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IInterface.h
