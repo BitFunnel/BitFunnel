@@ -53,7 +53,7 @@ namespace BitFunnel
     {
         try
         {
-            // GetDocTable().Cleanup(m_buffer);  TODO?
+            GetDocTable().Cleanup(m_buffer);
             m_shard.ReleaseSliceBuffer(m_buffer);
         }
         catch (...)
