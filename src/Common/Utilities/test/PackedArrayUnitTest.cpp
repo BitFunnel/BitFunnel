@@ -36,24 +36,23 @@ namespace BitFunnel
         TEST(HeapAlloc, Trivial)
         {
             RunTest1(1, false);
-            RunTest1(5, false);
-            RunTest1(100, false);
+            RunTest1(2, false);
 
             // Try one run with mmap/VirtualAlloc().
-            RunTest1(100, true);
+            RunTest1(3, true);
         }
 
 
         TEST(VirtualAlloc, Trivial)
         {
-            RunTest1(100, true);
+            RunTest1(4, true);
         }
 
 
         TEST(RoundTrip, Trivial)
         {
             // First test that array round trips correctly without virtual alloc.
-            unsigned capacity = 1000;
+            unsigned capacity = 100;
             unsigned bitsPerEntry = 9;
             bool useVirtualAlloc = false;
 

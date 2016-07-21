@@ -81,9 +81,9 @@ namespace BitFunnel
         {
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 1, false);
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 0, false);
-            RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 100, false);
-            RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 90, false);
-            RunTest1<SimpleHashPolicy::SingleThreaded>(200, true, 200, false);
+            RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 10, false);
+            RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 9, false);
+            RunTest1<SimpleHashPolicy::SingleThreaded>(200, true, 20, false);
         }
 
 
@@ -91,9 +91,9 @@ namespace BitFunnel
         {
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 1, true);
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 0, true);
-            RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 100, true);
-            RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 90, true);
-            RunTest1<SimpleHashPolicy::SingleThreaded>(200, true, 200, true);
+            RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 10, true);
+            RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 9, true);
+            RunTest1<SimpleHashPolicy::SingleThreaded>(200, true, 20, true);
         }
 
 
@@ -101,14 +101,14 @@ namespace BitFunnel
         {
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 1, false);
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 0, false);
-            RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 100, false);
-            RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 90, false);
+            RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 10, false);
+            RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 9, false);
 
             ThrowingLogger* logger = new ThrowingLogger();
             Logging::RegisterLogger(logger);
             try
             {
-                RunTest1<SimpleHashPolicy::Threadsafe>(200, true, 200, true);
+                RunTest1<SimpleHashPolicy::Threadsafe>(200, true, 20, true);
                 ADD_FAILURE();
             }
             catch (...)
@@ -123,14 +123,14 @@ namespace BitFunnel
         {
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 1, true);
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 0, true);
-            RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 100, true);
-            RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 90, true);
+            RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 10, true);
+            RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 9, true);
 
             ThrowingLogger* logger = new ThrowingLogger();
             Logging::RegisterLogger(logger);
             try
             {
-                RunTest1<SimpleHashPolicy::Threadsafe>(200, true, 200, true);
+                RunTest1<SimpleHashPolicy::Threadsafe>(200, true, 20, true);
                 ADD_FAILURE();
             }
             catch (...)

@@ -267,8 +267,8 @@ namespace BitFunnel
             while (m_isRunning)
             {
                 TrackTokens();
-                // 51 is an aribtrary number
-                std::this_thread::sleep_for(std::chrono::milliseconds(51));
+                // 2 is an arbitrary number.
+                std::this_thread::sleep_for(std::chrono::milliseconds(2));
             }
         }
 
@@ -292,7 +292,7 @@ namespace BitFunnel
             // here and token manager checking the status of the tracker
             // happening on different threads and potentially one can be
             // a little faster than the other.
-            // 3 is an arbitrary prime number.
+            // 3 is an arbitrary number.
             std::this_thread::sleep_for(std::chrono::milliseconds(3));
 
             // The tracker should now be de-registered from the token manager,
@@ -412,8 +412,8 @@ namespace BitFunnel
             // number of executions possible per unit time, and that we should
             // really have a seperate test that's designed for overnight use
             // that can be more comprehensive.
-            // 104 is an arbitrary number that's > 2x 15.
-            std::this_thread::sleep_for(std::chrono::milliseconds(104));
+            // 5 is an arbitrary number that's > 2x 2.
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
             isRunning = false;
             tokenDistributor.Stop();
@@ -439,8 +439,8 @@ namespace BitFunnel
         {
             const Token token = tokenManager.RequestToken();
             hasRequested = true;
-            // 17 is an arbitrary number.
-            std::this_thread::sleep_for(std::chrono::milliseconds(17));
+            // 2 is an arbitrary number.
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
             isExiting = true;
         }
 
