@@ -130,8 +130,7 @@ namespace BitFunnel
                                                      i % c_sliceCapacity,
                                                      docId);
 
-                // TODO: fix this after docId is implemented.
-                // EXPECT_EQ(handle.GetDocId(), docId);
+                EXPECT_EQ(handle.GetDocId(), docId);
                 EXPECT_EQ(handle.GetIndex(), i % c_sliceCapacity);
                 EXPECT_EQ(handle.GetSlice(), currentSlice);
 
@@ -209,8 +208,7 @@ namespace BitFunnel
 
                 currentSlice->CommitDocument();
 
-                // TODO: restore after DocId is implemented.
-                // EXPECT_EQ(handle.GetDocId(), docId);
+                EXPECT_EQ(handle.GetDocId(), docId);
                 EXPECT_EQ(handle.GetIndex(), i % c_sliceCapacity);
                 EXPECT_EQ(handle.GetSlice(), currentSlice);
 

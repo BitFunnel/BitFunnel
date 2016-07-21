@@ -132,7 +132,8 @@ namespace BitFunnel
 
     DocId DocumentHandle::GetDocId() const
     {
-        throw NotImplemented();
+        return m_slice->GetDocTable().GetDocId(m_slice->GetSliceBuffer(),
+                                               m_index);
     }
 
 
