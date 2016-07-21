@@ -5,7 +5,7 @@
 #include "DocTableDescriptor.h"
 #include "DocumentDataSchema.h"
 #include "IndexUtils.h"
-#include "Mocks/EmptyTermTable.h"
+#include "EmptyTermTable.h"
 #include "Shard.h"
 
 namespace BitFunnel

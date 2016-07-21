@@ -31,7 +31,7 @@
 #include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/TermInfo.h"
-#include "Mocks/EmptyTermTable.h"
+#include "EmptyTermTable.h"
 #include "Random.h"
 #include "Rounding.h"
 #include "RowTableDescriptor.h"

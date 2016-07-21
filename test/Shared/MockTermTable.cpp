@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
-#include "gtest/gtest.h"
-
 #include "BitFunnel/BitFunnelTypes.h"  // For ShardId.
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IFactSet.h"
@@ -30,6 +27,7 @@
 #include "BitFunnel/PackedTermInfo.h"
 #include "BitFunnel/RowId.h"  // For RowIndex.
 #include "BitFunnel/Stream.h"
+#include "LoggerInterfaces/Logging.h"
 #include "MockTermTable.h"
 
 
@@ -94,7 +92,8 @@ namespace BitFunnel
 
     RowId MockTermTable::GetRowIdForFact(size_t rowOffset) const
     {
-        EXPECT_LT(rowOffset, m_factsCount);
+        LogAssertB(rowOffset < m_factsCount,
+                   "Fact rowId overflow.");
         return RowId(m_shard, 0, rowOffset);
     }
 
@@ -113,8 +112,9 @@ namespace BitFunnel
                                 size_t /*rowIdOffset*/,
                                 size_t rowIdLength)
     {
-        EXPECT_EQ(m_entries.find(hash), m_entries.end());
-        EXPECT_EQ(rowIdLength, 1u);
+        LogAssertB(m_entries.find(hash) == m_entries.end(),
+                   "Adding duplicate term.");
+        LogAssertB(rowIdLength == 1u, "Only private rows supported.");
 
         Rank rank = 0;
         m_rowIds.push_back(RowId(m_shard,
@@ -167,7 +167,8 @@ namespace BitFunnel
         else
         {
             auto it = m_entries.find(term.GetRawHash());
-            EXPECT_NE(it, m_entries.end());
+            LogAssertB(it != m_entries.end(),
+                       "Term not found.");
             return it->second;
         }
     }

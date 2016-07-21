@@ -7,10 +7,7 @@ set(CPPFILES
     DocumentDataSchemaUnitTest.cpp
     DocumentHandleUnitTest.cpp
     DocumentLengthHistogramUnitTest.cpp
-    IndexUtils.cpp
     IndexUtilsUnitTest.cpp
-    Mocks/EmptyTermTable.cpp
-    Mocks/MockTermTable.cpp
     RowTableDescriptorUnitTest.cpp
     ShardUnitTest.cpp
     SliceUnitTest.cpp
@@ -24,10 +21,6 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
-    IndexUtils.h
-    Mocks/ChunkEventTracer.h
-    Mocks/EmptyTermTable.h
-    Mocks/MockTermTable.h
     TrackingSliceBufferAllocator.h
 )
 
@@ -42,12 +35,15 @@ COMBINE_FILE_LISTS()
 # Unit tests are allowed to access private headers of the library they test.
 include_directories(${CMAKE_SOURCE_DIR}/src/Index/src)
 
+# TODO: fix this hack.
+include_directories(${CMAKE_SOURCE_DIR}/test/Shared)
+
 add_executable(IndexTest ${CPPFILES} ${PRIVATE_HFILES} ${PUBLIC_HFILES})
 set_property(TARGET IndexTest PROPERTY FOLDER "src/Index")
 set_property(TARGET IndexTest PROPERTY PROJECT_LABEL "Test")
 
 # NOTE: The ordering Utilities-Index is important for XCode. If you reverse
 # Utilities and Index, we will get linker errors.
-target_link_libraries (IndexTest CsvTsv Utilities Index CsvTsv Utilities gtest gtest_main)
+target_link_libraries (IndexTest CsvTsv Utilities Index CsvTsv Utilities TestShared gtest gtest_main)
 
 add_test(NAME IndexTest COMMAND IndexTest)

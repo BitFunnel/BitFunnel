@@ -34,7 +34,7 @@
 #include "BitFunnel/Row.h"
 #include "BitFunnel/RowId.h"
 #include "DocumentDataSchema.h"
-#include "Mocks/EmptyTermTable.h"
+#include "EmptyTermTable.h"
 #include "IRecycler.h"
 #include "ChunkTaskProcessor.h"
 #include "Recycler.h"

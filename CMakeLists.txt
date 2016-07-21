@@ -178,6 +178,7 @@ enable_testing()
 # Libraries and executables.
 #
 add_subdirectory(src)
+add_subdirectory(test/Shared)
 add_subdirectory(tools/StatisticsBuilder)
 
 add_custom_target(TOPLEVEL SOURCES

@@ -34,7 +34,7 @@
 #include "Ingestor.h"
 #include "IRecycler.h"
 #include "ISliceBufferAllocator.h"
-#include "Mocks/EmptyTermTable.h"
+#include "EmptyTermTable.h"
 #include "Recycler.h"
 #include "Shard.h"
 #include "Slice.h"
