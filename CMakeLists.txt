@@ -178,13 +178,7 @@ enable_testing()
 # Libraries and executables.
 #
 add_subdirectory(src)
-# add_subdirectory(src/Common/CmdLineParser)
-# add_subdirectory(src/Common/CsvTsv)
-# add_subdirectory(src/Common/Utilities)
-# add_subdirectory(src/Index)
-
 add_subdirectory(tools/StatisticsBuilder)
-
 
 add_custom_target(TOPLEVEL SOURCES
 #  Configure_Make.bat

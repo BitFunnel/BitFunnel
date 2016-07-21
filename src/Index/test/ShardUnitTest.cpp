@@ -30,6 +30,7 @@
 #include "BitFunnel/Row.h"
 #include "BitFunnel/TermInfo.h"
 #include "DocumentDataSchema.h"
+#include "IndexUtils.h"
 #include "Ingestor.h"
 #include "IRecycler.h"
 #include "ISliceBufferAllocator.h"
@@ -45,16 +46,6 @@ namespace BitFunnel
     namespace ShardUnitTest
     {
         const size_t c_blockAllocatorBlockCount = 10;
-
-        // TODO: move this duplicated code into a shared file for tests.
-        size_t GetBufferSize(DocIndex capacity,
-                             std::vector<RowIndex> const & rowCounts,
-                             IDocumentDataSchema const & schema)
-        {
-            EmptyTermTable termTable(rowCounts);
-            return Shard::InitializeDescriptors(nullptr, capacity, schema, termTable);
-        }
-
 
         void TestSliceBuffers(Shard const & shard, std::vector<Slice*> const & allocatedSlices)
         {
@@ -87,7 +78,7 @@ namespace BitFunnel
                 termTable(new EmptyTermTable(rowCounts));
 
             static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
-            const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, rowCounts, schema);
+            const size_t sliceBufferSize = GetEmptyTermTableBufferSize(c_sliceCapacity, rowCounts, schema);
 
             std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
                 new TrackingSliceBufferAllocator(sliceBufferSize));
@@ -165,7 +156,7 @@ namespace BitFunnel
                 termTable(new EmptyTermTable(rowCounts));
 
             static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
-            const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, rowCounts, schema);
+            const size_t sliceBufferSize = GetEmptyTermTableBufferSize(c_sliceCapacity, rowCounts, schema);
 
             std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
                 new TrackingSliceBufferAllocator(sliceBufferSize));
@@ -267,47 +258,6 @@ namespace BitFunnel
             ingestor->Shutdown();
             recycler->Shutdown();
         }
-
-
-    //     TEST(BufferSizeTest, Trivial)
-    //     {
-    //         static const DocIndex c_capacityQuanta = 4096;
-    //         static const size_t c_sizeOfSlicePtr = sizeof(void*);
-    //         DocumentDataSchema schema;
-    //         schema.RegisterVariableSizeBlob();
-    //         schema.RegisterFixedSizeBlob(10);
-
-    //         {
-    //             // When there are no rows, buffer size is driven only by DocTable.
-    //             const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + c_sizeOfSlicePtr;
-    //             EXPECT_EQ(GetBufferSize(c_capacityQuanta * 1, { 0, 0, 0, 0, 0, 0, 0 }, schema), expectedBufferSize);
-    //         }
-
-    //         {
-    //             // 1 row at rank 0.
-    //             const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + 4096 / 8 + c_sizeOfSlicePtr;
-    //             EXPECT_EQ(GetBufferSize(c_capacityQuanta * 1, { 1, 0, 0, 0, 0, 0, 0 }, schema), expectedBufferSize);
-    //         }
-
-    //         {
-    //             // 10 row at rank 0.
-    //             const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + 4096 / 8 * 10 + c_sizeOfSlicePtr;
-    //             EXPECT_EQ(GetBufferSize(c_capacityQuanta * 1, { 10, 0, 0, 0, 0, 0, 0 }, schema), expectedBufferSize);
-    //         }
-
-    //         {
-    //             // 1 row at rank 0, 10 rows at rank 3.
-    //             const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 1, schema) + 4096 / 8 + 4096 / 8 / 8 * 10 + c_sizeOfSlicePtr;
-    //             EXPECT_EQ(GetBufferSize(c_capacityQuanta * 1, { 1, 0, 0, 10, 0, 0, 0 }, schema), expectedBufferSize);
-    //         }
-
-    //         {
-    //             // 20 rows at rank 6.
-    //             const size_t expectedBufferSize = DocTableDescriptor::GetBufferSize(c_capacityQuanta * 2, schema) + 2 * 4096 / 8 / 64 * 20 + c_sizeOfSlicePtr;
-    //             EXPECT_EQ(GetBufferSize(c_capacityQuanta * 2, { 0, 0, 0, 0, 0, 0, 20 }, schema), expectedBufferSize);
-    //         }
-    //     }
-
 
     //     TEST(CapacityForBufferSizeTest, Trivial)
     //     {

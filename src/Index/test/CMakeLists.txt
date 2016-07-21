@@ -7,6 +7,8 @@ set(CPPFILES
     DocumentDataSchemaUnitTest.cpp
     DocumentHandleUnitTest.cpp
     DocumentLengthHistogramUnitTest.cpp
+    IndexUtils.cpp
+    IndexUtilsUnitTest.cpp
     Mocks/EmptyTermTable.cpp
     Mocks/MockTermTable.cpp
     RowTableDescriptorUnitTest.cpp
@@ -22,6 +24,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    IndexUtils.h
     Mocks/ChunkEventTracer.h
     Mocks/EmptyTermTable.h
     Mocks/MockTermTable.h
@@ -38,7 +41,6 @@ COMBINE_FILE_LISTS()
 
 # Unit tests are allowed to access private headers of the library they test.
 include_directories(${CMAKE_SOURCE_DIR}/src/Index/src)
-
 
 add_executable(IndexTest ${CPPFILES} ${PRIVATE_HFILES} ${PUBLIC_HFILES})
 set_property(TARGET IndexTest PROPERTY FOLDER "src/Index")

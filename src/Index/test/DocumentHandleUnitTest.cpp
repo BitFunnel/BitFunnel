@@ -33,7 +33,7 @@
 #include "BitFunnel/TermInfo.h"
 #include "DocumentDataSchema.h"
 #include "DocumentHandleInternal.h"
-// #include "IndexWrapper.h"
+#include "IndexUtils.h"
 #include "Ingestor.h"
 #include "IRecycler.h"
 #include "Mocks/MockTermTable.h"
@@ -46,20 +46,6 @@ namespace BitFunnel
 {
     namespace DocumentHandleUnitTest
     {
-        // TODO: move this duplicated code into a shared file for tests.
-        // WARNING: must be called after Terms and Facts are added to termTable
-        // in order for rowCount to be correct.
-        size_t GetBufferSize(DocIndex capacity,
-                             IDocumentDataSchema const & schema,
-                             ITermTable const & termTable)
-        {
-            return Shard::InitializeDescriptors(nullptr,
-                                                capacity,
-                                                schema,
-                                                termTable);
-        }
-
-
         TEST(DocumentHandle,Trivial)
         {
             static Slice * const c_anySlice = reinterpret_cast<Slice*>(123);
