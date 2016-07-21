@@ -24,6 +24,7 @@
 #include <cstring>
 #include <iostream>
 
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Utilities/StreamUtilities.h"
 #include "DocTableDescriptor.h"
 #include "LoggerInterfaces/Logging.h"
@@ -250,7 +251,7 @@ namespace BitFunnel
         // Make sure it hasn't been allocated before.
         if (blobPtr.m_data != nullptr)
         {
-            throw std::runtime_error("Blob has already been allocated");
+            throw FatalError("Blob has already been allocated");
         }
 
         blobPtr.m_data = malloc(byteCount);

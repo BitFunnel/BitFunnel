@@ -21,8 +21,7 @@
 // THE SOFTWARE.
 
 
-#include <stdexcept>
-
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/PackedTermInfo.h"
 #include "BitFunnel/Row.h"  // For c_maxRankValue.
 #include "BitFunnel/RowId.h"
@@ -62,25 +61,25 @@ namespace BitFunnel
 
     void EmptyTermTable::Write(std::ostream& /* stream */) const
     {
-        throw std::runtime_error("Not implemented");
+        throw NotImplemented();
     }
 
 
     void EmptyTermTable::AddRowId(RowId /* id */)
     {
-        throw std::runtime_error("Not implemented");
+        throw NotImplemented();
     }
 
 
     uint32_t EmptyTermTable::GetRowIdCount() const
     {
-        throw std::runtime_error("Not implemented");
+        throw NotImplemented();
     }
 
 
     RowId EmptyTermTable::GetRowId(size_t /* rowOffset */) const
     {
-        throw std::runtime_error("Not implemented");
+        throw NotImplemented();
     }
 
 
@@ -88,7 +87,7 @@ namespace BitFunnel
                                         size_t /* rowOffset */,
                                         size_t /* variant */)  const
     {
-        throw std::runtime_error("Not implemented");
+        throw NotImplemented();
     }
 
 
@@ -108,7 +107,7 @@ namespace BitFunnel
                                  size_t /* rowIdOffset */,
                                  size_t /* rowIdLength */)
     {
-        throw std::runtime_error("Not implemented");
+        throw NotImplemented();
     }
 
 
@@ -119,7 +118,7 @@ namespace BitFunnel
     //                                   unsigned /* rowIdOffset */,
     //                                   unsigned /* rowIdLength */)
     // {
-    //     throw std::runtime_error("Not implemented");
+    //     throw NotImplemented();
     // }
 
 
@@ -127,13 +126,13 @@ namespace BitFunnel
                                          size_t /* rowCount */,
                                          size_t /* sharedRowCount */)
     {
-        throw std::runtime_error("Not implemented");
+        throw NotImplemented();
     }
 
 
     size_t EmptyTermTable::GetMutableFactRowCount(Rank /* rank */) const
     {
-        throw std::runtime_error("Not implemented");
+        throw NotImplemented();
     }
 
 
@@ -150,7 +149,7 @@ namespace BitFunnel
         }
         else
         {
-            throw std::runtime_error("Not implemented");
+            throw NotImplemented();
         }
     }
 }

@@ -265,7 +265,7 @@ namespace BitFunnel
 
             if (!slice.IsExpired())
             {
-                throw std::runtime_error("Slice being recycled has not been fully expired");
+                throw RecoverableError("Slice being recycled has not been fully expired");
             }
 
             std::vector<void*>* const newSlices = new std::vector<void*>();
@@ -281,7 +281,7 @@ namespace BitFunnel
 
             if (m_sliceBuffers.load()->size() != newSlices->size() + 1)
             {
-                throw std::runtime_error("Slice buffer to be removed is not found in the active slice buffers list");
+                throw RecoverableError("Slice buffer to be removed is not found in the active slice buffers list");
             }
 
             newSliceCount = newSlices->size();

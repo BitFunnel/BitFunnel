@@ -21,9 +21,9 @@
 // THE SOFTWARE.
 
 
-#include <exception>
 #include <memory>
 
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/IBlockAllocator.h"
 #include "BlockAllocator.h"
@@ -84,7 +84,7 @@ namespace BitFunnel
 
         if (m_freeListHead == nullptr)
         {
-            throw std::runtime_error("Out of memory");
+            throw FatalError("Out of memory");
         }
 
         uint64_t * block = m_freeListHead;

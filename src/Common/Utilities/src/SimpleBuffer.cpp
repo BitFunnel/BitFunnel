@@ -7,8 +7,7 @@
 #include <sys/mman.h>  // For mmap/munmap.
 #endif
 
-#include <stdexcept>
-
+#include "BitFunnel/Exceptions.h"
 #include "LoggerInterfaces/Logging.h"
 #include "SimpleBuffer.h"
 
@@ -66,8 +65,7 @@ namespace BitFunnel
                 errorMessage << "AlignedBuffer Failed to mmap: " <<
                     std::strerror(errno) <<
                     std::endl;
-                // TODO: replace this with BitFunnel specific exception.
-                throw std::runtime_error(errorMessage.str());
+                throw FatalError(errorMessage.str());
             }
 #endif
             m_capacity = capacity;
@@ -95,8 +93,7 @@ namespace BitFunnel
                 errorMessage << "AlignedBuffer Failed to mmap: " <<
                     std::strerror(errno) <<
                     std::endl;
-                // TODO: replace this with BitFunnel-specific exception
-                throw std::runtime_error(errorMessage.str());
+                throw RecoverableError(errorMessage.str());
             }
 #endif
             }

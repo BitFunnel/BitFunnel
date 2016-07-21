@@ -22,9 +22,10 @@
 
 
 #include <cstring>
-#include <stdexcept>
+
 
 #include "AlignedBuffer.h"
+#include "BitFunnel/Exceptions.h"
 #include "LoggerInterfaces/Logging.h"
 
 #ifdef BITFUNNEL_PLATFORM_WINDOWS
@@ -68,9 +69,7 @@ namespace BitFunnel
             errorMessage << "AlignedBuffer Failed to mmap: "
                          << std::strerror(errno)
                          << std::endl;
-            // TODO: replace this with BitFunnel specific error when that gets
-            // committed.
-            throw std::runtime_error(errorMessage.str());
+            throw FatalError(errorMessage.str());
         }
         m_alignedBuffer = m_rawBuffer;
 #endif
@@ -89,9 +88,7 @@ namespace BitFunnel
                 errorMessage << "AlignedBuffer Failed to mmap: "
                              << std::strerror(errno)
                              << std::endl;
-                // TODO: replace this with BitFunnel specific error when that gets
-                // committed.
-                throw std::runtime_error(errorMessage.str());
+                throw RecoverableError(errorMessage.str());
             }
 #endif
         }
