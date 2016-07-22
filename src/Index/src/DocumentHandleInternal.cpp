@@ -182,6 +182,12 @@ namespace BitFunnel
 
     void DocumentHandleInternal::Activate()
     {
-        throw NotImplemented();
+        const RowId softDeletedRowId =
+            m_slice->GetShard().GetSoftDeletedRowId();
+        RowTableDescriptor const & rowTable =
+            m_slice->GetRowTable(softDeletedRowId.GetRank());
+        rowTable.SetBit(m_slice->GetSliceBuffer(),
+                        softDeletedRowId.GetIndex(),
+                        m_index);
     }
 }

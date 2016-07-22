@@ -95,6 +95,9 @@ namespace BitFunnel
 
         DocumentHandleInternal handle = m_shards[0]->AllocateDocument();
         document.Ingest(handle);
+
+        handle.Activate();
+        handle.GetSlice()->CommitDocument();
     }
 
 
