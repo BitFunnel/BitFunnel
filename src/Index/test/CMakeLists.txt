@@ -1,16 +1,16 @@
 # BitFunnel/src/Index/test
 
 set(CPPFILES
-    ChunkReaderUnitTest.cpp
-    ChunkTaskProcessorUnitTest.cpp
-    DocTableDescriptorUnitTest.cpp
-    DocumentDataSchemaUnitTest.cpp
-    DocumentHandleUnitTest.cpp
-    DocumentLengthHistogramUnitTest.cpp
-    IndexUtilsUnitTest.cpp
-    RowTableDescriptorUnitTest.cpp
-    ShardUnitTest.cpp
-    SliceUnitTest.cpp
+    ChunkReaderTest.cpp
+    ChunkTaskProcessorTest.cpp
+    DocTableDescriptorTest.cpp
+    DocumentDataSchemaTest.cpp
+    DocumentHandleTest.cpp
+    DocumentLengthHistogramTest.cpp
+    IndexUtilsTest.cpp
+    RowTableDescriptorTest.cpp
+    ShardTest.cpp
+    SliceTest.cpp
     TrackingSliceBufferAllocator.cpp
 )
 

@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "CmdLineParserUnitTest.h"
+#include "CmdLineParserTest.h"
 
 namespace CmdLine
 {
-    void CmdLineParserUnitTest::InitializeCases()
+    void CmdLineParserTest::InitializeCases()
     {
         AddCase("required",
                 "Expected <p1>.\n"

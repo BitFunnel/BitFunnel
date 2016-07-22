@@ -1,12 +1,12 @@
 # BitFunnel/src/Common/CmdLineParser/test
 
 set(CPPFILES
-    AnswerResponseUnitTestBase.cpp
-    AnswerResponseUnitTestBase.h
+    AnswerResponseTestBase.cpp
+    AnswerResponseTestBase.h
     CMakeLists.txt
     CmdLineParserCases.cpp
-    CmdLineParserUnitTest.cpp
-    CmdLineParserUnitTest.h
+    CmdLineParserTest.cpp
+    CmdLineParserTest.h
     Main.cpp
 )
 

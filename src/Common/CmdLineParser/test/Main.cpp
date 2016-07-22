@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-#include "CmdLineParserUnitTest.h"
+#include "CmdLineParserTest.h"
 #include "CmdLineParser/CmdLineParser.h"
 #include "gtest/gtest.h"
 
@@ -35,7 +35,7 @@ bool g_createBaseline = false;
 
 TEST(CmdLineParser, AllTests)
 {
-    CmdLineParserUnitTest test(g_createBaseline);
+    CmdLineParserTest test(g_createBaseline);
     test.RunAllCases(g_createBaseline);
 }
 
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
         g_createBaseline = createBaseline;
 
         int dummyArgc = 1;
-        char* dummyArgv[] = { const_cast<char*>("CmdLineParserUnitTest.exe") };
+        char* dummyArgv[] = { const_cast<char*>("CmdLineParserTest.exe") };
 
         ::testing::InitGoogleTest(&dummyArgc, dummyArgv);
         success = RUN_ALL_TESTS();

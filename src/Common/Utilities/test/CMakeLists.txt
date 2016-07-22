@@ -3,27 +3,27 @@
 # TODO: move ThrowingLogger to some shared folder?
 
 set(CPPFILES
-    Array2DFixedUnitTest.cpp
-    Array3DFixedUnitTest.cpp
-    Array2DUnitTest.cpp
-    BlockAllocatorUnitTest.cpp
-    BlockingQueueUnitTest.cpp
+    Array2DFixedTest.cpp
+    Array3DFixedTest.cpp
+    Array2DTest.cpp
+    BlockAllocatorTest.cpp
+    BlockingQueueTest.cpp
     ConstructorDestructorCounter.cpp
-    FileHeaderUnitTest.cpp
-    MurmurHashUnitTest.cpp
-    PackedArrayUnitTest.cpp
-    RandomUnitTest.cpp
-    RoundingUnitTest.cpp
-    SimpleHashSetUnitTest.cpp
-    SimpleHashTableUnitTest.cpp
-    StreamUtilitiesUnitTest.cpp
-    TaskDistributorUnitTest.cpp
-    # TermTableUnitTest.cpp
+    FileHeaderTest.cpp
+    MurmurHashTest.cpp
+    PackedArrayTest.cpp
+    RandomTest.cpp
+    RoundingTest.cpp
+    SimpleHashSetTest.cpp
+    SimpleHashTableTest.cpp
+    StreamUtilitiesTest.cpp
+    TaskDistributorTest.cpp
+    # TermTableTest.cpp
     ThrowingLogger.cpp
-    TokenManagerUnitTest.cpp
-    TokenTrackerUnitTest.cpp
-    TokenUnitTest.cpp
-    VersionUnitTest.cpp
+    TokenManagerTest.cpp
+    TokenTrackerTest.cpp
+    TokenTest.cpp
+    VersionTest.cpp
 )
 
 set(WINDOWS_CPPFILES
