@@ -51,7 +51,7 @@ namespace BitFunnel
 {
     namespace SliceUnitTest
     {
-        TEST(SliceAllocateCommitExpire, Trivial)
+        TEST(Slice, SliceAllocateCommit)
         {
             std::unique_ptr<IRecycler> recycler =
                 std::unique_ptr<IRecycler>(new Recycler());
@@ -183,7 +183,7 @@ namespace BitFunnel
         }
 
 
-        TEST(RefCountTest, Trivial)
+        TEST(Slice, RefCount)
         {
             static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
 
@@ -257,7 +257,7 @@ namespace BitFunnel
         }
 
 
-        TEST(BasicIntegration, Trivial)
+        TEST(Slice, BasicIntegration)
         {
             DocumentDataSchema schema;
 

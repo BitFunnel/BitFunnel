@@ -37,7 +37,7 @@ namespace BitFunnel
         // [(2^(n-1) + 2^n) / 2 - 100, (2^(n-1) + 2^n) / 2],
         // [(2^(n-1) + 2^n) / 2, (2^(n-1) + 2^n) / 2 + 100],
         // and [2^n - 100, 2^n],
-        TEST(RoundToNearestPowerOf2Test, Trivial)
+        TEST(Rounding, RoundToNearestPowerOf2Test)
         {
             const size_t c_one = static_cast<size_t>(1);
 

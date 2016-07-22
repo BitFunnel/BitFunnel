@@ -58,7 +58,7 @@ namespace BitFunnel
 
 
         //*********************************************************************
-        TEST(BlockingQueueUnitTest, Trivial)
+        TEST(BlockingQueue, ShortRandom)
         {
             RunTest1(30, 3, 15, 3, false);         // Lots of readers and writers.
             // RunTest1(100, 10, 869, 3, false);           // Reader:Writer ratio not integer.

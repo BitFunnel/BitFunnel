@@ -286,7 +286,7 @@ namespace BitFunnel
         }
 
 
-        TEST(BitVectorContents, Trivial)
+        TEST(RowTableDescriptor, BitVectorContents)
         {
             const RowIndex c_rowCount = 10;
             const DocIndex c_columnCount = Row::DocumentsInRank0Row(100);
@@ -369,7 +369,7 @@ namespace BitFunnel
         }
 
 
-        TEST(BufferSizeTest, Trivial)
+        TEST(RowTableDescriptor, BufferSize)
         {
             static const DocIndex c_capacityQuanta = Row::DocumentsInRank0Row(1);
 
@@ -384,7 +384,7 @@ namespace BitFunnel
         }
 
 
-        TEST(RowOffsetTest, Trivial)
+        TEST(RowTableDescriptor, RowOffsetTest)
         {
             {
                 // Rank 0.

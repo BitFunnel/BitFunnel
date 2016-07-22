@@ -31,7 +31,7 @@ namespace BitFunnel
     {
 
         //*********************************************************************
-        TEST(DocumentLengthHistogramUnitTest, Trivial)
+        TEST(DocumentLengthHistogram, Basic)
         {
             DocumentLengthHistogram testHistogram;
 

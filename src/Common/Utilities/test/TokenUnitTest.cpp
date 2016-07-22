@@ -110,7 +110,7 @@ namespace BitFunnel
 
         // Test which covers creation of tokens and verifies that tokens
         // callback their issuer at the end of their lifetime.
-        TEST(TokenBasicTest, Trivial)
+        TEST(Token, Basic)
         {
             TestTokenListener issuer;
 
@@ -176,7 +176,7 @@ namespace BitFunnel
         */
 
         // Test which verifies that copy is done by moving a token object.
-        TEST(TokenCopyTest, Trivial)
+        TEST(Token, Copy)
         {
             TestTokenListener issuer;
 

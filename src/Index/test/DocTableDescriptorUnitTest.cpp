@@ -82,7 +82,7 @@ namespace BitFunnel
         }
 
 
-        TEST(BasicTest, Trivial)
+        TEST(DocTableDescriptor, Basic)
         {
             static const DocIndex c_capacity = 1000;
             static const ptrdiff_t c_anyDocTableBufferOffset
@@ -246,7 +246,7 @@ namespace BitFunnel
         }
 
 
-        TEST(BufferSizeTest, Trivial)
+        TEST(DocTableDescriptor, BufferSize)
         {
             static const DocIndex c_capacity = 1000;
 

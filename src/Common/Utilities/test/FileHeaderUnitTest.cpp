@@ -32,7 +32,7 @@ namespace BitFunnel
 {
     namespace FileHeaderUnitTest
     {
-        TEST(Roundtrip, Trivial)
+        TEST(FileHeader, Roundtrip)
         {
             Version version(1, 1, 0);
             FileHeader fileHeader(version, "Hello World");

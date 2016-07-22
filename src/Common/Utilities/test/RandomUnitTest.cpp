@@ -34,13 +34,11 @@ namespace BitFunnel
 {
     namespace RandomUnitTest
     {
-        TEST(Dummy, Trivial)
+        TEST(Random, TrivialDummyTest)
         {
-            RandomInt<unsigned> random(0,
-                                       1,
-                                       std::numeric_limits<unsigned>::max());
+            RandomInt<unsigned>
+                random(0, 1, std::numeric_limits<unsigned>::max());
             EXPECT_GT(random(), 0u);
         }
     }
 }
-

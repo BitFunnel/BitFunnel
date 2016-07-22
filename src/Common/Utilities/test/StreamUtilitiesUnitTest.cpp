@@ -108,7 +108,7 @@ namespace BitFunnel
         }
 
 
-        TEST(RoundTripIInputStream, Trivial)
+        TEST(StreamUtilities, RoundTripIInputStream)
         {
             std::stringstream stream;
             StandardInputStream stdStream(stream);
@@ -117,7 +117,7 @@ namespace BitFunnel
         }
 
 
-        TEST(RoundTripStdStream, Trivial)
+        TEST(StreamUtilities, RoundTripStdStream)
         {
             std::stringstream stream;
 

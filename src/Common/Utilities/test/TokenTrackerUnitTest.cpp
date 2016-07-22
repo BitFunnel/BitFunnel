@@ -38,7 +38,7 @@ namespace BitFunnel
 {
     namespace TokenTrackerUnitTest
     {
-        TEST(TokenTrackerBasicTest, Trivial)
+        TEST(TokenTracker, Basic)
         {
             static const SerialNumber c_anyCutoffSerialNumber = 10;
             static_assert(c_anyCutoffSerialNumber > 1,
@@ -169,7 +169,7 @@ namespace BitFunnel
         }
 
 
-        TEST(TokenTrackerMultithreadedTest, Trivial)
+        TEST(TokenTracker, MultithreadedTest)
         {
             // We will create c_anyTotalTokenCount with serial numbers monotonically
             // increasing starting from 0. Out of all of them, we are interested in

@@ -32,7 +32,7 @@ namespace BitFunnel
 {
     namespace DocumentDataSchemaUnitTest
     {
-        TEST(BasicTest, Trivial)
+        TEST(DocumentDataSchema, Basic)
         {
             DocumentDataSchema schema;
             // static const unsigned s_sizeOfDocId(sizeof(DocId));

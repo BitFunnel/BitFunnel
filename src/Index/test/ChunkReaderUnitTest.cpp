@@ -58,7 +58,7 @@ namespace BitFunnel
 
         // Parse chunk with 1 document, 2 streams, and no terms in the first
         // stream.
-        TEST(ChunkReaderUnitTest, ZeroTermStream)
+        TEST(ChunkReader, ZeroTermStream)
         {
             std::vector<char> const zeroTermStream = ToCharVector(
                 // First document.
@@ -92,7 +92,7 @@ namespace BitFunnel
 
 
         // Parse chunk with 1 document, 2 streams, and 0 terms.
-        TEST(ChunkReaderUnitTest, ZeroTermDocument)
+        TEST(ChunkReader, ZeroTermDocument)
         {
             std::vector<char> const zeroTermDocument = ToCharVector(
                 // First docuement.
@@ -125,7 +125,7 @@ namespace BitFunnel
 
 
         // Parse a simple example chunk.
-        TEST(ChunkReaderUnitTest, SimpleChunk)
+        TEST(ChunkReader, SimpleChunk)
         {
             std::vector<char> const chunk = ToCharVector(
                 // First document

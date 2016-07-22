@@ -32,7 +32,7 @@ namespace BitFunnel
 {
     namespace VersionUnitTest
     {
-        TEST(Manual, Trivial)
+        TEST(Version, Basic)
         {
             Version version(1, 2, 3);
 

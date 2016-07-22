@@ -33,7 +33,7 @@ namespace BitFunnel
         void RunTest1(unsigned capacity, bool useVirtualAlloc);
 
 
-        TEST(HeapAlloc, Trivial)
+        TEST(PackedArray, HeapAlloc)
         {
             RunTest1(1, false);
             RunTest1(2, false);
@@ -43,13 +43,13 @@ namespace BitFunnel
         }
 
 
-        TEST(VirtualAlloc, Trivial)
+        TEST(PackedArray, VirtualAlloc)
         {
             RunTest1(4, true);
         }
 
 
-        TEST(RoundTrip, Trivial)
+        TEST(PackedArray, RoundTrip)
         {
             // First test that array round trips correctly without virtual alloc.
             unsigned capacity = 100;

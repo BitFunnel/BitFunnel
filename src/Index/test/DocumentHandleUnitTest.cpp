@@ -46,7 +46,7 @@ namespace BitFunnel
 {
     namespace DocumentHandleUnitTest
     {
-        TEST(DocumentHandle,Trivial)
+        TEST(DocumentHandle, Basic)
         {
             static Slice * const c_anySlice = reinterpret_cast<Slice*>(123);
             static const DocIndex c_anyDocIndex = 123;
@@ -64,7 +64,7 @@ namespace BitFunnel
         };
 
 
-        TEST(DocTableIntegration, Trivial)
+        TEST(DocumentHandle, DocTableIntegration)
         {
             DocumentDataSchema schema;
             const VariableSizeBlobId variableBlob =
@@ -240,7 +240,7 @@ namespace BitFunnel
         }
 
 
-        TEST(RowTableIntegration, Trivial)
+        TEST(DocumentHandle, RowTableIntegration)
         {
             DocumentDataSchema schema;
 
@@ -352,7 +352,7 @@ namespace BitFunnel
 
         // Test to verify that expiring the last document in a Slice, schedules it for
         // recycling.
-        TEST(ExpireTriggersRecycleTest, Trivial)
+        TEST(DocumentHandle, ExpireTriggersRecycle)
         {
             // Arbitrary amount of time to sleep in order to wait for Recycler.
             static const auto c_sleepTime = std::chrono::milliseconds(1);

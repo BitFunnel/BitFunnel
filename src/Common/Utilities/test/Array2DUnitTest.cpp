@@ -35,7 +35,7 @@ namespace BitFunnel
     {
 
 
-        TEST(Initialization, Trivial)
+        TEST(Array2D, Initialization)
         {
             ConstructorDestructorCounter::ClearCount();
 
@@ -56,7 +56,7 @@ namespace BitFunnel
         }
 
 
-        TEST(FieldAccess, Trivual)
+        TEST(Array2D, FieldAccess)
         {
             const unsigned size1 = 3;
             const unsigned size2 = 5;
@@ -83,7 +83,7 @@ namespace BitFunnel
         }
 
 
-        TEST(RoundTrip, Trivial)
+        TEST(Array2D, RoundTrip)
         {
             const unsigned size1 = 3;
             const unsigned size2 = 5;

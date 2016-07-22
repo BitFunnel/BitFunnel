@@ -89,7 +89,7 @@ namespace BitFunnel
         }
 
 
-        TEST(ChunkTaskProcessorUnitTest, Trivial)
+        TEST(ChunkTaskProcessor, Basic)
         {
             // TODO: What's the Bing style for lambda brace placement?
             RunTest({}, 1, [](ChunkTaskProcessor & processor)
@@ -101,7 +101,7 @@ namespace BitFunnel
         }
 
 
-        TEST(ChunkTaskProcessorUnitTest, TestBadTaskIds)
+        TEST(ChunkTaskProcessor, BadTaskIds)
         {
             const std::vector<std::string> filePaths { "fileThatDoesNotExist" };
             RunTest(filePaths, 3, [](ChunkTaskProcessor & processor) {

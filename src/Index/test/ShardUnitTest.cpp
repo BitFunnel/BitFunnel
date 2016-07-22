@@ -64,7 +64,7 @@ namespace BitFunnel
         }
 
 
-        TEST(BasicShardTest, Trivial)
+        TEST(Shard, Basic)
         {
             DocumentDataSchema schema;
 
@@ -142,7 +142,7 @@ namespace BitFunnel
         }
 
 
-        TEST(AddRemoveSliceTest, Trivial)
+        TEST(Shard, AddRemoveSlice)
         {
             DocumentDataSchema schema;
 
@@ -258,41 +258,5 @@ namespace BitFunnel
             ingestor->Shutdown();
             recycler->Shutdown();
         }
-
-    //     TEST(CapacityForBufferSizeTest, Trivial)
-    //     {
-    //         static const DocIndex c_capacityQuanta = 4096;
-    //         static const size_t c_sizeOfSlicePtr = sizeof(void*);
-    //         DocumentDataSchema schema;
-    //         schema.RegisterVariableSizeBlob();
-    //         schema.RegisterFixedSizeBlob(10);
-
-    //         // Size of the DocTable entry is 8 + 8 + 10, rounded up to power of 2 is 32.
-    //         // Min buffer size for DocTable is 32 * 4096 = 131072.
-
-    //         const std::vector<RowIndex> rowCounts = { 100, 0, 0, 200, 0, 0, 0 };
-    //         // 100 rows in rank 0 and 200 rows at rank 3 for 4096 documents make it
-    //         // 100 * 4096 / 8 + 200 / 8 * 4096 / 8 = 51200 + 12800 = 64000.
-
-    //         EmptyTermTable termTable(rowCounts);
-
-    //         const size_t progressiveBufferSize = 131072 + 64000;
-    //         const size_t minSliceBufferSize = progressiveBufferSize + c_sizeOfSlicePtr;
-
-    //         EXPECT_EQ(Shard::GetCapacityForByteSize(minSliceBufferSize, schema, termTable), c_capacityQuanta);
-
-    //         // Doubling the progressiveBufferSize is not enough to have 2 * c_capacityQuanta
-    //         // since it does not accomodate the space for Slice*
-    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 2, schema, termTable), c_capacityQuanta);
-    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 2 + c_sizeOfSlicePtr, schema, termTable), c_capacityQuanta * 2);
-
-    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 3, schema, termTable), c_capacityQuanta * 2);
-    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 3 + c_sizeOfSlicePtr, schema, termTable), c_capacityQuanta * 3);
-
-    //         // Same rule applies to any multiple of c_capacityQuanta.
-    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 123, schema, termTable), c_capacityQuanta * 122);
-    //         EXPECT_EQ(Shard::GetCapacityForByteSize(progressiveBufferSize * 123 + c_sizeOfSlicePtr, schema, termTable), c_capacityQuanta * 123);
-    //     }
-    // }
     }
 }

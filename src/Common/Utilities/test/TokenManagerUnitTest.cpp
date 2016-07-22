@@ -37,7 +37,7 @@ namespace BitFunnel
 {
     namespace TokenManagerUnitTest
     {
-        TEST(BasicTest, Trivial)
+        TEST(TokenManager, Basic)
         {
             TokenManager tokenManager;
 
@@ -53,7 +53,7 @@ namespace BitFunnel
         }
 
 
-        TEST(StartTrackerTest, Trivial)
+        TEST(TokenManager, StartTracker)
         {
             TokenManager tokenManager;
 
@@ -379,7 +379,7 @@ namespace BitFunnel
 
         // Test which verifies distribution of tokens and starting/stopping
         // token trackers.
-        TEST(TokenManagerWithTrackersTest, Trivial)
+        TEST(TokenManager, WithTrackersTest)
         {
             static const unsigned c_threadCount = 16;
             // static const unsigned c_testDuration = 5 * 1000; TODO
@@ -445,7 +445,7 @@ namespace BitFunnel
         }
 
 
-        TEST(ShutdownTest, Trivial)
+        TEST(TokenManager, Shutdown)
         {
             TokenManager tokenManager;
 

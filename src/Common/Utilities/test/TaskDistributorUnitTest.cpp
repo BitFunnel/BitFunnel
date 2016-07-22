@@ -70,7 +70,7 @@ namespace BitFunnel
         // TaskDistributorUnitTest
         //
         //*************************************************************************
-        TEST(TaskDistributorUnitTest, Comprehensive)
+        TEST(TaskDistributor, Basic)
         {
             RunTest1(NUM_TASKS, 0);
             RunTest1(NUM_TASKS, 3);

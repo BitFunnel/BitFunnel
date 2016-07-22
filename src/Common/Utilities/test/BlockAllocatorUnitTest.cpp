@@ -35,7 +35,7 @@ namespace BitFunnel
 {
     namespace BlockAllocatorUnitTest
     {
-        TEST(BasicTest, Trivial)
+        TEST(BlockAllocator, Trivial)
         {
             static const size_t c_blockSize = 8;
             static const size_t c_totalBlockCount = 3;
@@ -93,7 +93,7 @@ namespace BitFunnel
         }
 
 
-        TEST(RoundUpTest, Trivial)
+        TEST(BlockAllocator, RoundUp)
         {
             static const size_t c_blockSize = 3;
             static const size_t c_totalBlockCount = 4;
@@ -113,7 +113,7 @@ namespace BitFunnel
         }
 
 
-        TEST(ReleaseWrongBlockTest, Trivial)
+        TEST(BlockAllocator, ReleaseWrongBlock)
         {
             ThrowingLogger logger;
             Logging::RegisterLogger(&logger);

@@ -33,7 +33,7 @@ namespace BitFunnel
 {
     namespace Array3DFixedUnitTest
     {
-        TEST(Initialization, Trivial)
+        TEST(Array3DFixedUnitTest, Initialization)
         {
             ConstructorDestructorCounter::ClearCount();
 
@@ -52,7 +52,7 @@ namespace BitFunnel
         }
 
 
-        TEST(FieldAccess, Trivial)
+        TEST(Array3DFixed, FieldAccess)
         {
             const unsigned size1 = 3;
             const unsigned size2 = 5;
@@ -86,7 +86,7 @@ namespace BitFunnel
         }
 
 
-        TEST(RoundTrip, Trivial)
+        TEST(Array3DFixed, RoundTrip)
         {
             const unsigned size1 = 3;
             const unsigned size2 = 5;

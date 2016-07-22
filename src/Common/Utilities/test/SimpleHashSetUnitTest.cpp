@@ -48,7 +48,7 @@ namespace BitFunnel
                       bool useAllocator);
         static uint64_t Hash(uint64_t index);
 
-        TEST(HeapAllocations, Trivial)
+        TEST(SimpleHashSet, HeapAllocations)
         {
             RunTest1(200, false, 1, false);
             RunTest1(200, false, 0, false);
@@ -58,7 +58,7 @@ namespace BitFunnel
         }
 
 
-        TEST(ArenaAllocations, Trivial)
+        TEST(SimpleHashSet, ArenaAllocations)
         {
             RunTest1(200, false, 1, true);
             RunTest1(200, false, 0, true);

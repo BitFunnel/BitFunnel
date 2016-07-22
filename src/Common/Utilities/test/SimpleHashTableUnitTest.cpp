@@ -77,7 +77,7 @@ namespace BitFunnel
         };
 
 
-        TEST(HeapAllocSingleThreaded, Trivial)
+        TEST(SimpleHashTable, HeapAllocSingleThreaded)
         {
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 1, false);
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 0, false);
@@ -87,7 +87,7 @@ namespace BitFunnel
         }
 
 
-        TEST(ArenaAllocSingleThreaded, Trivial)
+        TEST(SimpleHashTable, ArenaAllocSingleThreaded)
         {
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 1, true);
             RunTest1<SimpleHashPolicy::SingleThreaded>(200, false, 0, true);
@@ -97,7 +97,7 @@ namespace BitFunnel
         }
 
 
-        TEST(HeapAllocThreadsafe, Trivial)
+        TEST(SimpleHashTable, HeapAllocThreadsafe)
         {
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 1, false);
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 0, false);
@@ -119,7 +119,7 @@ namespace BitFunnel
         }
 
 
-        TEST(ArenaAllocThreadsafe, Trivial)
+        TEST(SimpleHashTable, ArenaAllocThreadsafe)
         {
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 1, true);
             RunTest1<SimpleHashPolicy::Threadsafe>(200, false, 0, true);

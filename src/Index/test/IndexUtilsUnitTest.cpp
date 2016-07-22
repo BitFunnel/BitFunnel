@@ -12,7 +12,7 @@ namespace BitFunnel
 {
     namespace IndexUtilsUnitTest
     {
-        TEST(BufferSizeTest, Trivial)
+        TEST(GetBufferSize, Trivial)
         {
             static const DocIndex c_capacityQuanta = 4096;
             static const size_t c_sizeOfSlicePtr = sizeof(void*);
