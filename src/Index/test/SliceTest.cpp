@@ -260,6 +260,7 @@ namespace BitFunnel
         TEST(Slice, BasicIntegration)
         {
             DocumentDataSchema schema;
+            const VariableSizeBlobId varBlobId0 = schema.RegisterVariableSizeBlob();
 
             std::unique_ptr<IRecycler> recycler =
                 std::unique_ptr<IRecycler>(new Recycler());
@@ -319,7 +320,6 @@ namespace BitFunnel
             slice.GetDocTable().SetDocId(sliceBuffer, c_anyDocIndex, c_anyDocId);
             EXPECT_EQ(slice.GetDocTable().GetDocId(sliceBuffer, c_anyDocIndex), c_anyDocId);
 
-            const VariableSizeBlobId varBlobId0 = schema.RegisterVariableSizeBlob();
             void* blobValue = slice.GetDocTable().GetVariableSizeBlob(sliceBuffer, c_anyDocIndex, varBlobId0);
             EXPECT_EQ(blobValue, nullptr);
 

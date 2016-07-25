@@ -22,7 +22,6 @@
 
 
 #include <cstring>
-#include <iostream>
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Utilities/StreamUtilities.h"
