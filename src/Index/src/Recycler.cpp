@@ -21,9 +21,6 @@
 // THE SOFTWARE.
 
 
-#include <chrono> // Used for temporary blocking recycle.
-#include <thread> // Used for temporary blocking recycle.
-
 #include "BitFunnel/Token.h"
 #include "LoggerInterfaces/Logging.h"
 #include "Recycler.h"
@@ -45,9 +42,11 @@ namespace BitFunnel
     }
 
 
+    // Run until shutdown. When m_shutdown is flagged, run until queue is
+    // empty and then return.
     void Recycler::Run()
     {
-        while (!m_shutdown)
+        for(;;)
         {
             IRecyclable* item;
             if (!m_queue->TryDequeue(item))
@@ -59,17 +58,6 @@ namespace BitFunnel
             item->Recycle();
             delete item;
         }
-        // TODO: fix leak. Items inside destructing queue will get leaked.  The
-        // leak can be fixed by popping items off the queue here. However, the
-        // queue will need to be modified to make this work.  An alternative
-        // would be to try to dequeue items in Shutdown, but we still need to
-        // modify the queue to prevent new items from getting inserted in the
-        // queue.
-
-        // This is relatively unlikely to be a problem in practice because our
-        // model is to start a Recycler when the system starts and run it
-        // forever. If that changes or people want to use this as a stand-alone
-        // module, this should be fixed.
     }
 
     void Recycler::ScheduleRecyling(std::unique_ptr<IRecyclable>& resource)

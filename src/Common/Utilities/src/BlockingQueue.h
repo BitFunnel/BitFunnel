@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
 #pragma once
 
 #include <atomic>
@@ -46,6 +47,7 @@ namespace BitFunnel
         // Destroys the BlockingQueue and its associated events and semaphores.
         ~BlockingQueue();
 
+        // Block until all items are dequeued.
         void Shutdown();
 
         // Returns true if item is successfully enqueued.
@@ -55,7 +57,7 @@ namespace BitFunnel
 
         // Blocks the caller until a value is available or the queue is
         // shutdown. Returns true if an item was successfully dequeued. Returns
-        // false if the timeout expired or the queue was shut down.
+        // false if queue was shut down.
         bool TryDequeue(T& value);
 
     private:
@@ -64,6 +66,7 @@ namespace BitFunnel
         std::mutex m_lock;
 
         size_t m_capacity;
+        std::atomic<bool> m_finished;
         std::atomic<bool> m_shutdown;
 
         std::deque<T> m_queue;
@@ -78,6 +81,7 @@ namespace BitFunnel
     template <typename T>
     BlockingQueue<T>::BlockingQueue(unsigned capacity)
         : m_capacity(capacity),
+          m_finished(false),
           m_shutdown(false)
     {
     }
@@ -86,7 +90,6 @@ namespace BitFunnel
     template <typename T>
     BlockingQueue<T>::~BlockingQueue()
     {
-        Shutdown();
     }
 
 
@@ -99,6 +102,7 @@ namespace BitFunnel
         }
         m_dequeueCond.notify_all();
         m_enqueueCond.notify_all();
+        while (!m_finished) {}
     }
 
 
@@ -131,11 +135,9 @@ namespace BitFunnel
         {
             m_dequeueCond.wait(lock);
         }
-        // TODO: consider making this condition m_shutdown && m_queue.empty().
-        // Then, when the queue has recv'd a shutdown, no more items can be
-        // enqueued, but the queue will still drain out correctly.
-        if (m_shutdown)
+        if (m_shutdown && m_queue.empty())
         {
+            m_finished = true;
             return false;
         }
         value = m_queue.front();
