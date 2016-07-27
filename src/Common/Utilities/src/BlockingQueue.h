@@ -68,6 +68,12 @@ namespace BitFunnel
         std::mutex m_lock;
 
         size_t m_capacity;
+
+        // m_shutdown tracks whether or not Shutdown has been called.
+        // m_finished tracks whether if both Shutdown has been called and the
+        // queue is empty. The queue is blocked from taking items when Shutdown
+        // is called, so it should be impossible for the queue to go from empty
+        // to non-empty while m_shutdown is true.
         std::atomic<bool> m_finished;
         std::atomic<bool> m_shutdown;
 
