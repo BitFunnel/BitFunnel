@@ -55,7 +55,7 @@ namespace BitFunnel
         {
             std::unique_ptr<IRecycler> recycler =
                 std::unique_ptr<IRecycler>(new Recycler());
-
+            auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
             static const std::vector<RowIndex>
                 rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
             std::shared_ptr<ITermTable const>
@@ -149,13 +149,8 @@ namespace BitFunnel
             //     EXPECT_FALSE(slice.ExpireDocument());
             // }
 
-
-            // DocumentDataSchema schema;
-            // static const size_t c_blockAllocatorBlockCount = 32; // TODO: what should this value be?
-            // IndexWrapper index(c_sliceCapacity, termTable, schema, c_blockAllocatorBlockCount);
-            // Shard& shard = index.GetShard();
-
             ingestor->Shutdown();
+            recycler->Shutdown();
         }
 
 

@@ -28,6 +28,8 @@
 #include <deque>
 #include <mutex>
 
+#include "LoggerInterfaces/Logging.h"
+
 namespace BitFunnel
 {
     //*************************************************************************
@@ -90,6 +92,9 @@ namespace BitFunnel
     template <typename T>
     BlockingQueue<T>::~BlockingQueue()
     {
+        // m_finished implies m_shutdown.
+        LogAssertB(m_shutdown, "Queue destructed without calling shutdown.")
+        LogAssertB(m_finished, "Queue destructed without finishing shutdown.")
     }
 
 
@@ -99,6 +104,10 @@ namespace BitFunnel
         {
             std::lock_guard<std::mutex> lock(m_lock);
             m_shutdown = true;
+            if (m_queue.empty())
+            {
+                m_finished = true;
+            }
         }
         m_dequeueCond.notify_all();
         m_enqueueCond.notify_all();
@@ -143,6 +152,10 @@ namespace BitFunnel
         value = m_queue.front();
         m_queue.pop_front();
         m_enqueueCond.notify_one();
+        if (m_shutdown && m_queue.empty())
+        {
+            m_finished = true;
+        }
         return true;
     }
 }

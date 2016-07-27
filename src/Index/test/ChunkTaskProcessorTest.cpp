@@ -22,6 +22,7 @@
 
 
 #include <functional>
+#include <future>
 #include <memory>
 #include <string>
 #include <vector>
@@ -61,6 +62,7 @@ namespace BitFunnel
 
             std::unique_ptr<IRecycler> recycler =
                 std::unique_ptr<IRecycler>(new Recycler());
+            auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
 
             // Create dummy SliceBufferAllocator to satisfy interface.
             // TODO: fix constants.
@@ -86,6 +88,7 @@ namespace BitFunnel
             test(processor);
 
             ingestor->Shutdown();
+            recycler->Shutdown();
         }
 
 

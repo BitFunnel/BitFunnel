@@ -134,9 +134,14 @@ namespace BitFunnel
             {
                 queue.Shutdown();
                 threadManager.WaitForThreads();
+                for (size_t i = 0 ; i < threads.size(); ++i)
+                {
+                    delete threads[i];
+                }
                 return;
             }
             threadManager.WaitForThreads();
+            queue.Shutdown();
 
             // Verify the results.
             uint64_t totalItemsProduced = 0;
@@ -199,8 +204,6 @@ namespace BitFunnel
                     }
                 }
                 ++m_itemsProcessed;
-                // No sleeps because we're trying to maximize the chance of threads
-                // interfering with each other.
             }
         }
 
