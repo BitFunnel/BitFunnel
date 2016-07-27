@@ -120,12 +120,19 @@ namespace BitFunnel
                 currentSlice->GetDocTable().SetDocId(currentSlice->GetSliceBuffer(),
                                                      i % c_sliceCapacity,
                                                      docId);
+                currentSlice->CommitDocument();
 
                 EXPECT_EQ(handle.GetDocId(), docId);
                 EXPECT_EQ(handle.GetIndex(), i % c_sliceCapacity);
                 EXPECT_EQ(handle.GetSlice(), currentSlice);
 
                 TestSliceBuffers(shard, allocatedSlices);
+                currentSlice->ExpireDocument();
+            }
+
+            for (const auto & slice : allocatedSlices)
+            {
+                shard.RecycleSlice(*slice);
             }
 
             ingestor->Shutdown();
