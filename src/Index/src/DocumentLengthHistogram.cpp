@@ -37,10 +37,6 @@ namespace BitFunnel
     void DocumentLengthHistogram::AddDocument(size_t postingCount)
     {
         const std::lock_guard<std::mutex> lock(m_lock);
-        if (postingCount == 0)
-        {
-            // TODO: Add a log assertion
-        }
 
         ++m_hist[postingCount];
         m_totalCount += postingCount;

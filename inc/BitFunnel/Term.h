@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <iosfwd>       // TODO: Remove this. For temporary Print().
+#include <iosfwd>
 #include <stdint.h>     // For uint8_t
 
 
@@ -74,6 +74,8 @@ namespace BitFunnel
              StreamId stream,
              IdfX10 idf);
 
+        Term(std::istream& input);
+
         void AddTerm(Term const & term);
 
         // Equality operator provided for use by unordered_map in Document class.
@@ -111,6 +113,8 @@ namespace BitFunnel
         IdfX10 GetIdfMax() const;
 
         void Print(std::ostream& output) const;
+
+        void Write(std::ostream& output) const;
 
         // Convert a double precision IDF value to IdfX10
         static IdfX10 IdfToIdfX10(double idf);

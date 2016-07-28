@@ -166,6 +166,8 @@ namespace BitFunnel
         }
         else
         {
+            // Note: the real term table should also have adhoc (and maybe disposed) terms.
+            termKind = Explicit;
             auto it = m_entries.find(term.GetRawHash());
             LogAssertB(it != m_entries.end(),
                        "Term not found.");

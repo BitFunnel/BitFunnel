@@ -22,6 +22,7 @@
 
 #include <algorithm>        // For std::min.
 #include <cstring>          // For strlen.
+#include <istream>
 #include <math.h>           // For log10.
 #include <ostream>          // Print() uses std::ostream.
 
@@ -67,6 +68,22 @@ namespace BitFunnel
           m_idfSum(idf),
           m_idfMax(idf)
     {
+    }
+
+
+    Term::Term(std::istream& input)
+    {
+        unsigned temp;
+        char comma;
+        input >> std::hex >> m_rawHash;
+        input >> comma;
+        LogAssertB(comma == ',', "bad input format.");
+        input >> std::dec >>temp;
+        m_gramSize = static_cast<GramSize>(temp);
+        input >> comma;
+        LogAssertB(comma == ',', "bad input format.");
+        input >> std::dec >>temp;
+        m_stream = static_cast<StreamId>(temp);
     }
 
 
@@ -136,6 +153,16 @@ namespace BitFunnel
             << ", "
             << std::dec << m_gramSize
             << ")";
+    }
+
+
+    void Term::Write(std::ostream& out) const
+    {
+        out << std::hex << m_rawHash
+            << ","
+            << std::dec << static_cast<unsigned>(m_gramSize)
+            << ","
+            << static_cast<unsigned>(m_stream);
     }
 
 

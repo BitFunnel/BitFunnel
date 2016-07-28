@@ -43,7 +43,6 @@ namespace BitFunnel
 
     void Document::Ingest(DocumentHandle handle) const
     {
-        // TODO: convert unique terms into postings.
         for (auto it = m_postings.begin(); it != m_postings.end(); ++it)
         {
             handle.AddPosting(*it);

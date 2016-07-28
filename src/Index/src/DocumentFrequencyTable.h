@@ -1,0 +1,25 @@
+#pragma once
+
+#include <iosfwd>
+#include <utility>
+#include <vector>
+
+#include "BitFunnel/Term.h"
+
+namespace BitFunnel
+{
+    class DocumentFrequencyTable
+    {
+    public:
+        // TODO: unifiy with other use of this?
+        typedef std::pair<Term, size_t> Entry;
+
+        DocumentFrequencyTable(std::istream& input);
+
+        Entry const & operator[](size_t index) const;
+
+        size_t size() const;
+    private:
+        std::vector<Entry> m_entries;
+    };
+}

@@ -96,8 +96,7 @@ namespace BitFunnel
 
     void DocumentHandle::AddPosting(Term const & term)
     {
-        // TODO: move the instrumentation that was in TemporaryAddPosting.
-        // m_slice->GetShard().TemporaryAddPosting(term, m_index);
+        m_slice->GetShard().TemporaryAddPosting(term, m_index);
 
         ITermTable const & termTable = m_slice->GetShard().GetTermTable();
         TermInfo termInfo(term, termTable);
