@@ -49,6 +49,11 @@ namespace BitFunnel
     {
         std::lock_guard<std::mutex> lock(m_lock);
 
+        if (byteSize != m_blockSize)
+        {
+            // TODO: remove.
+            throw byteSize;
+        }
         EXPECT_EQ(byteSize, m_blockSize);
 
         void* sliceBuffer = malloc(byteSize);
@@ -62,7 +67,7 @@ namespace BitFunnel
     {
         std::lock_guard<std::mutex> lock(m_lock);
 
-        const auto it = m_allocatedBuffers.find(buffer);
+        auto it = m_allocatedBuffers.find(buffer);
         EXPECT_NE(it, m_allocatedBuffers.end());
 
         free(buffer);

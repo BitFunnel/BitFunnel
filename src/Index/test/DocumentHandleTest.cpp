@@ -313,16 +313,19 @@ namespace BitFunnel
                            handle.GetIndex());
                 EXPECT_TRUE(IsDocumentActive(handle, softDeletedDocumentRow));
 
-                handle.Expire();
-                EXPECT_FALSE(IsDocumentActive(handle,
-                                              softDeletedDocumentRow));
+                // For the purpose of this test, do not expire the last
+                // DocIndex, as it will trigger a Slice recycling in the
+                // background thread and we don't want to manage the lifetime of
+                // that thread in this test.
+                if (i != c_sliceCapacity - 1)
+                {
+                    handle.Expire();
+
+                    EXPECT_FALSE(IsDocumentActive(handle,
+                                                  softDeletedDocumentRow));
+                }
             }
 
-            // We need to wait at least until recycling is scheduled to avoid
-            // leaking our Slice. Sine we don't have a good way of checking if
-            // recycling has been scheduled, we wait until recyling has
-            // completed.
-            while (trackingAllocator->GetInUseBuffersCount() != 0u) {}
             ingestor->Shutdown();
             recycler->Shutdown();
         }
