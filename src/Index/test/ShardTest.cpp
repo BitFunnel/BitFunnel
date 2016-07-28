@@ -246,8 +246,6 @@ namespace BitFunnel
             while(trackingAllocator->GetInUseBuffersCount() != 0u) {}
 
             // Trying to recycle a Slice which is not known to Shard - expect exception.
-            // First add at least one Slice.
-            shard.AllocateDocument();
 
             Slice slice(shard);
             for (DocIndex i = 0; i < shard.GetSliceCapacity(); ++i)
