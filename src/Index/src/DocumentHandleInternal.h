@@ -64,6 +64,11 @@ namespace BitFunnel
         // Returns the column in the slice where the document resides.
         DocIndex GetIndex() const;
 
+        // TODO: Can't we set the DocId in the constructor?
+        // Would like an immutable id.
+        void SetDocId(DocId id);
+
+
         // Make the document visible to matcher. Must be called after the
         // document's content is fully ingested.
         void Activate();

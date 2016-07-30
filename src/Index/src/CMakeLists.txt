@@ -13,6 +13,7 @@ set(CPPFILES
     DocumentFrequencyTableBuilder.cpp
     DocumentHandleInternal.cpp
     DocumentLengthHistogram.cpp
+    DocumentMap.cpp
     FactSetBase.cpp
     IngestChunks.cpp
     Ingestor.cpp
@@ -45,6 +46,7 @@ set(PRIVATE_HFILES
     DocumentFrequencyTableBuilder.h
     DocumentHandleInternal.h
     DocumentLengthHistogram.h
+    DocumentMap.h
     FactSetBase.h
     Ingestor.h
     IRecyclable.h

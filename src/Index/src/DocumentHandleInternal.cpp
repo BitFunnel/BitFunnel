@@ -179,6 +179,14 @@ namespace BitFunnel
     }
 
 
+    void DocumentHandleInternal::SetDocId(DocId id)
+    {
+        m_slice->GetDocTable().SetDocId(GetSlice()->GetSliceBuffer(),
+                                        GetIndex(),
+                                        id);
+    }
+
+
     void DocumentHandleInternal::Activate()
     {
         const RowId softDeletedRowId =

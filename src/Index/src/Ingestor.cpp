@@ -22,6 +22,7 @@
 
 #include <iostream>     // TODO: Remove this temporary header.
 #include <memory>
+#include <sstream>
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
@@ -31,6 +32,7 @@
 #include "Ingestor.h"
 #include "IRecycler.h"
 #include "ISliceBufferAllocator.h"
+#include "LoggerInterfaces/Logging.h"
 
 
 namespace BitFunnel
@@ -52,7 +54,8 @@ namespace BitFunnel
                        ITermTable const & termTable,
                        ISliceBufferAllocator& sliceBufferAllocator)
         : m_recycler(recycler),
-          m_documentCount(0),
+          m_documentCount(0),   // TODO: This member is now redundant (with m_documentMap).
+          m_documentMap(new DocumentMap()),
           m_tokenManager(Factories::CreateTokenManager()),
           m_sliceBufferAllocator(sliceBufferAllocator)
     {
@@ -98,7 +101,7 @@ namespace BitFunnel
     }
 
 
-    void Ingestor::Add(DocId /*id*/, IDocument const & document)
+    void Ingestor::Add(DocId id, IDocument const & document)
     {
         ++m_documentCount;
 
@@ -107,10 +110,37 @@ namespace BitFunnel
         m_postingsCount.AddDocument(document.GetPostingCount());
 
         DocumentHandleInternal handle = m_shards[0]->AllocateDocument();
+        handle.SetDocId(id);
         document.Ingest(handle);
 
+
+        // TODO: REVIEW: Why are Activate() and CommitDocument() separate operations?
         handle.Activate();
         handle.GetSlice()->CommitDocument();
+
+        // TODO: schedule for backup if Slice is full.
+        // Consider if Slice::CommitDocument itself may schedule a backup when full.
+
+        try
+        {
+            m_documentMap->Add(handle);
+        }
+        catch (...)
+        {
+            try
+            {
+                handle.Expire();
+            }
+            catch (...)
+            {
+                LogB(Logging::Error,
+                     "Ingestor::Add",
+                     "Error while cleaning up after AddDocument operation failed.");
+            }
+
+            // Re-throw the original exception back to the caller.
+            throw;
+        }
     }
 
 
@@ -138,9 +168,31 @@ namespace BitFunnel
     }
 
 
-    bool Ingestor::Delete(DocId /*id*/)
+    bool Ingestor::Delete(DocId id)
     {
-        throw NotImplemented();
+        const Token token = m_tokenManager->RequestToken();
+
+        // Protecting from concurrent Delete operations. Even though individual
+        // function calls here are thread-safe, Delete on the same value of DocId
+        // is not, since it modifies the counters of the expired documents in the
+        // Slice.
+        std::lock_guard<std::mutex> lock(m_deleteDocumentLock);
+
+        bool isFound;
+        DocumentHandleInternal location = m_documentMap->Find(id, isFound);
+
+        if (isFound)
+        {
+            m_documentMap->Delete(id);
+            location.Expire();
+        }
+
+        // In a case of documents deletes, a missing entry should not be treated
+        // as an error. This is to accommodate soft-deleting a large number of 
+        // documents where only the range of IDs is known, but not the exact 
+        // values.
+
+        return isFound;
     }
 
 
@@ -150,9 +202,12 @@ namespace BitFunnel
     }
 
 
-    bool Ingestor::Contains(DocId /*id*/) const
+    bool Ingestor::Contains(DocId id) const
     {
-        throw NotImplemented();
+        bool isFound;
+        m_documentMap->Find(id, isFound);
+
+        return isFound;
     }
 
 

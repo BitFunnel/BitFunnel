@@ -22,14 +22,17 @@
 
 #pragma once
 
-#include <atomic>                       // std::atomic member.
-#include <stddef.h>                     // size_t template parameter.
+#include <atomic>                           // std::atomic member.
+#include <mutex>                            // std::mutex member.
+#include <stddef.h>                         // size_t template parameter.
 
-#include "BitFunnel/Index/IIngestor.h"  // Inherits from IIngestor.
+#include "BitFunnel/Index/DocumentHandle.h" // DocHandleInternal template parameter.
+#include "BitFunnel/Index/IIngestor.h"      // Inherits from IIngestor.
 #include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/Token.h"
-#include "DocumentLengthHistogram.h"    // Embeds DocumentLengthHistogram.
-#include "Shard.h"                      // std::unique_ptr template parameter.
+#include "DocumentLengthHistogram.h"        // Embeds DocumentLengthHistogram.
+#include "DocumentMap.h"                    // DocumentMap template parameter.
+#include "Shard.h"                          // std::unique_ptr template parameter.
 
 
 namespace BitFunnel
@@ -126,11 +129,20 @@ namespace BitFunnel
 
         // TODO: Replace these tempoary statistics variables with document
         // length hash table and term frequency tables.
+        // TODO: This member is now redundant (with DocumentMap).
+        // Note that documentCount will not always be equal to
+        // the size of the unordered_map in m_documentMap. The reason
+        // is that documents may have been deleted.
         std::atomic<size_t> m_documentCount;
 
         std::vector<std::unique_ptr<Shard>> m_shards;
 
+        // TokenManager which distributes tokens for thread synchronization.
         std::unique_ptr<ITokenManager> m_tokenManager;
+
+        // Lock protecting concurrent DeleteDocument operations.
+        std::mutex m_deleteDocumentLock;
+
 
         DocumentLengthHistogram m_postingsCount;
 
@@ -139,5 +151,7 @@ namespace BitFunnel
         // blocks of the same byte size. Slices within Shards will choose the
         // capacity for which the byte size of the buffer is sufficient.
         ISliceBufferAllocator& m_sliceBufferAllocator;
+
+        std::unique_ptr<DocumentMap> m_documentMap;
     };
 }
