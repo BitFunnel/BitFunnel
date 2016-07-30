@@ -49,6 +49,7 @@ namespace BitFunnel
                                                        sliceBufferAllocator));
     }
 
+
     Ingestor::Ingestor(IDocumentDataSchema const & docDataSchema,
                        IRecycler& recycler,
                        ITermTable const & termTable,
@@ -71,6 +72,7 @@ namespace BitFunnel
                           m_sliceBufferAllocator,
                           m_sliceBufferAllocator.GetSliceBufferSize())));
     }
+
 
     void Ingestor::PrintStatistics() const
     {
@@ -109,8 +111,7 @@ namespace BitFunnel
 //        std::cout << "DocId: " << id << ": " << document.GetPostingCount() << std::endl;
         m_postingsCount.AddDocument(document.GetPostingCount());
 
-        DocumentHandleInternal handle = m_shards[0]->AllocateDocument();
-        handle.SetDocId(id);
+        DocumentHandleInternal handle = m_shards[0]->AllocateDocument(id);
         document.Ingest(handle);
 
 

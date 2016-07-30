@@ -87,7 +87,7 @@ namespace BitFunnel
     Shard::~Shard() {}
 
 
-    DocumentHandleInternal Shard::AllocateDocument()
+    DocumentHandleInternal Shard::AllocateDocument(DocId id)
     {
         std::lock_guard<std::mutex> lock(m_slicesLock);
         DocIndex index;
@@ -98,7 +98,8 @@ namespace BitFunnel
             LogAssertB(m_activeSlice->TryAllocateDocument(index),
                        "Newly allocated slice has no space.");
         }
-        return DocumentHandleInternal(m_activeSlice, index);
+
+        return DocumentHandleInternal(m_activeSlice, index, id);
     }
 
 

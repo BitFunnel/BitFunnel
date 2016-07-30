@@ -129,7 +129,7 @@ namespace BitFunnel
         //   }
         //
         //   return DocumentHandleInternal(m_activeSlice, docIndex);
-        DocumentHandleInternal AllocateDocument();
+        DocumentHandleInternal AllocateDocument(DocId id);
 
         // Loads a Slice from a previously serialized state and adds it to the
         // list of Slices. As part of deserialization, LoadSlice loads

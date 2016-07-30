@@ -102,7 +102,7 @@ namespace BitFunnel
             {
                 DocId docId = static_cast<DocId>(i) + 1234;
 
-                const DocumentHandleInternal handle = shard.AllocateDocument();
+                const DocumentHandleInternal handle = shard.AllocateDocument(docId);
 
                 if ((i % c_sliceCapacity) == 0)
                 {
@@ -185,7 +185,7 @@ namespace BitFunnel
             {
                 const DocId docId = static_cast<DocId>(i) + 1234;
 
-                const DocumentHandleInternal handle = shard.AllocateDocument();
+                const DocumentHandleInternal handle = shard.AllocateDocument(docId);
 
                 if ((i % c_sliceCapacity) == 0)
                 {

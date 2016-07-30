@@ -46,15 +46,20 @@ namespace BitFunnel
 {
     namespace DocumentHandleTest
     {
-        TEST(DocumentHandle, Basic)
-        {
-            static Slice * const c_anySlice = reinterpret_cast<Slice*>(123);
-            static const DocIndex c_anyDocIndex = 123;
+        // Disabled this test because it is no longer legal to pass a bogus
+        // Slice*. The constructor of DocumentHandle now registers the DocId
+        // with the Slice.
+        //
+        //TEST(DocumentHandle, Basic)
+        //{
+        //    static Slice * const c_anySlice = reinterpret_cast<Slice*>(123);
+        //    static const DocIndex c_anyDocIndex = 123;
+        //    static const DocId c_anyDocId = 0;
 
-            DocumentHandleInternal docHandle(c_anySlice, c_anyDocIndex);
-            EXPECT_EQ(docHandle.GetSlice(), c_anySlice);
-            EXPECT_EQ(docHandle.GetIndex(), c_anyDocIndex);
-        }
+        //    DocumentHandleInternal docHandle(c_anySlice, c_anyDocIndex, c_anyDocId);
+        //    EXPECT_EQ(docHandle.GetSlice(), c_anySlice);
+        //    EXPECT_EQ(docHandle.GetIndex(), c_anyDocIndex);
+        //}
 
 
         struct FixedSizeBlob0
@@ -100,7 +105,7 @@ namespace BitFunnel
 
             for (DocIndex docIndex = 0; docIndex < c_sliceCapacity; ++docIndex)
             {
-                DocumentHandleInternal handle(&slice, docIndex);
+                DocumentHandleInternal handle(&slice, docIndex, docIndex);
 
                 // Simulate different size blobs.
                 const size_t blobSize = 5 + docIndex / 100;
@@ -283,7 +288,7 @@ namespace BitFunnel
 
             for (DocIndex i = 0; i < c_sliceCapacity; ++i)
             {
-                DocumentHandleInternal handle = shard.AllocateDocument();
+                DocumentHandleInternal handle = shard.AllocateDocument(i);
 
                 // Document is not active untill fully ingested and activated.
                 // Activation is done by the owning Index.
@@ -339,7 +344,7 @@ namespace BitFunnel
             Slice* slice = nullptr;
             for (DocIndex i = 0; i < sliceCapacity; ++i)
             {
-                const DocumentHandleInternal handle = shard.AllocateDocument();
+                const DocumentHandleInternal handle = shard.AllocateDocument(i);
 
                 if (slice == nullptr)
                 {
@@ -396,7 +401,7 @@ namespace BitFunnel
                 // The slice is still not recycled since there is one reference holder.
                 for (DocIndex i = 0; i < c_sliceCapacity; ++i)
                 {
-                    DocumentHandleInternal handle(currentSlice, i);
+                    DocumentHandleInternal handle(currentSlice, i, i);
                     handle.Expire();
                 }
 
@@ -419,7 +424,7 @@ namespace BitFunnel
                 // The slice is still not recycled since there is one reference holder.
                 for (DocIndex i = 0; i < c_sliceCapacity; ++i)
                 {
-                    DocumentHandleInternal handle(currentSlice, i);
+                    DocumentHandleInternal handle(currentSlice, i, i);
                     handle.Expire();
                 }
 

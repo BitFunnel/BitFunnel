@@ -36,6 +36,13 @@ namespace BitFunnel
     // DocumentHandle
     //
     //*************************************************************************
+    DocumentHandle::DocumentHandle(Slice* slice, DocIndex index)
+      : m_slice(slice),
+        m_index(index)
+    {
+    }
+
+
     void* DocumentHandle::AllocateVariableSizeBlob(VariableSizeBlobId id, size_t byteSize)
     {
         return m_slice->GetDocTable().
@@ -136,13 +143,6 @@ namespace BitFunnel
     }
 
 
-    DocumentHandle::DocumentHandle(Slice* slice, DocIndex index)
-        : m_slice(slice),
-          m_index(index)
-    {
-    }
-
-
     //*************************************************************************
     //
     // DocumentHandleInternal
@@ -155,9 +155,12 @@ namespace BitFunnel
     }
 
 
-    DocumentHandleInternal::DocumentHandleInternal(Slice* slice, DocIndex index)
+    DocumentHandleInternal::DocumentHandleInternal(Slice* slice, DocIndex index, DocId id)
         : DocumentHandle(slice, index)
     {
+        m_slice->GetDocTable().SetDocId(GetSlice()->GetSliceBuffer(),
+                                        GetIndex(),
+                                        id);
     }
 
 
@@ -176,14 +179,6 @@ namespace BitFunnel
     DocIndex DocumentHandleInternal::GetIndex() const
     {
         return m_index;
-    }
-
-
-    void DocumentHandleInternal::SetDocId(DocId id)
-    {
-        m_slice->GetDocTable().SetDocId(GetSlice()->GetSliceBuffer(),
-                                        GetIndex(),
-                                        id);
     }
 
 

@@ -160,7 +160,7 @@ namespace BitFunnel
             Slice* firstSlice = nullptr;
             for (DocIndex i = 0; i < sliceCapacity; ++i)
             {
-                const DocumentHandleInternal handle = shard.AllocateDocument();
+                const DocumentHandleInternal handle = shard.AllocateDocument(i);
                 if (i == 0)
                 {
                     // Saving the value of the Slice* for subsequent comparison.
