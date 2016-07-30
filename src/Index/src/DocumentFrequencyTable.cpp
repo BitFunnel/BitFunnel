@@ -1,3 +1,4 @@
+#include <cctype>  // For isspace.
 #include <istream>
 
 #include "DocumentFrequencyTable.h"
