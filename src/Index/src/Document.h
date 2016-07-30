@@ -24,6 +24,7 @@
 
 #include <unordered_set>                    // TODO: Remove this temporary include.
 
+#include "BitFunnel/BitFunnelTypes.h"       // DocId parameter.
 #include "BitFunnel/Index/IDocument.h"      // Inherits from IDocument.
 #include "BitFunnel/Utilities/RingBuffer.h" // RingBuffer member.
 #include "BitFunnel/Term.h"                 // Term template parameter.
@@ -37,7 +38,13 @@ namespace BitFunnel
     class Document : public IDocument
     {
     public:
-        Document(IConfiguration const & config);
+        Document(IConfiguration const & config, DocId id);
+
+        DocId GetDocId() const;
+
+        //
+        // IDocument methods
+        //
 
         // Returns the number of postings this document will contribute
         // to the index. This method is used to determine which shard
@@ -77,10 +84,12 @@ namespace BitFunnel
         // Constructor parameters.
         //
 
+        const DocId m_docId;
+
         // Maximum size of ngrams that will be indexed.
         const size_t m_maxGramSize;
 
-        // Not used. TODO: Remove this?
+        // The document frequency table is used in term constructor.
         IDocumentFrequencyTable const & m_docFreqTable;
 
 

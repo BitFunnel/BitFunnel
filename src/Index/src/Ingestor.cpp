@@ -96,11 +96,12 @@ namespace BitFunnel
     }
 
 
-    void Ingestor::Add(DocId /*id*/, IDocument const & document)
+    void Ingestor::Add(DocId id, IDocument const & document)
     {
         ++m_documentCount;
 
         // Add postingCount to the DocumentLengthHistogram
+        std::cout << "DocId: " << id << ": " << document.GetPostingCount() << std::endl;
         m_postingsCount.AddDocument(document.GetPostingCount());
 
         DocumentHandleInternal handle = m_shards[0]->AllocateDocument();

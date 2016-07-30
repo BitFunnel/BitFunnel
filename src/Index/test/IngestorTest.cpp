@@ -195,7 +195,7 @@ namespace BitFunnel
             {
                 for (unsigned i = 0; i < docCount; ++i)
                 {
-                    std::unique_ptr<IDocument> document(new Document(config));
+                    std::unique_ptr<IDocument> document(new Document(config, i));
                     document->OpenStream(c_streamId);
                     auto terms = GenerateDocumentText(i);
                     for (const auto & term : terms)

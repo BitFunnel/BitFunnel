@@ -25,9 +25,9 @@
 #include <memory>                       // std::unqiue_ptr member.
 #include <vector>                       // std::vector member.
 
-#include "BitFunnel/Index/IDocument.h"  // std::unique_ptr<IDocument>.
 #include "BitFunnel/NonCopyable.h"      // Inherits from NonCopyable.
 #include "ChunkReader.h"                // Inherits from ChunkReader::IEvents.
+#include "Document.h"                   // std::unique_ptr<IDocument>.
 
 
 namespace BitFunnel
@@ -77,6 +77,6 @@ namespace BitFunnel
         // Other members
         //
         std::vector<char> const& m_chunkData;
-        std::unique_ptr<IDocument> m_currentDocument;
+        std::unique_ptr<Document> m_currentDocument;
     };
 }

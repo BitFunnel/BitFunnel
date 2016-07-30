@@ -44,9 +44,9 @@ namespace BitFunnel
     }
 
 
-    void ChunkIngestor::OnDocumentEnter(DocId /*id*/)
+    void ChunkIngestor::OnDocumentEnter(DocId id)
     {
-        m_currentDocument.reset(new Document(m_config));
+        m_currentDocument.reset(new Document(m_config, id));
     }
 
 
@@ -70,7 +70,7 @@ namespace BitFunnel
 
     void ChunkIngestor::OnDocumentExit()
     {
-        m_ingestor.Add(0, *m_currentDocument);
+        m_ingestor.Add(m_currentDocument->GetDocId(), *m_currentDocument);
         m_currentDocument.reset(nullptr);
     }
 

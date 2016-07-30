@@ -92,7 +92,7 @@ namespace BitFunnel
 
         // Arbitrary maxGramSize that is greater than 1. For initial tests.
         // TODO: Choose correct maxGramSize.
-        const size_t maxGramSize = 3;
+        const size_t maxGramSize = 1;
         std::unique_ptr<IConfiguration>
             configuration(Factories::CreateConfiguration(maxGramSize));
 

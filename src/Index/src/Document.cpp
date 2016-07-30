@@ -27,11 +27,18 @@
 
 namespace BitFunnel
 {
-    Document::Document(IConfiguration const & config)
-        : m_maxGramSize(config.GetMaxGramSize()),
+    Document::Document(IConfiguration const & config, DocId id)
+        : m_docId(id),
+          m_maxGramSize(config.GetMaxGramSize()),
           m_docFreqTable(config.GetDocumentFrequencyTable()),
           m_streamIsOpen(false)
     {
+    }
+
+
+    DocId Document::GetDocId() const
+    {
+        return m_docId;
     }
 
 
