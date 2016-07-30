@@ -51,7 +51,7 @@ namespace BitFunnel
 
         virtual void WriteDocumentFrequencyTable(std::ostream& out) const override;
         virtual void WriteDocumentLengthHistogram(std::ostream & out) const override;
-        virtual void WriteUniqueTermsVsDocumentCount(std::ostream & out) const override;
+        virtual void WriteCumulativePostingCounts(std::ostream & out) const override;
 
         // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.

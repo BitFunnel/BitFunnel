@@ -349,10 +349,16 @@ namespace BitFunnel
     }
 
 
-    void Shard::TemporaryPrintFrequencies(std::ostream& out)
+    void Shard::TemporaryWriteDocumentFrequencyTable(std::ostream& out) const
     {
         // out << "Term frequency table for shard " << m_id << ":" << std::endl;
         // TODO: 0.0 is the truncation frequency, which shouldn't be fixed at 0.
         m_docFrequencyTableBuilder->WriteFrequencies(out, 0.0);
+    }
+
+
+    void Shard::TemporaryWriteCumulativePostingCounts(std::ostream& out) const
+    {
+        m_docFrequencyTableBuilder->WriteCumulativePostingCounts(out);
     }
 }

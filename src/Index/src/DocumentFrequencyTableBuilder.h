@@ -16,10 +16,10 @@ namespace BitFunnel
         void OnTerm(Term t);
 
         void WriteFrequencies(std::ostream& output, double truncateBelowFrequency) const;
-        void WriteCumulativeCounts(std::ostream& output) const;
+        void WriteCumulativePostingCounts(std::ostream& output) const;
 
     private:
-        std::vector<size_t> m_cumulativeTermCounts;
+        std::vector<size_t> m_cumulativePostingCounts;
         // std::map<Term, size_t, Term::Hasher> m_termCounts;
         std::unordered_map<Term, size_t, Term::Hasher> m_termCounts;
     };

@@ -83,11 +83,14 @@ namespace BitFunnel
 
         void TemporaryAddPosting(Term const & term, DocIndex index);
         void TemporaryRecordDocument();
-        void TemporaryPrintFrequencies(std::ostream& out);
+        void TemporaryWriteDocumentFrequencyTable(std::ostream& out) const;
+        void TemporaryWriteCumulativePostingCounts(std::ostream& out) const;
+
 
         //
         // IShardIndex APIs.
         //
+
         // Returns the Id of the shard.
         //virtual ShardId GetId() const override;
 

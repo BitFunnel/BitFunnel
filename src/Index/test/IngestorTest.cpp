@@ -305,7 +305,7 @@ namespace BitFunnel
             const int c_documentCount = 64;
             SyntheticIndex index(c_documentCount);
             std::stringstream stream;
-            index.GetIngestor().GetShard(0).TemporaryPrintFrequencies(stream);
+            index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream);
 
             DocumentFrequencyTable table(stream);
 
@@ -320,7 +320,7 @@ namespace BitFunnel
             const int c_documentCount = 63;
             SyntheticIndex index(c_documentCount);
             std::stringstream stream;
-            index.GetIngestor().GetShard(0).TemporaryPrintFrequencies(stream);
+            index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream);
 
             DocumentFrequencyTable table(stream);
 
@@ -335,7 +335,7 @@ namespace BitFunnel
             const int c_documentCount = 62;
             SyntheticIndex index(c_documentCount);
             std::stringstream stream;
-            index.GetIngestor().GetShard(0).TemporaryPrintFrequencies(stream);
+            index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream);
 
             DocumentFrequencyTable table(stream);
 

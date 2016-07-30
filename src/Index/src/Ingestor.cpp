@@ -80,7 +80,7 @@ namespace BitFunnel
     {
         // TODO: Either write one file per shard, or move term
         // frequency table up to ingestor.
-        m_shards[0]->TemporaryPrintFrequencies(out);
+        m_shards[0]->TemporaryWriteDocumentFrequencyTable(out);
     }
 
 
@@ -90,18 +90,20 @@ namespace BitFunnel
     }
 
 
-    void Ingestor::WriteUniqueTermsVsDocumentCount(std::ostream & out) const
+    void Ingestor::WriteCumulativePostingCounts(std::ostream & out) const
     {
-        out << "WriteUniqueTermsVsDocumentCount" << std::endl;
+        // TODO: Either write one file per shard, or move term
+        // frequency table up to ingestor.
+        m_shards[0]->TemporaryWriteCumulativePostingCounts(out);
     }
 
 
-    void Ingestor::Add(DocId id, IDocument const & document)
+    void Ingestor::Add(DocId /*id*/, IDocument const & document)
     {
         ++m_documentCount;
 
         // Add postingCount to the DocumentLengthHistogram
-        std::cout << "DocId: " << id << ": " << document.GetPostingCount() << std::endl;
+//        std::cout << "DocId: " << id << ": " << document.GetPostingCount() << std::endl;
         m_postingsCount.AddDocument(document.GetPostingCount());
 
         DocumentHandleInternal handle = m_shards[0]->AllocateDocument();
