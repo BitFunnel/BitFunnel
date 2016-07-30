@@ -343,6 +343,12 @@ namespace BitFunnel
     }
 
 
+    void Shard::TemporaryRecordDocument()
+    {
+        m_docFrequencyTableBuilder->OnDocumentEnter();
+    }
+
+
     void Shard::TemporaryPrintFrequencies(std::ostream& out)
     {
         // out << "Term frequency table for shard " << m_id << ":" << std::endl;

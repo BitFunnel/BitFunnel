@@ -188,5 +188,7 @@ namespace BitFunnel
         rowTable.SetBit(m_slice->GetSliceBuffer(),
                         softDeletedRowId.GetIndex(),
                         m_index);
+
+        m_slice->GetShard().TemporaryRecordDocument();
     }
 }

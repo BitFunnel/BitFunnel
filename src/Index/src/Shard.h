@@ -82,6 +82,7 @@ namespace BitFunnel
         virtual ~Shard();
 
         void TemporaryAddPosting(Term const & term, DocIndex index);
+        void TemporaryRecordDocument();
         void TemporaryPrintFrequencies(std::ostream& out);
 
         //

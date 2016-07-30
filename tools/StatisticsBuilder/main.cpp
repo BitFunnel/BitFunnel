@@ -16,7 +16,6 @@
 #include "DocumentDataSchema.h"
 #include "DocumentHandleInternal.h"
 #include "IndexUtils.h"
-#include "Ingestor.h"
 #include "IRecycler.h"
 #include "MockTermTable.h"
 #include "Recycler.h"
@@ -52,7 +51,8 @@ namespace BitFunnel
     }
 
 
-    static void LoadAndIngestChunkList(char const * chunkListFileName)
+    static void LoadAndIngestChunkList(char const * chunkListFileName,
+                                       char const * docFreqTableFileName)
     {
         // TODO: Add try/catch around file operations.
         std::cout << "Loading chunk list file '" << chunkListFileName << "'"
@@ -95,10 +95,20 @@ namespace BitFunnel
         std::unique_ptr<IConfiguration>
             configuration(Factories::CreateConfiguration(maxGramSize));
 
+        std::cout << "Ingesting . . ." << std::endl;
+
         // TODO: Use correct thread count.
         size_t threadCount = 1;
         IngestChunks(filePaths, *configuration, *ingestor, threadCount);
+
+        std::cout << "Ingestion complete." << std::endl;
         ingestor->PrintStatistics();
+
+        if (docFreqTableFileName != nullptr)
+        {
+            std::ofstream out(docFreqTableFileName);
+            ingestor->WriteDocumentFrequencyTable(out);
+        }
 
         ingestor->Shutdown();
         recycler->Shutdown();
@@ -166,7 +176,22 @@ int main(int argc, char** argv)
         "Path to a file containing the paths to the chunk files to be ingested. "
         "One chunk file per line. Paths are relative to working directory.");
 
+    CmdLine::OptionalParameter<char const *> docFrequencyTableFileName(
+        "docFreqTable",
+        "Path to file where document frequency table will be written.", nullptr);
+
+    CmdLine::OptionalParameter<char const *> docLengthHistogramFileName(
+        "docLengthHistogram",
+        "Path to file where document length histogram will be written.");
+
+    CmdLine::OptionalParameter<char const *> termsVsDocumentsFileName(
+        "termsVsDocuments",
+        "Path to file where the table of unique term counts vs document count will be written.");
+
     parser.AddParameter(chunkListFileName);
+    parser.AddParameter(docFrequencyTableFileName);
+    parser.AddParameter(docLengthHistogramFileName);
+    parser.AddParameter(termsVsDocumentsFileName);
 
     int returnCode = 0;
 
@@ -174,7 +199,10 @@ int main(int argc, char** argv)
     {
         try
         {
-            BitFunnel::LoadAndIngestChunkList(chunkListFileName);
+            if (docFrequencyTableFileName.HasValue())
+                std::cout << "docFrequencyTableFileName: " << docFrequencyTableFileName << std::endl;
+            BitFunnel::LoadAndIngestChunkList(chunkListFileName,
+                                              docFrequencyTableFileName);
             returnCode = 0;
         }
         catch (...)

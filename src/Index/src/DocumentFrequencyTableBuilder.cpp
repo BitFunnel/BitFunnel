@@ -7,11 +7,6 @@
 
 namespace BitFunnel
 {
-    DocumentFrequencyTableBuilder::DocumentFrequencyTableBuilder()
-    {
-    }
-
-
     void DocumentFrequencyTableBuilder::OnDocumentEnter()
     {
         m_cumulativeTermCounts.push_back(m_termCounts.size());
@@ -27,27 +22,35 @@ namespace BitFunnel
     // Write out sorted truncated list, sorted by count (TODO: frequency).
     void DocumentFrequencyTableBuilder::WriteFrequencies(std::ostream& output, double truncateBelowFrequency) const
     {
-        typedef std::pair<Term, size_t> Entry;
-        std::vector<Entry> entries;
+        typedef std::pair<Term, double> Entry;
+
         struct
         {
             bool operator() (Entry a, Entry b)
             {
-                return a.second < b.second;
+                // Sorts by decreasing frequency.
+                return a.second > b.second;
             }
         } compare;
 
+        // Storage for sorted entries.
+        std::vector<Entry> entries;
+
+        // For each term count record, compute the document frequency then
+        // add to entries if frequency is above threshold.
         for (auto const & entry : m_termCounts)
         {
-            // TODO: this makes no sense -- entry is a count.
-            if (entry.second >= truncateBelowFrequency)
+            double frequency = static_cast<double>(entry.second) / m_cumulativeTermCounts.size();
+            if (frequency >= truncateBelowFrequency)
             {
-                entries.push_back(entry);
+                entries.push_back(std::make_pair(entry.first, frequency));
             }
         }
 
+        // Sort document frequency records by decreasing frequency.
         std::sort(entries.begin(), entries.end(), compare);
 
+        // Write sorted list to stream.
         for (auto const & entry : entries)
         {
             entry.first.Write(output);

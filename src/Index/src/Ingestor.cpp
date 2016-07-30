@@ -74,16 +74,29 @@ namespace BitFunnel
         std::cout << "Document count: " << m_documentCount << std::endl;
         std::cout << "Term count: " << m_postingsCount.m_totalCount << std::endl;
 
-        for (auto it = m_shards.begin(); it != m_shards.end(); ++it)
-        {
-            (*it)->TemporaryPrintFrequencies(std::cout);
-        }
-
-        std::cout << "Posting count histogram" << std::endl;
-
-        m_postingsCount.Write(std::cout);
+        //std::cout << "Posting count histogram" << std::endl;
+        //m_postingsCount.Write(std::cout);
     }
 
+
+    void Ingestor::WriteDocumentFrequencyTable(std::ostream& out) const
+    {
+        // TODO: Either write one file per shard, or move term
+        // frequency table up to ingestor.
+        m_shards[0]->TemporaryPrintFrequencies(out);
+    }
+
+
+    void Ingestor::WriteDocumentLengthHistogram(std::ostream & out) const
+    {
+        out << "WriteDocumentLengthHistogram" << std::endl;
+    }
+
+
+    void Ingestor::WriteUniqueTermsVsDocumentCount(std::ostream & out) const
+    {
+        out << "WriteUniqueTermsVsDocumentCount" << std::endl;
+    }
 
 
     void Ingestor::Add(DocId /*id*/, IDocument const & document)

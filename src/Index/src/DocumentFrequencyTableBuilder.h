@@ -12,8 +12,6 @@ namespace BitFunnel
     class DocumentFrequencyTableBuilder
     {
     public:
-        DocumentFrequencyTableBuilder();
-
         void OnDocumentEnter();
         void OnTerm(Term t);
 

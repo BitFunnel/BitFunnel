@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <iosfwd>                               //std::istream& parameter.
+
 #include "BitFunnel/IInterface.h"               // IIngestor inherits from IInterface.
 #include "BitFunnel/Index/IFactSet.h"           // FactHandle parameter.
 #include "BitFunnel/Index/DocumentHandle.h"     // DocHandle return value.
@@ -61,6 +63,10 @@ namespace BitFunnel
     public:
         // TODO: Remove this temporary method.
         virtual void PrintStatistics() const = 0;
+
+        virtual void WriteDocumentFrequencyTable(std::ostream& out) const = 0;
+        virtual void WriteDocumentLengthHistogram(std::ostream & out) const = 0;
+        virtual void WriteUniqueTermsVsDocumentCount(std::ostream & out) const = 0;
 
         // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.
