@@ -30,6 +30,7 @@
 namespace BitFunnel
 {
     DocumentLengthHistogram::DocumentLengthHistogram()
+        : m_totalCount(0)
     {
     }
 
