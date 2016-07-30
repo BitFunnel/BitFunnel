@@ -73,9 +73,6 @@ namespace BitFunnel
     {
         std::cout << "Document count: " << m_documentCount << std::endl;
         std::cout << "Term count: " << m_postingsCount.m_totalCount << std::endl;
-
-        //std::cout << "Posting count histogram" << std::endl;
-        //m_postingsCount.Write(std::cout);
     }
 
 
@@ -89,7 +86,7 @@ namespace BitFunnel
 
     void Ingestor::WriteDocumentLengthHistogram(std::ostream & out) const
     {
-        out << "WriteDocumentLengthHistogram" << std::endl;
+        m_postingsCount.Write(out);
     }
 
 

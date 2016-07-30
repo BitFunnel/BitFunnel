@@ -52,7 +52,8 @@ namespace BitFunnel
 
 
     static void LoadAndIngestChunkList(char const * chunkListFileName,
-                                       char const * docFreqTableFileName)
+                                       char const * docFreqTableFileName,
+                                       char const * docLengthHistogramFileName)
     {
         // TODO: Add try/catch around file operations.
         std::cout << "Loading chunk list file '" << chunkListFileName << "'"
@@ -106,8 +107,24 @@ namespace BitFunnel
 
         if (docFreqTableFileName != nullptr)
         {
+            std::cout
+                << "Writing document frequency table to "
+                << docFreqTableFileName
+                << std::endl;
+
             std::ofstream out(docFreqTableFileName);
             ingestor->WriteDocumentFrequencyTable(out);
+        }
+
+        if (docLengthHistogramFileName != nullptr)
+        {
+            std::cout
+                << "Writing document length histogram to "
+                << docLengthHistogramFileName
+                << std::endl;
+
+            std::ofstream out(docLengthHistogramFileName);
+            ingestor->WriteDocumentLengthHistogram(out);
         }
 
         ingestor->Shutdown();
@@ -200,9 +217,16 @@ int main(int argc, char** argv)
         try
         {
             if (docFrequencyTableFileName.HasValue())
+            {
                 std::cout << "docFrequencyTableFileName: " << docFrequencyTableFileName << std::endl;
+            }
+            if (docLengthHistogramFileName.HasValue())
+            {
+                std::cout << "docLengthHistogramFileName: " << docLengthHistogramFileName << std::endl;
+            }
             BitFunnel::LoadAndIngestChunkList(chunkListFileName,
-                                              docFrequencyTableFileName);
+                                              docFrequencyTableFileName,
+                                              docLengthHistogramFileName);
             returnCode = 0;
         }
         catch (...)
