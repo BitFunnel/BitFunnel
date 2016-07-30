@@ -102,6 +102,7 @@ namespace BitFunnel
 
         ingestor->Shutdown();
         recycler->Shutdown();
+        background.wait();
     }
 }
 

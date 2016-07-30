@@ -138,6 +138,7 @@ namespace BitFunnel
 
             ingestor->Shutdown();
             recycler->Shutdown();
+            background.wait();
         }
 
         // Helper method to get the RowId allocated for marking soft-deleted
@@ -328,6 +329,7 @@ namespace BitFunnel
 
             ingestor->Shutdown();
             recycler->Shutdown();
+            background.wait();
         }
 
         // Fills up a Slice full of commited documents and returns a pointer to
@@ -432,6 +434,7 @@ namespace BitFunnel
 
             ingestor->Shutdown();
             recycler->Shutdown();
+            background.wait();
         }
     }
 }
