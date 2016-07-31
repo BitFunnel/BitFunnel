@@ -283,13 +283,15 @@ namespace BitFunnel
         }
 
 
-        std::unordered_map<size_t, size_t> CreateDocCountHistogram(DocumentFrequencyTable const & table, unsigned docCount)
+        std::unordered_map<size_t, size_t>
+            CreateDocCountHistogram(DocumentFrequencyTable const & table,
+                                    unsigned docCount)
         {
             std::unordered_map<size_t, size_t> histogram;
             for (size_t i = 0; i < table.size(); ++i)
             {
                 auto entry = table[i];
-                ++histogram[entry.second * docCount + 0.5];
+                ++histogram[static_cast<size_t>(entry.second * docCount + 0.5)];
             }
             return histogram;
         }
