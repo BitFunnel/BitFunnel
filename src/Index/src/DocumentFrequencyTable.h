@@ -12,7 +12,7 @@ namespace BitFunnel
     {
     public:
         // TODO: unifiy with other use of this?
-        typedef std::pair<Term, size_t> Entry;
+        typedef std::pair<Term, double> Entry;
 
         DocumentFrequencyTable(std::istream& input);
 

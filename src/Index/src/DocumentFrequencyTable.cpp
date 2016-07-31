@@ -25,9 +25,9 @@ namespace BitFunnel
             Term t(input);
             input >> comma;
             LogAssertB(comma == ',', "Bad input format.");
-            size_t count;
-            input >> count;
-            m_entries.push_back(std::make_pair(t, count));
+            double frequency;
+            input >> frequency;
+            m_entries.push_back(std::make_pair(t, frequency));
 
             // Need to delete whitespace so that peeking for EOF doesn't get a
             // '\n'.

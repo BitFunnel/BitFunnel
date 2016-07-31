@@ -38,7 +38,7 @@
 #include "IndexUtils.h"
 #include "Ingestor.h"
 #include "IRecycler.h"
- #include "MockTermTable.h"
+#include "MockTermTable.h"
 #include "Recycler.h"
 #include "BitFunnel/TermInfo.h"
 #include "BitFunnel/Term.h"
@@ -283,13 +283,13 @@ namespace BitFunnel
         }
 
 
-        std::unordered_map<size_t, size_t> CreateDocFreqHistogram(DocumentFrequencyTable const & table)
+        std::unordered_map<size_t, size_t> CreateDocCountHistogram(DocumentFrequencyTable const & table, unsigned docCount)
         {
             std::unordered_map<size_t, size_t> histogram;
             for (size_t i = 0; i < table.size(); ++i)
             {
                 auto entry = table[i];
-                ++histogram[entry.second];
+                ++histogram[entry.second * docCount + 0.5];
             }
             return histogram;
         }
@@ -310,7 +310,7 @@ namespace BitFunnel
             DocumentFrequencyTable table(stream);
 
             EXPECT_EQ(table.size(), 6u);
-            std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocFreqHistogram(table);
+            std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
             EXPECT_EQ(docFreqHistogram[32], 6u);
         }
 
@@ -325,7 +325,7 @@ namespace BitFunnel
             DocumentFrequencyTable table(stream);
 
             EXPECT_EQ(table.size(), 6u);
-            std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocFreqHistogram(table);
+            std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
             EXPECT_EQ(docFreqHistogram[31], 6u);
         }
 
@@ -340,7 +340,7 @@ namespace BitFunnel
             DocumentFrequencyTable table(stream);
 
             EXPECT_EQ(table.size(), 6u);
-            std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocFreqHistogram(table);
+            std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
             EXPECT_EQ(docFreqHistogram[30], 5u);
             EXPECT_EQ(docFreqHistogram[31], 1u);
         }
