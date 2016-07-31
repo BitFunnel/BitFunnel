@@ -135,6 +135,8 @@ namespace BitFunnel
         // is that documents may have been deleted.
         std::atomic<size_t> m_documentCount;
 
+        std::unique_ptr<DocumentMap> m_documentMap;
+
         std::vector<std::unique_ptr<Shard>> m_shards;
 
         // TokenManager which distributes tokens for thread synchronization.
@@ -151,7 +153,5 @@ namespace BitFunnel
         // blocks of the same byte size. Slices within Shards will choose the
         // capacity for which the byte size of the buffer is sufficient.
         ISliceBufferAllocator& m_sliceBufferAllocator;
-
-        std::unique_ptr<DocumentMap> m_documentMap;
     };
 }

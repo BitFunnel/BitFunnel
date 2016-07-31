@@ -136,7 +136,8 @@ namespace BitFunnel
             {
                 LogB(Logging::Error,
                      "Ingestor::Add",
-                     "Error while cleaning up after AddDocument operation failed.");
+                     "Error while cleaning up after AddDocument operation failed.",
+                     "");
             }
 
             // Re-throw the original exception back to the caller.
@@ -189,8 +190,8 @@ namespace BitFunnel
         }
 
         // In a case of documents deletes, a missing entry should not be treated
-        // as an error. This is to accommodate soft-deleting a large number of 
-        // documents where only the range of IDs is known, but not the exact 
+        // as an error. This is to accommodate soft-deleting a large number of
+        // documents where only the range of IDs is known, but not the exact
         // values.
 
         return isFound;
