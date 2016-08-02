@@ -22,10 +22,6 @@
 #include "SliceBufferAllocator.h"
 // #include "TrackingSliceBufferAllocator.h"
 
-// TODO: Fix the code below so that it actually compiles. It has dependencies
-// on things in src/Index/src.
-// Should we pull everything it depends on into inc?
-
 namespace BitFunnel
 {
     // Returns a vector with one entry for each line in the file.
@@ -143,54 +139,6 @@ namespace BitFunnel
         recycler->Shutdown();
         background.wait();
     }
-}
-
-
-void CreateTestFiles(char const * chunkPath, char const * manifestPath)
-{
-    {
-        std::ofstream chunkStream(chunkPath);
-
-        char const chunk[] =
-
-            // First document
-            "Title\0Dogs\0\0"
-            "Body\0Dogs\0are\0man's\0best\0friend.\0\0"
-            "\0"
-
-            // Second document
-            "Title\0Cat\0Facts\0\0"
-            "Body\0The\0internet\0is\0made\0of\0cats.\0\0"
-            "\0"
-
-            // Third document
-            "Title\0More\0Cat\0Facts\0\0"
-            "Body\0The\0internet\0really\0is\0made\0of\0cats.\0\0"
-            "\0"
-
-            // End of corpus
-            "\0";
-
-        // Write out sizeof(chunk) - 1 bytes to skip the trailing zero in corpus
-        // which is not part of the file format.
-        chunkStream.write(chunk, sizeof(chunk) - 1);
-        chunkStream.close();
-    }
-
-    {
-        std::ofstream manifestStream(manifestPath);
-        manifestStream << chunkPath << std::endl;
-        manifestStream.close();
-    }
-}
-
-
-int main2(int /*argc*/, char** /*argv*/)
-{
-    CreateTestFiles(
-        "/tmp/chunks/Chunk1",
-        "/tmp/chunks/manifest.txt");
-    return 0;
 }
 
 
