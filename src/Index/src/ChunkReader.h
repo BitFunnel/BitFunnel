@@ -22,11 +22,11 @@
 
 #pragma once
 
-#include <iosfwd>
+#include <stdint.h>
 #include <vector>
 
+#include "BitFunnel/BitFunnelTypes.h"           // DocId.
 #include "BitFunnel/IInterface.h"               // Base class.
-#include "BitFunnel/Index/DocumentHandle.h"     // DocId parameter.
 #include "BitFunnel/NonCopyable.h"              // Base class.
 #include "BitFunnel/Term.h"                     // Term::StreamId parameter.
 

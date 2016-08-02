@@ -22,7 +22,6 @@
 
 #include "gtest/gtest.h"
 
-#include "LoggerInterfaces/Logging.h"
 #include "Rounding.h"
 
 namespace BitFunnel

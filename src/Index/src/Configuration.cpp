@@ -20,7 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "BitFunnel/Exceptions.h"
+
+#include <memory>
+
 #include "BitFunnel/Index/Factories.h"
 #include "Configuration.h"
 

@@ -23,7 +23,10 @@
 
 #pragma once
 
-#include "BitFunnel/Row.h"    // Rank.
+#include <stddef.h>
+#include <stdint.h>
+
+#include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/RowId.h"  // RowIndex.
 
 namespace BitFunnel

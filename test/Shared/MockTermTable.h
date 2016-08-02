@@ -8,7 +8,6 @@
 #include "BitFunnel/PackedTermInfo.h"  // For PackedTermInfo.
 #include "BitFunnel/Row.h"  // For c_maxRankValue.
 #include "BitFunnel/RowId.h"  // For RowIndex.
-#include "Random.h"
 
 
 namespace BitFunnel

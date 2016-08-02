@@ -20,9 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
+#include <new>
+
 #include "BitFunnel/Exceptions.h"
-#include "Configuration.h"
+#include "BitFunnel/Index/DocumentHandle.h"  // for DocumentHandle
+#include "BitFunnel/Index/IConfiguration.h"  // for IConfiguration
 #include "Document.h"
+#include "LoggerInterfaces/Logging.h"        // for LogAssertB
 
 
 namespace BitFunnel

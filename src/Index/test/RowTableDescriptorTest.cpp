@@ -22,7 +22,6 @@
 
 
 #include <algorithm>
-#include <set>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -32,7 +31,6 @@
 #include "BitFunnel/Row.h"
 #include "BitFunnel/TermInfo.h"
 #include "EmptyTermTable.h"
-#include "Random.h"
 #include "Rounding.h"
 #include "RowTableDescriptor.h"
 

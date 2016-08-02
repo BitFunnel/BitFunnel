@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 
-#include <inttypes.h>
+#include <stdint.h>
 
 #include "BitFunnel/Utilities/Factories.h"
 #include "LoggerInterfaces/Logging.h"

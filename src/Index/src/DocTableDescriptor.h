@@ -24,10 +24,12 @@
 #pragma once
 
 #include <iosfwd>
-#include <memory>                           // For ptrdiff_t.
+#include <stddef.h>                               // for size_t, ptrdiff_t
+#include <stdint.h>                               // for uint32_t
+#include <vector>                                 // for vector
 
-#include "BitFunnel/Index/DocumentHandle.h"  // For DocId, DocIndex
-#include "BitFunnel/Index/IDocumentDataSchema.h"  // For VariableSizeBlobId, FixedSizeBlobId.
+#include "BitFunnel/BitFunnelTypes.h"             // for DocIndex, DocId
+#include "BitFunnel/Index/IDocumentDataSchema.h"  // for VariableSizeBlobId, FixedSizeBlobId.
 
 namespace NativeJIT
 {

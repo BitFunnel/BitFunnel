@@ -22,7 +22,6 @@
 
 #pragma once
 
-#include <ostream>
 #include <stdexcept>
 #include <sstream>
 

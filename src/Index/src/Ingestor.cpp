@@ -22,7 +22,6 @@
 
 #include <iostream>     // TODO: Remove this temporary header.
 #include <memory>
-#include <sstream>
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"

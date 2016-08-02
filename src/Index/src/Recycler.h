@@ -26,7 +26,6 @@
 #include <memory>
 #include <vector>
 
-#include "BitFunnel/IInterface.h"
 #include "BitFunnel/NonCopyable.h"
 #include "BlockingQueue.h"
 #include "IRecyclable.h"
@@ -37,7 +36,6 @@ namespace BitFunnel
     class ITokenManager;
     class ITokenTracker;
     class Slice;
-    class SliceBufferAllocator;
 
     // Class which represents a recycling logic which happens after a list of
     // slices was changed - either a new Slice was added to the list, or a

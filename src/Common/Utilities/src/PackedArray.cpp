@@ -6,7 +6,6 @@
 #include <sys/mman.h>  // For mmap/munmap.
 #endif
 
-#include <memory.h>                 // For memset.
 
 #include "BitFunnel/Utilities/FileHeader.h"
 #include "BitFunnel/Utilities/StreamUtilities.h"

@@ -30,7 +30,6 @@
 
 namespace CmdLine
 {
-    class IConstraint;
     class IOptionalParameter;
 
     //*************************************************************************

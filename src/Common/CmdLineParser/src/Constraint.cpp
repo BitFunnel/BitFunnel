@@ -20,6 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
+#include <stdexcept>
+#include <string>
+
 #include "CmdLineParser/Constraint.h"
 #include "CmdLineParser/Parameter.h"
 

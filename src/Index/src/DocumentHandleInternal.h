@@ -22,11 +22,14 @@
 
 #pragma once
 
+#include "BitFunnel/BitFunnelTypes.h"        // for DocIndex, DocId
 #include "BitFunnel/Index/DocumentHandle.h"
 
 
 namespace BitFunnel
 {
+    class Slice;
+
     //*************************************************************************
     //
     // Internal representation of the DocumentHandle. Instances of this class

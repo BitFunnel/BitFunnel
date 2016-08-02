@@ -3,7 +3,7 @@
 // domain. The author hereby disclaims copyright to this source code.
 //
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <stddef.h>
 
 #if defined(_MSC_VER)

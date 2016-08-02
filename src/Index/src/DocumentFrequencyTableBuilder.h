@@ -2,7 +2,6 @@
 
 #include <iosfwd>
 #include <unordered_map>
-#include <utility>
 #include <vector>
 
 #include "BitFunnel/Term.h"

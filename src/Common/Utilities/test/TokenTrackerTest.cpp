@@ -21,9 +21,7 @@
 // THE SOFTWARE.
 
 
-#include <functional>
 #include <memory>
-#include <thread>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -31,7 +29,6 @@
 #include "BitFunnel/Utilities/ITaskDistributor.h"
 #include "BitFunnel/Utilities/ITaskProcessor.h"
 #include "BitFunnel/Utilities/Factories.h"
-#include "TaskDistributor.h"
 #include "TokenTracker.h"
 
 namespace BitFunnel

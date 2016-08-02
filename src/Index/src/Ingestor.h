@@ -23,10 +23,13 @@
 #pragma once
 
 #include <atomic>                           // std::atomic member.
+#include <iosfwd>
+#include <memory>
 #include <mutex>                            // std::mutex member.
 #include <stddef.h>                         // size_t template parameter.
+#include <vector>
 
-#include "BitFunnel/Index/DocumentHandle.h" // DocHandleInternal template parameter.
+#include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Index/IIngestor.h"      // Inherits from IIngestor.
 #include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/Token.h"
@@ -37,8 +40,11 @@
 
 namespace BitFunnel
 {
+    class IDocument;
+    class IDocumentDataSchema;
     class IRecycler;
     class ISliceBufferAllocator;
+    class ITermTable;
 
 
     class Ingestor : public IIngestor, NonCopyable

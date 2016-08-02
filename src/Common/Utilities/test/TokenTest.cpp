@@ -21,8 +21,6 @@
 // THE SOFTWARE.
 
 
-#include <memory>
-
 #include "gtest/gtest.h"
 
 #include "BitFunnel/Token.h"

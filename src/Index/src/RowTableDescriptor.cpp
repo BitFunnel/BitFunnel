@@ -22,7 +22,6 @@
 
 
 #include <cstring>
-#include <memory>
 
 #include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Row.h"

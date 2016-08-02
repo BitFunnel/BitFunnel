@@ -24,8 +24,6 @@
 #pragma once
 
 #include <istream>      // std::istream used as a parameter.
-#include <ostream>      // std::ostream used as a parameter.
-
 
 namespace BitFunnel
 {

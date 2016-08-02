@@ -23,15 +23,13 @@
 #pragma once
 
 #include <atomic>
+#include <stddef.h>
+#include <stdint.h>
 #include <mutex>
-//#include <iosfwd>
-//#include <vector>
-//
-#include "BitFunnel/Index/DocumentHandle.h"  // For DocIndex.
+
 #include "BitFunnel/NonCopyable.h"  // Inherits from NonCopyable.
-#include "BitFunnel/Row.h"  // For Rank.
-//#include "BitFunnel/BitFunnelTypes.h"                // DocIndex is a member variable.
-//#include "BitFunnel/ThreadsafeCounter.h"             // Member variable.
+#include "BitFunnel/BitFunnelTypes.h"   // for DocIndex, Rank.
+#include "BitFunnel/Row.h"
 
 namespace BitFunnel
 {

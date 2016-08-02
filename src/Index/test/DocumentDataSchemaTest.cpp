@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
-#include <memory>
+#include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
 
-#include "BitFunnel/Index/DocumentHandle.h"  // For DocId.
+#include "BitFunnel/Index/IDocumentDataSchema.h"
 #include "DocumentDataSchema.h"
 
 namespace BitFunnel

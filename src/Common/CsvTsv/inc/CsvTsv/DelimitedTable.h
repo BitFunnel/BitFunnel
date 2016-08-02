@@ -24,8 +24,7 @@
 
 
 #include <istream>
-#include <ostream>
-#include <string.h>
+#include <string>
 #include <vector>
 
 #include "Table.h"

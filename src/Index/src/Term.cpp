@@ -24,7 +24,6 @@
 #include <cstring>          // For strlen.
 #include <istream>
 #include <math.h>           // For log10.
-#include <ostream>          // Print() uses std::ostream.
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Term.h"

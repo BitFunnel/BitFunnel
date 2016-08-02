@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #include <iostream>
-#include <sstream>
 #include <vector>
 
 #include "CsvTsv/Csv.h"

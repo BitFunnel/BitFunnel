@@ -1,12 +1,9 @@
 #include "gtest/gtest.h"
 
 #include "BitFunnel/BitFunnelTypes.h"  // For DocIndex.
-#include "BitFunnel/RowId.h"  // For RowIndex.
 #include "DocTableDescriptor.h"
 #include "DocumentDataSchema.h"
 #include "IndexUtils.h"
-#include "EmptyTermTable.h"
-#include "Shard.h"
 
 namespace BitFunnel
 {

@@ -1,20 +1,20 @@
-#include <fstream>
+#include <algorithm>
 #include <future>
+#include <fstream>
 #include <iostream>
 #include <memory>
+#include <stddef.h>
+#include <string>
 #include <vector>
 
-#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/Stream.h"
-#include "BitFunnel/TermInfo.h"
 #include "CmdLineParser/CmdLineParser.h"
 #include "DocumentDataSchema.h"
-#include "DocumentHandleInternal.h"
 #include "IndexUtils.h"
 #include "IRecycler.h"
 #include "MockTermTable.h"

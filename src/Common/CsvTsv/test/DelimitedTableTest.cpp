@@ -22,10 +22,6 @@
 
 #include <iostream>
 #include <limits>
-#include <sstream>
-#include <stdexcept>
-#include <stdio.h>
-
 
 #include "CsvTsv/Csv.h"
 #include "CsvTsv/Tsv.h"

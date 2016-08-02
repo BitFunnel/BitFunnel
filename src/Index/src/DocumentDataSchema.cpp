@@ -21,7 +21,8 @@
 // THE SOFTWARE.
 
 
-#include "BitFunnel/Index/DocumentHandle.h"  // For DocId.
+#include <memory>
+
 #include "BitFunnel/Index/Factories.h"
 #include "DocumentDataSchema.h"
 

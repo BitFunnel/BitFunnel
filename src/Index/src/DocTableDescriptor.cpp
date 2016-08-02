@@ -22,11 +22,12 @@
 
 
 #include <cstring>
+#include <memory>
+#include <stdlib.h>
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Utilities/StreamUtilities.h"
 #include "DocTableDescriptor.h"
-#include "LoggerInterfaces/Logging.h"
 #include "Rounding.h"
 
 

@@ -20,10 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <algorithm>    // For std::min() or std::max()
+#include <algorithm>    // for std::min() or std::max()
 #include <sstream>
+#include <string.h>     // for strcmp, NULL
+#include <stdexcept>    // for runtime_error
+#include <string>       // for operator<<, string
+#include <vector>       // for vector
 
-#include "CmdLineParser/CmdLineParser.h"
 #include "CmdLineParser/FormattingUtilities.h"
 #include "CmdLineParser/Parameter.h"
 

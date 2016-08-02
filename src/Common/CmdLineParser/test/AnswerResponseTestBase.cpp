@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>
 #include <ostream>
-
 #include <string.h> // For strdup
 
 #include "AnswerResponseTestBase.h"

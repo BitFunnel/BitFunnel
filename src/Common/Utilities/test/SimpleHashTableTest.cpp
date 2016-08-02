@@ -25,18 +25,12 @@
 
 #include "gtest/gtest.h"
 
-#include "BitFunnel/Allocators//IAllocator.h"
 #include "SimpleHashTable.h"
 #include "ThrowingLogger.h"
 
 
 namespace BitFunnel
 {
-    namespace SimpleHashPolicy
-    {
-        class Threadsafe;
-    }
-
     namespace SimpleHashTableTest
     {
 

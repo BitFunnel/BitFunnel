@@ -22,7 +22,6 @@
 
 
 #include <cstring>
-#include <ctime>
 #include <time.h>
 
 #include "BitFunnel/Utilities/FileHeader.h"

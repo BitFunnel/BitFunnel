@@ -26,13 +26,11 @@
 #include <memory>                               // std::unique_ptr member.
 #include <mutex>                                // std::mutex member.
 #include <ostream>                              // TODO: Remove this temporary include.
-#include <unordered_map>                        // TODO: Remove this temporary include.
 #include <vector>
 //
 //#include "BitFunnel/Internal/IShardIndex.h"  // Inherits from IShardIndex.
 //#include "BitFunnel/RowId.h"                 // Embeds RowId.
 
-#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/Term.h"
 #include "DocTableDescriptor.h"              // Required for embedded std::unique_ptr.
@@ -47,7 +45,7 @@ namespace BitFunnel
     //class IDocumentDataSchema;
     //class IngestionIndex;
     class ISliceBufferAllocator;
-    //class ITermTable;
+    class ITermTable;
     class IIngestor;
     class Slice;
     class Term;     // TODO: Remove this temporary declaration.

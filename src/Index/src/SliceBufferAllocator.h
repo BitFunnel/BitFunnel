@@ -24,8 +24,8 @@
 #pragma once
 
 #include <memory>
+#include <stddef.h>
 
-#include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/Utilities/IBlockAllocator.h"
 #include "BitFunnel/NonCopyable.h"
 #include "ISliceBufferAllocator.h"

@@ -20,15 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
 #pragma once
+
+#include <iosfwd>                    // for ostream
+#include <string>                    // for string
 
 #include "AnswerResponseTestBase.h"
 
 
 namespace CmdLine
 {
-    class CmdLineParser;
-
     class CmdLineParserTest : public AnswerResponseTestBase
     {
     public:

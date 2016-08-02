@@ -21,8 +21,6 @@
 // THE SOFTWARE.
 
 
-#include <iostream> // TODO remove this temporary include
-
 #include "CsvTsv/Csv.h"
 #include "CsvTsv/Table.h"
 #include "DocumentLengthHistogram.h"
