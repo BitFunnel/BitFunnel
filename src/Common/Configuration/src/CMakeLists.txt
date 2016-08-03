@@ -5,6 +5,7 @@ set(CPPFILES
 )
 
 set(WINDOWS_CPPFILES
+    ParameterizedFile.cpp
 )
 
 set(POSIX_CPPFILES
@@ -15,6 +16,7 @@ set(PRIVATE_HFILES
 )
 
 set(WINDOWS_PRIVATE_HFILES
+    ParameterizedFile.h
 )
 
 set(POSIX_PRIVATE_HFILES

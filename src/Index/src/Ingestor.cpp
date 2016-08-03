@@ -23,6 +23,7 @@
 #include <iostream>     // TODO: Remove this temporary header.
 #include <memory>
 
+#include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocument.h"
@@ -37,23 +38,27 @@
 namespace BitFunnel
 {
     std::unique_ptr<IIngestor>
-    Factories::CreateIngestor(IDocumentDataSchema const & docDataSchema,
+    Factories::CreateIngestor(IFileManager& fileManager,
+                              IDocumentDataSchema const & docDataSchema,
                               IRecycler& recycler,
                               ITermTable const & termTable,
                               ISliceBufferAllocator& sliceBufferAllocator)
     {
-        return std::unique_ptr<IIngestor>(new Ingestor(docDataSchema,
+        return std::unique_ptr<IIngestor>(new Ingestor(fileManager,
+                                                       docDataSchema,
                                                        recycler,
                                                        termTable,
                                                        sliceBufferAllocator));
     }
 
 
-    Ingestor::Ingestor(IDocumentDataSchema const & docDataSchema,
+    Ingestor::Ingestor(IFileManager& fileManager,
+                       IDocumentDataSchema const & docDataSchema,
                        IRecycler& recycler,
                        ITermTable const & termTable,
                        ISliceBufferAllocator& sliceBufferAllocator)
-        : m_recycler(recycler),
+        : m_fileManager(fileManager),
+          m_recycler(recycler),
           m_documentCount(0),   // TODO: This member is now redundant (with m_documentMap).
           m_documentMap(new DocumentMap()),
           m_tokenManager(Factories::CreateTokenManager()),
@@ -76,29 +81,26 @@ namespace BitFunnel
     void Ingestor::PrintStatistics() const
     {
         std::cout << "Document count: " << m_documentCount << std::endl;
-        std::cout << "Term count: " << m_postingsCount.m_totalCount << std::endl;
+        std::cout << "Term count: " << m_histogram.m_totalCount << std::endl;
     }
 
 
-    void Ingestor::WriteDocumentFrequencyTable(std::ostream& out) const
+    void Ingestor::WriteStatistics() const
     {
-        // TODO: Either write one file per shard, or move term
-        // frequency table up to ingestor.
-        m_shards[0]->TemporaryWriteDocumentFrequencyTable(out);
-    }
+        {
+            auto out = m_fileManager.DocumentLengthHistogram().OpenForWrite();
+            m_histogram.Write(*out);
+        }
 
-
-    void Ingestor::WriteDocumentLengthHistogram(std::ostream & out) const
-    {
-        m_postingsCount.Write(out);
-    }
-
-
-    void Ingestor::WriteCumulativePostingCounts(std::ostream & out) const
-    {
-        // TODO: Either write one file per shard, or move term
-        // frequency table up to ingestor.
-        m_shards[0]->TemporaryWriteCumulativePostingCounts(out);
+        // TODO: Loop over all shards.
+        {
+            auto out = m_fileManager.CumulativePostingCounts(0).OpenForWrite();
+            m_shards[0]->TemporaryWriteCumulativePostingCounts(*out);
+        }
+        {
+            auto out = m_fileManager.DocFreqTable(0).OpenForWrite();
+            m_shards[0]->TemporaryWriteDocumentFrequencyTable(*out);
+        }
     }
 
 
@@ -108,7 +110,7 @@ namespace BitFunnel
 
         // Add postingCount to the DocumentLengthHistogram
 //        std::cout << "DocId: " << id << ": " << document.GetPostingCount() << std::endl;
-        m_postingsCount.AddDocument(document.GetPostingCount());
+        m_histogram.AddDocument(document.GetPostingCount());
 
         DocumentHandleInternal handle = m_shards[0]->AllocateDocument(id);
         document.Ingest(handle);

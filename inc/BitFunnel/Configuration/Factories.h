@@ -22,7 +22,9 @@
 
 #pragma once
 
-#include <memory>  // For std::unique_ptr.
+#include <memory>                       // std::unique_ptr return value.
+
+#include "BitFunnel/IFileManager.h"     // IFileManager template parameter.
 
 
 namespace BitFunnel

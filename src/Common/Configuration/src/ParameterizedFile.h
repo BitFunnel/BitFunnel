@@ -22,12 +22,10 @@
 
 #pragma once
 
-#include <fstream>
 #include <sstream>
 #include <string>
 
 #include "BitFunnel/IFileManager.h"
-// #include "BitFunnel/Tier.h"
 
 
 namespace BitFunnel
@@ -45,10 +43,10 @@ namespace BitFunnel
                           const char* baseName,
                           const char* extension);
 
-        std::istream* OpenForRead(const std::string& filename);
+        std::unique_ptr<std::istream> OpenForRead(const std::string& filename);
     protected:
         std::string GetTempName(const std::string& filename);
-        std::ostream* OpenForWrite(const std::string& filename);
+        std::unique_ptr<std::ostream> OpenForWrite(const std::string& filename);
         void Commit(const std::string& filename);
         bool Exists(const std::string& filename);
         void Delete(const std::string& filename);
@@ -65,18 +63,6 @@ namespace BitFunnel
                 return value;
             }
         };
-
-
-        /* TODO: do we need this?
-        template <>
-        struct Converter<Tier>
-        {
-            static const char* Convert(const Tier& value)
-            {
-                return TierToString(value);
-            }
-        };
-        */
     };
 
 
@@ -88,15 +74,16 @@ namespace BitFunnel
                            const char* extension);
 
         std::string GetName();
-        std::istream* OpenForRead();
-        std::ostream* OpenForWrite();
-        std::ostream* OpenTempForWrite();
+        std::unique_ptr<std::istream> OpenForRead();
+        std::unique_ptr<std::ostream> OpenForWrite();
+        std::unique_ptr<std::ostream> OpenTempForWrite();
         void Commit();
         bool Exists();
         void Delete();
     };
 
 
+    // TODO: Move these to the cpp file.
     class ParameterizedFile1 : public IParameterizedFile1, public ParameterizedFile
     {
     public:
@@ -116,19 +103,19 @@ namespace BitFunnel
         }
 
 
-        std::istream* OpenForRead(size_t p1)
+        std::unique_ptr<std::istream> OpenForRead(size_t p1)
         {
             return ParameterizedFile::OpenForRead(GetName(p1));
         }
 
 
-        std::ostream* OpenForWrite(size_t p1)
+        std::unique_ptr<std::ostream> OpenForWrite(size_t p1)
         {
             return ParameterizedFile::OpenForWrite(GetName(p1));
         }
 
 
-        std::ostream* OpenTempForWrite(size_t p1)
+        std::unique_ptr<std::ostream> OpenTempForWrite(size_t p1)
         {
             return ParameterizedFile::OpenForWrite(GetTempName(GetName(p1)));
         }
@@ -153,6 +140,7 @@ namespace BitFunnel
     };
 
 
+    // TODO: Move these to the cpp file.
     class ParameterizedFile2 : public IParameterizedFile2, public ParameterizedFile
     {
     public:
@@ -172,19 +160,19 @@ namespace BitFunnel
         }
 
 
-        std::istream* OpenForRead(size_t p1, size_t p2)
+        std::unique_ptr<std::istream> OpenForRead(size_t p1, size_t p2)
         {
             return ParameterizedFile::OpenForRead(GetName(p1, p2));
         }
 
 
-        std::ostream* OpenForWrite(size_t p1, size_t p2)
+        std::unique_ptr<std::ostream> OpenForWrite(size_t p1, size_t p2)
         {
             return ParameterizedFile::OpenForWrite(GetName(p1, p2));
         }
 
 
-        std::ostream* OpenTempForWrite(size_t p1, size_t p2)
+        std::unique_ptr<std::ostream> OpenTempForWrite(size_t p1, size_t p2)
         {
             return ParameterizedFile::OpenForWrite(GetTempName(GetName(p1, p2)));
         }

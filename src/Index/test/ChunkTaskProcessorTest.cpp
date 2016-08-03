@@ -29,15 +29,17 @@
 
 #include "gtest/gtest.h"
 
+#include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/RowId.h"
+#include "ChunkTaskProcessor.h"
 #include "DocumentDataSchema.h"
 #include "EmptyTermTable.h"
 #include "IRecycler.h"
-#include "ChunkTaskProcessor.h"
+#include "MockFileManager.h"
 #include "Recycler.h"
 #include "SliceBufferAllocator.h"
 
@@ -56,6 +58,8 @@ namespace BitFunnel
             size_t ngramSize,
             std::function<void(ChunkTaskProcessor &)> const & test)
         {
+            auto fileManager = CreateMockFileManager();
+
             const std::unique_ptr<IConfiguration>
                 configuration(Factories::CreateConfiguration(ngramSize));
 
@@ -78,7 +82,8 @@ namespace BitFunnel
             DocumentDataSchema schema;
 
             const std::unique_ptr<IIngestor>
-                ingestor(Factories::CreateIngestor(schema,
+                ingestor(Factories::CreateIngestor(*fileManager,
+                                                   schema,
                                                    *recycler,
                                                    *termTable,
                                                    *sliceBufferAllocator));

@@ -22,32 +22,12 @@
 
 #pragma once
 
-#include <memory>
+#include <memory>                       // std::auto_ptr<T> return value.
+
+#include "BitFunnel/IFileManager.h"     // IFileManager template parameter.
+
 
 namespace BitFunnel
 {
-    class IConfiguration;
-    class IDocumentDataSchema;
-    class IFactSet;
-    class IFileManager;
-    class IIngestor;
-    class IRecycler;
-    class ITermTable;
-    class ISliceBufferAllocator;
-
-    namespace Factories
-    {
-        std::unique_ptr<IConfiguration> CreateConfiguration(size_t maxGramSize);
-
-        std::unique_ptr<IFactSet> CreateFactSet();
-
-        std::unique_ptr<IIngestor>
-            CreateIngestor(IFileManager& filemanager,
-                           IDocumentDataSchema const & docDataSchema,
-                           IRecycler& recycler,
-                           ITermTable const & termTable,
-                           ISliceBufferAllocator& sliceBufferAllocator);
-
-        std::unique_ptr<IDocumentDataSchema> CreateDocumentDataSchema();
-    }
+    std::unique_ptr<IFileManager> CreateMockFileManager();
 }

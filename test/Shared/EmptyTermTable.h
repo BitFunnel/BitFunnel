@@ -29,7 +29,7 @@
 #include "BitFunnel/ITermTable.h"
 #include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/RowId.h"  // For RowIndex.
-// #include "BitFunnel/Term.h"  // For Term::Hash.
+
 
 namespace BitFunnel
 {

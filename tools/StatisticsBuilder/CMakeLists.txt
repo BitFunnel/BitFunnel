@@ -29,6 +29,6 @@ include_directories(${CMAKE_SOURCE_DIR}/test/Shared)
 
 
 add_executable(StatisticBuilder ${CPPFILES} ${PRIVATE_HFILES} ${PUBLIC_HFILES})
-target_link_libraries(StatisticBuilder CmdLineParser TestShared Index CsvTsv Utilities)
+target_link_libraries(StatisticBuilder CmdLineParser TestShared Index Configuration CsvTsv Utilities)
 set_property(TARGET StatisticBuilder PROPERTY FOLDER "tools")
 set_property(TARGET StatisticBuilder PROPERTY PROJECT_LABEL "StatisticsBuilder")

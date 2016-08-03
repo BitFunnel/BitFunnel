@@ -36,6 +36,7 @@
 #include "IndexUtils.h"
 #include "Ingestor.h"
 #include "IRecycler.h"
+#include "MockFileManager.h"
 #include "MockTermTable.h"
 #include "EmptyTermTable.h"
 #include "Recycler.h"
@@ -71,6 +72,8 @@ namespace BitFunnel
 
         TEST(DocumentHandle, DocTableIntegration)
         {
+            auto fileManager = CreateMockFileManager();
+
             DocumentDataSchema schema;
             const VariableSizeBlobId variableBlob =
                 schema.RegisterVariableSizeBlob();
@@ -94,7 +97,8 @@ namespace BitFunnel
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
             const std::unique_ptr<IIngestor>
-                ingestor(Factories::CreateIngestor(schema,
+                ingestor(Factories::CreateIngestor(*fileManager,
+                                                   schema,
                                                    *recycler,
                                                    *termTable,
                                                    *trackingAllocator));
@@ -248,6 +252,8 @@ namespace BitFunnel
 
         TEST(DocumentHandle, RowTableIntegration)
         {
+            auto fileManager = CreateMockFileManager();
+
             DocumentDataSchema schema;
 
             std::unique_ptr<IRecycler> recycler =
@@ -277,7 +283,8 @@ namespace BitFunnel
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
             const std::unique_ptr<IIngestor>
-                ingestor(Factories::CreateIngestor(schema,
+                ingestor(Factories::CreateIngestor(*fileManager,
+                                                   schema,
                                                    *recycler,
                                                    *termTable,
                                                    *trackingAllocator));
@@ -361,6 +368,8 @@ namespace BitFunnel
         // recycling.
         TEST(DocumentHandle, ExpireTriggersRecycle)
         {
+            auto fileManager = CreateMockFileManager();
+
             // Arbitrary amount of time to sleep in order to wait for Recycler.
             static const auto c_sleepTime = std::chrono::milliseconds(1);
 
@@ -382,7 +391,8 @@ namespace BitFunnel
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
             const std::unique_ptr<IIngestor>
-                ingestor(Factories::CreateIngestor(schema,
+                ingestor(Factories::CreateIngestor(*fileManager,
+                                                   schema,
                                                    *recycler,
                                                    *termTable,
                                                    *trackingAllocator));

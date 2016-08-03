@@ -28,6 +28,7 @@
 #include "LoggerInterfaces/Logging.h"
 #include "ParameterizedFile.h"
 
+
 namespace BitFunnel
 {
     std::unique_ptr<IFileManager>
@@ -44,7 +45,7 @@ namespace BitFunnel
     FileManager::FileManager(char const * intermediateDirectory,
                              char const * indexDirectory,
                              char const * /*backupDirectory*/)
-        : m_cumulativePostingCounts(new ParameterizedFile0(intermediateDirectory,
+        : m_cumulativePostingCounts(new ParameterizedFile1(intermediateDirectory,
                                                            "CumulativePostingCounts",
                                                            ".csv")),
           m_documentLengthHistogram(new ParameterizedFile0(intermediateDirectory,
@@ -56,15 +57,15 @@ namespace BitFunnel
     }
 
 
-    FileDescriptor0 FileManager::CumulativePostingCounts()
-    {
-        return FileDescriptor0(*m_cumulativePostingCounts);
-    }
-
-
     FileDescriptor0 FileManager::DocumentLengthHistogram()
     {
         return FileDescriptor0(*m_documentLengthHistogram);
+    }
+
+
+    FileDescriptor1 FileManager::CumulativePostingCounts(size_t shard)
+    {
+        return FileDescriptor1(*m_cumulativePostingCounts, shard);
     }
 
 

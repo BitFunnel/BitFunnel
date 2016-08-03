@@ -29,15 +29,16 @@
 
 #include "gtest/gtest.h"
 
-#include "Configuration.h"
-#include "Document.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
+#include "Configuration.h"
+#include "Document.h"
 #include "DocumentDataSchema.h"
 #include "DocumentFrequencyTable.h"
 #include "IndexUtils.h"
 #include "Ingestor.h"
 #include "IRecycler.h"
+#include "MockFileManager.h"
 #include "MockTermTable.h"
 #include "Recycler.h"
 #include "BitFunnel/TermInfo.h"
@@ -79,6 +80,8 @@ namespace BitFunnel
         public:
             IndexWrapper()
             {
+                auto fileManager = CreateMockFileManager();
+
                 DocumentDataSchema schema;
                 // Register blobs here, if necessary.
 
@@ -119,7 +122,8 @@ namespace BitFunnel
                     (new TrackingSliceBufferAllocator(sliceBufferSize));
 
                 m_ingestor =
-                    Factories::CreateIngestor(schema,
+                    Factories::CreateIngestor(*fileManager,
+                                              schema,
                                               *m_recycler,
                                               *m_termTable,
                                               *m_allocator);

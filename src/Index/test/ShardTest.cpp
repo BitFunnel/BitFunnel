@@ -30,11 +30,12 @@
 #include "BitFunnel/Row.h"
 #include "BitFunnel/TermInfo.h"
 #include "DocumentDataSchema.h"
+#include "EmptyTermTable.h"
 #include "IndexUtils.h"
 #include "Ingestor.h"
 #include "IRecycler.h"
 #include "ISliceBufferAllocator.h"
-#include "EmptyTermTable.h"
+#include "MockFileManager.h"
 #include "Recycler.h"
 #include "Shard.h"
 #include "Slice.h"
@@ -66,6 +67,8 @@ namespace BitFunnel
 
         TEST(Shard, Basic)
         {
+            auto fileManager = CreateMockFileManager();
+
             DocumentDataSchema schema;
 
             std::unique_ptr<IRecycler> recycler =
@@ -84,7 +87,8 @@ namespace BitFunnel
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
             const std::unique_ptr<IIngestor>
-                ingestor(Factories::CreateIngestor(schema,
+                ingestor(Factories::CreateIngestor(*fileManager,
+                                                   schema,
                                                    *recycler,
                                                    *termTable,
                                                    *trackingAllocator));
@@ -152,6 +156,8 @@ namespace BitFunnel
 
         TEST(Shard, AddRemoveSlice)
         {
+            auto fileManager = CreateMockFileManager();
+
             DocumentDataSchema schema;
 
             std::unique_ptr<IRecycler> recycler =
@@ -170,7 +176,8 @@ namespace BitFunnel
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
             const std::unique_ptr<IIngestor>
-                ingestor(Factories::CreateIngestor(schema,
+                ingestor(Factories::CreateIngestor(*fileManager,
+                                                   schema,
                                                    *recycler,
                                                    *termTable,
                                                    *trackingAllocator));

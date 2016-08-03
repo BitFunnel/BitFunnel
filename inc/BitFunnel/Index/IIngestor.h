@@ -64,9 +64,7 @@ namespace BitFunnel
         // TODO: Remove this temporary method.
         virtual void PrintStatistics() const = 0;
 
-        virtual void WriteDocumentFrequencyTable(std::ostream& out) const = 0;
-        virtual void WriteDocumentLengthHistogram(std::ostream & out) const = 0;
-        virtual void WriteCumulativePostingCounts(std::ostream & out) const = 0;
+        virtual void WriteStatistics() const = 0;
 
         // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.

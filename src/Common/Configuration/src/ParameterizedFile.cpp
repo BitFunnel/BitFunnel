@@ -21,8 +21,7 @@
 // THE SOFTWARE.
 
 
-#include "stdafx.h"
-
+#include <fstream>
 #include <istream>
 #include <Windows.h>                // For DeleteFile.
 
@@ -56,12 +55,12 @@ namespace BitFunnel
     }
 
 
-    std::istream* ParameterizedFile::OpenForRead(const std::string& filename)
+    std::unique_ptr<std::istream> ParameterizedFile::OpenForRead(const std::string& filename)
     {
         std::ifstream* stream = new std::ifstream(filename.c_str(), std::ifstream::binary);
         stream->exceptions ( std::ifstream::badbit );
         LogAssertB(stream->is_open(), "File %s failed to open for read.", filename.c_str());
-        return stream;
+        return std::unique_ptr<std::istream>(stream);
     }
 
 
@@ -71,12 +70,12 @@ namespace BitFunnel
     }
 
 
-    std::ostream* ParameterizedFile::OpenForWrite(const std::string& filename)
+    std::unique_ptr<std::ostream> ParameterizedFile::OpenForWrite(const std::string& filename)
     {
         std::ofstream* stream =  new std::ofstream(filename.c_str(), std::ofstream::binary);
         stream->exceptions ( std::ifstream::failbit | std::ifstream::badbit );
         LogAssertB(stream->is_open(), "File %s failed to open for write.", filename.c_str());
-        return stream;
+        return std::unique_ptr<std::ostream>(stream);
     }
 
 
@@ -134,19 +133,19 @@ namespace BitFunnel
     }
 
 
-    std::istream* ParameterizedFile0::OpenForRead()
+    std::unique_ptr<std::istream> ParameterizedFile0::OpenForRead()
     {
         return ParameterizedFile::OpenForRead(GetName());
     }
 
 
-    std::ostream* ParameterizedFile0::OpenForWrite()
+    std::unique_ptr<std::ostream> ParameterizedFile0::OpenForWrite()
     {
         return ParameterizedFile::OpenForWrite(GetName());
     }
 
 
-    std::ostream* ParameterizedFile0::OpenTempForWrite()
+    std::unique_ptr<std::ostream> ParameterizedFile0::OpenTempForWrite()
     {
         return ParameterizedFile::OpenForWrite(GetTempName(GetName()));
     }

@@ -30,17 +30,19 @@
 
 #include "gtest/gtest.h"
 
+#include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/TermInfo.h"
 #include "DocumentDataSchema.h"
+#include "EmptyTermTable.h"
 #include "IndexUtils.h"
 #include "Ingestor.h"
 #include "IRecycler.h"
 #include "ISliceBufferAllocator.h"
-#include "EmptyTermTable.h"
+#include "MockFileManager.h"
 #include "Recycler.h"
 #include "Shard.h"
 #include "Slice.h"
@@ -53,6 +55,8 @@ namespace BitFunnel
     {
         TEST(Slice, SliceAllocateCommit)
         {
+            auto fileManager = CreateMockFileManager();
+
             std::unique_ptr<IRecycler> recycler =
                 std::unique_ptr<IRecycler>(new Recycler());
             auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
@@ -71,7 +75,8 @@ namespace BitFunnel
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
             std::unique_ptr<IIngestor>
-                ingestor(Factories::CreateIngestor(schema,
+                ingestor(Factories::CreateIngestor(*fileManager,
+                                                   schema,
                                                    *recycler,
                                                    *termTable,
                                                    *trackingAllocator));
@@ -181,6 +186,8 @@ namespace BitFunnel
 
         TEST(Slice, RefCount)
         {
+            auto fileManager = CreateMockFileManager();
+
             static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
 
             // Arbitrary amount of time to sleep in order to wait for Recycler.
@@ -204,7 +211,8 @@ namespace BitFunnel
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
             const std::unique_ptr<IIngestor>
-                ingestor(Factories::CreateIngestor(schema,
+                ingestor(Factories::CreateIngestor(*fileManager,
+                                                   schema,
                                                    *recycler,
                                                    *termTable,
                                                    *trackingAllocator));
@@ -256,6 +264,8 @@ namespace BitFunnel
 
         TEST(Slice, BasicIntegration)
         {
+            auto fileManager = CreateMockFileManager();
+
             DocumentDataSchema schema;
             const VariableSizeBlobId varBlobId0 = schema.RegisterVariableSizeBlob();
 
@@ -275,7 +285,8 @@ namespace BitFunnel
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
             const std::unique_ptr<IIngestor>
-                ingestor(Factories::CreateIngestor(schema,
+                ingestor(Factories::CreateIngestor(*fileManager,
+                                                   schema,
                                                    *recycler,
                                                    *termTable,
                                                    *trackingAllocator));

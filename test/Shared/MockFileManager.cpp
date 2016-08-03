@@ -20,34 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include "BitFunnel/Configuration/Factories.h"
+#include "MockFileManager.h"
 
-#include <memory>
 
 namespace BitFunnel
 {
-    class IConfiguration;
-    class IDocumentDataSchema;
-    class IFactSet;
-    class IFileManager;
-    class IIngestor;
-    class IRecycler;
-    class ITermTable;
-    class ISliceBufferAllocator;
-
-    namespace Factories
+    std::unique_ptr<IFileManager> CreateMockFileManager()
     {
-        std::unique_ptr<IConfiguration> CreateConfiguration(size_t maxGramSize);
-
-        std::unique_ptr<IFactSet> CreateFactSet();
-
-        std::unique_ptr<IIngestor>
-            CreateIngestor(IFileManager& filemanager,
-                           IDocumentDataSchema const & docDataSchema,
-                           IRecycler& recycler,
-                           ITermTable const & termTable,
-                           ISliceBufferAllocator& sliceBufferAllocator);
-
-        std::unique_ptr<IDocumentDataSchema> CreateDocumentDataSchema();
+        // TODO: Change paths for Linux/Posix.
+        return Factories::CreateFileManager("c:\\temp\\",
+                                            "c:\\temp\\", 
+                                            "c:\\temp\\");
     }
 }

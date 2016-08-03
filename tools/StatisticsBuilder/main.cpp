@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
@@ -47,11 +49,14 @@ namespace BitFunnel
     }
 
 
-    static void LoadAndIngestChunkList(char const * chunkListFileName,
-                                       char const * docFreqTableFileName,
-                                       char const * docLengthHistogramFileName,
-                                       char const * cumulativePostingCountsFileName)
+    static void LoadAndIngestChunkList(char const * intermediateDirectory,
+                                       char const * chunkListFileName,
+                                       bool generateStatistics)
     {
+        auto fileManager = Factories::CreateFileManager(intermediateDirectory,
+                                                        intermediateDirectory,
+                                                        intermediateDirectory);
+
         // TODO: Add try/catch around file operations.
         std::cout << "Loading chunk list file '" << chunkListFileName << "'"
             << std::endl;
@@ -82,7 +87,8 @@ namespace BitFunnel
             sliceAllocator(new SliceBufferAllocator(sliceBufferSize, 16));
 
         const std::unique_ptr<IIngestor>
-            ingestor(Factories::CreateIngestor(schema,
+            ingestor(Factories::CreateIngestor(*fileManager,
+                                               schema,
                                                *recycler,
                                                *termTable,
                                                *sliceAllocator));
@@ -102,37 +108,9 @@ namespace BitFunnel
         std::cout << "Ingestion complete." << std::endl;
         ingestor->PrintStatistics();
 
-        if (docFreqTableFileName != nullptr)
+        if (generateStatistics)
         {
-            std::cout
-                << "Writing document frequency table to "
-                << docFreqTableFileName
-                << std::endl;
-
-            std::ofstream out(docFreqTableFileName);
-            ingestor->WriteDocumentFrequencyTable(out);
-        }
-
-        if (docLengthHistogramFileName != nullptr)
-        {
-            std::cout
-                << "Writing document length histogram to "
-                << docLengthHistogramFileName
-                << std::endl;
-
-            std::ofstream out(docLengthHistogramFileName);
-            ingestor->WriteDocumentLengthHistogram(out);
-        }
-
-        if (cumulativePostingCountsFileName != nullptr)
-        {
-            std::cout
-                << "Writing cumulative posting counts "
-                << cumulativePostingCountsFileName
-                << std::endl;
-
-            std::ofstream out(cumulativePostingCountsFileName);
-            ingestor->WriteCumulativePostingCounts(out);
+            ingestor->WriteStatistics();
         }
 
         ingestor->Shutdown();
@@ -153,25 +131,13 @@ int main(int argc, char** argv)
         "Path to a file containing the paths to the chunk files to be ingested. "
         "One chunk file per line. Paths are relative to working directory.");
 
-    CmdLine::OptionalParameter<char const *> docFrequencyTableFileName(
-        "docFreqTable",
-        "Path to file where document frequency table will be written.",
-        nullptr);
-
-    CmdLine::OptionalParameter<char const *> docLengthHistogramFileName(
-        "docLengthHistogram",
-        "Path to file where document length histogram will be written.",
-        nullptr);
-
-    CmdLine::OptionalParameter<char const *> cumulativePostingCountsFilename(
-        "cumulativePostingCountss",
-        "Path to file where the table of cumulative posting counts will be written.",
-        nullptr);
+    CmdLine::OptionalParameterList statistics(
+        "statistics",
+        "Generate index statistics such as document frequency table, "
+        "document length histogram, and cumulative term counts.");
 
     parser.AddParameter(chunkListFileName);
-    parser.AddParameter(docFrequencyTableFileName);
-    parser.AddParameter(docLengthHistogramFileName);
-    parser.AddParameter(cumulativePostingCountsFilename);
+    parser.AddParameter(statistics);
 
     int returnCode = 0;
 
@@ -179,25 +145,9 @@ int main(int argc, char** argv)
     {
         try
         {
-            if (docFrequencyTableFileName.HasValue())
-            {
-                std::cout << "docFrequencyTableFileName: " << docFrequencyTableFileName << std::endl;
-            }
-
-            if (docLengthHistogramFileName.HasValue())
-            {
-                std::cout << "docLengthHistogramFileName: " << docLengthHistogramFileName << std::endl;
-            }
-
-            if (cumulativePostingCountsFilename.HasValue())
-            {
-                std::cout << "cumulativePostingCountsFilename: " << cumulativePostingCountsFilename << std::endl;
-            }
-
-            BitFunnel::LoadAndIngestChunkList(chunkListFileName,
-                                              docFrequencyTableFileName,
-                                              docLengthHistogramFileName,
-                                              cumulativePostingCountsFilename);
+            BitFunnel::LoadAndIngestChunkList("c:\\temp\\",
+                                              chunkListFileName,
+                                              statistics.IsActivated());
             returnCode = 0;
         }
         catch (...)
