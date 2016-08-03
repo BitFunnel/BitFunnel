@@ -43,28 +43,44 @@ namespace BitFunnel
 
     FileManager::FileManager(char const * intermediateDirectory,
                              char const * indexDirectory,
-                             char const * backupDirectory)
-        : m_documentHistogram(new ParameterizedFile0(intermediateDirectory, "DocumentHistogram", ".csv" )),
-          m_docTable(new ParameterizedFile1(indexDirectory, "DocTable", ".bin" )),
-          m_indexSlice(new ParameterizedFile2(backupDirectory, "IndexSlice", ".bin"))
+                             char const * /*backupDirectory*/)
+        : m_cumulativePostingCounts(new ParameterizedFile0(intermediateDirectory,
+                                                           "CumulativePostingCounts",
+                                                           ".csv")),
+          m_documentLengthHistogram(new ParameterizedFile0(intermediateDirectory,
+                                                           "DocumentLengthHistogram",".csv" )),
+          m_docFreqTable(new ParameterizedFile1(indexDirectory, "DocFreqTable", ".csv"))
+        //m_docTable(new ParameterizedFile1(indexDirectory, "DocTable", ".bin")),
+        //m_indexSlice(new ParameterizedFile2(backupDirectory, "IndexSlice", ".bin"))
     {
     }
 
 
-    FileDescriptor0 FileManager::DocumentHistogram()
+    FileDescriptor0 FileManager::CumulativePostingCounts()
     {
-        return FileDescriptor0(*m_documentHistogram);
+        return FileDescriptor0(*m_cumulativePostingCounts);
     }
 
 
-    FileDescriptor1 FileManager::DocTable(size_t shard)
+    FileDescriptor0 FileManager::DocumentLengthHistogram()
     {
-        return FileDescriptor1(*m_docTable, shard);
+        return FileDescriptor0(*m_documentLengthHistogram);
     }
 
 
-    FileDescriptor2 FileManager::IndexSlice(size_t shard, size_t slice)
+    FileDescriptor1 FileManager::DocFreqTable(size_t shard)
     {
-        return FileDescriptor2(*m_indexSlice, shard, slice);
+        return FileDescriptor1(*m_docFreqTable, shard);
     }
+
+    //FileDescriptor1 FileManager::DocTable(size_t shard)
+    //{
+    //    return FileDescriptor1(*m_docTable, shard);
+    //}
+
+
+    //FileDescriptor2 FileManager::IndexSlice(size_t shard, size_t slice)
+    //{
+    //    return FileDescriptor2(*m_indexSlice, shard, slice);
+    //}
 }

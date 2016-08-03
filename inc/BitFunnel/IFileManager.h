@@ -64,39 +64,42 @@ namespace BitFunnel
         // parameterized by the IFileManager. The returned FileDescriptor0
         // objects provide methods to generate the file names and open the
         // files.
-        virtual FileDescriptor0 BandTable() = 0;
-        virtual FileDescriptor0 CommonNegatedTerms() = 0;
-        virtual FileDescriptor0 CommonPhrases() = 0;
-        virtual FileDescriptor0 DocFreqTable() = 0;
-        virtual FileDescriptor0 DocumentHistogram() = 0;
-        virtual FileDescriptor0 L1RankerConfig() = 0;
-        virtual FileDescriptor0 Manifest() = 0;
-        virtual FileDescriptor0 Model() = 0;
-        virtual FileDescriptor0 PlanDescriptors() = 0;
-        virtual FileDescriptor0 PostingCounts() = 0;
-        virtual FileDescriptor0 ShardDefinition() = 0;
-        virtual FileDescriptor0 ShardDocCounts() = 0;
-        virtual FileDescriptor0 ShardedDocFreqTable() = 0;
-        virtual FileDescriptor0 SortRankerConfig() = 0;
-        virtual FileDescriptor0 StreamNameToSuffixMap() = 0;
-        virtual FileDescriptor0 SuffixToClassificationMap() = 0;
-        virtual FileDescriptor0 ClickStreamSuffixToMarketMap() = 0;
-        virtual FileDescriptor0 TierDefinition() = 0;
-        virtual FileDescriptor0 TermDisposeDefinition() = 0;
-        virtual FileDescriptor0 MetaWordTierHintMap() = 0;
-        virtual FileDescriptor0 TermTableStats() = 0;
-        virtual FileDescriptor0 PostingAndBitStats() = 0;
-        virtual FileDescriptor0 StrengtheningMetawords() = 0;
+
+        //virtual FileDescriptor0 BandTable() = 0;
+        //virtual FileDescriptor0 CommonNegatedTerms() = 0;
+        //virtual FileDescriptor0 CommonPhrases() = 0;
+        virtual FileDescriptor0 CumulativePostingCounts() = 0;
+        //virtual FileDescriptor0 DocFreqTable() = 0;
+        virtual FileDescriptor0 DocumentLengthHistogram() = 0;
+        //virtual FileDescriptor0 L1RankerConfig() = 0;
+        //virtual FileDescriptor0 Manifest() = 0;
+        //virtual FileDescriptor0 Model() = 0;
+        //virtual FileDescriptor0 PlanDescriptors() = 0;
+        //virtual FileDescriptor0 PostingCounts() = 0;
+        //virtual FileDescriptor0 ShardDefinition() = 0;
+        //virtual FileDescriptor0 ShardDocCounts() = 0;
+        //virtual FileDescriptor0 ShardedDocFreqTable() = 0;
+        //virtual FileDescriptor0 SortRankerConfig() = 0;
+        //virtual FileDescriptor0 StreamNameToSuffixMap() = 0;
+        //virtual FileDescriptor0 SuffixToClassificationMap() = 0;
+        //virtual FileDescriptor0 ClickStreamSuffixToMarketMap() = 0;
+        //virtual FileDescriptor0 TierDefinition() = 0;
+        //virtual FileDescriptor0 TermDisposeDefinition() = 0;
+        //virtual FileDescriptor0 MetaWordTierHintMap() = 0;
+        //virtual FileDescriptor0 TermTableStats() = 0;
+        //virtual FileDescriptor0 PostingAndBitStats() = 0;
+        //virtual FileDescriptor0 StrengtheningMetawords() = 0;
 
         // These methods return descriptors for files that are parameterized
         // by a shard number.  The returned FileDescriptor1 objects provide
         // methods to generate the file names and open the files.
-        virtual FileDescriptor1 DocTable(size_t shard) = 0;
-        virtual FileDescriptor1 ScoreTable(size_t shard) = 0;
-        virtual FileDescriptor1 TermTable(size_t shard) = 0;
+        virtual FileDescriptor1 DocFreqTable(size_t shard) = 0;
+        //virtual FileDescriptor1 DocTable(size_t shard) = 0;
+        //virtual FileDescriptor1 ScoreTable(size_t shard) = 0;
+        //virtual FileDescriptor1 TermTable(size_t shard) = 0;
 
-        virtual FileDescriptor2 IndexSlice(size_t shard,
-                                           size_t slice) = 0;
+        //virtual FileDescriptor2 IndexSlice(size_t shard,
+        //                                   size_t slice) = 0;
     };
 
 

@@ -27,6 +27,7 @@
 
 #include "BitFunnel/IFileManager.h"
 
+
 namespace BitFunnel
 {
     class FileManager : public IFileManager
@@ -39,39 +40,43 @@ namespace BitFunnel
         //
         // IFileManager methods.
         //
-        virtual FileDescriptor0 BandTable() override;
-        virtual FileDescriptor0 CommonNegatedTerms() override;
-        virtual FileDescriptor0 CommonPhrases() override;
-        virtual FileDescriptor0 DocFreqTable() override;
-        virtual FileDescriptor0 DocumentHistogram() override;
-        virtual FileDescriptor0 L1RankerConfig() override;
-        virtual FileDescriptor0 Manifest() override;
-        virtual FileDescriptor0 Model() override;
-        virtual FileDescriptor0 PlanDescriptors() override;
-        virtual FileDescriptor0 PostingCounts() override;
-        virtual FileDescriptor0 ShardDefinition() override;
-        virtual FileDescriptor0 ShardDocCounts() override;
-        virtual FileDescriptor0 ShardedDocFreqTable() override;
-        virtual FileDescriptor0 SortRankerConfig() override;
-        virtual FileDescriptor0 StreamNameToSuffixMap() override;
-        virtual FileDescriptor0 SuffixToClassificationMap() override;
-        virtual FileDescriptor0 ClickStreamSuffixToMarketMap() override;
-        virtual FileDescriptor0 TierDefinition() override;
-        virtual FileDescriptor0 TermDisposeDefinition() override;
-        virtual FileDescriptor0 MetaWordTierHintMap() override;
-        virtual FileDescriptor0 TermTableStats() override;
-        virtual FileDescriptor0 PostingAndBitStats() override;
-        virtual FileDescriptor0 StrengtheningMetawords() override;
+        //virtual FileDescriptor0 BandTable() override;
+        //virtual FileDescriptor0 CommonNegatedTerms() override;
+        //virtual FileDescriptor0 CommonPhrases() override;
+        virtual FileDescriptor0 CumulativePostingCounts() override;
+        //virtual FileDescriptor0 DocFreqTable() override;
+        virtual FileDescriptor0 DocumentLengthHistogram() override;
+        //virtual FileDescriptor0 L1RankerConfig() override;
+        //virtual FileDescriptor0 Manifest() override;
+        //virtual FileDescriptor0 Model() override;
+        //virtual FileDescriptor0 PlanDescriptors() override;
+        //virtual FileDescriptor0 PostingCounts() override;
+        //virtual FileDescriptor0 ShardDefinition() override;
+        //virtual FileDescriptor0 ShardDocCounts() override;
+        //virtual FileDescriptor0 ShardedDocFreqTable() override;
+        //virtual FileDescriptor0 SortRankerConfig() override;
+        //virtual FileDescriptor0 StreamNameToSuffixMap() override;
+        //virtual FileDescriptor0 SuffixToClassificationMap() override;
+        //virtual FileDescriptor0 ClickStreamSuffixToMarketMap() override;
+        //virtual FileDescriptor0 TierDefinition() override;
+        //virtual FileDescriptor0 TermDisposeDefinition() override;
+        //virtual FileDescriptor0 MetaWordTierHintMap() override;
+        //virtual FileDescriptor0 TermTableStats() override;
+        //virtual FileDescriptor0 PostingAndBitStats() override;
+        //virtual FileDescriptor0 StrengtheningMetawords() override;
 
-        virtual FileDescriptor1 DocTable(size_t shard) override;
-        virtual FileDescriptor1 ScoreTable(size_t shard) override;
-        virtual FileDescriptor1 TermTable(size_t shard) override;
+        virtual FileDescriptor1 DocFreqTable(size_t shard) override;
+        //virtual FileDescriptor1 DocTable(size_t shard) override;
+        //virtual FileDescriptor1 ScoreTable(size_t shard) override;
+        //virtual FileDescriptor1 TermTable(size_t shard) override;
 
-        virtual FileDescriptor2 IndexSlice(size_t shard, size_t slice) override;
+        //virtual FileDescriptor2 IndexSlice(size_t shard, size_t slice) override;
 
     private:
-        std::unique_ptr<IParameterizedFile0> m_documentHistogram;
-        std::unique_ptr<IParameterizedFile1> m_docTable;
-        std::unique_ptr<IParameterizedFile2> m_indexSlice;
+        std::unique_ptr<IParameterizedFile0> m_cumulativePostingCounts;
+        std::unique_ptr<IParameterizedFile0> m_documentLengthHistogram;
+        std::unique_ptr<IParameterizedFile1> m_docFreqTable;
+        //std::unique_ptr<IParameterizedFile1> m_docTable;
+        //std::unique_ptr<IParameterizedFile2> m_indexSlice;
     };
 }

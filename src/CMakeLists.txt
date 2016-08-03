@@ -10,6 +10,7 @@ include_directories(
 # Libraries
 #
 add_subdirectory(Common/CmdLineParser)
+add_subdirectory(Common/Configuration)
 add_subdirectory(Common/CsvTsv)
 add_subdirectory(Common/Utilities)
 add_subdirectory(Index)
