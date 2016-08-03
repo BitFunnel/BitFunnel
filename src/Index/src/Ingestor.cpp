@@ -70,7 +70,16 @@ namespace BitFunnel
         m_shards.push_back(
             std::unique_ptr<Shard>(
                 new Shard(*this,
-                          123,
+                          0,
+                          termTable,
+                          docDataSchema,
+                          m_sliceBufferAllocator,
+                          m_sliceBufferAllocator.GetSliceBufferSize())));
+
+        m_shards.push_back(
+            std::unique_ptr<Shard>(
+                new Shard(*this,
+                          1,
                           termTable,
                           docDataSchema,
                           m_sliceBufferAllocator,
@@ -80,6 +89,7 @@ namespace BitFunnel
 
     void Ingestor::PrintStatistics() const
     {
+        std::cout << "Shard count:" << m_shards.size() << std::endl;
         std::cout << "Document count: " << m_documentCount << std::endl;
         std::cout << "Term count: " << m_histogram.m_totalCount << std::endl;
     }
@@ -92,14 +102,16 @@ namespace BitFunnel
             m_histogram.Write(*out);
         }
 
-        // TODO: Loop over all shards.
+        for (size_t shard = 0; shard < m_shards.size(); ++shard)
         {
-            auto out = m_fileManager.CumulativePostingCounts(0).OpenForWrite();
-            m_shards[0]->TemporaryWriteCumulativePostingCounts(*out);
-        }
-        {
-            auto out = m_fileManager.DocFreqTable(0).OpenForWrite();
-            m_shards[0]->TemporaryWriteDocumentFrequencyTable(*out);
+            {
+                auto out = m_fileManager.CumulativePostingCounts(shard).OpenForWrite();
+                m_shards[shard]->TemporaryWriteCumulativePostingCounts(*out);
+            }
+            {
+                auto out = m_fileManager.DocFreqTable(shard).OpenForWrite();
+                m_shards[shard]->TemporaryWriteDocumentFrequencyTable(*out);
+            }
         }
     }
 
@@ -112,7 +124,15 @@ namespace BitFunnel
 //        std::cout << "DocId: " << id << ": " << document.GetPostingCount() << std::endl;
         m_histogram.AddDocument(document.GetPostingCount());
 
-        DocumentHandleInternal handle = m_shards[0]->AllocateDocument(id);
+        DocumentHandleInternal handle;
+        if (document.GetPostingCount() < 1000)
+        {
+            handle = m_shards[0]->AllocateDocument(id);
+        }
+        else
+        {
+            handle = m_shards[1]->AllocateDocument(id);
+        }
         document.Ingest(handle);
 
 

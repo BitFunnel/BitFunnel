@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
+#include <iostream>         // TODO: Remove this temporary header.
 #include <fstream>
 #include <sstream>
 
@@ -54,8 +54,8 @@ namespace BitFunnel
         // // TODO: Replace stream to cout with calls to the logger.
         // std::cout << "ChunkTaskProcessor::ProcessTask: taskId:" << taskId
         //           << std::endl;
-        // std::cout << "ChunkTaskProcessor::ProcessTask: filePath:"
-        //           << m_filePaths[taskId] << std::endl;
+         std::cout << "ChunkTaskProcessor::ProcessTask: filePath:"
+                   << m_filePaths[taskId] << std::endl;
 
         std::ifstream inputStream(m_filePaths[taskId], std::ios::binary);
         if (!inputStream.is_open())
