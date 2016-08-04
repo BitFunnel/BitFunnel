@@ -23,8 +23,9 @@
 #include <iostream>     // TODO: Remove this temporary header.
 #include <memory>
 
-#include "BitFunnel/IFileManager.h"
+#include "BitFunnel/Configuration/IShardDefinition.h"
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocument.h"
 #include "BitFunnel/Utilities/Factories.h"
@@ -68,26 +69,18 @@ namespace BitFunnel
           m_tokenManager(Factories::CreateTokenManager()),
           m_sliceBufferAllocator(sliceBufferAllocator)
     {
-        // Initialize histogram and frequency tables here.
-        // TODO: make order of parameters in Shard as similar as possible to
-        // order of parameters in Ingestor.
-        m_shards.push_back(
-            std::unique_ptr<Shard>(
-                new Shard(*this,
-                          0,
-                          termTable,
-                          docDataSchema,
-                          m_sliceBufferAllocator,
-                          m_sliceBufferAllocator.GetSliceBufferSize())));
-
-        m_shards.push_back(
-            std::unique_ptr<Shard>(
-                new Shard(*this,
-                          1,
-                          termTable,
-                          docDataSchema,
-                          m_sliceBufferAllocator,
-                          m_sliceBufferAllocator.GetSliceBufferSize())));
+        // Create shards based on shard definition in m_shardDefinition..
+        for (ShardId shardId = 0; shardId < m_shardDefinition.GetShardCount(); ++shardId)
+        {
+            m_shards.push_back(
+                std::unique_ptr<Shard>(
+                    new Shard(*this,
+                              shardId,
+                              termTable,
+                              docDataSchema,
+                              m_sliceBufferAllocator,
+                              m_sliceBufferAllocator.GetSliceBufferSize())));
+        }
     }
 
 
@@ -125,18 +118,12 @@ namespace BitFunnel
         ++m_documentCount;
 
         // Add postingCount to the DocumentLengthHistogram
-//        std::cout << "DocId: " << id << ": " << document.GetPostingCount() << std::endl;
         m_histogram.AddDocument(document.GetPostingCount());
 
-        DocumentHandleInternal handle;
-        if (document.GetPostingCount() < 1000)
-        {
-            handle = m_shards[0]->AllocateDocument(id);
-        }
-        else
-        {
-            handle = m_shards[1]->AllocateDocument(id);
-        }
+        // Choose correct shard and then allocate handle.
+        ShardId shardId = m_shardDefinition.GetShard(document.GetPostingCount());
+        DocumentHandleInternal handle = m_shards[shardId]->AllocateDocument(id);
+
         document.Ingest(handle);
 
 
