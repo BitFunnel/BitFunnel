@@ -12,8 +12,6 @@ namespace BitFunnel
         {
             input.get();
         }
-
-
     }
 
 

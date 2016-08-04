@@ -180,6 +180,7 @@ enable_testing()
 add_subdirectory(src)
 add_subdirectory(test/Shared)
 add_subdirectory(tools/StatisticsBuilder)
+add_subdirectory(tools/TermTableBuilder)
 
 add_custom_target(TOPLEVEL SOURCES
 #  Configure_Make.bat
