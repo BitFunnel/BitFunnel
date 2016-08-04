@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Configuration/IShardDefinition.h"
 #include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/Factories.h"
@@ -86,11 +87,17 @@ namespace BitFunnel
         std::unique_ptr<SliceBufferAllocator>
             sliceAllocator(new SliceBufferAllocator(sliceBufferSize, 16));
 
+        auto shardDefinition = Factories::CreateShardDefinition();
+        shardDefinition->AddShard(1000);
+        shardDefinition->AddShard(2000);
+        shardDefinition->AddShard(3000);
+
         const std::unique_ptr<IIngestor>
             ingestor(Factories::CreateIngestor(*fileManager,
                                                schema,
                                                *recycler,
                                                *termTable,
+                                               *shardDefinition,
                                                *sliceAllocator));
 
         // Arbitrary maxGramSize that is greater than 1. For initial tests.

@@ -22,20 +22,28 @@
 
 #pragma once
 
-#include <memory>                       // std::unique_ptr return value.
+#include <iosfwd>                                       // std::istream, std::ostream parameters.
+#include <memory>                                       // std::unique_ptr return value.
 
-#include "BitFunnel/IFileManager.h"     // IFileManager template parameter.
+#include "BitFunnel/IFileManager.h"                     // IFileManager template parameter.
+#include "BitFunnel/Configuration/IShardDefinition.h"   // IShardDefinition template parameter.
 
 
 namespace BitFunnel
 {
 
     class IFileManager;
+    class IShardDefinition;
+
     namespace Factories
     {
         std::unique_ptr<IFileManager>
             CreateFileManager(char const * intermediateDirectory,
                               char const * indexDirectory,
                               char const * backupDirectory);
+
+
+        std::unique_ptr<IShardDefinition> CreateShardDefinition();
+        std::unique_ptr<IShardDefinition> CreateShardDefinition(std::istream& input);
     }
 }

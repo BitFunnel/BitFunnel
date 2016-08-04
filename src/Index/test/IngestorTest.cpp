@@ -29,6 +29,7 @@
 
 #include "gtest/gtest.h"
 
+#include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "Configuration.h"
@@ -118,6 +119,8 @@ namespace BitFunnel
                                                              schema,
                                                              *m_termTable);
 
+                auto shardDefinition = Factories::CreateShardDefinition();
+
                 m_allocator = std::unique_ptr<TrackingSliceBufferAllocator>
                     (new TrackingSliceBufferAllocator(sliceBufferSize));
 
@@ -126,6 +129,7 @@ namespace BitFunnel
                                               schema,
                                               *m_recycler,
                                               *m_termTable,
+                                              *shardDefinition,
                                               *m_allocator);
             }
 

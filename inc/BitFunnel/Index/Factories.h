@@ -33,6 +33,7 @@ namespace BitFunnel
     class IIngestor;
     class IRecycler;
     class ITermTable;
+    class IShardDefinition;
     class ISliceBufferAllocator;
 
     namespace Factories
@@ -46,6 +47,7 @@ namespace BitFunnel
                            IDocumentDataSchema const & docDataSchema,
                            IRecycler& recycler,
                            ITermTable const & termTable,
+                           IShardDefinition const & shardDefinition,
                            ISliceBufferAllocator& sliceBufferAllocator);
 
         std::unique_ptr<IDocumentDataSchema> CreateDocumentDataSchema();

@@ -44,6 +44,7 @@ namespace BitFunnel
     class IDocumentDataSchema;
     class IFileManager;
     class IRecycler;
+    class IShardDefinition;
     class ISliceBufferAllocator;
     class ITermTable;
 
@@ -55,6 +56,7 @@ namespace BitFunnel
                  IDocumentDataSchema const & docDataSchema,
                  IRecycler& recycle,
                  ITermTable const & termTable,
+                 IShardDefinition const & shardDefinition,
                  ISliceBufferAllocator& sliceBufferAllocator);
 
         // TODO: Remove this temporary method.
@@ -133,6 +135,7 @@ namespace BitFunnel
     private:
         IFileManager& m_fileManager;
         IRecycler& m_recycler;
+        IShardDefinition const & m_shardDefinition;
 
         // TODO: Replace these tempoary statistics variables with document
         // length hash table and term frequency tables.

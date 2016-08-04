@@ -42,12 +42,14 @@ namespace BitFunnel
                               IDocumentDataSchema const & docDataSchema,
                               IRecycler& recycler,
                               ITermTable const & termTable,
+                              IShardDefinition const & shardDefinition,
                               ISliceBufferAllocator& sliceBufferAllocator)
     {
         return std::unique_ptr<IIngestor>(new Ingestor(fileManager,
                                                        docDataSchema,
                                                        recycler,
                                                        termTable,
+                                                       shardDefinition,
                                                        sliceBufferAllocator));
     }
 
@@ -56,9 +58,11 @@ namespace BitFunnel
                        IDocumentDataSchema const & docDataSchema,
                        IRecycler& recycler,
                        ITermTable const & termTable,
+                       IShardDefinition const & shardDefinition,
                        ISliceBufferAllocator& sliceBufferAllocator)
         : m_fileManager(fileManager),
           m_recycler(recycler),
+          m_shardDefinition(shardDefinition),
           m_documentCount(0),   // TODO: This member is now redundant (with m_documentMap).
           m_documentMap(new DocumentMap()),
           m_tokenManager(Factories::CreateTokenManager()),

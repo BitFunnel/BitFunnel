@@ -81,11 +81,14 @@ namespace BitFunnel
 
             DocumentDataSchema schema;
 
+            auto shardDefinition = Factories::CreateShardDefinition();
+
             const std::unique_ptr<IIngestor>
                 ingestor(Factories::CreateIngestor(*fileManager,
                                                    schema,
                                                    *recycler,
                                                    *termTable,
+                                                   *shardDefinition,
                                                    *sliceBufferAllocator));
 
             ChunkTaskProcessor processor(filePaths, *configuration, *ingestor);

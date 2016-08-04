@@ -24,6 +24,7 @@
 
 #include "gtest/gtest.h"
 
+#include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/ITermTable.h"
@@ -83,6 +84,8 @@ namespace BitFunnel
             static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
             const size_t sliceBufferSize = GetEmptyTermTableBufferSize(c_sliceCapacity, rowCounts, schema);
 
+            auto shardDefinition = Factories::CreateShardDefinition();
+
             std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
@@ -91,6 +94,7 @@ namespace BitFunnel
                                                    schema,
                                                    *recycler,
                                                    *termTable,
+                                                   *shardDefinition,
                                                    *trackingAllocator));
 
             Shard& shard = ingestor->GetShard(0);
@@ -172,6 +176,8 @@ namespace BitFunnel
             static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
             const size_t sliceBufferSize = GetEmptyTermTableBufferSize(c_sliceCapacity, rowCounts, schema);
 
+            auto shardDefinition = Factories::CreateShardDefinition();
+
             std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
                 new TrackingSliceBufferAllocator(sliceBufferSize));
 
@@ -180,6 +186,7 @@ namespace BitFunnel
                                                    schema,
                                                    *recycler,
                                                    *termTable,
+                                                   *shardDefinition,
                                                    *trackingAllocator));
 
             Shard& shard = ingestor->GetShard(0);

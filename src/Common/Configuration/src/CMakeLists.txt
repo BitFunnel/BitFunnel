@@ -2,10 +2,11 @@
 
 set(CPPFILES
     FileManager.cpp
+    ParameterizedFile.cpp
+    ShardDefinition.cpp
 )
 
 set(WINDOWS_CPPFILES
-    ParameterizedFile.cpp
 )
 
 set(POSIX_CPPFILES
@@ -13,10 +14,11 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     FileManager.h
+    ParameterizedFile.h
+    ShardDefinition.cpp
 )
 
 set(WINDOWS_PRIVATE_HFILES
-    ParameterizedFile.h
 )
 
 set(POSIX_PRIVATE_HFILES
