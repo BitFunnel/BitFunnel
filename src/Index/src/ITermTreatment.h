@@ -22,7 +22,11 @@
 
 #pragma once
 
-#include "BitFunnel/IEnumerator.h"      // Inherits from IEnumerator.
+#include "BitFunnel/BitFunnelTypes.h"   // Rank parameter.
+#include "BitFunnel/IInterface.h"       // Inherits from IInterface.
+#include "BitFunnel/RowId.h"            // RowIndex parameter.
+#include "BitFunnel/Term.h"             // Term parameter.
+
 
 namespace BitFunnel
 {
@@ -34,35 +38,48 @@ namespace BitFunnel
     //   Is an instance created as each term is processed, or are a fixed number
     //   of instances associated with classes of terms created at startup?
 
-    class RankDescriptor
+    class RowConfiguration // : public std::iterator<std::input_iterator_tag, RowConfiguration::Entry>
     {
     public:
-        RankDescriptor(RowIndex count, bool isPrivate);
+        class Entry
+        {
+        public:
+            Entry(Rank rank, RowIndex rowCount, bool isPrivate);
 
-        RowIndex GetRowCount() const;
-        bool IsPrivate() const;
+            Rank GetRank() const;
+            RowIndex GetRowCount() const;
+            bool IsPrivate() const;
 
-    private:
-        RowIndex m_count;
-        bool m_isPrivate;
-    };
+            bool operator==(Entry const & other) const;
 
+        private:
+            friend class RowConfiguration;
 
-    class TermTreatment : public IEnumerator<RankDescriptor>
-    {
-    public:
+            Entry(uint8_t rawData);
 
-        TermTreatment(Term term, double frequency);
+            uint8_t m_data;
+        };
 
-        //
-        // IEnumerator methods.
-        //
-        bool MoveNext();
-        void Reset();
-        RankDescriptor Current() const;
+        typedef RowConfiguration iterator;
+
+        RowConfiguration();
+
+        void push_front(Entry entry);
+
+        iterator begin() const;
+        iterator end() const;
+
+        bool operator!=(RowConfiguration const & other) const;
+        RowConfiguration& operator++();
+        Entry operator*() const;
 
     private:
         uint64_t m_data;
-        size_t m_nextRank;
+    };
+
+
+    class ITermTreatment : public IInterface
+    {
+        virtual RowConfiguration GetTreatment(Term term) const = 0;
     };
 }

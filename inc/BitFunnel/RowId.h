@@ -25,7 +25,7 @@
 
 #include <string>
 
-#include "BitFunnel/BitFunnelTypes.h"  // For Rank, RowIndex, ShardId.
+#include "BitFunnel/BitFunnelTypes.h"  // For Rank, ShardId.
 
 
 namespace BitFunnel

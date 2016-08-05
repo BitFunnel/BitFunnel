@@ -9,6 +9,7 @@ set(CPPFILES
     DocumentLengthHistogramTest.cpp
     IndexUtilsTest.cpp
     IngestorTest.cpp
+    RowConfigurationTest.cpp
     RowTableDescriptorTest.cpp
     ShardTest.cpp
     SliceTest.cpp

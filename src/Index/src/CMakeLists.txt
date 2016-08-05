@@ -20,6 +20,7 @@ set(CPPFILES
     PackedTermInfo.cpp
     Recycler.cpp
     RowId.cpp
+    RowConfiguration.cpp
     RowTableDescriptor.cpp
     Shard.cpp
     Slice.cpp
