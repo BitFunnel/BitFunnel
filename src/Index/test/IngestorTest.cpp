@@ -119,7 +119,7 @@ namespace BitFunnel
                                                              schema,
                                                              *m_termTable);
 
-                auto shardDefinition = Factories::CreateShardDefinition();
+                m_shardDefinition = Factories::CreateShardDefinition();
 
                 m_allocator = std::unique_ptr<TrackingSliceBufferAllocator>
                     (new TrackingSliceBufferAllocator(sliceBufferSize));
@@ -129,7 +129,7 @@ namespace BitFunnel
                                               schema,
                                               *m_recycler,
                                               *m_termTable,
-                                              *shardDefinition,
+                                              *m_shardDefinition,
                                               *m_allocator);
             }
 
@@ -162,6 +162,7 @@ namespace BitFunnel
             std::unique_ptr<ITermTable> m_termTable;
             std::unique_ptr<IRecycler> m_recycler;
             std::future<void> m_recyclerHandle;
+            std::unique_ptr<IShardDefinition> m_shardDefinition;
         };
 
 
