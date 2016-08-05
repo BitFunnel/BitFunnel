@@ -48,9 +48,9 @@ namespace BitFunnel
         : m_cumulativePostingCounts(new ParameterizedFile1(intermediateDirectory,
                                                            "CumulativePostingCounts",
                                                            ".csv")),
+          m_docFreqTable(new ParameterizedFile1(indexDirectory, "DocFreqTable", ".csv")),
           m_documentLengthHistogram(new ParameterizedFile0(intermediateDirectory,
-                                                           "DocumentLengthHistogram",".csv" )),
-          m_docFreqTable(new ParameterizedFile1(indexDirectory, "DocFreqTable", ".csv"))
+                                                           "DocumentLengthHistogram",".csv" ))
         //m_docTable(new ParameterizedFile1(indexDirectory, "DocTable", ".bin")),
         //m_indexSlice(new ParameterizedFile2(backupDirectory, "IndexSlice", ".bin"))
     {

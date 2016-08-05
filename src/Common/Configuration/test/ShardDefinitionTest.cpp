@@ -40,7 +40,7 @@ namespace BitFunnel
             s.AddShard(600);
             s.AddShard(450);
 
-            EXPECT_EQ(s.GetShardCount(), 5);
+            EXPECT_EQ(s.GetShardCount(), 5u);
 
             for (ShardId i = 0; i < s.GetShardCount() - 1; ++i)
             {
@@ -64,13 +64,13 @@ namespace BitFunnel
             s.AddShard(600);
             s.AddShard(750);
 
-            EXPECT_EQ(s.GetShard(0), 0);
-            EXPECT_EQ(s.GetShard(10), 0);
-            EXPECT_EQ(s.GetShard(400), 0);
-            EXPECT_EQ(s.GetShard(401), 1);
-            EXPECT_EQ(s.GetShard(750), 3);
-            EXPECT_EQ(s.GetShard(751), 4);
-            EXPECT_EQ(s.GetShard(10000), 4);
+            EXPECT_EQ(s.GetShard(0), 0u);
+            EXPECT_EQ(s.GetShard(10), 0u);
+            EXPECT_EQ(s.GetShard(400), 0u);
+            EXPECT_EQ(s.GetShard(401), 1u);
+            EXPECT_EQ(s.GetShard(750), 3u);
+            EXPECT_EQ(s.GetShard(751), 4u);
+            EXPECT_EQ(s.GetShard(10000), 4u);
         }
 
 
@@ -88,7 +88,7 @@ namespace BitFunnel
             // Ensure the test fails if s1 isn't loaded correctly.
             // Perhaps one really wants to ensure that characters were written to stream.
             // Want to guard against writing nothing and the passing the test when nothing is read.
-            EXPECT_EQ(s1.GetShardCount(), 5);
+            EXPECT_EQ(s1.GetShardCount(), 5u);
 
 
             ShardDefinition s2(stream);

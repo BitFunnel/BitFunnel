@@ -23,7 +23,7 @@
 
 #include <fstream>
 #include <istream>
-#include <Windows.h>                // For DeleteFile.
+// #include <Windows.h>                // For DeleteFile.
 
 #include "LoggerInterfaces/Logging.h"
 #include "ParameterizedFile.h"
@@ -35,13 +35,15 @@ namespace BitFunnel
                                          const char* baseName,
                                          const char* extension)
     {
+        // TODO: These are Windows-specific. Must make cross-platform.
+
         // Ensure that the base name does not contain '\' or '.'.
-        LogAssertB(strchr(baseName, '\\') == nullptr);
-        LogAssertB(strchr(baseName, '.') == nullptr);
+        LogAssertB(strchr(baseName, '\\') == nullptr, "Filename contains \\");
+        LogAssertB(strchr(baseName, '.') == nullptr, "Filenae contains .");
 
         // Ensure that extension starts with '.' and does not contain '\'.
-        LogAssertB(extension[0] == '.');
-        LogAssertB(strchr(extension, '\\') == nullptr);
+        LogAssertB(extension[0] == '.', "Extension doesn't start with .");
+        LogAssertB(strchr(extension, '\\') == nullptr, "Extension contains \\");
 
         // TODO: Consider using a library function for path building.
         size_t pathLength = strlen(path);
@@ -79,42 +81,42 @@ namespace BitFunnel
     }
 
 
-    void ParameterizedFile::Commit(const std::string& filename)
-    {
-        if (Exists(filename))
-        {
-            Delete(filename);
-        }
+    // void ParameterizedFile::Commit(const std::string& filename)
+    // {
+    //     if (Exists(filename))
+    //     {
+    //         Delete(filename);
+    //     }
 
-        std::string tempFilename = GetTempName(filename);
+    //     std::string tempFilename = GetTempName(filename);
 
-        BOOL res = MoveFileA(tempFilename.c_str(), filename.c_str());
+    //     BOOL res = MoveFileA(tempFilename.c_str(), filename.c_str());
 
-        LogAssertB(res != 0, "Error %d commit file %s.", GetLastError(), filename.c_str());
-    }
-
-
-    bool ParameterizedFile::Exists(const std::string& filename)
-    {
-        // DESIGN NOTE: The following stream-based technique will return false
-        // in some situations where the file exists. Some examples are when the
-        // file exists, but is opened for exclusive access by another process.
-        //std::ifstream stream(filename.c_str());
-        //bool success = stream.is_open();
-        //stream.close();
-        //return success;
-
-        return GetFileAttributesA(filename.c_str()) != INVALID_FILE_ATTRIBUTES;
-    }
+    //     LogAssertB(res != 0, "Error %d commit file %s.", GetLastError(), filename.c_str());
+    // }
 
 
-    void ParameterizedFile::Delete(const std::string& filename)
-    {
-        LogAssertB(DeleteFileA(filename.c_str()) != 0,
-                   "Error %d deleting file %s.",
-                   GetLastError(),
-                   filename.c_str());
-    }
+    // bool ParameterizedFile::Exists(const std::string& filename)
+    // {
+    //     // DESIGN NOTE: The following stream-based technique will return false
+    //     // in some situations where the file exists. Some examples are when the
+    //     // file exists, but is opened for exclusive access by another process.
+    //     //std::ifstream stream(filename.c_str());
+    //     //bool success = stream.is_open();
+    //     //stream.close();
+    //     //return success;
+
+    //     return GetFileAttributesA(filename.c_str()) != INVALID_FILE_ATTRIBUTES;
+    // }
+
+
+    // void ParameterizedFile::Delete(const std::string& filename)
+    // {
+    //     LogAssertB(DeleteFileA(filename.c_str()) != 0,
+    //                "Error %d deleting file %s.",
+    //                GetLastError(),
+    //                filename.c_str());
+    // }
 
 
     ParameterizedFile0::ParameterizedFile0(const char* path,
@@ -145,26 +147,26 @@ namespace BitFunnel
     }
 
 
-    std::unique_ptr<std::ostream> ParameterizedFile0::OpenTempForWrite()
-    {
-        return ParameterizedFile::OpenForWrite(GetTempName(GetName()));
-    }
+    // std::unique_ptr<std::ostream> ParameterizedFile0::OpenTempForWrite()
+    // {
+    //     return ParameterizedFile::OpenForWrite(GetTempName(GetName()));
+    // }
 
 
-    void ParameterizedFile0::Commit()
-    {
-        ParameterizedFile::Commit(GetName());
-    }
+    // void ParameterizedFile0::Commit()
+    // {
+    //     ParameterizedFile::Commit(GetName());
+    // }
 
 
-    bool ParameterizedFile0::Exists()
-    {
-        return ParameterizedFile::Exists(GetName());
-    }
+    // bool ParameterizedFile0::Exists()
+    // {
+    //     return ParameterizedFile::Exists(GetName());
+    // }
 
 
-    void ParameterizedFile0::Delete()
-    {
-        ParameterizedFile::Delete(GetName());
-    }
+    // void ParameterizedFile0::Delete()
+    // {
+    //     ParameterizedFile::Delete(GetName());
+    // }
 }

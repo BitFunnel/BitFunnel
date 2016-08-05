@@ -112,10 +112,10 @@ namespace BitFunnel
         virtual std::string GetName() = 0;
         virtual std::unique_ptr<std::istream> OpenForRead() = 0;
         virtual std::unique_ptr<std::ostream> OpenForWrite() = 0;
-        virtual std::unique_ptr<std::ostream> OpenTempForWrite() = 0;
-        virtual void Commit() = 0;
-        virtual bool Exists() = 0;
-        virtual void Delete() = 0;
+        // virtual std::unique_ptr<std::ostream> OpenTempForWrite() = 0;
+        // virtual void Commit() = 0;
+        // virtual bool Exists() = 0;
+        // virtual void Delete() = 0;
     };
 
 
@@ -127,10 +127,10 @@ namespace BitFunnel
         virtual std::string GetName(size_t p1) = 0;
         virtual std::unique_ptr<std::istream> OpenForRead(size_t p1) = 0;
         virtual std::unique_ptr<std::ostream> OpenForWrite(size_t p1) = 0;
-        virtual std::unique_ptr<std::ostream> OpenTempForWrite(size_t p1) = 0;
-        virtual void Commit(size_t p1) = 0;
-        virtual bool Exists(size_t p1) = 0;
-        virtual void Delete(size_t p1) = 0;
+        // virtual std::unique_ptr<std::ostream> OpenTempForWrite(size_t p1) = 0;
+        // virtual void Commit(size_t p1) = 0;
+        // virtual bool Exists(size_t p1) = 0;
+        // virtual void Delete(size_t p1) = 0;
     };
 
 
@@ -142,10 +142,10 @@ namespace BitFunnel
         virtual std::string GetName(size_t p1, size_t p2) = 0;
         virtual std::unique_ptr<std::istream> OpenForRead(size_t p1, size_t p2) = 0;
         virtual std::unique_ptr<std::ostream> OpenForWrite(size_t p1, size_t p2) = 0;
-        virtual std::unique_ptr<std::ostream> OpenTempForWrite(size_t p1, size_t p2) = 0;
-        virtual void Commit(size_t p1, size_t p2) = 0;
-        virtual bool Exists(size_t p1, size_t p2) = 0;
-        virtual void Delete(size_t p1, size_t p2) = 0;
+        // virtual std::unique_ptr<std::ostream> OpenTempForWrite(size_t p1, size_t p2) = 0;
+        // virtual void Commit(size_t p1, size_t p2) = 0;
+        // virtual bool Exists(size_t p1, size_t p2) = 0;
+        // virtual void Delete(size_t p1, size_t p2) = 0;
     };
 
 
@@ -162,10 +162,10 @@ namespace BitFunnel
         std::string GetName() { return m_file.GetName(); }
         std::unique_ptr<std::istream> OpenForRead() { return m_file.OpenForRead(); }
         std::unique_ptr<std::ostream> OpenForWrite() { return m_file.OpenForWrite(); }
-        std::unique_ptr<std::ostream> OpenTempForWrite() { return m_file.OpenTempForWrite(); }
-        void Commit() { return m_file.Commit(); }
-        bool Exists() { return m_file.Exists(); }
-        void Delete() { m_file.Delete(); }
+        // std::unique_ptr<std::ostream> OpenTempForWrite() { return m_file.OpenTempForWrite(); }
+        // void Commit() { return m_file.Commit(); }
+        // bool Exists() { return m_file.Exists(); }
+        // void Delete() { m_file.Delete(); }
 
     private:
         IParameterizedFile0& m_file;
@@ -186,10 +186,10 @@ namespace BitFunnel
         std::string GetName() { return m_file.GetName(m_p1); }
         std::unique_ptr<std::istream> OpenForRead() { return m_file.OpenForRead(m_p1); }
         std::unique_ptr<std::ostream> OpenForWrite() { return m_file.OpenForWrite(m_p1); }
-        std::unique_ptr<std::ostream> OpenTempForWrite() { return m_file.OpenTempForWrite(m_p1); }
-        void Commit() { return m_file.Commit(m_p1); }
-        bool Exists() { return m_file.Exists(m_p1); }
-        void Delete() { m_file.Delete(m_p1); }
+        // std::unique_ptr<std::ostream> OpenTempForWrite() { return m_file.OpenTempForWrite(m_p1); }
+        // void Commit() { return m_file.Commit(m_p1); }
+        // bool Exists() { return m_file.Exists(m_p1); }
+        // void Delete() { m_file.Delete(m_p1); }
 
     private:
         IParameterizedFile1& m_file;
@@ -212,10 +212,10 @@ namespace BitFunnel
         std::string GetName() { return m_file.GetName(m_p1, m_p2); }
         std::unique_ptr<std::istream> OpenForRead() { return m_file.OpenForRead(m_p1, m_p2); }
         std::unique_ptr<std::ostream> OpenForWrite() { return m_file.OpenForWrite(m_p1, m_p2); }
-        std::unique_ptr<std::ostream> OpenTempForWrite() { return m_file.OpenTempForWrite(m_p1, m_p2); }
-        void Commit() { return m_file.Commit(m_p1, m_p2); }
-        bool Exists() { return m_file.Exists(m_p1, m_p2); }
-        void Delete() { m_file.Delete(m_p1, m_p2); }
+        // std::unique_ptr<std::ostream> OpenTempForWrite() { return m_file.OpenTempForWrite(m_p1, m_p2); }
+        // void Commit() { return m_file.Commit(m_p1, m_p2); }
+        // bool Exists() { return m_file.Exists(m_p1, m_p2); }
+        // void Delete() { m_file.Delete(m_p1, m_p2); }
 
     private:
         IParameterizedFile2& m_file;

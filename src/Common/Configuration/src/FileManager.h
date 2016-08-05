@@ -73,9 +73,9 @@ namespace BitFunnel
         //virtual FileDescriptor2 IndexSlice(size_t shard, size_t slice) override;
 
     private:
-        std::unique_ptr<IParameterizedFile0> m_documentLengthHistogram;
         std::unique_ptr<IParameterizedFile1> m_cumulativePostingCounts;
         std::unique_ptr<IParameterizedFile1> m_docFreqTable;
+        std::unique_ptr<IParameterizedFile0> m_documentLengthHistogram;
         //std::unique_ptr<IParameterizedFile1> m_docTable;
         //std::unique_ptr<IParameterizedFile2> m_indexSlice;
     };
