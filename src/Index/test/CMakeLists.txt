@@ -45,6 +45,6 @@ set_property(TARGET IndexTest PROPERTY PROJECT_LABEL "Test")
 
 # NOTE: The ordering Utilities-Index is important for XCode. If you reverse
 # Utilities and Index, we will get linker errors.
-target_link_libraries (IndexTest CsvTsv Utilities Index Configuration CsvTsv Utilities TestShared gtest gtest_main)
+target_link_libraries (IndexTest CsvTsv TestShared Utilities Index Configuration CsvTsv Utilities  gtest gtest_main)
 
 add_test(NAME IndexTest COMMAND IndexTest)
