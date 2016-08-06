@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <ostream>
 
 #include "BitFunnel/Exceptions.h"
 #include "ITermTreatment.h"         // TODO: place this file in the right location.
@@ -83,6 +84,15 @@ namespace BitFunnel
     }
 
 
+    void RowConfiguration::Entry::Write(std::ostream& output) const
+    {
+        output
+            << "(" << GetRank()
+            << ", " << GetRowCount()
+            << ", " << (IsPrivate() ? "private)" : "shared)");
+    }
+
+
     //*************************************************************************
     //
     // RowConfiguration::iterator
@@ -125,6 +135,7 @@ namespace BitFunnel
 
         return Entry(static_cast<uint8_t>(m_data & 0xff));
     }
+
 
 
     //*************************************************************************
@@ -173,5 +184,19 @@ namespace BitFunnel
     RowConfiguration::iterator RowConfiguration::end() const
     {
         return iterator(0ull);
+    }
+
+
+    void RowConfiguration::Write(std::ostream& output) const
+    {
+        output << "{ ";
+
+        for (auto e : *this)
+        {
+            e.Write(output);
+            output << " ";
+        }
+
+        output << "}";
     }
 }

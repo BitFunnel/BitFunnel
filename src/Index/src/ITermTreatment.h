@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <iosfwd>                       // std::ostream parameter.
+
 #include "BitFunnel/BitFunnelTypes.h"   // Rank parameter.
 #include "BitFunnel/IInterface.h"       // Inherits from IInterface.
 #include "BitFunnel/RowId.h"            // RowIndex parameter.
@@ -52,6 +54,8 @@ namespace BitFunnel
 
             bool operator==(Entry const & other) const;
 
+            void Write(std::ostream& output) const;
+
         private:
             friend class RowConfiguration;
 
@@ -80,6 +84,8 @@ namespace BitFunnel
 
         iterator begin() const;
         iterator end() const;
+
+        void Write(std::ostream& output) const;
 
     private:
         uint64_t m_data;

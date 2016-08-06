@@ -26,6 +26,7 @@ set(CPPFILES
     Slice.cpp
     SliceBufferAllocator.cpp
     Term.cpp
+    TermTreatments.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -58,6 +59,7 @@ set(PRIVATE_HFILES
     Shard.h
     Slice.h
     SliceBufferAllocator.h
+    TermTreatments.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
