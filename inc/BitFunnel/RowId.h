@@ -49,6 +49,8 @@ namespace BitFunnel
         RowId();
 
         // Constructor for primary use case.
+        // TODO: Replace size_t with ShardID, Rank, RowIndex.
+        // TODO: Why do we need shard?
         RowId(size_t shard, size_t rank, size_t index);
 
         // RowId is used as a value type and is often copied. Cannot generate
@@ -99,6 +101,7 @@ namespace BitFunnel
 
     public:
         static const size_t c_maxRowIndexValue = (1ul << c_bitsOfIndex) - 1;
+        static const size_t c_maxRankValue = (1ul << c_bitsOfRank) - 1;
 
     private:
         // ShardId number.

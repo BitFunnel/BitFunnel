@@ -122,9 +122,17 @@ namespace BitFunnel
         // Using it now to drive the debugger.
         TEST(TermTreatments, Sample)
         {
-            TreatmentPrivateRank0 x;
-            TreatmentPrivateSharedRank0 y(0.1, 10);
-            TreatmentPrivateSharedRank0and3 z(0.1, 10);
+            //TreatmentPrivateRank0 x;
+            //TreatmentPrivateSharedRank0 y(0.1, 10);
+            //TreatmentPrivateSharedRank0and3 z(0.1, 10);
+
+            //std::vector<int> a;
+            //for (unsigned i = 0; i < 10; ++i)
+            //    a.push_back(i);
+
+            //for (auto&& [3, 4] : a) {
+
+            //}
         }
     }
 }

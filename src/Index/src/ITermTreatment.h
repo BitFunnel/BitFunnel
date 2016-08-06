@@ -94,6 +94,7 @@ namespace BitFunnel
 
     class ITermTreatment : public IInterface
     {
+    public:
         virtual RowConfiguration GetTreatment(Term term) const = 0;
     };
 }
