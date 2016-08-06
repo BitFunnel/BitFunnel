@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4996)
+#endif
 
 #include <algorithm>        // std::equal
 #include <deque>
-#include <iostream>         // TODO: remove this temporary include.
 
 #include "BitFunnel/Exceptions.h"
 #include "ITermTreatment.h"
@@ -81,15 +82,14 @@ namespace BitFunnel
             ASSERT_THROW(++it, RecoverableError);
         }
 
-        // Iterate correct number.
-        // push_front
-        // Throw on push_front full.
+
         // Throw on duplicate rank
         TEST(RowConfiguration, Iterate)
         {
             std::deque<RowConfiguration::Entry> expected;
             RowConfiguration observed;
 
+            // push_front, iterate, and verify contents for up to 8 entries.
             for (unsigned i = 0; i < 8; ++i)
             {
                 RowConfiguration::Entry e(i, i + 1, (i & 1) == 1);
@@ -98,32 +98,25 @@ namespace BitFunnel
 
                 EXPECT_TRUE(std::equal(observed.begin(), observed.end(), expected.begin()));
                 EXPECT_TRUE(std::equal(expected.begin(), expected.end(), observed.begin()));
-                //size_t j = 0;
-                //for (auto e : observed)
-                //{
-                //    EXPECT_EQ(expected[j], e);
-                //    j++;
-                //}
-                //EXPECT_EQ(j, expected.size());
             }
-            //c.push_front(RowConfiguration::Entry(0, 1, false));
-            //c.push_front(RowConfiguration::Entry(2, 3, true));
-            //c.push_front(RowConfiguration::Entry(4, 5, false));
-            //c.push_front(RowConfiguration::Entry(6, 7, true));
-            //c.push_front(RowConfiguration::Entry(0, 1, false));
-            //c.push_front(RowConfiguration::Entry(2, 3, true));
-            //c.push_front(RowConfiguration::Entry(4, 5, false));
-            //c.push_front(RowConfiguration::Entry(6, 7, true));
 
-            //for (auto e : c)
-            //{
-            //    std::cout
-            //        << e.GetRank()
-            //        << ", " << e.GetRowCount()
-            //        << ", " << e.IsPrivate()
-            //        << std::endl;
-            //}
+            // Ensure 9th entry generates an exception, now that RowConfiguration is full.
+            RowConfiguration::Entry e2(1, 2, false);
+            ASSERT_THROW(observed.push_front(e2), RecoverableError);
+        }
+
+
+        TEST(RowConfiguration, ThrowOnDuplicateRank)
+        {
+            RowConfiguration c;
+            c.push_front(RowConfiguration::Entry(1, 2, false));
+
+            // Adding a second entry with the same rank should trigger an exception.
+            ASSERT_THROW(c.push_front(RowConfiguration::Entry(1, 3, true)),
+                         RecoverableError);
         }
     }
 }
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif

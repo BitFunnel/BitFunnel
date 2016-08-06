@@ -38,7 +38,7 @@ namespace BitFunnel
     //   Is an instance created as each term is processed, or are a fixed number
     //   of instances associated with classes of terms created at startup?
 
-    class RowConfiguration // : public std::iterator<std::input_iterator_tag, RowConfiguration::Entry>
+    class RowConfiguration
     {
     public:
         class Entry
@@ -60,7 +60,19 @@ namespace BitFunnel
             uint8_t m_data;
         };
 
-        typedef RowConfiguration iterator;
+        class iterator : public std::iterator<std::input_iterator_tag, RowConfiguration::Entry>
+        {
+        public:
+            bool operator!=(iterator const & other) const;
+            iterator& operator++();
+            Entry operator*() const;
+
+        private:
+            friend class RowConfiguration;
+
+            iterator(uint64_t data);
+            uint64_t m_data;
+        };
 
         RowConfiguration();
 
@@ -68,10 +80,6 @@ namespace BitFunnel
 
         iterator begin() const;
         iterator end() const;
-
-        bool operator!=(RowConfiguration const & other) const;
-        RowConfiguration& operator++();
-        Entry operator*() const;
 
     private:
         uint64_t m_data;

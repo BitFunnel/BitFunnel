@@ -36,9 +36,6 @@ namespace BitFunnel
     //
     //*************************************************************************
     RowConfiguration::Entry::Entry(Rank rank, RowIndex rowCount, bool isPrivate)
-        //: m_rank(static_cast<unsigned char>(rank)),
-        //  m_rowCount(static_cast<unsigned char>(rowCount)),
-        //  m_isPrivate(isPrivate)
     {
         if (rank > c_maxRank || rowCount > c_maxRowCount)
         {
@@ -88,6 +85,50 @@ namespace BitFunnel
 
     //*************************************************************************
     //
+    // RowConfiguration::iterator
+    //
+    //*************************************************************************
+    RowConfiguration::iterator::iterator(uint64_t data)
+        : m_data(data)
+    {
+    }
+
+
+    bool RowConfiguration::iterator::operator!=(RowConfiguration::iterator const & other) const
+    {
+        return m_data != other.m_data;
+    }
+
+
+    RowConfiguration::iterator& RowConfiguration::iterator::operator++()
+    {
+        if (m_data == 0)
+        {
+            RecoverableError error("RowConfiguration::operator++: no more entries.");
+            throw error;
+        }
+        else
+        {
+            m_data >>= 8;
+            return *this;
+        }
+    }
+
+
+    RowConfiguration::Entry RowConfiguration::iterator::operator*() const
+    {
+        if (m_data == 0)
+        {
+            RecoverableError error("RowConfiguration::operator*: no more entries.");
+            throw error;
+        }
+
+        return Entry(static_cast<uint8_t>(m_data & 0xff));
+    }
+
+
+    //*************************************************************************
+    //
     // RowConfiguration
     //
     //*************************************************************************
@@ -104,6 +145,20 @@ namespace BitFunnel
             RecoverableError error("RowConfiguration::push_back: out of space.");
             throw error;
         }
+
+        // Ensure that the entry doesn't have the same rank as an existing entry.
+        // The restriction that no rank appears more than once simplified the bin
+        // packing algorithm in the term table build which must ensure that all
+        // rows for a term at a rank are distinct.
+        for (auto existing : *this)
+        {
+            if (existing.GetRank() == entry.GetRank())
+            {
+                RecoverableError error("RowConfiguration::push_back: duplicate rank not allowed.");
+                throw error;
+            }
+        }
+
         m_data <<= 8;
         m_data |= entry.m_data;
     }
@@ -111,45 +166,12 @@ namespace BitFunnel
 
     RowConfiguration::iterator RowConfiguration::begin() const
     {
-        return *this;
+        return iterator(m_data);
     }
 
 
     RowConfiguration::iterator RowConfiguration::end() const
     {
-        return RowConfiguration();
-    }
-
-
-    bool RowConfiguration::operator!=(RowConfiguration const & other) const
-    {
-        return m_data != other.m_data;
-    }
-
-
-    RowConfiguration& RowConfiguration::operator++()
-    {
-        if (m_data == 0)
-        {
-            RecoverableError error("RowConfiguration::operator++: no more entries.");
-            throw error;
-        }
-        else
-        {
-            m_data >>= 8;
-            return *this;
-        }
-    }
-
-
-    RowConfiguration::Entry RowConfiguration::operator*() const
-    {
-        if (m_data == 0)
-        {
-            RecoverableError error("RowConfiguration::operator*: no more entries.");
-            throw error;
-        }
-
-        return Entry(static_cast<uint8_t>(m_data & 0xff));
+        return iterator(0ull);
     }
 }
