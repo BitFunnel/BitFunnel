@@ -148,7 +148,10 @@ namespace BitFunnel
                     m_availableSpace -= static_cast<float>(frequency);
                 }
 
-                bool operator<(Bin const & other) const;
+                bool operator<(Bin const & other) const
+                {
+                    return m_availableSpace < other.m_availableSpace;
+                }
 
             private:
                 float m_availableSpace;

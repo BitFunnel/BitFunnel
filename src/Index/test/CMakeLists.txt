@@ -13,6 +13,7 @@ set(CPPFILES
     RowTableDescriptorTest.cpp
     ShardTest.cpp
     SliceTest.cpp
+    TermTableBuilderTest.cpp
     TrackingSliceBufferAllocator.cpp
 )
 

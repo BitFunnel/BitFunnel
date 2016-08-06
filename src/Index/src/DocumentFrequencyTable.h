@@ -18,8 +18,8 @@ namespace BitFunnel
 
         Entry const & operator[](size_t index) const;
 
-        std::vector<Entry>::iterator begin() const;
-        std::vector<Entry>::iterator end() const;
+        std::vector<Entry>::const_iterator begin() const;
+        std::vector<Entry>::const_iterator end() const;
 
         size_t size() const;
     private:

@@ -26,6 +26,7 @@
 #include "DocumentFrequencyTable.h"
 #include "LoggerInterfaces/Logging.h"
 
+
 namespace BitFunnel
 {
     void SkipWhitespace(std::istream& input)
@@ -59,6 +60,17 @@ namespace BitFunnel
     DocumentFrequencyTable::Entry const & DocumentFrequencyTable::operator[](size_t index) const
     {
         return m_entries[index];
+    }
+
+    std::vector<DocumentFrequencyTable::Entry>::const_iterator DocumentFrequencyTable::begin() const
+    {
+        return m_entries.begin();
+    }
+
+
+    std::vector<DocumentFrequencyTable::Entry>::const_iterator DocumentFrequencyTable::end() const
+    {
+        return m_entries.begin();
     }
 
 
