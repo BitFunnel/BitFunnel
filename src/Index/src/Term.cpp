@@ -150,7 +150,9 @@ namespace BitFunnel
         out << "Term("
             << std::hex << m_rawHash
             << ", "
-            << std::dec << m_gramSize
+            << std::dec << static_cast<unsigned>(m_gramSize)
+            << ", "
+            << static_cast<unsigned>(m_stream)
             << ")";
     }
 
@@ -176,6 +178,21 @@ namespace BitFunnel
         else
         {
             IdfX10 idf = IdfToIdfX10(log10(corpusSize / documentFrequency));
+
+            return (std::min)(maxIdf, (std::min)(static_cast<IdfX10>(c_maxIdfX10Value), idf));
+        }
+    }
+
+
+    Term::IdfX10 Term::ComputeIdfX10(double frequency, IdfX10 maxIdf)
+    {
+        if (frequency == 0)
+        {
+            return static_cast<IdfX10>(maxIdf);
+        }
+        else
+        {
+            IdfX10 idf = IdfToIdfX10(log10(1.0 / frequency));
 
             return (std::min)(maxIdf, (std::min)(static_cast<IdfX10>(c_maxIdfX10Value), idf));
         }

@@ -68,7 +68,7 @@ namespace BitFunnel
         {
             RowConfiguration configuration;
 
-            double frequency = pow(10, -idf / 10.0);
+            double frequency = pow(10, -idf / 10.0);        // TODO: use method from Term.cpp.
             //std::cout << "idf = " << (float)idf << ", ";
             //std::cout << "frequency = " << frequency << std::endl;
             if (frequency > maxSharedRowFrequency)
@@ -113,7 +113,7 @@ namespace BitFunnel
         {
             RowConfiguration configuration;
 
-            double frequency = pow(10, -idf / 10.0);
+            double frequency = pow(10, -idf / 10.0);    // TODO: Use method from term.cpp. Use IdfX10.
             if (frequency > maxSharedRowFrequency)
             {
                 configuration.push_front(RowConfiguration::Entry(0, 1, true));
@@ -126,7 +126,7 @@ namespace BitFunnel
                 {
                     // TODO: compute frequency at rank.
                     Rank rank = 3;
-                    double frequencyAtRank = 1 - pow(1.0 - frequency, rank);
+                    double frequencyAtRank = 1 - pow(1.0 - frequency, rank + 1);    // TODO: Put this in shared function.
                     if (frequencyAtRank > maxSharedRowFrequency)
                     {
                         configuration.push_front(RowConfiguration::Entry(3, 1, true));

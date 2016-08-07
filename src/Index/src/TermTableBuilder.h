@@ -29,9 +29,10 @@
 #include <set>                          // std::set member.
 #include <vector>                       // std::vector member.
 
-#include "BitFunnel/BitFunnelTypes.h"   // Rank parameter.
-#include "BitFunnel/RowId.h"            // RowIndex, RowId parameter.
-#include "BitFunnel/Term.h"             // Term::Hash template parameter.
+#include "BitFunnel/BitFunnelTypes.h"           // Rank parameter.
+#include "BitFunnel/RowId.h"                    // RowIndex, RowId parameter.
+#include "BitFunnel/Term.h"                     // Term::Hash template parameter.
+#include "BitFunnel/Utilities/Accumulator.h"    // Accumulator member.
 
 
 namespace BitFunnel
@@ -106,12 +107,19 @@ namespace BitFunnel
             double m_adhocFrequency;
             TermTableBuilder::RowIdInserter& m_inserter;
 
+            // Sum of frequencies of all adhoc terms. Used to compute the
+            // number of adhoc rows.
             double m_adhocTotal;
 
             RowIndex m_currentRow;
 
             class Bin;
             std::set<Bin> m_bins;
+
+            size_t m_explicitTermCount;
+            size_t m_adhocTermCount;
+            size_t m_privateTermCount;
+            size_t m_privateRowCount;
 
             class Bin
             {
@@ -150,7 +158,14 @@ namespace BitFunnel
 
                 bool operator<(Bin const & other) const
                 {
-                    return m_availableSpace < other.m_availableSpace;
+                    if (m_availableSpace != other.m_availableSpace)
+                    {
+                        return m_availableSpace < other.m_availableSpace;
+                    }
+                    else
+                    {
+                        return m_index < other.m_index;
+                    }
                 }
 
             private:

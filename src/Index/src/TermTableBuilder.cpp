@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream>     // TODO: Remove this temporary include.
 #include <ostream>
 
 #include "BitFunnel/Exceptions.h"
@@ -58,11 +59,20 @@ namespace BitFunnel
         // (note that the entries are sorted in order of decreasing frequency).
         for (auto term : terms)
         {
+            std::cout << "Term: ";
+            term.first.Print(std::cout);
+            std::cout << "; frequency = " << term.second << std::endl;
+
             // Record the first row assignment slot for this term.
             size_t start = m_rowAssignments.size();
+            std::cout << "  start = " << start << std::endl;
 
             // Get the term's RowConfiguration.
             auto configuration = treatment.GetTreatment(term.first);
+
+            std::cout << "  Configuration: ";
+            configuration.Write(std::cout);
+            std::cout << std::endl;
 
             // For each rank entry in the RowConfiguration.
             for (auto entry : configuration)
@@ -76,6 +86,7 @@ namespace BitFunnel
             // Record the next row assignment slot after adding row assignments
             // for this term.
             size_t end = m_rowAssignments.size();
+            std::cout << "  end = " << end << std::endl;
 
             if (end - start != 0)
             {
@@ -90,18 +101,6 @@ namespace BitFunnel
 
     void TermTableBuilder::Print(std::ostream& output) const
     {
-        // For each rank
-        //   terms
-        //     count
-        //   explicit rows
-        //     counts: total, private, shared
-        //     density: min, max, mean, variance, distribution?
-        //   adhoc rows
-        //     count
-
-        // RowAssignments
-        //   count
-        //   RowId count
         for (auto&& assigner : m_rowAssigners)
         {
             assigner->Print(output);
@@ -127,7 +126,11 @@ namespace BitFunnel
           m_adhocFrequency(adhocFrequency),
           m_inserter(inserter),
           m_adhocTotal(0),
-          m_currentRow(0)
+          m_currentRow(0),
+          m_explicitTermCount(0),
+          m_adhocTermCount(0),
+          m_privateTermCount(0),
+          m_privateRowCount(0)
     {
     }
 
@@ -135,7 +138,7 @@ namespace BitFunnel
     void TermTableBuilder::RowAssigner::Assign(double frequency, RowIndex count, bool isPrivate)
     {
         // Compute the frequency at rank.
-        double f = 1.0 - pow(1.0 - frequency, m_rank);
+        double f = 1.0 - pow(1.0 - frequency, m_rank + 1);      // TODO: Put this in shared function.
 
         if (isPrivate || f >= m_density)
         {
@@ -144,6 +147,9 @@ namespace BitFunnel
             // Since the row is private (i.e. not shared with other terms)
             // we only need a single row, even if count > 1.
 
+            ++m_privateTermCount;
+            ++m_privateRowCount;
+
             // Just reserve the RowIndex and then add the appropriate RowID to
             // the TermTableBuilder.
             m_inserter = RowId(0, m_rank, m_currentRow++);
@@ -151,14 +157,18 @@ namespace BitFunnel
         else if (f < m_adhocFrequency)
         {
             // This is an adhoc term whose location is defined by a set of
-            // hash functions. Update m_adhocTotal with this term's
-            // contribution to the total number of bits.
+            // hash functions.
+            ++m_adhocTermCount;
+
+            // Update m_adhocTotal with this term's contribution to the total
+            // number of bits.
             m_adhocTotal += frequency * count;
         }
         else
         {
             // This is an explicit term. In other words, it sets enough bits
             // that it must be bin-packed into its rows.
+            ++m_explicitTermCount;
 
             // Use the Best Fit Descreasing bin packing algorithm.
             // See https://www.cs.ucsb.edu/~suri/cs130b/BinPacking.txt.
@@ -244,26 +254,44 @@ namespace BitFunnel
         output << "===================================" << std::endl;
         output << "RowAssigner for rank " << m_rank << std::endl;
 
-        output << "  Terms" << std::endl;
-        output << "    Total: " << std::endl;
-        output << "    Adhoc: " << std::endl;
-        output << "    Explicit: " << std::endl;
-        output << "    Private: " << std::endl;
+        if (m_explicitTermCount + m_adhocTermCount == 0)
+        {
+            output << "  No terms" << std::endl;
+        }
+        else
+        {
+            output << "  Terms" << std::endl;
+            output << "    Total: " << m_adhocTermCount + m_explicitTermCount + m_privateTermCount << std::endl;
+            output << "    Adhoc: " << m_adhocTermCount << std::endl;
+            output << "    Explicit: " << m_explicitTermCount << std::endl;
+            output << "    Private: " << m_privateTermCount << std::endl;
 
-        output << std::endl;
+            output << std::endl;
 
-        output << "  Rows" << std::endl;
-        output << "    Total: " << std::endl;
-        output << "    Adhoc: " << std::endl;
-        output << "    Explicit: " << std::endl;
+            output << "  Rows" << std::endl;
+            output << "    Total: " << GetAdhocRowCount() + m_currentRow << std::endl;
+            output << "    Adhoc: " << GetAdhocRowCount() << std::endl;
+            output << "    Explicit: " << m_bins.size() << std::endl;
+            output << "    Private: " << m_privateRowCount << std::endl;
 
-        output << std::endl;
+            output << std::endl;
 
-        output << "  Densities" << std::endl;
-        output << "    Mean: " << std::endl;
-        output << "    Min: " << std::endl;
-        output << "    Max: " << std::endl;
-        output << "    Variance: " << std::endl;
+            output << "  Bins" << std::endl;
+            Accumulator a;
+            for (auto bin : m_bins)
+            {
+                output << "    " << bin.GetFrequency(m_density) << ", " << bin.GetIndex() << std::endl;
+                a.Record(bin.GetFrequency(m_density));
+            }
+
+            output << std::endl;
+
+            output << "  Densities in explicit shared rows" << std::endl;
+            output << "    Mean: " << a.GetMean() << std::endl;
+            output << "    Min: " << a.GetMin() << std::endl;
+            output << "    Max: " << a.GetMax() << std::endl;
+            output << "    Variance: " << a.GetVariance() << std::endl;
+        }
 
         output << std::endl;
     }

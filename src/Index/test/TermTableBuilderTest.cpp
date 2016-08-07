@@ -37,13 +37,21 @@ namespace BitFunnel
         TEST(TermTableBuilder, InProgress)
         {
             std::stringstream input;
-            input << "123,1,1,0.5\n456,1,1,0.1\n789,1,1,0.01\n";
+            input << 
+                "123,1,1,0.5\n"
+                "456,1,1,0.1\n"
+                "789,1,1,0.01\n"
+                "111,1,1,0.01\n"
+                "333,1,1,0.005\n"
+                "222,1,1,0.001\n";
             DocumentFrequencyTable terms(input);
 
-            TreatmentPrivateRank0 treatment;
-
+            double snr = 10;
             double density = 0.1;
-            double adhocFrequency = 0.01;
+            double adhocFrequency = 0.0001;
+            
+//            TreatmentPrivateRank0 treatment;
+            TreatmentPrivateSharedRank0 treatment(density, snr);
 
             TermTableBuilder builder(density, adhocFrequency, treatment, terms);
             builder.Print(std::cout);

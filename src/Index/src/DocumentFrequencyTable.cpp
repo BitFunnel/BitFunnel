@@ -20,9 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <cctype>  // For isspace.
+#include <cctype>                           // For isspace.
 #include <istream>
 
+#include "BitFunnel/Exceptions.h"
 #include "DocumentFrequencyTable.h"
 #include "LoggerInterfaces/Logging.h"
 
@@ -38,16 +39,45 @@ namespace BitFunnel
     }
 
 
+    static void Consume(std::istream& input, char expected)
+    {
+        char c;
+        input >> c;
+        if (c != expected)
+        {
+            FatalError error("DocumentFrequencyTable: bad input format.");
+            throw error;
+        }
+    }
+
+
     DocumentFrequencyTable::DocumentFrequencyTable(std::istream& input)
     {
         while (input.peek() != EOF)
         {
-            char comma;
-            Term t(input);
-            input >> comma;
-            LogAssertB(comma == ',', "Bad input format.");
+            unsigned temp;
+
+            Term::Hash rawHash;
+            input >> std::hex >> rawHash;
+            Consume(input, ',');
+
+            Term::GramSize gramSize;
+            input >> std::dec >> temp;
+            gramSize = static_cast<Term::GramSize>(temp);
+            Consume(input, ',');
+
+            Term::StreamId streamId;
+            input >> std::dec >> temp;
+            streamId = static_cast<Term::StreamId>(temp);
+
+            Consume(input, ',');
+
             double frequency;
             input >> frequency;
+
+            const Term::IdfX10 maxIdf = 60;
+            Term t(rawHash, streamId, Term::ComputeIdfX10(frequency, maxIdf));
+
             m_entries.push_back(std::make_pair(t, frequency));
 
             // Need to delete whitespace so that peeking for EOF doesn't get a
@@ -62,6 +92,7 @@ namespace BitFunnel
         return m_entries[index];
     }
 
+
     std::vector<DocumentFrequencyTable::Entry>::const_iterator DocumentFrequencyTable::begin() const
     {
         return m_entries.begin();
@@ -70,7 +101,7 @@ namespace BitFunnel
 
     std::vector<DocumentFrequencyTable::Entry>::const_iterator DocumentFrequencyTable::end() const
     {
-        return m_entries.begin();
+        return m_entries.end();
     }
 
 

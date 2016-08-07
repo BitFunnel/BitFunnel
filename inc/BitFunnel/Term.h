@@ -125,6 +125,8 @@ namespace BitFunnel
                                     double corpusSize,
                                     IdfX10 maxIdf);
 
+        static IdfX10 ComputeIdfX10(double frequency, IdfX10 maxIdf);
+
         // static method to calculate document frequency from Idf value.
         static unsigned ComputeDocumentFrequency(double corpusSize, double idf);
 
