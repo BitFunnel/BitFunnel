@@ -42,7 +42,7 @@ namespace BitFunnel
 
             EXPECT_EQ(s.GetShardCount(), 5u);
 
-            for (ShardId i = 0; i < s.GetShardCount() - 1; ++i)
+            for (ShardId i = 0; i < s.GetShardCount() - 2; ++i)
             {
                 EXPECT_LT(s.GetMaxPostingCount(i), s.GetMaxPostingCount(i + 1));
             }
