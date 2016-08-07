@@ -126,6 +126,7 @@ set(INDEX_HFILES
 )
 
 set(UTILITIES_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Accumulator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Factories.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/FileHeader.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IBlockAllocator.h

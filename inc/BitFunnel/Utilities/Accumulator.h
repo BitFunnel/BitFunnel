@@ -25,12 +25,24 @@
 #include <algorithm>    // std::min(), std::max()
 #include <limits>       // infinity()
 
+#include "BitFunnel/Exceptions.h"
+
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // Accumulator
+    //
+    // Computes count, sum, min, max, mean, and variance of a series of
+    // nummeric values.
+    //
+    //*************************************************************************
     class Accumulator
     {
     public:
+
+        // Constructs an accumulator representing an empty sequence of numbers.
         Accumulator()
           : m_count(0),
             m_sum(0),
@@ -40,6 +52,9 @@ namespace BitFunnel
         {
         }
 
+
+        // Updates the accumulated statistics the reflect the addition of
+        // another value.
         template <typename T>
         void Record(T value)
         {
@@ -51,6 +66,8 @@ namespace BitFunnel
             m_max = std::max(m_max, v);
         }
 
+
+        // Returns the mean or average of all of the values recorded so far.
         double GetMean() const
         {
             if (m_count == 0)
@@ -63,16 +80,32 @@ namespace BitFunnel
             }
         }
 
+
+        // Returns the minimum value recorded.
+        // Throws if no values have been recorded.
         double GetMin() const
         {
+            if (m_count == 0)
+            {
+                throw RecoverableError("Accumulator::GetMin(): no recorded values.");
+            }
             return m_min;
         }
 
+
+        // Returns the maximum value recorded.
+        // Throws if no values have been recorded.
         double GetMax() const
         {
+            if (m_count == 0)
+            {
+                throw RecoverableError("Accumulator::GetMax(): no recorded values.");
+            }
             return m_max;
         }
 
+
+        // Returns the variance of the values recorded.
         double GetVariance() const
         {
             if (m_count < 2)
@@ -85,10 +118,14 @@ namespace BitFunnel
             }
         }
 
+
+        // Returns the number of times the Record() method has been invoked.
+        // NOTE: does not return the number of unique values.
         size_t GetCount() const
         {
             return m_count;
         }
+
 
     private:
         size_t m_count;
