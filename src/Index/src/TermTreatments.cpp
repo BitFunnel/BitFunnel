@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #include <iostream>             // TODO: Remove this temporary include.
+#include <math.h>
 
 #include "BitFunnel/Term.h"
 #include "TermTreatments.h"
