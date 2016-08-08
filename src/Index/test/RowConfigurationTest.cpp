@@ -57,11 +57,13 @@ namespace BitFunnel
         TEST(Entry, Throw)
         {
             // Rank is too large.
-            ASSERT_THROW(RowConfiguration::Entry(8u, 1u, true),
+            ASSERT_THROW(RowConfiguration::Entry(c_maxRankValue + 1, 1u, true),
                          RecoverableError);
 
             // RowCount is too large.
-            ASSERT_THROW(RowConfiguration::Entry(0u, 16u, true),
+            ASSERT_THROW(RowConfiguration::Entry(0u,
+                                                 RowConfiguration::Entry::c_maxRowCount + 1,
+                                                 true),
                          RecoverableError);
 
             // RowCount is zero.

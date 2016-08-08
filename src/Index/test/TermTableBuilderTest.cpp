@@ -49,7 +49,7 @@ namespace BitFunnel
             double snr = 10;
             double density = 0.1;
             double adhocFrequency = 0.0001;
-            
+
 //            TreatmentPrivateRank0 treatment;
             TreatmentPrivateSharedRank0 treatment(density, snr);
 

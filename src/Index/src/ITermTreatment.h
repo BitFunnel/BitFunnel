@@ -108,6 +108,9 @@ namespace BitFunnel
 
             void Write(std::ostream& output) const;
 
+            static const size_t c_log2MaxRowCount = 4;
+            static const size_t c_maxRowCount = (1ull << c_log2MaxRowCount) - 1;
+
         private:
             friend class RowConfiguration;
 
@@ -142,8 +145,6 @@ namespace BitFunnel
         void Write(std::ostream& output) const;
 
     private:
-        static const size_t c_log2MaxRowCount = 4;
-        static const size_t c_maxRowCount = (1ull << c_log2MaxRowCount) - 1;
 
         uint64_t m_data;
     };

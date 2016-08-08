@@ -22,12 +22,12 @@
 
 #pragma once
 
-#include <iosfwd>                       // std::ostream parameter.
-#include <iterator>                     // typedef uses std::back_inserter_iterator.
-#include <map>                          // std::map member.
-#include <memory>                       // std::unique_ptr member.
-#include <set>                          // std::set member.
-#include <vector>                       // std::vector member.
+#include <iosfwd>                               // std::ostream parameter.
+#include <iterator>                             // typedef uses std::back_inserter_iterator.
+#include <map>                                  // std::map member.
+#include <memory>                               // std::unique_ptr member.
+#include <set>                                  // std::set member.
+#include <vector>                               // std::vector member.
 
 #include "BitFunnel/BitFunnelTypes.h"           // Rank parameter.
 #include "BitFunnel/RowId.h"                    // RowIndex, RowId parameter.

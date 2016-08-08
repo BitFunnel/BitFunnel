@@ -140,7 +140,7 @@ namespace BitFunnel
     void TermTableBuilder::RowAssigner::Assign(double frequency, RowIndex count, bool isPrivate)
     {
         // Compute the frequency at rank.
-        double f = 1.0 - pow(1.0 - frequency, m_rank + 1);      // TODO: Put this in shared function.
+        double f = Term::FrequencyAtRank(frequency, m_rank);
 
         if (isPrivate || f >= m_density)
         {

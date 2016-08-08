@@ -29,6 +29,13 @@
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // TreatmentPrivateRank0
+    //
+    // Every term gets the same treatment: a single, private, rank 0 row.
+    //
+    //*************************************************************************
     class TreatmentPrivateRank0 : public ITermTreatment
     {
     public:
@@ -45,6 +52,17 @@ namespace BitFunnel
     };
 
 
+    //*************************************************************************
+    //
+    // TreatmentPrivateSharedRank0
+    //
+    // Term treatment based on target bit density, signal to noise ratio and
+    // the term's IdfSum() value.
+    //
+    // Treatments only involve rank 0 rows, but common terms will get a private
+    // row, while rare terms will get multiple shared rows.
+    //
+    //*************************************************************************
     class TreatmentPrivateSharedRank0 : public ITermTreatment
     {
     public:
@@ -61,6 +79,18 @@ namespace BitFunnel
     };
 
 
+    //*************************************************************************
+    //
+    // TreatmentPrivateSharedRank0and3
+    //
+    // Term treatment based on target bit density, signal to noise ratio and
+    // the term's IdfSum() value.
+    //
+    // Treatments may now include rank 0 and rank 3 rows. Common terms will
+    // get a private row, while rare terms will get a combination of rank of
+    // private and shared rows from ranks 0 and 3.
+    //
+    //*************************************************************************
     class TreatmentPrivateSharedRank0and3 : public ITermTreatment
     {
     public:

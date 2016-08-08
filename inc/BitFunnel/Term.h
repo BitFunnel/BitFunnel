@@ -22,8 +22,10 @@
 
 #pragma once
 
-#include <iosfwd>
-#include <stdint.h>     // For uint8_t
+#include <iosfwd>                       // std::ostream parameter.
+#include <stdint.h>                     // uint8_t, uint64_t members.
+
+#include "BitFunnel/BitFunnelTypes.h"   // Rank parameter.
 
 
 namespace BitFunnel
@@ -118,6 +120,10 @@ namespace BitFunnel
 
         // Convert a double precision IDF value to IdfX10
         static IdfX10 IdfToIdfX10(double idf);
+
+        static double IdfX10ToFrequency(IdfX10 idf);
+
+        static double FrequencyAtRank(double frequency, Rank rank);
 
         // Static method that calculates IDF value from document frequency and
         // corpus document count.

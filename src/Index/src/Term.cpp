@@ -199,6 +199,19 @@ namespace BitFunnel
     }
 
 
+    double Term::IdfX10ToFrequency(IdfX10 idf)
+    {
+        return pow(10, -idf / 10.0);
+    }
+
+
+    double Term::FrequencyAtRank(double frequency, Rank rank)
+    {
+        return 1.0 - pow(1.0 - frequency, rank + 1.0);
+    }
+
+
+
     unsigned Term::ComputeDocumentFrequency(double corpusSize, double idf)
     {
         return static_cast<unsigned>(corpusSize / pow(10, idf));

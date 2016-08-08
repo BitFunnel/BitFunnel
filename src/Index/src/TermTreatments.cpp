@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <algorithm>
 #include <iostream>             // TODO: Remove this temporary include.
 #include <math.h>
 
@@ -46,6 +47,7 @@ namespace BitFunnel
         std::cout << std::endl;
     }
 
+
     RowConfiguration TreatmentPrivateRank0::GetTreatment(Term /*term*/) const
     {
         return m_configuration;
@@ -62,22 +64,23 @@ namespace BitFunnel
     //*************************************************************************
     TreatmentPrivateSharedRank0::TreatmentPrivateSharedRank0(double density, double snr)
     {
-        double maxSharedRowFrequency = density / 10.0;
-
-        // TODO: fill up vector of RowConfigurations.
-        for (Term::IdfX10 idf = 0; idf < 90; ++idf)
+        // Fill up vector of RowConfigurations. GetTreatment() will use the
+        // IdfSum() value of the Term as an index into this vector.
+        for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
             RowConfiguration configuration;
 
-            double frequency = pow(10, -idf / 10.0);        // TODO: use method from Term.cpp.
-            //std::cout << "idf = " << (float)idf << ", ";
-            //std::cout << "frequency = " << frequency << std::endl;
-            if (frequency > maxSharedRowFrequency)
+            double frequency = Term::IdfX10ToFrequency(idf);
+            if (frequency >= density)
             {
+                // This term is so common that it must be assigned a private row.
                 configuration.push_front(RowConfiguration::Entry(0, 1, true));
             }
             else
             {
+                // Determine the number of rows, k, required to reach the
+                // desired signal to noise ratio, snr, given a certain bit
+                // density.
                 unsigned k = lround(ceil(log(frequency / snr) / log(density - frequency)) + 1);
                 configuration.push_front(RowConfiguration::Entry(0, k, false));
             }
@@ -93,7 +96,8 @@ namespace BitFunnel
 
     RowConfiguration TreatmentPrivateSharedRank0::GetTreatment(Term term) const
     {
-        return m_configurations[term.GetIdfSum()];
+        Term::IdfX10 idf = std::min(term.GetIdfSum(), Term::c_maxIdfX10Value);
+        return m_configurations[idf];
     }
 
 
@@ -107,15 +111,14 @@ namespace BitFunnel
     //*************************************************************************
     TreatmentPrivateSharedRank0and3::TreatmentPrivateSharedRank0and3(double density, double snr)
     {
-        double maxSharedRowFrequency = density / 10.0;
-
-        // TODO: fill up vector of RowConfigurations.
-        for (Term::IdfX10 idf = 0; idf < 90; ++idf)
+        // Fill up vector of RowConfigurations. GetTreatment() will use the
+        // IdfSum() value of the Term as an index into this vector.
+        for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
             RowConfiguration configuration;
 
-            double frequency = pow(10, -idf / 10.0);    // TODO: Use method from term.cpp. Use IdfX10.
-            if (frequency > maxSharedRowFrequency)
+            double frequency = Term::IdfX10ToFrequency(idf);
+            if (frequency > density)
             {
                 configuration.push_front(RowConfiguration::Entry(0, 1, true));
             }
@@ -125,16 +128,15 @@ namespace BitFunnel
                 configuration.push_front(RowConfiguration::Entry(0, 1, false));
                 if (k > 1)
                 {
-                    // TODO: compute frequency at rank.
                     Rank rank = 3;
-                    double frequencyAtRank = 1 - pow(1.0 - frequency, rank + 1);    // TODO: Put this in shared function.
-                    if (frequencyAtRank > maxSharedRowFrequency)
+                    double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
+                    if (frequencyAtRank >= density)
                     {
-                        configuration.push_front(RowConfiguration::Entry(3, 1, true));
+                        configuration.push_front(RowConfiguration::Entry(rank, 1, true));
                     }
                     else
                     {
-                        configuration.push_front(RowConfiguration::Entry(3, k - 1, false));
+                        configuration.push_front(RowConfiguration::Entry(rank, k - 1, false));
                     }
                 }
             }
@@ -150,6 +152,7 @@ namespace BitFunnel
 
     RowConfiguration TreatmentPrivateSharedRank0and3::GetTreatment(Term term) const
     {
-        return m_configurations[term.GetIdfSum()];
+        Term::IdfX10 idf = std::min(term.GetIdfSum(), Term::c_maxIdfX10Value);
+        return m_configurations[idf];
     }
 }
