@@ -103,13 +103,13 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    // TreatmentPrivateSharedRank0and3
+    // TreatmentPrivateSharedRank0And3
     //
     // Terms get one or more rank 0 and rank 3 rows that could be private or
     // shared, depending on term frequency.
     //
     //*************************************************************************
-    TreatmentPrivateSharedRank0and3::TreatmentPrivateSharedRank0and3(double density, double snr)
+    TreatmentPrivateSharedRank0And3::TreatmentPrivateSharedRank0And3(double density, double snr)
     {
         // Fill up vector of RowConfigurations. GetTreatment() will use the
         // IdfSum() value of the Term as an index into this vector.
@@ -150,7 +150,7 @@ namespace BitFunnel
     }
 
 
-    RowConfiguration TreatmentPrivateSharedRank0and3::GetTreatment(Term term) const
+    RowConfiguration TreatmentPrivateSharedRank0And3::GetTreatment(Term term) const
     {
         Term::IdfX10 idf = std::min(term.GetIdfSum(), Term::c_maxIdfX10Value);
         return m_configurations[idf];

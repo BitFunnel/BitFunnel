@@ -81,7 +81,7 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    // TreatmentPrivateSharedRank0and3
+    // TreatmentPrivateSharedRank0And3
     //
     // Term treatment based on target bit density, signal to noise ratio and
     // the term's IdfSum() value.
@@ -91,10 +91,10 @@ namespace BitFunnel
     // private and shared rows from ranks 0 and 3.
     //
     //*************************************************************************
-    class TreatmentPrivateSharedRank0and3 : public ITermTreatment
+    class TreatmentPrivateSharedRank0And3 : public ITermTreatment
     {
     public:
-        TreatmentPrivateSharedRank0and3(double density, double snr);
+        TreatmentPrivateSharedRank0And3(double density, double snr);
 
         //
         // ITermTreatment methods.

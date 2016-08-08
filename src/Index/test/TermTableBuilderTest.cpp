@@ -51,7 +51,8 @@ namespace BitFunnel
             double adhocFrequency = 0.0001;
 
 //            TreatmentPrivateRank0 treatment;
-            TreatmentPrivateSharedRank0 treatment(density, snr);
+//            TreatmentPrivateSharedRank0 treatment(density, snr);
+            TreatmentPrivateSharedRank0And3 treatment(density, snr);
 
             TermTableBuilder builder(density, adhocFrequency, treatment, terms);
             builder.Print(std::cout);
