@@ -36,7 +36,7 @@ namespace BitFunnel
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #endif
-    RowId::RowId(size_t shard, size_t rank, size_t index)
+    RowId::RowId(ShardId shard, Rank rank, RowIndex index)
         : m_shard(shard), m_rank(rank), m_index(index)
     {
         if (index > c_maxRowIndexValue)
@@ -156,7 +156,7 @@ namespace BitFunnel
     // TODO: Who calls this?
     unsigned RowId::GetPackedRepresentationBitCount()
     {
-        return c_bitsOfShard
+        return c_log2MaxShardIdValue
                + c_log2MaxRankValue
                + c_log2MaxRowIndexValue;
     }

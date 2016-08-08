@@ -42,14 +42,10 @@ namespace BitFunnel
     class RowId
     {
     public:
-        // Default constructor creates invalid rows
-        // (i.e. IsValid() will return false).
-        RowId();
-
         // Constructor for primary use case.
         // TODO: Replace size_t with ShardID, Rank, RowIndex.
         // TODO: Why do we need shard?
-        RowId(size_t shard, size_t rank, size_t index);
+        RowId(ShardId shard, Rank rank, RowIndex index);
 
         // RowId is used as a value type and is often copied. Cannot generate
         // default copy constructor because of bit fields.
@@ -89,22 +85,12 @@ namespace BitFunnel
         // of a RowId. Currently this method returns the value 32.
         static unsigned GetPackedRepresentationBitCount();
 
-    protected:
-        // The following constants define the 32-bits of RowId assigned to
-        // Tier, Rank, ShardId, Index. Constants are protected to allow access
-        // from the unit test.
-        static const unsigned c_bitsOfShard = 4;
-//        static const unsigned c_bitsOfIndex = 32 - c_bitsOfShard - c_log2MaxRankValue;
-
-    public:
-        //static const size_t c_maxRowIndexValue = (1ul << c_bitsOfIndex) - 1;
-
     private:
-        static_assert(c_bitsOfShard + c_log2MaxRankValue + c_log2MaxRowIndexValue == 32ull,
+        static_assert(c_log2MaxShardIdValue + c_log2MaxRankValue + c_log2MaxRowIndexValue == 32ull,
                       "Expect m_shard, m_rank, and m_index to use 32 bits.");
 
         // ShardId number.
-        unsigned m_shard: c_bitsOfShard;
+        unsigned m_shard: c_log2MaxShardIdValue;
 
         // Rank.
         unsigned m_rank: c_log2MaxRankValue;
