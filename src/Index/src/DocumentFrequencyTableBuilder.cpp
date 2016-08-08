@@ -75,9 +75,14 @@ namespace BitFunnel
         // Write sorted list to stream.
         for (auto const & entry : entries)
         {
-            // TODO: Write fields of term directly.
-            entry.first.Write(output);
-            output << "," << entry.second << std::endl;
+            output << std::hex << entry.first.GetRawHash()
+                   << ","
+                   << std::dec << static_cast<unsigned>(entry.first.GetGramSize())
+                   << ","
+                   << static_cast<unsigned>(entry.first.GetStream())
+                   << ","
+                   << entry.second
+                   << std::endl;
         }
     }
 

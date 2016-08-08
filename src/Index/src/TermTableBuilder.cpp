@@ -59,30 +59,30 @@ namespace BitFunnel
 
         // For each entry in the document frequency table.
         // (note that the entries are sorted in order of decreasing frequency).
-        for (auto term : terms)
+        for (auto dfEntry : terms)
         {
             std::cout << "Term: ";
-            term.first.Print(std::cout);
-            std::cout << "; frequency = " << term.second << std::endl;
+            dfEntry.GetTerm().Print(std::cout);
+            std::cout << "; frequency = " << dfEntry.GetFrequency() << std::endl;
 
             // Record the first row assignment slot for this term.
             size_t start = m_rowAssignments.size();
             std::cout << "  start = " << start << std::endl;
 
             // Get the term's RowConfiguration.
-            auto configuration = treatment.GetTreatment(term.first);
+            auto configuration = treatment.GetTreatment(dfEntry.GetTerm());
 
             std::cout << "  Configuration: ";
             configuration.Write(std::cout);
             std::cout << std::endl;
 
             // For each rank entry in the RowConfiguration.
-            for (auto entry : configuration)
+            for (auto rcEntry : configuration)
             {
                 // Assign the appropriate rows.
-                m_rowAssigners[entry.GetRank()]->Assign(term.second,
-                                                        entry.GetRowCount(),
-                                                        entry.IsPrivate());
+                m_rowAssigners[rcEntry.GetRank()]->Assign(dfEntry.GetFrequency(),
+                                                          rcEntry.GetRowCount(),
+                                                          rcEntry.IsPrivate());
             }
 
             // Record the next row assignment slot after adding row assignments
@@ -94,7 +94,7 @@ namespace BitFunnel
             {
                 // Row assignments were generated, so this term should be stored
                 // explicitly.
-                m_map.insert(std::make_pair(term.first.GetRawHash(),
+                m_map.insert(std::make_pair(dfEntry.GetTerm().GetRawHash(),
                                             RowAssignment(start, end)));
             }
         }

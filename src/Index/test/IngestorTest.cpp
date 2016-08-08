@@ -300,7 +300,7 @@ namespace BitFunnel
             for (size_t i = 0; i < table.size(); ++i)
             {
                 auto entry = table[i];
-                ++histogram[static_cast<size_t>(entry.second * docCount + 0.5)];
+                ++histogram[static_cast<size_t>(round(entry.GetFrequency() * docCount))];
             }
             return histogram;
         }

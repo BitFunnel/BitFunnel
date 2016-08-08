@@ -12,9 +12,7 @@ namespace BitFunnel
     class DocumentFrequencyTable
     {
     public:
-        // TODO: unifiy with other use of this?
-        // TODO: Perhaps Entry should be its own class.
-        typedef std::pair<Term, double> Entry;
+        class Entry;
 
         // Constructs a DocumentFrequencyTable from data previously persisted
         // to a stream by DocumentFrequencyTableBuilder::WriteFrequencies().
@@ -34,6 +32,30 @@ namespace BitFunnel
         std::vector<Entry>::const_iterator end() const;
 
         size_t size() const;
+
+        class Entry
+        {
+        public:
+            Entry(Term term, double frequency)
+                : m_term(term),
+                m_frequency(frequency)
+            {
+            }
+
+            Term GetTerm() const
+            {
+                return m_term;
+            }
+
+            double GetFrequency() const
+            {
+                return m_frequency;
+            }
+
+        private:
+            Term m_term;
+            double m_frequency;
+        };
 
     private:
         std::vector<Entry> m_entries;

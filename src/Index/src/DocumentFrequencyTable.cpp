@@ -77,14 +77,14 @@ namespace BitFunnel
             const Term::IdfX10 maxIdf = 60;
             Term t(rawHash, streamId, Term::ComputeIdfX10(frequency, maxIdf));
 
-            if (m_entries.size() > 0 && m_entries.back().second < frequency)
+            if (m_entries.size() > 0 && m_entries.back().GetFrequency() < frequency)
             {
                 RecoverableError
                     error("DocumentFrequencyTable: expect non-increasing frequencies.");
                 throw error;
             }
 
-            m_entries.push_back(std::make_pair(t, frequency));
+            m_entries.push_back(Entry(t, frequency));
 
             // Need to delete whitespace so that peeking for EOF doesn't get a
             // '\n'.
