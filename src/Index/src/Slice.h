@@ -27,9 +27,9 @@
 #include <stdint.h>
 #include <mutex>
 
-#include "BitFunnel/NonCopyable.h"  // Inherits from NonCopyable.
+#include "BitFunnel/NonCopyable.h"      // Inherits from NonCopyable.
 #include "BitFunnel/BitFunnelTypes.h"   // for DocIndex, Rank.
-#include "BitFunnel/Row.h"
+
 
 namespace BitFunnel
 {

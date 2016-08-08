@@ -75,6 +75,7 @@ namespace BitFunnel
         // Write sorted list to stream.
         for (auto const & entry : entries)
         {
+            // TODO: Write fields of term directly.
             entry.first.Write(output);
             output << "," << entry.second << std::endl;
         }

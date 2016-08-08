@@ -25,12 +25,11 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "DocumentFrequencyTable.h"
-#include "LoggerInterfaces/Logging.h"
 
 
 namespace BitFunnel
 {
-    void SkipWhitespace(std::istream& input)
+    static void SkipWhitespace(std::istream& input)
     {
         while(std::isspace(input.peek()))
         {
@@ -77,6 +76,13 @@ namespace BitFunnel
 
             const Term::IdfX10 maxIdf = 60;
             Term t(rawHash, streamId, Term::ComputeIdfX10(frequency, maxIdf));
+
+            if (m_entries.size() > 0 && m_entries.back().second < frequency)
+            {
+                RecoverableError
+                    error("DocumentFrequencyTable: expect non-increasing frequencies.");
+                throw error;
+            }
 
             m_entries.push_back(std::make_pair(t, frequency));
 

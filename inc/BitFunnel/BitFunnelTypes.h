@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 #pragma once
 
-#include <inttypes.h>  // For uint*_t.
-#include <stddef.h>  // For size_t.
+#include <inttypes.h>   // For uint*_t.
+#include <stddef.h>     // For size_t.
+
 
 namespace BitFunnel
 {
@@ -46,30 +46,35 @@ namespace BitFunnel
     // https://github.com/BitFunnel/BitFunnel/issues/53 for a potential issue
     // about the size of DocIndex and DocId.
     typedef size_t DocIndex;
+    // TODO: c_maxDocIndexValue? Also, should DocIndex be uint32_t since it is
+    // stored?
 
     // TODO: remove unecessary includes of Row.h now that Rank lives here.
 
-    // TODO: should this be a size_t? Although its value is always quite small.
-    // If it's not a size_t, why shouldn't it be a uint8_t or something?
     // Rank is a characteristic of a row in BitFunnel.
     // Each bit in a row corresponds to a set of documents with cardinality
     // equal to 2^r where r is the Rank of the row (e.g. Rank == 0 implies
     // one document per bit, Rank == 1 implies 2 documents per bit and so on).
-    typedef uint32_t Rank;
-
-    // Rank is limited to fit within a three bit field. This constraint exists
-    // to bound the size of RowId.
+    // Rank is limited to fit within a three-bit field. This constraint exists
+    // to bound the size of RowId to fit into 4-bytes.
+    typedef size_t Rank;
     static const size_t c_log2MaxRankValue = 3;
     static const size_t c_maxRankValue = (1ul << c_log2MaxRankValue) - 1;
 
-    // TODO: should this be a size_t? Although its value is always quite small.
-    // If it's not a size_t, why shouldn't it be a uint8_t or something?
-    typedef uint32_t ShardId;
+    // The BitFunnel index is partitioned into Shards, each of which holds
+    // documents with similar sizes (e.g. shard for short documents, shard for
+    // long documents).
+    // ShardId is an identifier for a shard.
+    // ShardId is limited to fit within a four-bit field. This constraint exists
+    // to bound the size of RowId to fit into 4-bytes.
+    typedef size_t ShardId;
     static const size_t c_log2MaxShardIdValue = 4;
     static const size_t c_maxShardIdValue = (1ul << c_log2MaxShardIdValue) - 1;
 
     // RowIndex is the ordinal position of a row in a row table. The RowIndex
     // of the first row is zero.
+    // RowIndex is limited to fit within a 25-bit field. This constraint exists
+    // to bound the size of RowId to fit into 4-bytes.
     typedef size_t RowIndex;
     static const size_t c_log2MaxRowIndexValue = 25;
     static const size_t c_maxRowIndexValue = (1ul << c_log2MaxRowIndexValue) - 1;

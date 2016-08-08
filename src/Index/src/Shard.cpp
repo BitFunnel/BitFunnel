@@ -23,6 +23,7 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Row.h"
 #include "BitFunnel/TermInfo.h"
 #include "IRecyclable.h"
 #include "IRecycler.h"

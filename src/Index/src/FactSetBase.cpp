@@ -3,7 +3,7 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/Row.h"  // For c_systemRowCount.
+#include "BitFunnel/Row.h"                  // For c_systemRowCount.
 #include "FactSetBase.h"
 
 
