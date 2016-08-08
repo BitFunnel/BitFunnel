@@ -51,9 +51,20 @@ namespace BitFunnel
 
     // TODO: should this be a size_t? Although its value is always quite small.
     // If it's not a size_t, why shouldn't it be a uint8_t or something?
+    // Rank is a characteristic of a row in BitFunnel.
+    // Each bit in a row corresponds to a set of documents with cardinality
+    // equal to 2^r where r is the Rank of the row (e.g. Rank == 0 implies
+    // one document per bit, Rank == 1 implies 2 documents per bit and so on).
     typedef uint32_t Rank;
+
+    // Rank is limited to fit within a three bit field. This constraint exists
+    // to bound the size of RowId.
+    static const size_t c_log2MaxRankValue = 3;
+    static const size_t c_maxRankValue = (1ul << c_log2MaxRankValue) - 1;
 
     // TODO: should this be a size_t? Although its value is always quite small.
     // If it's not a size_t, why shouldn't it be a uint8_t or something?
     typedef uint32_t ShardId;
+    static const size_t c_log2MaxShardIdValue = 4;
+    static const size_t c_maxShardIdValue = (1ul << c_log2MaxShardIdValue) - 1;
 }

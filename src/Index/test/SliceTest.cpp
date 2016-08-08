@@ -61,7 +61,7 @@ namespace BitFunnel
                 std::unique_ptr<IRecycler>(new Recycler());
             auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
             static const std::vector<RowIndex>
-                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
+                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1, 0 };
             std::shared_ptr<ITermTable const>
                 termTable(new EmptyTermTable(rowCounts));
 
@@ -205,7 +205,7 @@ namespace BitFunnel
             auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
 
             static const std::vector<RowIndex>
-                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
+                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1, 0 };
             std::shared_ptr<ITermTable const>
                 termTable(new EmptyTermTable(rowCounts));
 
@@ -281,7 +281,7 @@ namespace BitFunnel
             auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
 
             static const std::vector<RowIndex>
-                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
+                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1, 0 };
             std::shared_ptr<ITermTable const>
                 termTable(new EmptyTermTable(rowCounts));
 

@@ -22,6 +22,7 @@
 
 
 #include "LoggerInterfaces/Logging.h"
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/RowId.h"
 
 
@@ -38,9 +39,21 @@ namespace BitFunnel
     RowId::RowId(size_t shard, size_t rank, size_t index)
         : m_shard(shard), m_rank(rank), m_index(index)
     {
-        LogAssertB(index <= c_maxRowIndexValue, "Row index out of range.");
-        // TODO: assert that other values are in range.
-    }
+        if (index > c_maxRowIndexValue)
+        {
+            throw RecoverableError("RowId::RowId(): Row index out of range.");
+        }
+
+        if (rank > c_maxRankValue)
+        {
+            throw RecoverableError("RowId::RowId(): Rank out of range.");
+        }
+
+        if (shard > c_maxShardIdValue)
+        {
+            throw RecoverableError("RowId::RowId(): ShardId out of range.");
+        }
+}
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -60,7 +73,7 @@ namespace BitFunnel
         m_index = packedRepresentation;
         packedRepresentation >>= c_bitsOfIndex;
         m_rank = packedRepresentation;
-        packedRepresentation >>= c_bitsOfRank;
+        packedRepresentation >>= c_log2MaxRankValue;
         m_shard = packedRepresentation;
     }
 
@@ -68,7 +81,7 @@ namespace BitFunnel
     uint32_t RowId::GetPackedRepresentation() const
     {
         uint32_t packedRepresentation = m_shard;
-        packedRepresentation <<= c_bitsOfRank;
+        packedRepresentation <<= c_log2MaxRankValue;
         packedRepresentation |= m_rank;
         packedRepresentation <<= c_bitsOfIndex;
         packedRepresentation |= m_index;
@@ -143,7 +156,7 @@ namespace BitFunnel
     unsigned RowId::GetPackedRepresentationBitCount()
     {
         return c_bitsOfShard
-               + c_bitsOfRank
+               + c_log2MaxRankValue
                + c_bitsOfIndex;
     }
 }

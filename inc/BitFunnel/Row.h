@@ -30,8 +30,6 @@
 
 namespace BitFunnel
 {
-    static constexpr unsigned c_maxRankValue = 6;
-
     // Soft-deleted, match-all, and match-none rows.
     static constexpr unsigned c_systemRowCount = 3;
 

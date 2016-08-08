@@ -22,6 +22,7 @@
 
 #include <cstdlib>
 
+#include "BitFunnel/Exceptions.h"
 #include "NullLogger.h"
 
 
@@ -39,6 +40,7 @@ namespace Logging
 
     void NullLogger::Abort()
     {
-        abort();
+        BitFunnel::FatalError error("NullLogger::Abort()");
+        throw error;
     }
 }

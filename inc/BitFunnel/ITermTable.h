@@ -25,15 +25,14 @@
 
 #include <ostream>
 
-#include "BitFunnel/BitFunnelTypes.h"         // For Rank.
-// #include "BitFunnel/RowId.h"                  // Typpedef RowId is a parameter.
-#include "BitFunnel/Term.h"                   // Term::Hash is a parameter.
+#include "BitFunnel/BitFunnelTypes.h"         // Rank parameter.
+#include "BitFunnel/RowId.h"                  // RowId parameter.
+#include "BitFunnel/Term.h"                   // Term::Hash parameter.
 
 
 namespace BitFunnel
 {
     class PackedTermInfo;
-    class RowId;
 
     //*************************************************************************
     //

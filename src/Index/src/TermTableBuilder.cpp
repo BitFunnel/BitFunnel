@@ -24,6 +24,7 @@
 #include <math.h>
 #include <ostream>
 
+#include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Exceptions.h"
 #include "DocumentFrequencyTable.h"
 #include "ITermTreatment.h"
@@ -45,7 +46,7 @@ namespace BitFunnel
         RowIdInserter inserter = std::back_inserter(m_rowAssignments);
 
         // Create one RowAssigner for each rank.
-        for (Rank rank = 0; rank <= RowId::c_maxRankValue; ++rank)
+        for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
         {
             m_rowAssigners.push_back(
                 std::unique_ptr<RowAssigner>(

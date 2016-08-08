@@ -23,11 +23,8 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/PackedTermInfo.h"
-#include "BitFunnel/Row.h"  // For c_maxRankValue.
-#include "BitFunnel/RowId.h"
 #include "EmptyTermTable.h"
 #include "LoggerInterfaces/Logging.h"
-#include "BitFunnel/Term.h"
 
 
 // TODO: move this somewhere appropriate and make it a real value.
@@ -38,18 +35,18 @@ namespace BitFunnel
     EmptyTermTable::EmptyTermTable()
         : m_rowCounts(c_maxRankValue + 1, c_systemRowCount)
     {
-        LogAssertB(static_cast<size_t>(m_rowCounts.size()) ==
-                   (c_maxRankValue + 1),
-                   "");
     }
 
 
     EmptyTermTable::EmptyTermTable(std::vector<RowIndex> const & rowCounts)
         : m_rowCounts(rowCounts)
     {
-        LogAssertB(static_cast<size_t>(rowCounts.size()) ==
-                   (c_maxRankValue + 1),
-                   "");
+        if (static_cast<size_t>(rowCounts.size()) !=
+            (c_maxRankValue + 1))
+        {
+            RecoverableError error("EmptyTermTable::EmptyTermTable: rowCounts has wrong number of entries.");
+            throw error;
+        }
     }
 
 

@@ -9,6 +9,7 @@ tramp
 .\#*
 
 # Other
+Testing
 .DS_Store
 build/
 build-*/

@@ -293,7 +293,7 @@ namespace BitFunnel
             // Rank 0
             //
             {
-                const std::vector<RowIndex> rowCounts = { c_rowCount, 0, 0, 0, 0, 0, 0 };
+                const std::vector<RowIndex> rowCounts = { c_rowCount, 0, 0, 0, 0, 0, 0, 0 };
                 EmptyTermTable termTable(rowCounts);
                 RowTableHolder holder(c_columnCount, termTable, 0, 123);
 
@@ -324,7 +324,7 @@ namespace BitFunnel
             // Rank 1
             //
             {
-                const std::vector<RowIndex> rowCounts = { c_systemRowCount, c_rowCount, 0, 0, 0, 0, 0 };
+                const std::vector<RowIndex> rowCounts = { c_systemRowCount, c_rowCount, 0, 0, 0, 0, 0, 0 };
                 EmptyTermTable termTable(rowCounts);
                 RowTableHolder holder(c_columnCount, termTable, 1, 456);
 
@@ -341,7 +341,7 @@ namespace BitFunnel
             // Rank 2
             //
             {
-                const std::vector<RowIndex> rowCounts = { c_systemRowCount, 0, c_rowCount, 0, 0, 0, 0 };
+                const std::vector<RowIndex> rowCounts = { c_systemRowCount, 0, c_rowCount, 0, 0, 0, 0, 0 };
                 EmptyTermTable termTable(rowCounts);
                 RowTableHolder holder(c_columnCount, termTable, 2, 789);
 
@@ -371,14 +371,14 @@ namespace BitFunnel
         {
             static const DocIndex c_capacityQuanta = Row::DocumentsInRank0Row(1);
 
-            TestBufferSize(c_capacityQuanta * 1, 100, 0, 51200);
-            TestBufferSize(c_capacityQuanta * 2, 50, 0, 51200);
-            TestBufferSize(c_capacityQuanta * 1, 10, 0, 5120);
+            TestBufferSize(c_capacityQuanta * 1, 100, 0, 102400);
+            TestBufferSize(c_capacityQuanta * 2, 50, 0, 102400);
+            TestBufferSize(c_capacityQuanta * 1, 10, 0, 10240);
 
-            TestBufferSize(c_capacityQuanta * 1, 10, 3, 640);
-            TestBufferSize(c_capacityQuanta * 1, 10, 6, 80);
-            TestBufferSize(c_capacityQuanta * 10, 1, 6, 80);
-            TestBufferSize(c_capacityQuanta * 10, 10, 6, 800);
+            TestBufferSize(c_capacityQuanta * 1, 10, 3, 1280);
+            TestBufferSize(c_capacityQuanta * 1, 10, 6, 160);
+            TestBufferSize(c_capacityQuanta * 10, 1, 6, 160);
+            TestBufferSize(c_capacityQuanta * 10, 10, 6, 1600);
         }
 
 
@@ -392,10 +392,10 @@ namespace BitFunnel
                 const ptrdiff_t c_bufferOffset = 123 * c_rowTableByteAlignment;
                 RowTableDescriptor rowTable(c_sliceCapacity, c_rowCount, c_rank, c_bufferOffset);
 
-                // 1536 bytes per row.
+                // 3072 bytes per row.
                 EXPECT_EQ(rowTable.GetRowOffset(0), c_bufferOffset);
-                EXPECT_EQ(rowTable.GetRowOffset(10), c_bufferOffset + 1536 * 10);
-                EXPECT_EQ(rowTable.GetRowOffset(99), c_bufferOffset + 1536 * 99);
+                EXPECT_EQ(rowTable.GetRowOffset(10), c_bufferOffset + 3072 * 10);
+                EXPECT_EQ(rowTable.GetRowOffset(99), c_bufferOffset + 3072 * 99);
             }
 
             {
@@ -406,10 +406,10 @@ namespace BitFunnel
                 const ptrdiff_t c_bufferOffset = 31 * c_rowTableByteAlignment;
                 RowTableDescriptor rowTable(c_sliceCapacity, c_rowCount, c_rank, c_bufferOffset);
 
-                // 128 bytes per row.
+                // 256 bytes per row.
                 EXPECT_EQ(rowTable.GetRowOffset(0), c_bufferOffset);
-                EXPECT_EQ(rowTable.GetRowOffset(10), c_bufferOffset + 128 * 10);
-                EXPECT_EQ(rowTable.GetRowOffset(49), c_bufferOffset + 128 * 49);
+                EXPECT_EQ(rowTable.GetRowOffset(10), c_bufferOffset + 256 * 10);
+                EXPECT_EQ(rowTable.GetRowOffset(49), c_bufferOffset + 256 * 49);
             }
         }
     }

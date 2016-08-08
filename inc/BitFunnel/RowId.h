@@ -96,19 +96,17 @@ namespace BitFunnel
         // Tier, Rank, ShardId, Index. Constants are protected to allow access
         // from the unit test.
         static const unsigned c_bitsOfShard = 4;
-        static const unsigned c_bitsOfRank = 3;
-        static const unsigned c_bitsOfIndex = 32 - c_bitsOfShard - c_bitsOfRank;
+        static const unsigned c_bitsOfIndex = 32 - c_bitsOfShard - c_log2MaxRankValue;
 
     public:
         static const size_t c_maxRowIndexValue = (1ul << c_bitsOfIndex) - 1;
-        static const size_t c_maxRankValue = (1ul << c_bitsOfRank) - 1;
 
     private:
         // ShardId number.
         unsigned m_shard: c_bitsOfShard;
 
         // Rank.
-        unsigned m_rank: c_bitsOfRank;
+        unsigned m_rank: c_log2MaxRankValue;
 
         // Index is the row number within a row table.
         // We are limited to 8M rows because of the 32 bit size of RowId. At

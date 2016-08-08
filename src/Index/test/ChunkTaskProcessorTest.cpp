@@ -72,10 +72,10 @@ namespace BitFunnel
             // TODO: fix constants.
             std::unique_ptr<ISliceBufferAllocator> sliceBufferAllocator =
                 std::unique_ptr<ISliceBufferAllocator>(
-                    new SliceBufferAllocator(2048*24, 1));
+                    new SliceBufferAllocator(0x20000, 1));
 
             static const std::vector<RowIndex>
-                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1 };
+                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1, 0 };
             std::shared_ptr<ITermTable const>
                 termTable(new EmptyTermTable(rowCounts));
 

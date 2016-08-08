@@ -86,7 +86,7 @@ namespace BitFunnel
             auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
 
             static const std::vector<RowIndex>
-                rowCounts = { 100, 0, 0, 200, 0, 0, 300 };
+                rowCounts = { 100, 0, 0, 200, 0, 0, 300, 0 };
             std::shared_ptr<ITermTable const>
                 termTable(new EmptyTermTable(rowCounts));
 
