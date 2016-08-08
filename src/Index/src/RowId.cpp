@@ -71,7 +71,7 @@ namespace BitFunnel
     RowId::RowId(uint32_t packedRepresentation)
     {
         m_index = packedRepresentation;
-        packedRepresentation >>= c_bitsOfIndex;
+        packedRepresentation >>= c_log2MaxRowIndexValue;
         m_rank = packedRepresentation;
         packedRepresentation >>= c_log2MaxRankValue;
         m_shard = packedRepresentation;
@@ -83,7 +83,7 @@ namespace BitFunnel
         uint32_t packedRepresentation = m_shard;
         packedRepresentation <<= c_log2MaxRankValue;
         packedRepresentation |= m_rank;
-        packedRepresentation <<= c_bitsOfIndex;
+        packedRepresentation <<= c_log2MaxRowIndexValue;
         packedRepresentation |= m_index;
         return packedRepresentation;
     }
@@ -153,10 +153,11 @@ namespace BitFunnel
     // }
 
 
+    // TODO: Who calls this?
     unsigned RowId::GetPackedRepresentationBitCount()
     {
         return c_bitsOfShard
                + c_log2MaxRankValue
-               + c_bitsOfIndex;
+               + c_log2MaxRowIndexValue;
     }
 }

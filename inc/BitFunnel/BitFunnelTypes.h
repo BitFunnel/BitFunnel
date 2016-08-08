@@ -67,4 +67,10 @@ namespace BitFunnel
     typedef uint32_t ShardId;
     static const size_t c_log2MaxShardIdValue = 4;
     static const size_t c_maxShardIdValue = (1ul << c_log2MaxShardIdValue) - 1;
+
+    // RowIndex is the ordinal position of a row in a row table. The RowIndex
+    // of the first row is zero.
+    typedef size_t RowIndex;
+    static const size_t c_log2MaxRowIndexValue = 25;
+    static const size_t c_maxRowIndexValue = (1ul << c_log2MaxRowIndexValue) - 1;
 }

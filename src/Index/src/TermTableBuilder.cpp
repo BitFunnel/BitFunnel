@@ -232,7 +232,7 @@ namespace BitFunnel
     RowIndex TermTableBuilder::RowAssigner::GetAdhocRowCount() const
     {
         double rowCount = ceil(m_adhocTotal / m_density);
-        if (rowCount > RowId::c_maxRowIndexValue)
+        if (rowCount > c_maxRowIndexValue)
         {
             FatalError
                 error("TermTableBuilder::RowAssigner::GetAdhocRowCount: too many rows.");

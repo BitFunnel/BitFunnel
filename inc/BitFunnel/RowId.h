@@ -30,8 +30,6 @@
 
 namespace BitFunnel
 {
-    typedef size_t RowIndex;
-
     //*************************************************************************
     //
     // RowId is a unique identifier for a row in an index.
@@ -96,12 +94,15 @@ namespace BitFunnel
         // Tier, Rank, ShardId, Index. Constants are protected to allow access
         // from the unit test.
         static const unsigned c_bitsOfShard = 4;
-        static const unsigned c_bitsOfIndex = 32 - c_bitsOfShard - c_log2MaxRankValue;
+//        static const unsigned c_bitsOfIndex = 32 - c_bitsOfShard - c_log2MaxRankValue;
 
     public:
-        static const size_t c_maxRowIndexValue = (1ul << c_bitsOfIndex) - 1;
+        //static const size_t c_maxRowIndexValue = (1ul << c_bitsOfIndex) - 1;
 
     private:
+        static_assert(c_bitsOfShard + c_log2MaxRankValue + c_log2MaxRowIndexValue == 32ull,
+                      "Expect m_shard, m_rank, and m_index to use 32 bits.");
+
         // ShardId number.
         unsigned m_shard: c_bitsOfShard;
 
@@ -113,6 +114,9 @@ namespace BitFunnel
         // 10% bit density that means that bit funnel is limited to 800K
         // postings per document per tier per rank or approximately 100K terms
         // in a document
-        unsigned m_index: c_bitsOfIndex;
+        unsigned m_index: c_log2MaxRowIndexValue;
     };
+
+    static_assert(sizeof(RowId) == 4,
+                  "Expect sizeof(RowId) to be 4 bytes.");
 }
