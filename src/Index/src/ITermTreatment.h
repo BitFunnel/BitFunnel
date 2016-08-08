@@ -32,14 +32,66 @@
 
 namespace BitFunnel
 {
-    // Design goals:
-    //   Use in query pipeline ==> fast, no memory allocations.
+    class RowConfiguration;
 
-    // Issues:
-    //   How is the class configured for density, SNR, available ranks?
-    //   Is an instance created as each term is processed, or are a fixed number
-    //   of instances associated with classes of terms created at startup?
 
+    //*************************************************************************
+    //
+    // ITermTreatment
+    //
+    // An abstract base class or interface for classes mapping Terms to their
+    // RowConfiguration.
+    //
+    // This mapping is used during TermTable construction to determine the
+    // number of rows required in each RowTable. It is used during query
+    // processing to determine the specific hash functions used to identify
+    // each row corresponding to a term.
+    //
+    // ITermTreatment was designed as an interface to allow for pluggable
+    // mappings. Some examples include
+    //   Naive treatment where every term gets a single, rank 0 private row.
+    //   Frequency based treatment where rarer terms get more rows.
+    //   Sophisticated treatment where terms get rows of varying rank.
+    //   Table-based treatment where table was built by Machine Learning.
+    //
+    //*************************************************************************
+    class ITermTreatment : public IInterface
+    {
+    public:
+        // Returns the RowConfiguration describing how a particular term
+        // should be represented in the index.
+        virtual RowConfiguration GetTreatment(Term term) const = 0;
+    };
+
+
+    //*************************************************************************
+    //
+    // RowConfiguration
+    //
+    // Provides a small collection of (Rank, RowCount, IsPrivate) tuples used
+    // to describe how a Term will be represented in the Index.
+    //
+    // For example,
+    //   A term with a single private, rank 0 row would be represented by the
+    //   RowConfiguration {(0, 1, true)}.
+    //
+    //   A term with one shared rank 0 row and 4 shared rank 3 rows would be
+    //   represented by the RowConfiguration {(0, 1, false), (3, 4, false)}.
+    //
+    // RowConfiguration is designed to be a small value type that can be passed
+    // in a register. As such, it is implemented as a packed array of bit
+    // fields.
+    //
+    // In order to fit into a quadword, a RowConfiguration is limited to eight
+    // entries, each of which consists of a 3-bit rank, a 4 bit row count, and
+    // one bit indicating whether the row(s) are private.
+    //
+    // DESIGN RATIONALE. RowConfiguration is used in the query pipeline when
+    // processing adhoc terms. Since the query pipeline is performance
+    // critical, RowConfiguration was designed as a small value type that could
+    // be constructed and manipulated without heap allocations.
+    //
+    //*************************************************************************
     class RowConfiguration
     {
     public:
@@ -61,6 +113,8 @@ namespace BitFunnel
 
             Entry(uint8_t rawData);
 
+            // Packed data field.
+            // | 1-bit is private | 3-bit rank | 4-bit row count |
             uint8_t m_data;
         };
 
@@ -88,13 +142,9 @@ namespace BitFunnel
         void Write(std::ostream& output) const;
 
     private:
+        static const size_t c_log2MaxRowCount = 4;
+        static const size_t c_maxRowCount = (1ull << c_log2MaxRowCount) - 1;
+
         uint64_t m_data;
-    };
-
-
-    class ITermTreatment : public IInterface
-    {
-    public:
-        virtual RowConfiguration GetTreatment(Term term) const = 0;
     };
 }
