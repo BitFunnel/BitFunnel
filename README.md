@@ -9,7 +9,7 @@ Dependencies
 ------------
 
 In order to build BitFunnel you will need CMake (2.8.11+), and a modern C++
-compiler (gcc 5+, clang 3.4+, or VC 2015+). You can run CMake directly to generate the appropriate build setup for your platform. Alternately, we have some scripts that have the defaults that we use available.
+compiler (gcc 5+, clang 3.5+, or VC 2015+). You can run CMake directly to generate the appropriate build setup for your platform. Alternately, we have some scripts that have the defaults that we use available.
 
 ### *nix
 
