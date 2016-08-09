@@ -42,9 +42,9 @@ namespace BitFunnel
         // Same configuration for all terms - one private rank 0 row.
         m_configuration.push_front(RowConfiguration::Entry(0, 1, true));
 
-        std::cout << "Single configuration: ";
-        m_configuration.Write(std::cout);
-        std::cout << std::endl;
+        //std::cout << "Single configuration: ";
+        //m_configuration.Write(std::cout);
+        //std::cout << std::endl;
     }
 
 
@@ -87,9 +87,9 @@ namespace BitFunnel
 
             m_configurations.push_back(configuration);
 
-            std::cout << idf / 10.0 << ": ";
-            m_configurations.back().Write(std::cout);
-            std::cout << std::endl;
+            //std::cout << idf / 10.0 << ": ";
+            //m_configurations.back().Write(std::cout);
+            //std::cout << std::endl;
         }
     }
 
@@ -147,9 +147,9 @@ namespace BitFunnel
 
             m_configurations.push_back(configuration);
 
-            std::cout << idf / 10.0 << ": ";
-            m_configurations.back().Write(std::cout);
-            std::cout << std::endl;
+            //std::cout << idf / 10.0 << ": ";
+            //m_configurations.back().Write(std::cout);
+            //std::cout << std::endl;
         }
     }
 

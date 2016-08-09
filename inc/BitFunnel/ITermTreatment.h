@@ -121,17 +121,17 @@ namespace BitFunnel
             uint8_t m_data;
         };
 
-        class iterator : public std::iterator<std::input_iterator_tag, RowConfiguration::Entry>
+        class const_iterator : public std::iterator<std::input_iterator_tag, RowConfiguration::Entry>
         {
         public:
-            bool operator!=(iterator const & other) const;
-            iterator& operator++();
+            bool operator!=(const_iterator const & other) const;
+            const_iterator& operator++();
             Entry operator*() const;
 
         private:
             friend class RowConfiguration;
 
-            iterator(uint64_t data);
+            const_iterator(uint64_t data);
             uint64_t m_data;
         };
 
@@ -139,8 +139,8 @@ namespace BitFunnel
 
         void push_front(Entry entry);
 
-        iterator begin() const;
-        iterator end() const;
+        const_iterator begin() const;
+        const_iterator end() const;
 
         void Write(std::ostream& output) const;
 

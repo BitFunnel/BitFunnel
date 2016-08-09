@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+// For std::equal() on Windows.
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4996)

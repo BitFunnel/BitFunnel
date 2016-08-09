@@ -20,6 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+// For std::equal() on Windows.
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
+
 #include <iostream>         // TODO: Remove this temporary include.
 #include <sstream>
 
@@ -194,10 +200,10 @@ namespace BitFunnel
             m_termTable.AddRowId(RowId(0, 4, rows[4]++));
             m_termTable.CloseTerm(hash++);
 
-            for (Rank r2 = 0; r2 <= c_maxRankValue; ++r2)
-            {
-                std::cout << "Rank " << r2 << ": " << rows[r2] << std::endl;
-            }
+            //for (Rank r2 = 0; r2 <= c_maxRankValue; ++r2)
+            //{
+            //    std::cout << "Rank " << r2 << ": " << rows[r2] << std::endl;
+            //}
         }
 
 
@@ -227,68 +233,42 @@ private:
 
     namespace TermTableBuilderTest
     {
-        TEST(TermTableBuilder, InProgress)
+        TEST(TermTableBuilder, GeneralCases)
         {
-            TestEnvironment e;
+            // Construct a test environment that provides the ITermTreatment
+            // and DocumentFrequencyTable to be used by the TermTableBuilder.
+            // The test environement also provides a hand-constructed expected
+            // TermTable for verification purposes.
+            TestEnvironment environment;
 
-            ITermTreatment const & treatment = e.GetTermTreatment();
-            DocumentFrequencyTable const & terms = e.GetDocFrequencyTable();
-
+            // Run the TermTableBuilder to configure a TermTable.
+            ITermTreatment const & treatment = environment.GetTermTreatment();
+            DocumentFrequencyTable const & terms = environment.GetDocFrequencyTable();
             TermTable termTable;
-
             double density = 0.1;
             double adhocFrequency = 0.0001;
             TermTableBuilder builder(density, adhocFrequency, treatment, terms, termTable);
-            builder.Print(std::cout);
 
+            //
+            // Verify that configured TermTable is the same as the expected
+            // TermTable provided by the enviornment.
+            //
+
+            // Ensure that all known terms have the same RowIdSequences.
             for (auto term : terms)
             {
-                std::cout << term.GetTerm().GetRawHash() << ": " << std::endl;
-
-                RowIdSequence rows(term.GetTerm(), termTable);
-                for (auto row : rows)
-                {
-                    std::cout
-                        << "  " << row.GetRank() << ", " << row.GetIndex() << std::endl;
-                }
+                RowIdSequence expected(term.GetTerm(), environment.GetTermTable());
+                RowIdSequence observed(term.GetTerm(), termTable);
+                EXPECT_TRUE(std::equal(observed.begin(), observed.end(), expected.begin()));
+                EXPECT_TRUE(std::equal(expected.begin(), expected.end(), observed.begin()));
             }
 
-            std::cout << "=======================" << std::endl;
-
-            for (auto term : terms)
-            {
-                std::cout << term.GetTerm().GetRawHash() << ": " << std::endl;
-
-                RowIdSequence rows(term.GetTerm(), e.GetTermTable());
-                for (auto row : rows)
-                {
-                    std::cout
-                        << "  " << row.GetRank() << ", " << row.GetIndex() << std::endl;
-                }
-            }
-
-
-
-//            std::stringstream input;
-//            input << 
-//                "123,1,1,0.5\n"
-//                "456,1,1,0.1\n"
-//                "789,1,1,0.01\n"
-//                "111,1,1,0.01\n"
-//                "333,1,1,0.005\n"
-//                "222,1,1,0.001\n";
-//            DocumentFrequencyTable terms(input);
-//
-//            double snr = 10;
-//            double density = 0.1;
-//            double adhocFrequency = 0.0001;
-//
-////            TreatmentPrivateRank0 treatment;
-////            TreatmentPrivateSharedRank0 treatment(density, snr);
-//            TreatmentPrivateSharedRank0And3 treatment(density, snr);
-//
-//            TermTableBuilder builder(density, adhocFrequency, treatment, terms);
-//            builder.Print(std::cout);
+            // TODO: Verify adhoc
+            // TODO: Verify facts
+            // TODO: Verify row counts.
         }
     }
 }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

@@ -104,19 +104,19 @@ namespace BitFunnel
     // RowConfiguration::iterator
     //
     //*************************************************************************
-    RowConfiguration::iterator::iterator(uint64_t data)
+    RowConfiguration::const_iterator::const_iterator(uint64_t data)
         : m_data(data)
     {
     }
 
 
-    bool RowConfiguration::iterator::operator!=(RowConfiguration::iterator const & other) const
+    bool RowConfiguration::const_iterator::operator!=(RowConfiguration::const_iterator const & other) const
     {
         return m_data != other.m_data;
     }
 
 
-    RowConfiguration::iterator& RowConfiguration::iterator::operator++()
+    RowConfiguration::const_iterator& RowConfiguration::const_iterator::operator++()
     {
         if (m_data == 0)
         {
@@ -132,7 +132,7 @@ namespace BitFunnel
     }
 
 
-    RowConfiguration::Entry RowConfiguration::iterator::operator*() const
+    RowConfiguration::Entry RowConfiguration::const_iterator::operator*() const
     {
         if (m_data == 0)
         {
@@ -192,16 +192,16 @@ namespace BitFunnel
     }
 
 
-    RowConfiguration::iterator RowConfiguration::begin() const
+    RowConfiguration::const_iterator RowConfiguration::begin() const
     {
-        return iterator(m_data);
+        return const_iterator(m_data);
     }
 
 
-    RowConfiguration::iterator RowConfiguration::end() const
+    RowConfiguration::const_iterator RowConfiguration::end() const
     {
         // The end of the iteration is the empty RowConfiguration.
-        return iterator(0ull);
+        return const_iterator(0ull);
     }
 
 

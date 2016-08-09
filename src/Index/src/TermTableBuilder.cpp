@@ -62,18 +62,18 @@ namespace BitFunnel
         // (note that the entries are sorted in order of decreasing frequency).
         for (auto dfEntry : terms)
         {
-            std::cout << "Term: ";
-            dfEntry.GetTerm().Print(std::cout);
-            std::cout << "; frequency = " << dfEntry.GetFrequency() << std::endl;
+            //std::cout << "Term: ";
+            //dfEntry.GetTerm().Print(std::cout);
+            //std::cout << "; frequency = " << dfEntry.GetFrequency() << std::endl;
 
             m_termTable.OpenTerm();
 
             // Get the term's RowConfiguration.
             auto configuration = treatment.GetTreatment(dfEntry.GetTerm());
 
-            std::cout << "  Configuration: ";
-            configuration.Write(std::cout);
-            std::cout << std::endl;
+            //std::cout << "  Configuration: ";
+            //configuration.Write(std::cout);
+            //std::cout << std::endl;
 
             // For each rank entry in the RowConfiguration.
             for (auto rcEntry : configuration)

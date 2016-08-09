@@ -62,7 +62,7 @@ namespace BitFunnel
         const_iterator begin() const;
         const_iterator end() const;
 
-        class const_iterator
+        class const_iterator : public std::iterator<std::input_iterator_tag, RowId>
         {
         public:
             bool operator!=(const_iterator const & other) const
