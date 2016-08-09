@@ -22,13 +22,11 @@
 
 #include <sstream>
 
+#include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Term.h"
 #include "TermTable.h"
 
-
-// TODO: Remove this temporary include. 
-#include "BitFunnel/Row.h"
 
 
 namespace BitFunnel
@@ -50,6 +48,7 @@ namespace BitFunnel
     }
 
 
+    // TODO: PackedRowIdSequence::Type parameter.
     void TermTable::CloseTerm(Term::Hash hash)
     {
         // Verify that this Term::Hash hasn't been added previously.
@@ -63,8 +62,40 @@ namespace BitFunnel
         }
 
         RowIndex end = static_cast<RowIndex>(m_rowIds.size());
-        m_termHashToRows.insert(std::make_pair(hash, std::make_pair(m_start, end)));
+        m_termHashToRows.insert(
+            std::make_pair(hash,
+                           PackedRowIdSequence(
+                               m_start,
+                               end,
+                               PackedRowIdSequence::Type::Explicit)));
     }
+
+
+    PackedRowIdSequence TermTable::GetRows(const Term& term) const
+    {
+        // TODO: Implement adhoc.
+        // TODO: Implement facts.
+
+        auto it = m_termHashToRows.find(term.GetRawHash());
+        if (it != m_termHashToRows.end())
+        {
+            // For now, treat all terms as explicit.
+            return (*it).second;
+        }
+        else
+        {
+            // For now, if term isn't found, just return and empty row sequence.
+            return PackedRowIdSequence(0, 0, PackedRowIdSequence::Type::Adhoc);
+        }
+    }
+
+
+    RowId TermTable::GetRowId(size_t rowOffset) const
+    {
+        // TODO: Error checking?
+        return m_rowIds[rowOffset];
+    }
+
 
 
     //size_t TermTable::GetTotalRowCount(Rank /*rank*/) const
@@ -72,26 +103,26 @@ namespace BitFunnel
     //    throw 0;
     //}
 
-    TermTable::const_iterator TermTable::GetRows(Term term) const
-    {
-        auto it = m_termHashToRows.find(term.GetRawHash());
-        if (it != m_termHashToRows.end())
-        {
-            RowId const * buffer = &m_rowIds[0];
-            return const_iterator(buffer + (*it).second.first,
-                                  buffer + (*it).second.second);
-        }
-        else
-        {
-            return end();
-        }
-    }
+    //TermTable::const_iterator TermTable::GetRows(Term term) const
+    //{
+    //    auto it = m_termHashToRows.find(term.GetRawHash());
+    //    if (it != m_termHashToRows.end())
+    //    {
+    //        RowId const * buffer = &m_rowIds[0];
+    //        return const_iterator(buffer + (*it).second.first,
+    //                              buffer + (*it).second.second);
+    //    }
+    //    else
+    //    {
+    //        return end();
+    //    }
+    //}
 
 
-    TermTable::const_iterator TermTable::end() const
-    {
-        return const_iterator(nullptr, nullptr);
-    }
+    //TermTable::const_iterator TermTable::end() const
+    //{
+    //    return const_iterator(nullptr, nullptr);
+    //}
 
 
     //*************************************************************************
@@ -99,89 +130,39 @@ namespace BitFunnel
     // TermTable::const_iterator
     //
     //*************************************************************************
-    TermTable::const_iterator::const_iterator(RowId const * start, RowId const * end)
-        : m_current(start),
-          m_end(end)
-    {
-    }
+    //TermTable::const_iterator::const_iterator(RowId const * start, RowId const * end)
+    //    : m_current(start),
+    //      m_end(end)
+    //{
+    //}
 
 
-    RowId TermTable::const_iterator::operator*() const
-    {
-        if (m_current == m_end)
-        {
-            RecoverableError error("TermTable::const_iterator::operator*: no more entries.");
-            throw error;
-        }
+    //RowId TermTable::const_iterator::operator*() const
+    //{
+    //    if (m_current == m_end)
+    //    {
+    //        RecoverableError error("TermTable::const_iterator::operator*: no more entries.");
+    //        throw error;
+    //    }
 
-        return *m_current;
-    }
+    //    return *m_current;
+    //}
 
-    TermTable::const_iterator& TermTable::const_iterator::operator++()
-    {
-        if (m_current == m_end)
-        {
-            RecoverableError error("TermTable::const_iterator::operator++: no more entries.");
-            throw error;
-        }
+    //TermTable::const_iterator& TermTable::const_iterator::operator++()
+    //{
+    //    if (m_current == m_end)
+    //    {
+    //        RecoverableError error("TermTable::const_iterator::operator++: no more entries.");
+    //        throw error;
+    //    }
 
-        ++m_current;
-        return *this;
-    }
-
-
-    bool TermTable::const_iterator::operator!=(const_iterator const & other) const
-    {
-        return (m_current != other.m_current) && (m_end != other.m_end);
-    }
+    //    ++m_current;
+    //    return *this;
+    //}
 
 
-    // TODO: Remove this temporary StreamId.
-    const Term::StreamId c_metaWord = 0;
-
-    // Helper function to create a system internal term. System internal terms
-    // are special terms whose Raw hash values by convention are sequential
-    // numbers starting at 0. The number of such terms is specified in
-    // c_systemRowCount.
-    Term CreateSystemInternalTerm(Term::Hash rawHash)
-    {
-        if (rawHash >= c_systemRowCount)
-        {
-            RecoverableError error("Hash out of internal row range.");
-            throw error;
-        }
-
-        const Term term(rawHash,
-                        c_metaWord,
-                        static_cast<Term::IdfX10>(0));
-        return term;
-    }
-
-
-
-    //*************************************************************************
-    //
-    // Some random ITermTable static methods.
-    // TODO: figure out where these should go.
-    //
-    //*************************************************************************
-    Term ITermTable::GetSoftDeletedTerm()
-    {
-        static Term softDeletedTerm(CreateSystemInternalTerm(0));
-        return softDeletedTerm;
-    }
-
-
-    Term ITermTable::GetMatchAllTerm()
-    {
-        static Term matchAllTerm(CreateSystemInternalTerm(1));
-        return matchAllTerm;
-    }
-
-
-    Term ITermTable::GetMatchNoneTerm()
-    {
-        static Term matchNoneTerm(CreateSystemInternalTerm(2));
-        return matchNoneTerm;
-    }
+    //bool TermTable::const_iterator::operator!=(const_iterator const & other) const
+    //{
+    //    return (m_current != other.m_current) && (m_end != other.m_end);
+    //}
 }

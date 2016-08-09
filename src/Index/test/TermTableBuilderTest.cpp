@@ -25,6 +25,7 @@
 
 #include "gtest/gtest.h"
 
+#include "BitFunnel/RowIdSequence.h"
 #include "DocumentFrequencyTable.h"
 #include "TermTable.h"
 #include "TermTableBuilder.h"
@@ -111,6 +112,8 @@ namespace BitFunnel
                 rows.push_back(0);
             }
 
+            Term::Hash hash = 0ull;
+
             // First term configured as private rank 0 so it should go in its
             // own row.
             m_termTreatment.OpenConfiguration();
@@ -119,7 +122,7 @@ namespace BitFunnel
 
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, rows[0]++));
-            m_termTable.CloseTerm(0ull);
+            m_termTable.CloseTerm(hash++);
 
             // Second term is configurated as a single shared rank 0 row, but
             // will be placed in its own row because of its high density of 0.7.
@@ -129,7 +132,7 @@ namespace BitFunnel
 
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, rows[0]++));
-            m_termTable.CloseTerm(1ull);
+            m_termTable.CloseTerm(hash++);
 
             // Third row is configured as a single shared rank 0 row. It's
             // density of 0.07 is low enough that it will share with the fifth
@@ -141,7 +144,7 @@ namespace BitFunnel
             RowIndex third = rows[0];
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, rows[0]++));
-            m_termTable.CloseTerm(2ull);
+            m_termTable.CloseTerm(hash++);
 
             // Fourth row is configured as a single shared rank 0 row. It's
             // density of 0.05 is low enough that it will share with the sixth
@@ -153,7 +156,7 @@ namespace BitFunnel
             RowIndex fourth = rows[0];
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, rows[0]++));
-            m_termTable.CloseTerm(3ull);
+            m_termTable.CloseTerm(hash++);
 
             // Fifth row is configured as a single shared rank 0 row. It's
             // density of 0.02 is low enough that it will share with the
@@ -164,7 +167,7 @@ namespace BitFunnel
 
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, third));
-            m_termTable.CloseTerm(4ull);
+            m_termTable.CloseTerm(hash++);
 
             // Sixth row is configured as a pair of shared rank 0 rows. It's
             // density of 0.01 is low enough that it will share with the third
@@ -176,20 +179,20 @@ namespace BitFunnel
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, third));
             m_termTable.AddRowId(RowId(0, 0, fourth));
-            m_termTable.CloseTerm(5ull);
+            m_termTable.CloseTerm(hash++);
 
             // Seventh row is configured two shared rows, one rank 0 and one
             // rank 4. Seventh row's frequency of 0.01 is great enough to 
             // require a private row at rank 4.
             m_termTreatment.OpenConfiguration();
-            m_termTreatment.AddEntry(0, 1, false);
             m_termTreatment.AddEntry(4, 1, false);
+            m_termTreatment.AddEntry(0, 1, false);
             m_termTreatment.CloseConfiguration();
 
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, fourth));
             m_termTable.AddRowId(RowId(0, 4, rows[4]++));
-            m_termTable.CloseTerm(5ull);
+            m_termTable.CloseTerm(hash++);
 
             for (Rank r2 = 0; r2 <= c_maxRankValue; ++r2)
             {
@@ -230,6 +233,7 @@ private:
         TermTable m_termTable;
     };
 
+
     namespace TermTableBuilderTest
     {
         TEST(TermTableBuilder, InProgress)
@@ -250,13 +254,29 @@ private:
             {
                 std::cout << term.GetTerm().GetRawHash() << ": " << std::endl;
 
-                auto it = termTable.GetRows(term.GetTerm());
-                while (it != termTable.end())
+                RowIdSequence rows(term.GetTerm(), termTable);
+                for (auto row : rows)
                 {
                     std::cout
-                        << "  " << (*it).GetRank() << ", " << (*it).GetIndex() << std::endl;
+                        << "  " << row.GetRank() << ", " << row.GetIndex() << std::endl;
                 }
             }
+
+            std::cout << "=======================" << std::endl;
+
+            for (auto term : terms)
+            {
+                std::cout << term.GetTerm().GetRawHash() << ": " << std::endl;
+
+                RowIdSequence rows(term.GetTerm(), e.GetTermTable());
+                for (auto row : rows)
+                {
+                    std::cout
+                        << "  " << row.GetRank() << ", " << row.GetIndex() << std::endl;
+                }
+            }
+
+
 
 //            std::stringstream input;
 //            input << 

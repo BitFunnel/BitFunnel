@@ -120,10 +120,14 @@ namespace BitFunnel
             double frequency = Term::IdfX10ToFrequency(idf);
             if (frequency > density)
             {
+                // This term is so common that it must be assigned a private row.
                 configuration.push_front(RowConfiguration::Entry(0, 1, true));
             }
             else
             {
+                // Determine the number of rows, k, required to reach the
+                // desired signal to noise ratio, snr, given a certain bit
+                // density.
                 unsigned k = lround(ceil(log(frequency / snr) / log(density - frequency)) + 1);
                 configuration.push_front(RowConfiguration::Entry(0, 1, false));
                 if (k > 1)

@@ -103,10 +103,13 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermDisposeDefinition.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTable.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTable2.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTreatment.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/PackedTermInfo.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Row.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowId.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowIdSequence.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Stream.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/TermInfo.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Token.h

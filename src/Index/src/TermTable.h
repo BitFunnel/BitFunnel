@@ -22,12 +22,13 @@
 
 #pragma once
 
-#include <unordered_map>    // std::unordered_map member.
-#include <vector>           // std::vector member.
+#include <unordered_map>            // std::unordered_map member.
+#include <vector>                   // std::vector member.
 
-#include "BitFunnel/ITermTable.h"
-#include "BitFunnel/RowId.h"
-#include "BitFunnel/Term.h"
+#include "BitFunnel/ITermTable2.h"   // Base class.
+//#include "ITermTreatment.h"         // RowConfiguration::Entry::c_maxRowCount.
+#include "BitFunnel/RowId.h"        // RowId template parameter.
+#include "BitFunnel/Term.h"         // Term::Hash parameter.
 
 
 namespace BitFunnel
@@ -42,13 +43,18 @@ namespace BitFunnel
 
         virtual void CloseTerm(Term::Hash term) override;
 
+        virtual PackedRowIdSequence GetRows(const Term& term) const override;
+
+        // Returns the RowId at the specified offset in the TermTable.
+        virtual RowId GetRowId(size_t rowOffset) const override;
+
         // Returns the total number of rows (private + shared) associated with
         // the row table for (rank). This includes rows allocated for
         // facts, if applicable.
 //        virtual size_t GetTotalRowCount(Rank rank) const = 0;
 
-        virtual const_iterator GetRows(Term term) const override;
-        virtual const_iterator end() const override;
+        //virtual const_iterator GetRows(Term term) const override;
+        //virtual const_iterator end() const override;
 
     private:
         RowIndex m_start;
@@ -58,9 +64,11 @@ namespace BitFunnel
         // even lead to a benefit if we didn't replace std::unordered_map with
         // a better hash table? Should measure actual memory use for this data
         // structure.
-        std::unordered_map<Term::Hash, std::pair<RowIndex, RowIndex>> m_termHashToRows;
+        std::unordered_map<Term::Hash, PackedRowIdSequence> m_termHashToRows;
         std::vector<RowId> m_rowIds;
 
 //        std::vector<RowIndex> m_rowsPerRank;
+
+
     };
 }

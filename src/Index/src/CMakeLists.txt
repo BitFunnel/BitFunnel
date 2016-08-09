@@ -17,9 +17,11 @@ set(CPPFILES
     FactSetBase.cpp
     IngestChunks.cpp
     Ingestor.cpp
+    PackedRowIdSequence.cpp
     PackedTermInfo.cpp
     Recycler.cpp
     RowId.cpp
+    RowIdSequence.cpp
     RowConfiguration.cpp
     RowTableDescriptor.cpp
     Shard.cpp
@@ -29,6 +31,7 @@ set(CPPFILES
     TermInfo.cpp
     TermTable.cpp
     TermTableBuilder.cpp
+    TermTableHelpers.cpp
     TermTreatments.cpp
 )
 

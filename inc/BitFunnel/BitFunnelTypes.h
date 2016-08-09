@@ -78,4 +78,5 @@ namespace BitFunnel
     typedef size_t RowIndex;
     static const size_t c_log2MaxRowIndexValue = 25;
     static const size_t c_maxRowIndexValue = (1ul << c_log2MaxRowIndexValue) - 1;
+    static const size_t c_rowIndexMask = (1ul << c_log2MaxRowIndexValue) - 1;
 }

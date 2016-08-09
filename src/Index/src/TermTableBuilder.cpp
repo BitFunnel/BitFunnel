@@ -26,9 +26,9 @@
 
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/ITermTable.h"
+#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/ITermTreatment.h"
 #include "DocumentFrequencyTable.h"
-#include "ITermTreatment.h"
 #include "TermTableBuilder.h"
 
 
@@ -66,9 +66,6 @@ namespace BitFunnel
             dfEntry.GetTerm().Print(std::cout);
             std::cout << "; frequency = " << dfEntry.GetFrequency() << std::endl;
 
-            // Record the first row assignment slot for this term.
-            //size_t start = m_rowAssignments.size();
-            //std::cout << "  start = " << start << std::endl;
             m_termTable.OpenTerm();
 
             // Get the term's RowConfiguration.
@@ -87,29 +84,7 @@ namespace BitFunnel
                                                           rcEntry.IsPrivate());
             }
 
-            // Record the next row assignment slot after adding row assignments
-            // for this term.
-            //size_t end = m_rowAssignments.size();
-            //std::cout << "  end = " << end << std::endl;
-
             m_termTable.CloseTerm(dfEntry.GetTerm().GetRawHash());
-
-            //if (end - start != 0)
-            //{
-            //    // Row assignments were generated, so this term should be stored
-            //    // explicitly.
-            //    m_map.insert(std::make_pair(dfEntry.GetTerm().GetRawHash(),
-            //                                RowAssignment(start, end)));
-
-            //    for (size_t x = start; x < end; ++x)
-            //    {
-            //        std::cout
-            //            << "  "
-            //            << "rank: " << m_rowAssignments[x].GetRank()
-            //            << ", index: " << m_rowAssignments[x].GetIndex()
-            //            << std::endl;
-            //    }
-            //}
         }
     }
 
@@ -120,9 +95,6 @@ namespace BitFunnel
         {
             assigner->Print(output);
         }
-
-        //output << "Explicit terms across all shards: " << m_map.size() << std::endl;
-        //output << "RowIds across all shards: " << m_rowAssignments.size() << std::endl;
     }
 
 
@@ -167,7 +139,6 @@ namespace BitFunnel
 
             // Just reserve the RowIndex and then add the appropriate RowID to
             // the TermTableBuilder.
-//            m_inserter = RowId(0, m_rank, m_currentRow);
             m_termTable.AddRowId(RowId(0, m_rank, m_currentRow++));
         }
         else if (f < m_adhocFrequency)
@@ -194,12 +165,6 @@ namespace BitFunnel
 
             for (RowIndex i = 0; i < count; ++i)
             {
-                //for (auto bin : m_bins)
-                //{
-                //    std::cout << ">>>" << bin.GetFrequency(m_density) << ", " << bin.GetIndex() << std::endl;
-                //}
-                //std::cout << std::endl;
-
                 // Look for an existing bin with enough space.
                 auto it = m_bins.lower_bound(Bin(f));
                 if (it == m_bins.end())
@@ -234,7 +199,6 @@ namespace BitFunnel
             // Now add the appropriate RowIds to the TermTableBuilder.
             for (auto b : currentBins)
             {
-//                m_inserter = RowId(0, m_rank, b.GetIndex());
                 m_termTable.AddRowId(RowId(0, m_rank, b.GetIndex()));
             }
 
@@ -266,14 +230,6 @@ namespace BitFunnel
 
     void TermTableBuilder::RowAssigner::Print(std::ostream& output) const
     {
-        // For each rank
-        //   terms
-        //     count
-        //   explicit rows
-        //     counts: total, private, shared
-        //     density: min, max, mean, variance, distribution?
-        //   adhoc rows
-        //     count
         output << "===================================" << std::endl;
         output << "RowAssigner for rank " << m_rank << std::endl;
 

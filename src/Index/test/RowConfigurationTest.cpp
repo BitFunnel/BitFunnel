@@ -29,7 +29,7 @@
 #include <deque>
 
 #include "BitFunnel/Exceptions.h"
-#include "ITermTreatment.h"
+#include "BitFunnel/ITermTreatment.h"
 #include "gtest/gtest.h"
 #include "TermTreatments.h"
 
