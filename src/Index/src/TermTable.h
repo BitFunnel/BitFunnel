@@ -36,6 +36,8 @@ namespace BitFunnel
     class TermTable : public ITermTable2
     {
     public:
+        TermTable();
+
         virtual void OpenTerm() override;
 
         // Adds a single RowId to the term table's RowId buffer.
@@ -48,11 +50,15 @@ namespace BitFunnel
         // Returns the RowId at the specified offset in the TermTable.
         virtual RowId GetRowId(size_t rowOffset) const override;
 
+        virtual void SetRowCounts(Rank rank,
+                                  size_t explicitCount,
+                                  size_t adhocCount) override;
+
         // Returns the total number of rows (private + shared) associated with
         // the row table for (rank). This includes rows allocated for
         // facts, if applicable.
         // TODO: Implement this method.
-        // virtual size_t GetTotalRowCount(Rank rank) const = 0;
+        virtual size_t GetTotalRowCount(Rank rank) const override;
 
     private:
         RowIndex m_start;
@@ -65,8 +71,8 @@ namespace BitFunnel
         std::unordered_map<Term::Hash, PackedRowIdSequence> m_termHashToRows;
         std::vector<RowId> m_rowIds;
 
-//        std::vector<RowIndex> m_rowsPerRank;
-
-
+        std::vector<RowIndex> m_explicitRowCounts;
+        std::vector<RowIndex> m_adhocRowCounts;
+        RowIndex m_factRowCount;
     };
 }

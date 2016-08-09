@@ -86,6 +86,14 @@ namespace BitFunnel
 
             m_termTable.CloseTerm(dfEntry.GetTerm().GetRawHash());
         }
+
+
+        for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
+        {
+            m_termTable.SetRowCounts(rank,
+                                     m_rowAssigners[rank]->GetExplicitRowCount(),
+                                     m_rowAssigners[rank]->GetAdhocRowCount());
+        }
     }
 
 

@@ -35,6 +35,14 @@ namespace BitFunnel
     // TermTable
     //
     //*************************************************************************
+    TermTable::TermTable()
+        : m_explicitRowCounts(c_maxRankValue + 1, 0),
+          m_adhocRowCounts(c_maxRankValue + 1, 0),
+          m_factRowCount(0)
+    {
+    }
+
+
     void TermTable::OpenTerm()
     {
         m_start = static_cast<RowIndex>(m_rowIds.size());
@@ -67,6 +75,24 @@ namespace BitFunnel
                                m_start,
                                end,
                                PackedRowIdSequence::Type::Explicit)));
+    }
+
+
+    void TermTable::SetRowCounts(Rank rank,
+                                 size_t explicitCount,
+                                 size_t adhocCount)
+    {
+        m_explicitRowCounts[rank] = explicitCount;
+        m_adhocRowCounts[rank] = adhocCount;
+    }
+
+
+    size_t TermTable::GetTotalRowCount(Rank rank) const
+    {
+        return 
+            m_explicitRowCounts[rank] +
+            m_adhocRowCounts[rank] +
+            (rank == 0) ? m_factRowCount : 0;
     }
 
 

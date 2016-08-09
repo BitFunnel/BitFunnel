@@ -199,11 +199,6 @@ namespace BitFunnel
             m_termTable.AddRowId(RowId(0, 0, fourth));
             m_termTable.AddRowId(RowId(0, 4, rows[4]++));
             m_termTable.CloseTerm(hash++);
-
-            //for (Rank r2 = 0; r2 <= c_maxRankValue; ++r2)
-            //{
-            //    std::cout << "Rank " << r2 << ": " << rows[r2] << std::endl;
-            //}
         }
 
 
@@ -255,12 +250,26 @@ private:
             //
 
             // Ensure that all known terms have the same RowIdSequences.
+            // NOTE: This test relies on the existence of a separate unit test
+            // for TermTable that ensures that RowIds and Terms are added
+            // correctly. Without such a test, a bogus TermTable that ignores
+            // all RowId additions would allow TermTableBuilderTest to pass.
             for (auto term : terms)
             {
                 RowIdSequence expected(term.GetTerm(), environment.GetTermTable());
                 RowIdSequence observed(term.GetTerm(), termTable);
                 EXPECT_TRUE(std::equal(observed.begin(), observed.end(), expected.begin()));
                 EXPECT_TRUE(std::equal(expected.begin(), expected.end(), observed.begin()));
+            }
+
+
+            // NOTE: This test relies on the existence of a separate unit test
+            // for TermTable that ensures that row counts are recorded
+            // correctly. Without such a test, a bogus TermTable that ignores
+            // all SetRowCounts would allow TermTableBuilderTest to pass.
+            for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
+            {
+                EXPECT_EQ(termTable.GetTotalRowCount(rank), environment.GetTermTable().GetTotalRowCount(rank));
             }
 
             // TODO: Verify adhoc

@@ -41,10 +41,14 @@ namespace BitFunnel
 
         virtual void CloseTerm(Term::Hash term) = 0;
 
+        virtual void SetRowCounts(Rank rank,
+                                  size_t explicitCount,
+                                  size_t adhocCount) = 0;
+
         // Returns the total number of rows (private + shared) associated with
         // the row table for (rank). This includes rows allocated for
         // facts, if applicable.
-        //virtual size_t GetTotalRowCount(Rank rank) const = 0;
+        virtual size_t GetTotalRowCount(Rank rank) const = 0;
 
         // Returns a PackedRowIdSequence structure associated with the
         // specified term. The PackedRowIdSequence structure contains
