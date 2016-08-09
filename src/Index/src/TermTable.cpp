@@ -77,8 +77,9 @@ namespace BitFunnel
         auto it = m_termHashToRows.find(term.GetRawHash());
         if (it != m_termHashToRows.end())
         {
-            return const_iterator(&m_rowIds[(*it).second.first],
-                                  &m_rowIds[(*it).second.second]);
+            RowId const * buffer = &m_rowIds[0];
+            return const_iterator(buffer + (*it).second.first,
+                                  buffer + (*it).second.second);
         }
         else
         {
@@ -126,6 +127,12 @@ namespace BitFunnel
 
         ++m_current;
         return *this;
+    }
+
+
+    bool TermTable::const_iterator::operator!=(const_iterator const & other) const
+    {
+        return (m_current != other.m_current) && (m_end != other.m_end);
     }
 
 

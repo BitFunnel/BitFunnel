@@ -239,10 +239,24 @@ private:
             ITermTreatment const & treatment = e.GetTermTreatment();
             DocumentFrequencyTable const & terms = e.GetDocFrequencyTable();
 
+            TermTable termTable;
+
             double density = 0.1;
             double adhocFrequency = 0.0001;
-            TermTableBuilder builder(density, adhocFrequency, treatment, terms);
+            TermTableBuilder builder(density, adhocFrequency, treatment, terms, termTable);
             builder.Print(std::cout);
+
+            for (auto term : terms)
+            {
+                std::cout << term.GetTerm().GetRawHash() << ": " << std::endl;
+
+                auto it = termTable.GetRows(term.GetTerm());
+                while (it != termTable.end())
+                {
+                    std::cout
+                        << "  " << (*it).GetRank() << ", " << (*it).GetIndex() << std::endl;
+                }
+            }
 
 //            std::stringstream input;
 //            input << 

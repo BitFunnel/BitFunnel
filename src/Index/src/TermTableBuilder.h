@@ -39,6 +39,7 @@ namespace BitFunnel
 {
     class DocumentFrequencyTable;   // TODO: IDocumentFrequencyTable
     class ITermTreatment;
+    class ITermTable2;
 
     class TermTableBuilder
     {
@@ -46,16 +47,13 @@ namespace BitFunnel
         TermTableBuilder(double density,
                          double adhocFrequency,
                          ITermTreatment const & treatment,
-                         DocumentFrequencyTable const & terms);
+                         DocumentFrequencyTable const & terms,
+                         ITermTable2 & termTable);
 
         void Print(std::ostream& output) const;
 
     private:
-        std::vector<RowId> m_rowAssignments;
-        typedef std::back_insert_iterator<decltype(m_rowAssignments)> RowIdInserter;
-
-        class RowAssignment;
-        std::map<Term::Hash, RowAssignment> m_map;
+        ITermTable2 & m_termTable;
 
         class RowAssigner;
         std::vector <std::unique_ptr<RowAssigner>> m_rowAssigners;
@@ -91,7 +89,7 @@ namespace BitFunnel
             RowAssigner(Rank rank,
                         double density,
                         double adhocFrequency,
-                        RowIdInserter inserter);
+                        ITermTable2 & termTable);
 
             void Assign(double frequency, RowIndex count, bool isPrivate);
 
@@ -105,7 +103,7 @@ namespace BitFunnel
             Rank m_rank;
             double m_density;
             double m_adhocFrequency;
-            TermTableBuilder::RowIdInserter& m_inserter;
+            ITermTable2 & m_termTable;
 
             // Sum of frequencies of all adhoc terms. Used to compute the
             // number of adhoc rows.

@@ -26,6 +26,7 @@
 
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/ITermTable.h"
 #include "DocumentFrequencyTable.h"
 #include "ITermTreatment.h"
 #include "TermTableBuilder.h"
@@ -41,10 +42,10 @@ namespace BitFunnel
     TermTableBuilder::TermTableBuilder(double density,
                                        double adhocFrequency,
                                        ITermTreatment const & treatment,
-                                       DocumentFrequencyTable const & terms)
+                                       DocumentFrequencyTable const & terms,
+                                       ITermTable2 & termTable)
+        : m_termTable(termTable)
     {
-        RowIdInserter inserter = std::back_inserter(m_rowAssignments);
-
         // Create one RowAssigner for each rank.
         for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
         {
@@ -53,7 +54,7 @@ namespace BitFunnel
                     new RowAssigner(rank,
                                     density,
                                     adhocFrequency,
-                                    inserter)));
+                                    termTable)));
         }
 
 
@@ -66,8 +67,9 @@ namespace BitFunnel
             std::cout << "; frequency = " << dfEntry.GetFrequency() << std::endl;
 
             // Record the first row assignment slot for this term.
-            size_t start = m_rowAssignments.size();
-            std::cout << "  start = " << start << std::endl;
+            //size_t start = m_rowAssignments.size();
+            //std::cout << "  start = " << start << std::endl;
+            m_termTable.OpenTerm();
 
             // Get the term's RowConfiguration.
             auto configuration = treatment.GetTreatment(dfEntry.GetTerm());
@@ -87,25 +89,27 @@ namespace BitFunnel
 
             // Record the next row assignment slot after adding row assignments
             // for this term.
-            size_t end = m_rowAssignments.size();
-            std::cout << "  end = " << end << std::endl;
+            //size_t end = m_rowAssignments.size();
+            //std::cout << "  end = " << end << std::endl;
 
-            if (end - start != 0)
-            {
-                // Row assignments were generated, so this term should be stored
-                // explicitly.
-                m_map.insert(std::make_pair(dfEntry.GetTerm().GetRawHash(),
-                                            RowAssignment(start, end)));
+            m_termTable.CloseTerm(dfEntry.GetTerm().GetRawHash());
 
-                for (size_t x = start; x < end; ++x)
-                {
-                    std::cout
-                        << "  "
-                        << "rank: " << m_rowAssignments[x].GetRank()
-                        << ", index: " << m_rowAssignments[x].GetIndex()
-                        << std::endl;
-                }
-            }
+            //if (end - start != 0)
+            //{
+            //    // Row assignments were generated, so this term should be stored
+            //    // explicitly.
+            //    m_map.insert(std::make_pair(dfEntry.GetTerm().GetRawHash(),
+            //                                RowAssignment(start, end)));
+
+            //    for (size_t x = start; x < end; ++x)
+            //    {
+            //        std::cout
+            //            << "  "
+            //            << "rank: " << m_rowAssignments[x].GetRank()
+            //            << ", index: " << m_rowAssignments[x].GetIndex()
+            //            << std::endl;
+            //    }
+            //}
         }
     }
 
@@ -117,8 +121,8 @@ namespace BitFunnel
             assigner->Print(output);
         }
 
-        output << "Explicit terms across all shards: " << m_map.size() << std::endl;
-        output << "RowIds across all shards: " << m_rowAssignments.size() << std::endl;
+        //output << "Explicit terms across all shards: " << m_map.size() << std::endl;
+        //output << "RowIds across all shards: " << m_rowAssignments.size() << std::endl;
     }
 
 
@@ -131,11 +135,11 @@ namespace BitFunnel
         Rank rank,
         double density,
         double adhocFrequency,
-        TermTableBuilder::RowIdInserter inserter)
+        ITermTable2 & termTable)
         : m_rank(rank),
           m_density(density),
           m_adhocFrequency(adhocFrequency),
-          m_inserter(inserter),
+          m_termTable(termTable),
           m_adhocTotal(0),
           m_currentRow(0),
           m_explicitTermCount(0),
@@ -163,7 +167,8 @@ namespace BitFunnel
 
             // Just reserve the RowIndex and then add the appropriate RowID to
             // the TermTableBuilder.
-            m_inserter = RowId(0, m_rank, m_currentRow++);
+//            m_inserter = RowId(0, m_rank, m_currentRow);
+            m_termTable.AddRowId(RowId(0, m_rank, m_currentRow++));
         }
         else if (f < m_adhocFrequency)
         {
@@ -189,11 +194,11 @@ namespace BitFunnel
 
             for (RowIndex i = 0; i < count; ++i)
             {
-                for (auto bin : m_bins)
-                {
-                    std::cout << ">>>" << bin.GetFrequency(m_density) << ", " << bin.GetIndex() << std::endl;
-                }
-                std::cout << std::endl;
+                //for (auto bin : m_bins)
+                //{
+                //    std::cout << ">>>" << bin.GetFrequency(m_density) << ", " << bin.GetIndex() << std::endl;
+                //}
+                //std::cout << std::endl;
 
                 // Look for an existing bin with enough space.
                 auto it = m_bins.lower_bound(Bin(f));
@@ -229,7 +234,8 @@ namespace BitFunnel
             // Now add the appropriate RowIds to the TermTableBuilder.
             for (auto b : currentBins)
             {
-                m_inserter = RowId(0, m_rank, b.GetIndex());
+//                m_inserter = RowId(0, m_rank, b.GetIndex());
+                m_termTable.AddRowId(RowId(0, m_rank, b.GetIndex()));
             }
 
             // Reinsert the bins into m_bins.

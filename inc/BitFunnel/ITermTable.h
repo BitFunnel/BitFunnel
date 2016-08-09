@@ -64,6 +64,7 @@ namespace BitFunnel
 
             RowId operator*() const;
             const_iterator& operator++();
+            bool operator!=(const_iterator const & other) const;
 
         private:
             RowId const * m_current;
