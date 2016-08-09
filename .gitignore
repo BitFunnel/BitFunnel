@@ -10,6 +10,7 @@ tramp
 
 # Other
 Testing
+pingme.txt
 .DS_Store
 build/
 build-*/

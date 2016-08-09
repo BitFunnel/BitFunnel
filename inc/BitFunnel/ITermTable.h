@@ -26,6 +26,7 @@
 #include <ostream>
 
 #include "BitFunnel/BitFunnelTypes.h"         // Rank parameter.
+#include "BitFunnel/IInterface.h"             // Base class.
 #include "BitFunnel/RowId.h"                  // RowId parameter.
 #include "BitFunnel/Term.h"                   // Term::Hash parameter.
 
@@ -33,6 +34,43 @@
 namespace BitFunnel
 {
     class PackedTermInfo;
+
+    class ITermTable2 : public IInterface
+    {
+    public:
+        virtual void OpenTerm() = 0;
+
+        // Adds a single RowId to the term table's RowId buffer.
+        virtual void AddRowId(RowId id) = 0;
+
+        virtual void CloseTerm(Term::Hash term) = 0;
+
+        // Returns the total number of rows (private + shared) associated with
+        // the row table for (rank). This includes rows allocated for
+        // facts, if applicable.
+        //virtual size_t GetTotalRowCount(Rank rank) const = 0;
+
+        // ITerator approach needs to work for explicit and adhoc terms and
+        // it can't allocate any memory.
+        class const_iterator;
+
+        virtual const_iterator GetRows(Term term) const = 0;
+        virtual const_iterator end() const = 0;
+
+        class const_iterator
+        {
+        public:
+            const_iterator(RowId const * start, RowId const * end);
+
+            RowId operator*() const;
+            const_iterator& operator++();
+
+        private:
+            RowId const * m_current;
+            RowId const * m_end;
+        };
+    };
+
 
     //*************************************************************************
     //

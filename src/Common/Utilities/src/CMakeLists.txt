@@ -23,7 +23,6 @@ set(CPPFILES
     TaskDistributor.cpp
     TaskDistributorThread.cpp
     TermInfo.cpp
-    TermTable.cpp
     ThreadManager.cpp
     Token.cpp
     TokenManager.cpp

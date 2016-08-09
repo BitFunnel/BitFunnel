@@ -125,13 +125,13 @@ namespace BitFunnel
             {
             public:
                 Bin(double density, double frequency, RowIndex index)
-                    : m_availableSpace(static_cast<float>(density - frequency)),
+                    : m_availableSpace(density - frequency),
                       m_index(index)
                 {
                 }
 
                 Bin(double frequency)
-                    : m_availableSpace(static_cast<float>(frequency))
+                    : m_availableSpace(frequency)
                 {
                 }
 
@@ -153,7 +153,7 @@ namespace BitFunnel
                 void Reserve(double frequency)
                 {
                     // TODO: check for overflow.
-                    m_availableSpace -= static_cast<float>(frequency);
+                    m_availableSpace -= frequency;
                 }
 
                 bool operator<(Bin const & other) const
@@ -169,7 +169,7 @@ namespace BitFunnel
                 }
 
             private:
-                float m_availableSpace;
+                double m_availableSpace;
                 RowIndex m_index;
             };
         };

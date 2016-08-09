@@ -26,6 +26,7 @@ set(CPPFILES
     Slice.cpp
     SliceBufferAllocator.cpp
     Term.cpp
+    TermTable.cpp
     TermTableBuilder.cpp
     TermTreatments.cpp
 )
@@ -60,6 +61,7 @@ set(PRIVATE_HFILES
     Shard.h
     Slice.h
     SliceBufferAllocator.h
+    TermTable.h
     TermTableBuilder.h
     TermTreatments.h
 )

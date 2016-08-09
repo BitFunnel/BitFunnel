@@ -96,6 +96,15 @@ namespace BitFunnel
                 // explicitly.
                 m_map.insert(std::make_pair(dfEntry.GetTerm().GetRawHash(),
                                             RowAssignment(start, end)));
+
+                for (size_t x = start; x < end; ++x)
+                {
+                    std::cout
+                        << "  "
+                        << "rank: " << m_rowAssignments[x].GetRank()
+                        << ", index: " << m_rowAssignments[x].GetIndex()
+                        << std::endl;
+                }
             }
         }
     }
@@ -180,6 +189,12 @@ namespace BitFunnel
 
             for (RowIndex i = 0; i < count; ++i)
             {
+                for (auto bin : m_bins)
+                {
+                    std::cout << ">>>" << bin.GetFrequency(m_density) << ", " << bin.GetIndex() << std::endl;
+                }
+                std::cout << std::endl;
+
                 // Look for an existing bin with enough space.
                 auto it = m_bins.lower_bound(Bin(f));
                 if (it == m_bins.end())
