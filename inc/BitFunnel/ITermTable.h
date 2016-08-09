@@ -27,7 +27,6 @@
 
 #include "BitFunnel/BitFunnelTypes.h"   // Rank parameter.
 #include "BitFunnel/IInterface.h"       // Base class.
-#include "ITermTreatment.h"             // RowConfiguration::Entry::c_maxRowCount.
 #include "BitFunnel/RowId.h"            // RowId parameter.
 #include "BitFunnel/Term.h"             // Term::Hash parameter.
 
@@ -35,81 +34,6 @@
 namespace BitFunnel
 {
     class PackedTermInfo;
-
-    //class ITermTable2 : public IInterface
-    //{
-    //public:
-    //    virtual void OpenTerm() = 0;
-
-    //    // Adds a single RowId to the term table's RowId buffer.
-    //    virtual void AddRowId(RowId id) = 0;
-
-    //    virtual void CloseTerm(Term::Hash term) = 0;
-
-    //    // Returns the total number of rows (private + shared) associated with
-    //    // the row table for (rank). This includes rows allocated for
-    //    // facts, if applicable.
-    //    //virtual size_t GetTotalRowCount(Rank rank) const = 0;
-
-    //    // Returns a PackedRowIdSequence structure associated with the
-    //    // specified term. The PackedRowIdSequence structure contains
-    //    // information about the term's rows. PackedRowIdSequence is used
-    //    // by RowIdSequence to implement RowId enumeration for regular, adhoc
-    //    // and fact terms.
-    //    class PackedRowIdSequence;
-    //    virtual PackedRowIdSequence GetTermInfo(const Term& term) const = 0;
-
-
-    //    class PackedRowIdSequence
-    //    {
-    //    public:
-    //        enum class Type
-    //        {
-    //            Explicit = 0,
-    //            Adhoc = 1,
-    //            Fact = 2,
-    //            Last = Fact
-    //            // WARNING: update c_log2MaxTypeValue, c_maxTypeValue when
-    //            // adding new enumeration values to Types.
-    //        };
-    //        static const size_t c_log2MaxTypeValue = 2;
-    //        static const Type c_maxTypeValue = Type::Last;
-
-    //        PackedRowIdSequence(RowIndex start,
-    //                            RowIndex end,
-    //                            Type type);
-
-    //        RowIndex GetStart() const
-    //        {
-    //            return m_start;
-    //        }
-
-    //        RowIndex GetEnd() const
-    //        {
-    //            return m_start + m_count;
-    //        }
-
-    //        Type GetType() const
-    //        {
-    //            return static_cast<Type>(m_type);
-    //        }
-
-    //    private:
-    //        const uint32_t m_start : c_log2MaxRowIndexValue;
-    //        const uint32_t m_count : RowConfiguration::Entry::c_log2MaxRowCount;
-    //        const uint32_t m_type : c_log2MaxTypeValue;
-    //    };
-
-    //    // DESIGN NOTE: PackedRowIdSequence is intended to be a small value
-    //    // type. Considerations include:
-    //    //     Term table may potentially store millions of PackedRowIdSequence.
-    //    //         ==> Small data structure.
-    //    //     PackedRowIdSequence returned for each term in query
-    //    //         ==> No memory allocations for copy.
-    //    //         ==> Value type.
-    //    static_assert(sizeof(PackedRowIdSequence) == sizeof(uint32_t), "PackedRowIDSequence too large.");
-    //};
-
 
     //*************************************************************************
     //

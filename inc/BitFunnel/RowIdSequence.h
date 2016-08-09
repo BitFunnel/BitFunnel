@@ -24,10 +24,8 @@
 #pragma once
 
 #include "BitFunnel/Exceptions.h"       // Inline code.
-//#include "BitFunnel/ITermTable2.h"      // Embeds ITermTable::TermKind.
-#include "BitFunnel/Index/IFactSet.h"   // FactHandle is used as a parameter.
+//#include "BitFunnel/Index/IFactSet.h"   // FactHandle is used as a parameter.
 #include "BitFunnel/NonCopyable.h"      // TermInfo inherits from NonCopyable.
-//#include "BitFunnel/PackedRowIdSequence.h"  // PackedRowIdSequence return value.
 #include "BitFunnel/RowId.h"            // RowId return value.
 #include "BitFunnel/Term.h"             // Embeds Term::Hash.
 
@@ -55,8 +53,9 @@ namespace BitFunnel
         // the supplied ITermTable.
         RowIdSequence(Term const & term, ITermTable2 const & termTable);
 
-        //// Constructs a TermInfo for a fact based on information in the
-        //// supplied ITermTable.
+        // TODO: Implement this constructor.
+        // Constructs a TermInfo for a fact based on information in the
+        // supplied ITermTable.
         //RowIdSequence(FactHandle fact, ITermTable const & termTable);
 
         class const_iterator;
@@ -129,9 +128,5 @@ namespace BitFunnel
 
         // Number of RowId to be enumerated.
         size_t m_rowIdCount;
-
-        //// m_termKind holds the term enumeration strategy.
-        //// Options are explicit, fact, and adhoc.
-        //ITermTable::TermKind m_termKind;
     };
 }

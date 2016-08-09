@@ -29,7 +29,6 @@
 #include <deque>
 
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/ITermTreatment.h"
 #include "gtest/gtest.h"
 #include "TermTreatments.h"
 
@@ -117,24 +116,6 @@ namespace BitFunnel
             // Adding a second entry with the same rank should trigger an exception.
             ASSERT_THROW(c.push_front(RowConfiguration::Entry(1, 3, true)),
                          RecoverableError);
-        }
-
-
-        // TODO: Turn this into a real test.
-        // Using it now to drive the debugger.
-        TEST(TermTreatments, Sample)
-        {
-            //TreatmentPrivateRank0 x;
-            //TreatmentPrivateSharedRank0 y(0.1, 10);
-            //TreatmentPrivateSharedRank0and3 z(0.1, 10);
-
-            //std::vector<int> a;
-            //for (unsigned i = 0; i < 10; ++i)
-            //    a.push_back(i);
-
-            //for (auto&& [3, 4] : a) {
-
-            //}
         }
     }
 }

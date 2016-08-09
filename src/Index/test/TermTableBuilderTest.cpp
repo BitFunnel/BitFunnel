@@ -219,15 +219,6 @@ namespace BitFunnel
         }
 
 private:
-
-        void AddAssignment(RowIndex /*start*/, RowIndex /*end*/)
-        {
-        }
-
-
-        //std::vector<RowId> m_rowIds;
-        //std::vector<std::pair<RowIndex, RowIndex>> m_rowAssignments;
-
         std::unique_ptr<DocumentFrequencyTable> m_documentFrequencyTable;
         MockTermTreatment m_termTreatment;
         TermTable m_termTable;

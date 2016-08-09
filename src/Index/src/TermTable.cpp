@@ -24,7 +24,6 @@
 
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/Term.h"
 #include "TermTable.h"
 
 
@@ -92,77 +91,7 @@ namespace BitFunnel
 
     RowId TermTable::GetRowId(size_t rowOffset) const
     {
-        // TODO: Error checking?
+        // TODO: Error checking - rowOffset in range?
         return m_rowIds[rowOffset];
     }
-
-
-
-    //size_t TermTable::GetTotalRowCount(Rank /*rank*/) const
-    //{
-    //    throw 0;
-    //}
-
-    //TermTable::const_iterator TermTable::GetRows(Term term) const
-    //{
-    //    auto it = m_termHashToRows.find(term.GetRawHash());
-    //    if (it != m_termHashToRows.end())
-    //    {
-    //        RowId const * buffer = &m_rowIds[0];
-    //        return const_iterator(buffer + (*it).second.first,
-    //                              buffer + (*it).second.second);
-    //    }
-    //    else
-    //    {
-    //        return end();
-    //    }
-    //}
-
-
-    //TermTable::const_iterator TermTable::end() const
-    //{
-    //    return const_iterator(nullptr, nullptr);
-    //}
-
-
-    //*************************************************************************
-    //
-    // TermTable::const_iterator
-    //
-    //*************************************************************************
-    //TermTable::const_iterator::const_iterator(RowId const * start, RowId const * end)
-    //    : m_current(start),
-    //      m_end(end)
-    //{
-    //}
-
-
-    //RowId TermTable::const_iterator::operator*() const
-    //{
-    //    if (m_current == m_end)
-    //    {
-    //        RecoverableError error("TermTable::const_iterator::operator*: no more entries.");
-    //        throw error;
-    //    }
-
-    //    return *m_current;
-    //}
-
-    //TermTable::const_iterator& TermTable::const_iterator::operator++()
-    //{
-    //    if (m_current == m_end)
-    //    {
-    //        RecoverableError error("TermTable::const_iterator::operator++: no more entries.");
-    //        throw error;
-    //    }
-
-    //    ++m_current;
-    //    return *this;
-    //}
-
-
-    //bool TermTable::const_iterator::operator!=(const_iterator const & other) const
-    //{
-    //    return (m_current != other.m_current) && (m_end != other.m_end);
-    //}
 }

@@ -21,16 +21,11 @@
 // THE SOFTWARE.
 
 
-// TODO: figure out correct location for this file.
-// TODO: for that matter, figure out correction location for everything that
-// used to be in Core.
-
 //#include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
 #include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/PackedRowIdSequence.h"
 #include "BitFunnel/RowId.h"
 #include "BitFunnel/RowIdSequence.h"
-//#include "BitFunnel/Stream.h"           // For StreamId.
 #include "BitFunnel/Term.h"
 #include "LoggerInterfaces/Logging.h"
 
@@ -56,6 +51,7 @@ namespace BitFunnel
     }
 
 
+    // TODO: Implement this constructor.
     //RowIdSequence::RowIdSequence(FactHandle fact, ITermTable2 const & termTable)
     //  : m_hash(0),
     //    m_termTable(termTable)
@@ -91,8 +87,8 @@ namespace BitFunnel
             throw error;
         }
 
-        // TODO: adhoc
-        // TODO: fact
+        // TODO: implement handling for adhoc
+        // TODO: implement handling for fact
         return m_termTable.GetRowId(m_rowIdStart + row);
 
         //// No special clause for ITermTable::Disposed as they return an empty

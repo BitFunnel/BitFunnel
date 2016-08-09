@@ -21,10 +21,9 @@
 // THE SOFTWARE.
 #pragma once
 
-#include <inttypes.h>   // For uint*_t.
+#include <inttypes.h>                   // For uint*_t.
 
 #include "BitFunnel/BitFunnelTypes.h"   // RowIndex parameter.
-#include "BitFunnel/RowId.h"            // RowId parameter.
 #include "BitFunnel/ITermTreatment.h"   // RowConfiguration::Entry::c_maxRowCount.
 
 

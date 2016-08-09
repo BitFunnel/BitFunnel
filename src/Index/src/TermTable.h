@@ -51,10 +51,8 @@ namespace BitFunnel
         // Returns the total number of rows (private + shared) associated with
         // the row table for (rank). This includes rows allocated for
         // facts, if applicable.
-//        virtual size_t GetTotalRowCount(Rank rank) const = 0;
-
-        //virtual const_iterator GetRows(Term term) const override;
-        //virtual const_iterator end() const override;
+        // TODO: Implement this method.
+        // virtual size_t GetTotalRowCount(Rank rank) const = 0;
 
     private:
         RowIndex m_start;

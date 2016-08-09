@@ -23,14 +23,10 @@
 
 #pragma once
 
-#include <ostream>
-
-//#include "BitFunnel/BitFunnelTypes.h"       // Rank parameter.
 #include "BitFunnel/IInterface.h"           // Base class.
 #include "BitFunnel/PackedRowIdSequence.h"  // RowId parameter.
 #include "BitFunnel/RowId.h"                // RowId parameter.
 #include "BitFunnel/Term.h"                 // Term::Hash parameter.
-//#include "ITermTreatment.h"                 // RowConfiguration::Entry::c_maxRowCount.
 
 
 namespace BitFunnel
@@ -59,55 +55,5 @@ namespace BitFunnel
 
         // Returns the RowId at the specified offset in the TermTable.
         virtual RowId GetRowId(size_t rowOffset) const = 0;
-
-
-        //class PackedRowIdSequence
-        //{
-        //public:
-        //    enum class Type
-        //    {
-        //        Explicit = 0,
-        //        Adhoc = 1,
-        //        Fact = 2,
-        //        Last = Fact
-        //        // WARNING: update c_log2MaxTypeValue, c_maxTypeValue when
-        //        // adding new enumeration values to Types.
-        //    };
-        //    static const size_t c_log2MaxTypeValue = 2;
-        //    static const Type c_maxTypeValue = Type::Last;
-
-        //    PackedRowIdSequence(RowIndex start,
-        //                        RowIndex end,
-        //                        Type type);
-
-        //    RowIndex GetStart() const
-        //    {
-        //        return m_start;
-        //    }
-
-        //    RowIndex GetEnd() const
-        //    {
-        //        return m_start + m_count;
-        //    }
-
-        //    Type GetType() const
-        //    {
-        //        return static_cast<Type>(m_type);
-        //    }
-
-        //private:
-        //    const uint32_t m_start : c_log2MaxRowIndexValue;
-        //    const uint32_t m_count : RowConfiguration::Entry::c_log2MaxRowCount;
-        //    const uint32_t m_type : c_log2MaxTypeValue;
-        //};
-
-        //// DESIGN NOTE: PackedRowIdSequence is intended to be a small value
-        //// type. Considerations include:
-        ////     Term table may potentially store millions of PackedRowIdSequence.
-        ////         ==> Small data structure.
-        ////     PackedRowIdSequence returned for each term in query
-        ////         ==> No memory allocations for copy.
-        ////         ==> Value type.
-        //static_assert(sizeof(PackedRowIdSequence) == sizeof(uint32_t), "PackedRowIDSequence too large.");
     };
 }
