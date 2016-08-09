@@ -40,7 +40,7 @@ namespace BitFunnel
     // TermInfo
     //
     // TermInfo enumerates the RowIds associated with a Term. TermInfo works
-    // closely with TermTable and PackedTermTable to enumerate RowIds.
+    // closely with TermTable and PackedTermInfo to enumerate RowIds.
     //
     //*************************************************************************
     class TermInfo : public IEnumerator<RowId>, NonCopyable

@@ -26,6 +26,7 @@ set(CPPFILES
     Slice.cpp
     SliceBufferAllocator.cpp
     Term.cpp
+    TermInfo.cpp
     TermTable.cpp
     TermTableBuilder.cpp
     TermTreatments.cpp
