@@ -84,6 +84,8 @@ namespace BitFunnel
         // TODO: Add try/catch around file operations.
         std::cout << "Loading chunk list file '" << chunkListFileName << "'"
             << std::endl;
+        std::cout << "Temp dir: '" << intermediateDirectory << "'"
+            << std::endl;
         std::vector<std::string> filePaths = ReadLines(chunkListFileName);
 
         DocumentDataSchema schema;
@@ -161,12 +163,18 @@ int main(int argc, char** argv)
         "Path to a file containing the paths to the chunk files to be ingested. "
         "One chunk file per line. Paths are relative to working directory.");
 
+    CmdLine::RequiredParameter<char const *> tempPath(
+        "tempPath",
+        "Path to a tmp directory. "
+        "Something like /tmp/ or c:\\temp\\, depending on platform..");
+
     CmdLine::OptionalParameterList statistics(
         "statistics",
         "Generate index statistics such as document frequency table, "
         "document length histogram, and cumulative term counts.");
 
     parser.AddParameter(chunkListFileName);
+    parser.AddParameter(tempPath);
     parser.AddParameter(statistics);
 
     int returnCode = 0;
@@ -175,7 +183,7 @@ int main(int argc, char** argv)
     {
         try
         {
-            BitFunnel::LoadAndIngestChunkList("c:\\temp\\",
+            BitFunnel::LoadAndIngestChunkList(tempPath,
                                               chunkListFileName,
                                               statistics.IsActivated());
             returnCode = 0;
