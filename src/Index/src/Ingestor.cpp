@@ -88,7 +88,7 @@ namespace BitFunnel
     {
         std::cout << "Shard count:" << m_shards.size() << std::endl;
         std::cout << "Document count: " << m_documentCount << std::endl;
-        std::cout << "Term count: " << m_histogram.m_totalCount << std::endl;
+        std::cout << "Term count: " << m_histogram.GetPostingCount() << std::endl;
     }
 
 

@@ -35,21 +35,28 @@ namespace BitFunnel
 
     void DocumentLengthHistogram::AddDocument(size_t postingCount)
     {
-        const std::lock_guard<std::mutex> lock(m_lock);
-
-        ++m_hist[postingCount];
+        {
+            const std::lock_guard<std::mutex> lock(m_lock);
+            ++m_hist[postingCount];
+        }
         m_totalCount += postingCount;
     }
 
 
-    size_t DocumentLengthHistogram::GetValue(size_t postingCount)
+    size_t DocumentLengthHistogram::GetPostingCount() const
+    {
+        return m_totalCount;
+    }
+
+
+    size_t DocumentLengthHistogram::GetValue(size_t postingCount) const
     {
         const std::lock_guard<std::mutex> lock(m_lock);
 
         const auto kvPair = m_hist.find(postingCount);
         if (kvPair != m_hist.end())
         {
-            return m_hist[postingCount];
+            return kvPair->second;
         }
         else
         {
