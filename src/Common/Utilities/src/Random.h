@@ -45,7 +45,7 @@ namespace BitFunnel
     class RandomInt
     {
     public:
-        RandomInt(unsigned long seed, T minValue, T maxValue);
+        RandomInt(unsigned seed, T minValue, T maxValue);
 
         T operator()();
 
@@ -73,7 +73,7 @@ namespace BitFunnel
     class RandomReal
     {
     public:
-        RandomReal(unsigned long seed, T minValue, T maxValue);
+        RandomReal(unsigned seed, T minValue, T maxValue);
 
         T operator()();
 
@@ -84,7 +84,7 @@ namespace BitFunnel
 
 
     template <typename T>
-    RandomInt<T>::RandomInt(unsigned long seed, T minValue, T maxValue)
+    RandomInt<T>::RandomInt(unsigned seed, T minValue, T maxValue)
         : m_mt19937Engine(seed),
           m_distribution(minValue, maxValue)
     {
@@ -99,7 +99,7 @@ namespace BitFunnel
 
 
     template <typename T>
-    RandomReal<T>::RandomReal(unsigned long seed, T minValue, T maxValue)
+    RandomReal<T>::RandomReal(unsigned seed, T minValue, T maxValue)
         : m_mt19937Engine(seed),
           m_distribution(minValue, maxValue)
     {
