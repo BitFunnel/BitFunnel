@@ -188,11 +188,11 @@ namespace BitFunnel
             m_termTable.CloseTerm(hash++);
 
             // Seventh row is configured two shared rows, one rank 0 and one
-            // rank 4. Seventh row's frequency of 0.01 is great enough to
+            // rank 4. Seventh row's frequency of 0.01 is great enough to 
             // require a private row at rank 4.
             m_termTreatment.OpenConfiguration();
-            m_termTreatment.AddEntry(0, 1, false);
             m_termTreatment.AddEntry(4, 1, false);
+            m_termTreatment.AddEntry(0, 1, false);
             m_termTreatment.CloseConfiguration();
 
             m_termTable.OpenTerm();
