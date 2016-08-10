@@ -115,9 +115,9 @@ namespace BitFunnel
             sliceAllocator(new SliceBufferAllocator(sliceBufferSize, 16));
 
         auto shardDefinition = Factories::CreateShardDefinition();
-        shardDefinition->AddShard(1000);
-        shardDefinition->AddShard(2000);
-        shardDefinition->AddShard(3000);
+        // shardDefinition->AddShard(1000);
+        // shardDefinition->AddShard(2000);
+        // shardDefinition->AddShard(3000);
 
         const std::unique_ptr<IIngestor>
             ingestor(Factories::CreateIngestor(*fileManager,
