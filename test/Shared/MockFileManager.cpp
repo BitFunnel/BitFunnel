@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
+#include <string>
+
 #include "BitFunnel/Configuration/Factories.h"
 #include "MockFileManager.h"
 
@@ -28,9 +31,14 @@ namespace BitFunnel
 {
     std::unique_ptr<IFileManager> CreateMockFileManager()
     {
-        // TODO: Change paths for Linux/Posix.
-        return Factories::CreateFileManager("c:\\temp\\",
-                                            "c:\\temp\\", 
-                                            "c:\\temp\\");
+        // TODO: use some library that will provide this.
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
+        const std::string c_path = "c:\\temp\\";
+#else
+        const std::string c_path = "/tmp";
+#endif
+        return Factories::CreateFileManager(c_path.c_str(),
+                                            c_path.c_str(),
+                                            c_path.c_str());
     }
 }

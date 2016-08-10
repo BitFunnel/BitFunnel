@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
 #include "BitFunnel/BitFunnelTypes.h"  // For ShardId.
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IFactSet.h"

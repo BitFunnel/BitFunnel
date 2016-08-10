@@ -88,6 +88,8 @@ namespace BitFunnel
             << std::endl;
         std::vector<std::string> filePaths = ReadLines(chunkListFileName);
 
+        std::cout << "Reading " << filePaths.size() << " files\n";
+
         DocumentDataSchema schema;
 
         std::unique_ptr<IRecycler> recycler =

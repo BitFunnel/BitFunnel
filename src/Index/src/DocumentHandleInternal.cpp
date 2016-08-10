@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+// #define HORRIBLE_HACK_DONT_CHECK_IN
+
 #include "BitFunnel/TermInfo.h"
 #include "DocumentHandleInternal.h"
 #include "DocTableDescriptor.h"
@@ -105,6 +107,7 @@ namespace BitFunnel
     {
         m_slice->GetShard().TemporaryAddPosting(term, m_index);
 
+#ifndef HORRIBLE_HACK_DONT_CHECK_IN
         ITermTable const & termTable = m_slice->GetShard().GetTermTable();
         TermInfo termInfo(term, termTable);
         while (termInfo.MoveNext())
@@ -115,6 +118,7 @@ namespace BitFunnel
                        row.GetIndex(),
                        m_index);
         }
+#endif
     }
 
 
