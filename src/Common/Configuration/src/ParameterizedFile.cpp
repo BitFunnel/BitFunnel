@@ -36,11 +36,11 @@ namespace BitFunnel
                                          const char* baseName,
                                          const char* extension)
     {
-        // TODO: These are Windows-specific. Must make cross-platform.
-
+        // TODO: use a multiplatform library for this.
+#ifdef BITFUNNEL_PLATFORM_WINDOWS
         // Ensure that the base name does not contain '\' or '.'.
         LogAssertB(strchr(baseName, '\\') == nullptr, "Filename contains \\");
-        LogAssertB(strchr(baseName, '.') == nullptr, "Filenae contains .");
+        LogAssertB(strchr(baseName, '.') == nullptr, "Filename contains .");
 
         // Ensure that extension starts with '.' and does not contain '\'.
         LogAssertB(extension[0] == '.', "Extension doesn't start with .");
@@ -53,6 +53,23 @@ namespace BitFunnel
         m_leftSide = path;
         m_leftSide.push_back('\\');
         m_leftSide.append(baseName);
+#else
+        // Ensure that the base name does not contain '\' or '.'.
+        LogAssertB(strchr(baseName, '/') == nullptr, "Filename contains /");
+        LogAssertB(strchr(baseName, '.') == nullptr, "Filename contains .");
+
+        // Ensure that extension starts with '.' and does not contain '\'.
+        LogAssertB(extension[0] == '.', "Extension doesn't start with .");
+        LogAssertB(strchr(extension, '/') == nullptr, "Extension contains /");
+
+        // TODO: Consider using a library function for path building.
+        size_t pathLength = strlen(path);
+        m_leftSide.reserve(pathLength + 1 + strlen(baseName));
+
+        m_leftSide = path;
+        m_leftSide.push_back('/');
+        m_leftSide.append(baseName);
+#endif
 
         m_extension = extension;
     }
