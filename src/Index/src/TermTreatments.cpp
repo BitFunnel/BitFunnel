@@ -81,8 +81,16 @@ namespace BitFunnel
                 // Determine the number of rows, k, required to reach the
                 // desired signal to noise ratio, snr, given a certain bit
                 // density.
+                // TODO: consider checking for oveflow?
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#endif
                 unsigned k = lround(ceil(log(frequency / snr) / log(density - frequency)) + 1);
                 configuration.push_front(RowConfiguration::Entry(0, k, false));
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
             }
 
             m_configurations.push_back(configuration);
@@ -128,8 +136,16 @@ namespace BitFunnel
                 // Determine the number of rows, k, required to reach the
                 // desired signal to noise ratio, snr, given a certain bit
                 // density.
+                // TODO: consider checking for overflow?
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#endif
                 unsigned k = lround(ceil(log(frequency / snr) / log(density - frequency)) + 1);
                 configuration.push_front(RowConfiguration::Entry(0, 1, false));
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
                 if (k > 1)
                 {
                     Rank rank = 3;

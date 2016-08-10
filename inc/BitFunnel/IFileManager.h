@@ -59,7 +59,7 @@ namespace BitFunnel
     class IFileManager
     {
     public:
-        virtual ~IFileManager() {};
+        virtual ~IFileManager() {}
 
         // These methods return descriptors for files that are only
         // parameterized by the IFileManager. The returned FileDescriptor0
@@ -107,7 +107,7 @@ namespace BitFunnel
     class IParameterizedFile0
     {
     public:
-        virtual ~IParameterizedFile0() {};
+        virtual ~IParameterizedFile0() {}
 
         virtual std::string GetName() = 0;
         virtual std::unique_ptr<std::istream> OpenForRead() = 0;
@@ -122,7 +122,7 @@ namespace BitFunnel
     class IParameterizedFile1
     {
     public:
-        virtual ~IParameterizedFile1() {};
+        virtual ~IParameterizedFile1() {}
 
         virtual std::string GetName(size_t p1) = 0;
         virtual std::unique_ptr<std::istream> OpenForRead(size_t p1) = 0;
@@ -137,7 +137,7 @@ namespace BitFunnel
     class IParameterizedFile2
     {
     public:
-        virtual ~IParameterizedFile2() {};
+        virtual ~IParameterizedFile2() {}
 
         virtual std::string GetName(size_t p1, size_t p2) = 0;
         virtual std::unique_ptr<std::istream> OpenForRead(size_t p1, size_t p2) = 0;
