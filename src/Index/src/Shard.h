@@ -82,7 +82,7 @@ namespace BitFunnel
         void TemporaryAddPosting(Term const & term, DocIndex index);
         void TemporaryRecordDocument();
         void TemporaryWriteDocumentFrequencyTable(std::ostream& out) const;
-        void TemporaryWriteCumulativePostingCounts(std::ostream& out) const;
+        void TemporaryWriteCumulativeTermCounts(std::ostream& out) const;
 
 
         //

@@ -93,7 +93,7 @@ namespace BitFunnel
         // These methods return descriptors for files that are parameterized
         // by a shard number.  The returned FileDescriptor1 objects provide
         // methods to generate the file names and open the files.
-        virtual FileDescriptor1 CumulativePostingCounts(size_t shard) = 0;
+        virtual FileDescriptor1 CumulativeTermCounts(size_t shard) = 0;
         virtual FileDescriptor1 DocFreqTable(size_t shard) = 0;
         //virtual FileDescriptor1 DocTable(size_t shard) = 0;
         //virtual FileDescriptor1 ScoreTable(size_t shard) = 0;

@@ -45,7 +45,6 @@ namespace BitFunnel
         // AddDocument is thread safe with multiple writers.
         void AddDocument(size_t postingCount);
 
-        // AddDocument is thread safe with multiple readers and writers.
         size_t GetPostingCount() const;
 
         // AddDocument is thread safe with multiple readers and writers.

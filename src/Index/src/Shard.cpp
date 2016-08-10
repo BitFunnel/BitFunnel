@@ -359,8 +359,8 @@ namespace BitFunnel
     }
 
 
-    void Shard::TemporaryWriteCumulativePostingCounts(std::ostream& out) const
+    void Shard::TemporaryWriteCumulativeTermCounts(std::ostream& out) const
     {
-        m_docFrequencyTableBuilder->WriteCumulativePostingCounts(out);
+        m_docFrequencyTableBuilder->WriteCumulativeTermCounts(out);
     }
 }

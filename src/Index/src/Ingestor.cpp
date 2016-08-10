@@ -88,7 +88,8 @@ namespace BitFunnel
     {
         std::cout << "Shard count:" << m_shards.size() << std::endl;
         std::cout << "Document count: " << m_documentCount << std::endl;
-        std::cout << "Term count: " << m_histogram.GetPostingCount() << std::endl;
+        std::cout << "Posting count: " << m_histogram.GetPostingCount() << std::endl;
+        // TODO: print out term count?
     }
 
 
@@ -102,8 +103,8 @@ namespace BitFunnel
         for (size_t shard = 0; shard < m_shards.size(); ++shard)
         {
             {
-                auto out = m_fileManager.CumulativePostingCounts(shard).OpenForWrite();
-                m_shards[shard]->TemporaryWriteCumulativePostingCounts(*out);
+                auto out = m_fileManager.CumulativeTermCounts(shard).OpenForWrite();
+                m_shards[shard]->TemporaryWriteCumulativeTermCounts(*out);
             }
             {
                 auto out = m_fileManager.DocFreqTable(shard).OpenForWrite();

@@ -45,8 +45,8 @@ namespace BitFunnel
     FileManager::FileManager(char const * intermediateDirectory,
                              char const * indexDirectory,
                              char const * /*backupDirectory*/)
-        : m_cumulativePostingCounts(new ParameterizedFile1(intermediateDirectory,
-                                                           "CumulativePostingCounts",
+        : m_cumulativeTermCounts(new ParameterizedFile1(intermediateDirectory,
+                                                           "CumulativeTermCounts",
                                                            ".csv")),
           m_docFreqTable(new ParameterizedFile1(indexDirectory, "DocFreqTable", ".csv")),
           m_documentLengthHistogram(new ParameterizedFile0(intermediateDirectory,
@@ -63,9 +63,9 @@ namespace BitFunnel
     }
 
 
-    FileDescriptor1 FileManager::CumulativePostingCounts(size_t shard)
+    FileDescriptor1 FileManager::CumulativeTermCounts(size_t shard)
     {
-        return FileDescriptor1(*m_cumulativePostingCounts, shard);
+        return FileDescriptor1(*m_cumulativeTermCounts, shard);
     }
 
 

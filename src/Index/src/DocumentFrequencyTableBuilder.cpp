@@ -31,7 +31,7 @@ namespace BitFunnel
 {
     void DocumentFrequencyTableBuilder::OnDocumentEnter()
     {
-        m_cumulativePostingCounts.push_back(m_termCounts.size());
+        m_cumulativeTermCounts.push_back(m_termCounts.size());
     }
 
 
@@ -62,7 +62,7 @@ namespace BitFunnel
         // add to entries if frequency is above threshold.
         for (auto const & entry : m_termCounts)
         {
-            double frequency = static_cast<double>(entry.second) / m_cumulativePostingCounts.size();
+            double frequency = static_cast<double>(entry.second) / m_cumulativeTermCounts.size();
             if (frequency >= truncateBelowFrequency)
             {
                 entries.push_back(std::make_pair(entry.first, frequency));
@@ -87,11 +87,11 @@ namespace BitFunnel
     }
 
 
-    void DocumentFrequencyTableBuilder::WriteCumulativePostingCounts(std::ostream& output) const
+    void DocumentFrequencyTableBuilder::WriteCumulativeTermCounts(std::ostream& output) const
     {
-        for (size_t i = 0; i < m_cumulativePostingCounts.size(); ++i)
+        for (size_t i = 0; i < m_cumulativeTermCounts.size(); ++i)
         {
-            output << i << "," << m_cumulativePostingCounts[i] << std::endl;
+            output << i << "," << m_cumulativeTermCounts[i] << std::endl;
         }
     }
 }
