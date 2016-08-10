@@ -199,6 +199,9 @@ namespace BitFunnel
             m_termTable.AddRowId(RowId(0, 0, fourth));
             m_termTable.AddRowId(RowId(0, 4, rows[4]++));
             m_termTable.CloseTerm(hash++);
+
+            m_termTable.SetRowCounts(0, 4, 0);
+            m_termTable.SetRowCounts(4, 1, 0);
         }
 
 
