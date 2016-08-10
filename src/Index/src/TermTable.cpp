@@ -89,10 +89,10 @@ namespace BitFunnel
 
     size_t TermTable::GetTotalRowCount(Rank rank) const
     {
-        return 
+        return
             m_explicitRowCounts[rank] +
             m_adhocRowCounts[rank] +
-            (rank == 0) ? m_factRowCount : 0;
+            ((rank == 0) ? m_factRowCount : 0);
     }
 
 
