@@ -59,6 +59,9 @@ namespace BitFunnel
         class RowAssigner;
         std::vector <std::unique_ptr<RowAssigner>> m_rowAssigners;
 
+        double m_buildTime;
+
+
         class RowAssignment
         {
         public:
@@ -119,6 +122,7 @@ namespace BitFunnel
             size_t m_adhocTermCount;
             size_t m_privateTermCount;
             size_t m_privateRowCount;
+
 
             class Bin
             {

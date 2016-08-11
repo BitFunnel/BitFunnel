@@ -31,6 +31,7 @@
 #include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/Index/ITermTableBuilder.h"
 #include "BitFunnel/ITermTreatment.h"
+#include "BitFunnel/Utilities/Stopwatch.h"
 #include "CmdLineParser/CmdLineParser.h"
 
 
@@ -42,6 +43,8 @@ namespace BitFunnel
                         double snr,
                         double adhocFrequency)
     {
+        std::cout << "Loading files for TermTable build." << std::endl;
+
         auto fileManager = Factories::CreateFileManager(intermediateDirectory,
                                                         intermediateDirectory,
                                                         intermediateDirectory);
@@ -52,6 +55,8 @@ namespace BitFunnel
 
         auto termTable(Factories::CreateTermTable());
 
+        std::cout << "Starting TermTable build." << std::endl;
+
         auto termTableBuilder(Factories::CreateTermTableBuilder(density,
                                                                 adhocFrequency,
                                                                 *treatment,
@@ -60,7 +65,11 @@ namespace BitFunnel
 
         termTableBuilder->Print(std::cout);
 
+        std::cout << "Writing TermTable files." << std::endl;
+
         termTable->Write(*fileManager->TermTable(shard).OpenForWrite());
+
+        std::cout << "Done." << std::endl;
     }
 }
 

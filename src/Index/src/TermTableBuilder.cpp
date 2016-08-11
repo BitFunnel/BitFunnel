@@ -29,6 +29,7 @@
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/ITermTreatment.h"
+#include "BitFunnel/Utilities/Stopwatch.h"
 #include "DocumentFrequencyTable.h"
 #include "TermTableBuilder.h"
 
@@ -66,8 +67,11 @@ namespace BitFunnel
                                        ITermTreatment const & treatment,
                                        IDocumentFrequencyTable const & terms,
                                        ITermTable2 & termTable)
-        : m_termTable(termTable)
+        : m_termTable(termTable),
+          m_buildTime(0.0)
     {
+        Stopwatch stopwatch;
+
         // Create one RowAssigner for each rank.
         for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
         {
@@ -136,11 +140,15 @@ namespace BitFunnel
         }
 
         m_termTable.Seal();
+
+        m_buildTime = stopwatch.ElapsedTime();
     }
 
 
     void TermTableBuilder::Print(std::ostream& output) const
     {
+        output << "Total build time: " << m_buildTime << " seconds." << std::endl;
+
         for (auto&& assigner : m_rowAssigners)
         {
             assigner->Print(output);

@@ -39,6 +39,7 @@
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/Stream.h"
+#include "BitFunnel/Utilities/Stopwatch.h"
 #include "CmdLineParser/CmdLineParser.h"
 #include "DocumentDataSchema.h"
 #include "IndexUtils.h"
@@ -47,6 +48,7 @@
 #include "Recycler.h"
 #include "SliceBufferAllocator.h"
 // #include "TrackingSliceBufferAllocator.h"
+
 
 namespace BitFunnel
 {
@@ -135,11 +137,17 @@ namespace BitFunnel
 
         std::cout << "Ingesting . . ." << std::endl;
 
+        Stopwatch stopwatch;
+
         // TODO: Use correct thread count.
         size_t threadCount = 1;
         IngestChunks(filePaths, *configuration, *ingestor, threadCount);
 
+        double elapsedTime = stopwatch.ElapsedTime();
+
         std::cout << "Ingestion complete." << std::endl;
+        std::cout << "  Ingestion time = " << elapsedTime << std::endl;
+
         ingestor->PrintStatistics();
 
         if (generateStatistics)
