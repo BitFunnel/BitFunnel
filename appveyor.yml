@@ -19,5 +19,5 @@ build:
 
 test_script:
   - cd build-msvc
-  - ctest -C Debug
+  - ctest -C Debug --verbose
   # TODO: Add Release tests here too.
