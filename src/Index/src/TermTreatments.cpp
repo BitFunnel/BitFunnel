@@ -24,12 +24,45 @@
 #include <iostream>             // TODO: Remove this temporary include.
 #include <math.h>
 
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Term.h"
 #include "TermTreatments.h"
 
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // Factory methods.
+    //
+    //*************************************************************************
+    std::unique_ptr<ITermTreatment> Factories::CreateTreatmentPrivateRank0()
+    {
+        return std::unique_ptr<ITermTreatment>(new TreatmentPrivateRank0());
+    }
+
+
+    std::unique_ptr<ITermTreatment>
+        Factories::CreateTreatmentPrivateSharedRank0(double density,
+                                                     double snr)
+    {
+        return 
+            std::unique_ptr<ITermTreatment>(
+                new TreatmentPrivateSharedRank0(density, snr));
+    }
+
+
+    std::unique_ptr<ITermTreatment>
+        Factories::CreateTreatmentPrivateShardRank0And3(double density,
+                                                        double snr)
+    {
+        return
+            std::unique_ptr<ITermTreatment>(
+                new TreatmentPrivateSharedRank0And3(density, snr));
+    }
+
+
+
     //*************************************************************************
     //
     // TreatmentPrivateRank0

@@ -26,6 +26,7 @@
 
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/ITermTreatment.h"
 #include "DocumentFrequencyTable.h"
@@ -36,13 +37,34 @@ namespace BitFunnel
 {
     //*************************************************************************
     //
+    // Factory methods.
+    //
+    //*************************************************************************
+    std::unique_ptr<ITermTableBuilder>
+        Factories::CreateTermTableBuilder(double density,
+                                          double adhocFrequency,
+                                          ITermTreatment const & treatment,
+                                          IDocumentFrequencyTable const & terms,
+                                          ITermTable2 & termTable)
+    {
+        return
+            std::unique_ptr<ITermTableBuilder>(new TermTableBuilder(density,
+                                                                    adhocFrequency,
+                                                                    treatment,
+                                                                    terms,
+                                                                    termTable));
+    }
+
+
+    //*************************************************************************
+    //
     // TermTableBuilder
     //
     //*************************************************************************
     TermTableBuilder::TermTableBuilder(double density,
                                        double adhocFrequency,
                                        ITermTreatment const & treatment,
-                                       DocumentFrequencyTable const & terms,
+                                       IDocumentFrequencyTable const & terms,
                                        ITermTable2 & termTable)
         : m_termTable(termTable)
     {
@@ -268,11 +290,11 @@ namespace BitFunnel
 
             output << std::endl;
 
-            output << "  Bins" << std::endl;
+            //output << "  Bins" << std::endl;
             Accumulator a;
             for (auto bin : m_bins)
             {
-                output << "    " << bin.GetFrequency(m_density) << ", " << bin.GetIndex() << std::endl;
+//                output << "    " << bin.GetFrequency(m_density) << ", " << bin.GetIndex() << std::endl;
                 a.Record(bin.GetFrequency(m_density));
             }
 

@@ -1,19 +1,18 @@
 #pragma once
 
-#include <iosfwd>           // std::istream member.
-#include <utility>          // std::pair return value.
-#include <vector>           // std::vector member.
+#include <iosfwd>                                       // std::istream member.
+#include <utility>                                      // std::pair return value.
+#include <vector>                                       // std::vector member.
 
-#include "BitFunnel/Term.h" // Term template parameter.
+#include "BitFunnel/Index/IDocumentFrequencyTable.h"    // Base class.
+#include "BitFunnel/Term.h"                             // Term template parameter.
 
 
 namespace BitFunnel
 {
-    class DocumentFrequencyTable
+    class DocumentFrequencyTable : public IDocumentFrequencyTable
     {
     public:
-        class Entry;
-
         // Constructs a DocumentFrequencyTable from data previously persisted
         // to a stream by DocumentFrequencyTableBuilder::WriteFrequencies().
         // The file format is a sequence of entries, one per line. Each entry
@@ -26,36 +25,12 @@ namespace BitFunnel
         DocumentFrequencyTable(std::istream& input);
 
         // Returns the entry corresponding a specific index.
-        Entry const & operator[](size_t index) const;
+        virtual Entry const & operator[](size_t index) const override;
 
-        std::vector<Entry>::const_iterator begin() const;
-        std::vector<Entry>::const_iterator end() const;
+        virtual std::vector<Entry>::const_iterator begin() const override;
+        virtual std::vector<Entry>::const_iterator end() const override;
 
-        size_t size() const;
-
-        class Entry
-        {
-        public:
-            Entry(Term term, double frequency)
-                : m_term(term),
-                m_frequency(frequency)
-            {
-            }
-
-            Term GetTerm() const
-            {
-                return m_term;
-            }
-
-            double GetFrequency() const
-            {
-                return m_frequency;
-            }
-
-        private:
-            Term m_term;
-            double m_frequency;
-        };
+        virtual size_t size() const override;
 
     private:
         std::vector<Entry> m_entries;

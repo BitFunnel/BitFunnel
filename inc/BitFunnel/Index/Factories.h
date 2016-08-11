@@ -22,25 +22,29 @@
 
 #pragma once
 
-#include <memory>
+#include <iosfwd>   // std::istream parameter.
+#include <memory>   // std::unique_ptr return type.
+
 
 namespace BitFunnel
 {
     class IConfiguration;
     class IDocumentDataSchema;
+    class IDocumentFrequencyTable;
     class IFactSet;
     class IFileManager;
     class IIngestor;
     class IRecycler;
-    class ITermTable;
     class IShardDefinition;
     class ISliceBufferAllocator;
+    class ITermTable;
+    class ITermTable2;
+    class ITermTableBuilder;
+    class ITermTreatment;
 
     namespace Factories
     {
         std::unique_ptr<IConfiguration> CreateConfiguration(size_t maxGramSize);
-
-        std::unique_ptr<IFactSet> CreateFactSet();
 
         std::unique_ptr<IIngestor>
             CreateIngestor(IFileManager& filemanager,
@@ -51,5 +55,27 @@ namespace BitFunnel
                            ISliceBufferAllocator& sliceBufferAllocator);
 
         std::unique_ptr<IDocumentDataSchema> CreateDocumentDataSchema();
+
+        std::unique_ptr<IDocumentFrequencyTable>
+            CreateDocumentFrequencyTable(std::istream& input);
+
+        std::unique_ptr<IFactSet> CreateFactSet();
+
+        std::unique_ptr<ITermTable2> CreateTermTable();
+
+        std::unique_ptr<ITermTableBuilder> 
+            CreateTermTableBuilder(double density,
+                                   double adhocFrequency,
+                                   ITermTreatment const & treatment,
+                                   IDocumentFrequencyTable const & terms,
+                                   ITermTable2 & termTable);
+
+        std::unique_ptr<ITermTreatment> CreateTreatmentPrivateRank0();
+
+        std::unique_ptr<ITermTreatment> 
+            CreateTreatmentPrivateSharedRank0(double density, double snr);
+
+        std::unique_ptr<ITermTreatment>
+            CreateTreatmentPrivateShardRank0And3(double density, double snr);
     }
 }

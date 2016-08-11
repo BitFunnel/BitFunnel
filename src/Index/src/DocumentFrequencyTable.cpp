@@ -23,12 +23,32 @@
 #include <cctype>                           // For isspace.
 #include <istream>
 
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Exceptions.h"
 #include "DocumentFrequencyTable.h"
 
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // Factory methods
+    //
+    //*************************************************************************
+    std::unique_ptr<IDocumentFrequencyTable>
+        Factories::CreateDocumentFrequencyTable(std::istream& input)
+    {
+        return
+            std::unique_ptr<IDocumentFrequencyTable>(
+                new DocumentFrequencyTable(input));
+    }
+
+
+    //*************************************************************************
+    //
+    // DocumentFrequencyTable
+    //
+    //*************************************************************************
     static void SkipWhitespace(std::istream& input)
     {
         while(std::isspace(input.peek()))

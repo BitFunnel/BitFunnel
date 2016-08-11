@@ -46,7 +46,7 @@ namespace BitFunnel
     // TFS 15152.
     //
     //*************************************************************************
-    class ITermTable
+    class ITermTable : public IInterface
     {
     public:
         virtual ~ITermTable() {}

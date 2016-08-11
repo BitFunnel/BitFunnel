@@ -24,12 +24,24 @@
 
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/Factories.h"
 #include "TermTable.h"
 
 
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // Factory methods.
+    //
+    //*************************************************************************
+    std::unique_ptr<ITermTable2> Factories::CreateTermTable()
+    {
+        return std::unique_ptr<ITermTable2>(new TermTable());
+    }
+
+
     //*************************************************************************
     //
     // TermTable

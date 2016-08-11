@@ -30,6 +30,7 @@
 #include <vector>                               // std::vector member.
 
 #include "BitFunnel/BitFunnelTypes.h"           // Rank parameter.
+#include "BitFunnel/Index/ITermTableBuilder.h"  // Base class.
 #include "BitFunnel/RowId.h"                    // RowIndex, RowId parameter.
 #include "BitFunnel/Term.h"                     // Term::Hash template parameter.
 #include "BitFunnel/Utilities/Accumulator.h"    // Accumulator member.
@@ -41,16 +42,16 @@ namespace BitFunnel
     class ITermTreatment;
     class ITermTable2;
 
-    class TermTableBuilder
+    class TermTableBuilder : public ITermTableBuilder
     {
     public:
         TermTableBuilder(double density,
                          double adhocFrequency,
                          ITermTreatment const & treatment,
-                         DocumentFrequencyTable const & terms,
+                         IDocumentFrequencyTable const & terms,
                          ITermTable2 & termTable);
 
-        void Print(std::ostream& output) const;
+        virtual void Print(std::ostream& output) const override;
 
     private:
         ITermTable2 & m_termTable;

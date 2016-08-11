@@ -23,8 +23,88 @@
 
 #include <iostream>
 
-int main(int /*argc*/, char** /*argv*/)
+#include "BitFunnel/BitFunnelTypes.h"
+#include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/IFileManager.h"
+#include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Index/IDocumentFrequencyTable.h"
+#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/Index/ITermTableBuilder.h"
+#include "BitFunnel/ITermTreatment.h"
+#include "CmdLineParser/CmdLineParser.h"
+
+
+namespace BitFunnel
 {
-    std::cout << "Hello, world!" << std::endl;
-    return 0;
+    void BuildTermTable(char const * intermediateDirectory,
+                        ShardId shard,
+                        double density,
+                        double snr,
+                        double adhocFrequency)
+    {
+        auto fileManager = Factories::CreateFileManager(intermediateDirectory,
+                                                        intermediateDirectory,
+                                                        intermediateDirectory);
+
+        auto terms(Factories::CreateDocumentFrequencyTable(*fileManager->DocFreqTable(shard).OpenForRead()));
+
+        auto treatment(Factories::CreateTreatmentPrivateShardRank0And3(density, snr));
+
+        auto termTable(Factories::CreateTermTable());
+
+        auto termTableBuilder(Factories::CreateTermTableBuilder(density,
+                                                                adhocFrequency,
+                                                                *treatment,
+                                                                *terms,
+                                                                *termTable));
+
+        termTableBuilder->Print(std::cout);
+    }
+}
+
+int main(int argc, char** argv)
+{
+    CmdLine::CmdLineParser parser(
+        "TermTableBuilder",
+        "Generate a TermTable from a DocumentFrequencyTable.");
+
+    CmdLine::RequiredParameter<char const *> tempPath(
+        "tempPath",
+        "Path to a tmp directory. "
+        "Something like /tmp/ or c:\\temp\\, depending on platform..");
+
+
+    parser.AddParameter(tempPath);
+
+    int returnCode = 0;
+
+    if (parser.TryParse(std::cout, argc, argv))
+    {
+        try
+        {
+            BitFunnel::ShardId shard = 0;
+            double density = 0.1;
+            double snr = 10.0;
+            double adhocFrequency = 0.001;
+
+            BitFunnel::BuildTermTable(tempPath,
+                                      shard,
+                                      density,
+                                      snr,
+                                      adhocFrequency);
+            returnCode = 0;
+        }
+        catch (...)
+        {
+            std::cout << "Unexpected error.";
+            returnCode = 1;
+        }
+    }
+    else
+    {
+        parser.Usage(std::cout, argv[0]);
+        returnCode = 1;
+    }
+
+    return returnCode;
 }
