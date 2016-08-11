@@ -111,11 +111,7 @@ namespace BitFunnel
 
         RowIndex end = static_cast<RowIndex>(m_rowIds.size());
 
-        // Use placement new syntax to overwrite exiting PackedRowIdSequence.
-        // This is necessary because the members of PackedRowIdSequence are
-        // const, preventing assignment.
-        new (&m_adhocRows[idf][gramSize])
-            PackedRowIdSequence(m_start, end, PackedRowIdSequence::Type::Adhoc);
+        m_adhocRows[idf][gramSize] = PackedRowIdSequence(m_start, end, PackedRowIdSequence::Type::Adhoc);
     }
 
 

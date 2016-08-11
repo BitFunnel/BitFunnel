@@ -24,8 +24,9 @@
 #pragma once
 
 #include <inttypes.h>                   // For uint32_t.
+#include <type_traits>                  // std::is_trivially_copyable in static_assert.
 
-#include "BitFunnel/BitFunnelTypes.h"   // For Rank, ShardId.
+#include "BitFunnel/BitFunnelTypes.h"   // Rank, RowIndex, ShardId parameters.
 
 
 namespace BitFunnel
@@ -87,6 +88,9 @@ namespace BitFunnel
         static_assert(c_log2MaxShardIdValue + c_log2MaxRankValue + c_log2MaxRowIndexValue == 32ull,
                       "Expect m_shard, m_rank, and m_index to use 32 bits.");
 
+        // DESIGN NOTE: members would normally be const, but we want this class
+        // to be trivially_copyable to allow for binary serialization.
+
         // ShardId number.
         uint32_t m_shard: c_log2MaxShardIdValue;
 
@@ -103,4 +107,9 @@ namespace BitFunnel
 
     static_assert(sizeof(RowId) == 4,
                   "Expect sizeof(RowId) to be 4 bytes.");
+
+    // Require RowId to be trivailly copyable to allow for binary serialization
+    // in TermTable.
+    static_assert(std::is_trivially_copyable<RowId>::value,
+                  "RowId must be trivially copyable.");
 }

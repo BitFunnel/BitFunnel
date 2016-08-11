@@ -22,6 +22,7 @@
 #pragma once
 
 #include <inttypes.h>                   // For uint*_t.
+#include <type_traits>                  // std::is_trivially_copyable in static_assert.
 
 #include "BitFunnel/BitFunnelTypes.h"   // RowIndex parameter.
 #include "BitFunnel/ITermTreatment.h"   // RowConfiguration::Entry::c_maxRowCount.
@@ -76,10 +77,17 @@ namespace BitFunnel
         }
 
     private:
-        const uint32_t m_start : c_log2MaxRowIndexValue;
-        const uint32_t m_count : RowConfiguration::Entry::c_log2MaxRowCount;
-        const uint32_t m_type : c_log2MaxTypeValue;
+        // DESIGN NOTE: members would normally be const, but we want this class
+        // to be trivially_copyable to allow for binary serialization.
+        uint32_t m_start : c_log2MaxRowIndexValue;
+        uint32_t m_count : RowConfiguration::Entry::c_log2MaxRowCount;
+        uint32_t m_type : c_log2MaxTypeValue;
     };
+
+    // Require PackedRowIdSequence to be trivailly copyable to allow for binary
+    // serialization in TermTable.
+    static_assert(std::is_trivially_copyable<PackedRowIdSequence >::value,
+                  "PackedRowIdSequence must be trivially copyable.");
 
     // DESIGN NOTE: PackedRowIdSequence is intended to be a small value
     // type. Considerations include:
