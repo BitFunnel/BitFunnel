@@ -59,6 +59,8 @@ namespace BitFunnel
                                                                 *termTable));
 
         termTableBuilder->Print(std::cout);
+
+        termTable->Write(*fileManager->TermTable(shard).OpenForWrite());
     }
 }
 

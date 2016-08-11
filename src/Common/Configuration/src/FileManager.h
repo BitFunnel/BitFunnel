@@ -68,7 +68,7 @@ namespace BitFunnel
         virtual FileDescriptor1 DocFreqTable(size_t shard) override;
         //virtual FileDescriptor1 DocTable(size_t shard) override;
         //virtual FileDescriptor1 ScoreTable(size_t shard) override;
-        //virtual FileDescriptor1 TermTable(size_t shard) override;
+        virtual FileDescriptor1 TermTable(size_t shard) override;
 
         //virtual FileDescriptor2 IndexSlice(size_t shard, size_t slice) override;
 
@@ -76,7 +76,6 @@ namespace BitFunnel
         std::unique_ptr<IParameterizedFile1> m_cumulativeTermCounts;
         std::unique_ptr<IParameterizedFile1> m_docFreqTable;
         std::unique_ptr<IParameterizedFile0> m_documentLengthHistogram;
-        //std::unique_ptr<IParameterizedFile1> m_docTable;
-        //std::unique_ptr<IParameterizedFile2> m_indexSlice;
+        std::unique_ptr<IParameterizedFile1> m_termTable;
     };
 }
