@@ -50,6 +50,8 @@ namespace BitFunnel
         // facts, if applicable.
         virtual size_t GetTotalRowCount(Rank rank) const = 0;
 
+        virtual double GetBytesPerDocument(Rank rank) const = 0;
+
         // Returns a PackedRowIdSequence structure associated with the
         // specified term. The PackedRowIdSequence structure contains
         // information about the term's rows. PackedRowIdSequence is used

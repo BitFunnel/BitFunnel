@@ -60,6 +60,8 @@ namespace BitFunnel
         // TODO: Implement this method.
         virtual size_t GetTotalRowCount(Rank rank) const override;
 
+        virtual double GetBytesPerDocument(Rank rank) const override;
+
     private:
         RowIndex m_start;
 

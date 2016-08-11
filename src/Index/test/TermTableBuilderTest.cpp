@@ -247,6 +247,8 @@ private:
             double adhocFrequency = 0.0001;
             TermTableBuilder builder(density, adhocFrequency, treatment, terms, termTable);
 
+            builder.Print(std::cout);
+
             //
             // Verify that configured TermTable is the same as the expected
             // TermTable provided by the enviornment.

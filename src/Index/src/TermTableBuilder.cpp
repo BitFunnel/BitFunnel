@@ -130,7 +130,9 @@ namespace BitFunnel
     }
 
 
-    void TermTableBuilder::RowAssigner::Assign(double frequency, RowIndex count, bool isPrivate)
+    void TermTableBuilder::RowAssigner::Assign(double frequency,
+                                               RowIndex count,
+                                               bool isPrivate)
     {
         // Compute the frequency at rank.
         double f = Term::FrequencyAtRank(frequency, m_rank);
@@ -260,6 +262,9 @@ namespace BitFunnel
             output << "    Adhoc: " << GetAdhocRowCount() << std::endl;
             output << "    Explicit: " << m_bins.size() << std::endl;
             output << "    Private: " << m_privateRowCount << std::endl;
+            output << std::endl;
+
+            output << "  Bytes per document: " << m_termTable.GetBytesPerDocument(m_rank) << std::endl;
 
             output << std::endl;
 
