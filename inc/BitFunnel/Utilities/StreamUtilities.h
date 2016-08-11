@@ -24,15 +24,14 @@
 #pragma once
 
 #include <cstddef>  // For std::ptrdiff
-#include <iosfwd>
-#include <istream>
-#include <memory>
-#include <ostream>
-#include <string>
+#include <istream>  // Used in template definition.
+#include <ostream>  // Used in template definition.
+#include <string>   // std::string parameter.
 
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Utilities/IInputStream.h"
 #include "BitFunnel/Utilities/StandardInputStream.h"
-#include "LoggerInterfaces/Logging.h"
+
 
 namespace BitFunnel
 {
@@ -129,7 +128,7 @@ namespace BitFunnel
 
 
     //
-    // Implementations of templated methods for reading from an input stream.
+    // Implementations of templated methods for reading from an IInputStream.
     //
 
     template <typename T>
@@ -137,7 +136,13 @@ namespace BitFunnel
     {
         T temp;
         const size_t bytesRead = stream.Read(reinterpret_cast<char*>(&temp), sizeof(T));
-        LogAssertB(bytesRead == sizeof(T), "Stream Read Error");
+        if (bytesRead != sizeof(T))
+        {
+            // Error considered fatal since we cannot continue reading from
+            // a corrupt stream.
+            FatalError error("StreamUtilities::ReadField: error reading.");
+            throw error;
+        }
         return temp;
     }
 
@@ -184,7 +189,13 @@ namespace BitFunnel
     void StreamUtilities::WriteField(std::ostream& stream, const T& field)
     {
         stream.write(reinterpret_cast<const char*>(&field), sizeof(T));
-        LogAssertB(!stream.bad(), "Stream Write Error");
+        if (stream.bad())
+        {
+            // Error considered fatal since we cannot continue reading from
+            // a corrupt stream.
+            FatalError error("StreamUtilities::WriteField: error writing.");
+            throw error;
+        }
     }
 
 

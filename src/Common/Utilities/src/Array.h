@@ -26,8 +26,9 @@
 #include <istream>              // std::istream used as parameter.
 #include <ostream>              // std::ostream used as parameter.
 
-#include "BitFunnel/Utilities/StreamUtilities.h"    // Template code calls.
-#include "SimpleBuffer.h"       // Embeds SimpleBuffer.
+#include "BitFunnel/Utilities/StreamUtilities.h"    // Template code.
+#include "LoggerInterfaces/Logging.h"               // Template code.
+#include "SimpleBuffer.h"                           // Embeds SimpleBuffer.
 
 
 
