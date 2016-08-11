@@ -22,11 +22,13 @@
 
 #pragma once
 
-#include <iosfwd>
-#include <map>
-#include <mutex>
+#include <atomic>   // std::atomic member
+#include <iosfwd>   // std::ostream parameter
+#include <map>      // std::map member
+#include <mutex>    // std::mutex member
 
 #include "BitFunnel/NonCopyable.h"
+
 
 // BitFunnelLib\src\Common\Configuration\DocumentDocumentLengthHistogram.cpp
 // TODO: one unit test should be to write and read and get the same result.
