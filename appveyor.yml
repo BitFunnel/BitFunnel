@@ -7,7 +7,7 @@ branches:
 
 image: Visual Studio 2015
 
-clone_depth: 15
+clone_depth: 1
 
 install:
   - .\Configure_MSVC.bat
