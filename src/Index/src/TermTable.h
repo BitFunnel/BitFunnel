@@ -40,29 +40,38 @@ namespace BitFunnel
 
         virtual void OpenTerm() override;
 
-        // Adds a single RowId to the term table's RowId buffer.
         virtual void AddRowId(RowId id) override;
 
-        virtual void CloseTerm(Term::Hash term) override;
+        virtual void CloseTerm(Term::Hash hash) override;
+
+        virtual void CloseAdhocTerm(Term::IdfX10 idf,
+                                    Term::GramSize gramSize) override;
 
         virtual PackedRowIdSequence GetRows(const Term& term) const override;
 
-        // Returns the RowId at the specified offset in the TermTable.
-        virtual RowId GetRowId(size_t rowOffset) const override;
+        virtual RowId GetRowIdExplicit(size_t index) const override;
+
+        virtual RowId GetRowIdAdhoc(Term::Hash hash,
+                                    size_t index,
+                                    size_t variant) const override;
+
 
         virtual void SetRowCounts(Rank rank,
                                   size_t explicitCount,
                                   size_t adhocCount) override;
 
-        // Returns the total number of rows (private + shared) associated with
-        // the row table for (rank). This includes rows allocated for
-        // facts, if applicable.
-        // TODO: Implement this method.
+        virtual void Seal() override;
+
         virtual size_t GetTotalRowCount(Rank rank) const override;
 
         virtual double GetBytesPerDocument(Rank rank) const override;
 
     private:
+        void ThrowIfSealed() const;
+
+        bool m_setRowCountsCalled;
+        bool m_sealed;
+
         RowIndex m_start;
 
         // TODO: Is the term table big enough that we would benefit from
@@ -71,10 +80,14 @@ namespace BitFunnel
         // a better hash table? Should measure actual memory use for this data
         // structure.
         std::unordered_map<Term::Hash, PackedRowIdSequence> m_termHashToRows;
+
+        PackedRowIdSequence m_adhocRows[Term::c_maxIdfX10Value + 1][Term::c_maxGramSize + 1];
+
         std::vector<RowId> m_rowIds;
 
         std::vector<RowIndex> m_explicitRowCounts;
         std::vector<RowIndex> m_adhocRowCounts;
+        std::vector<RowIndex> m_sharedRowCounts;
         RowIndex m_factRowCount;
     };
 }

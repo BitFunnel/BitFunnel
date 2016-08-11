@@ -34,22 +34,78 @@ namespace BitFunnel
     class ITermTable2 : public IInterface
     {
     public:
+        //
+        // TermTable build methods.
+        //
+
+        //
+        // TermTable build involves
+        //   1. Adding sequences of RowIds for Explicit terms.
+        //   2. Adding sequences of RowIds used as recipes for Adhoc terms.
+        //   3. Recording the number of Explicit, Adhoc, and Fact rows.
+        //   4. Sealing the TermTable.
+        //
+        // Explicit terms are added as follows:
+        //   Invoke OpenTerm().
+        //   Call AddRowId() once for each RowId associated with the term.
+        //   Invoke CloseTerm(hash) with the term's raw hash.
+        //
+        // Adhoc terms are added as follows:
+        //   Invoke OpenTerm().
+        //   Call AddRowId() once for each RowId in the recipe. These RowIds
+        //     supply the combination of Rank values in the generated adhoc
+        //     row. The RowIndex values are ignored as they are replaced by
+        //     different hashes of the term's raw hash.
+        //
+        // The Row counts are recorded via calls to SetRowCounts(). This method
+        // should be called once for each Rank in [0..c_maxRankValue].
+        //
+        // Sealing is the last step, it cannot be skipped and it may only be
+        // performed once. This step updates all of the stored RowIds to have
+        // absolute RowIndex values.
+
+
+        // Instructs the TermTable to start recording RowIds added by AddRowId.
         virtual void OpenTerm() = 0;
 
         // Adds a single RowId to the term table's RowId buffer.
         virtual void AddRowId(RowId id) = 0;
 
-        virtual void CloseTerm(Term::Hash term) = 0;
+        // Constructs a PackedRowIdSequence from RowIds recorded since the last
+        // call to OpenTerm. Stores this sequence in a map of explicit terms,
+        // indexed by the supplied hash.
+        virtual void CloseTerm(Term::Hash hash) = 0;
 
+        // Constructs a PackedRowIdSequence from RowIds recorded since the last
+        // call to OpenTerm. Stores this sequence in an array of adhoc term
+        // recipes, indexed by the supplied idf and gramSize values.
+        virtual void CloseAdhocTerm(Term::IdfX10 idf,
+                                    Term::GramSize gramSize) = 0;
+
+        // Set the number of explicit and adhoc rows at each Rank.
+        // Should be invoked once for rank values in [0..c_maxRankValue] during
+        // TermTable build.
         virtual void SetRowCounts(Rank rank,
                                   size_t explicitCount,
                                   size_t adhocCount) = 0;
+
+        // Completes the TermTable build process by converting relative
+        // RowIndex values to absolute RowIndex values. This can only be done
+        // after the row counts are set via a call to SetRowCounts().
+        virtual void Seal() = 0;
+
+
+        //
+        // TermTable reader methods.
+        //
 
         // Returns the total number of rows (private + shared) associated with
         // the row table for (rank). This includes rows allocated for
         // facts, if applicable.
         virtual size_t GetTotalRowCount(Rank rank) const = 0;
 
+        // Returns the number of bytes of Row data required to store each
+        // document using this TermTable.
         virtual double GetBytesPerDocument(Rank rank) const = 0;
 
         // Returns a PackedRowIdSequence structure associated with the
@@ -59,7 +115,17 @@ namespace BitFunnel
         // and fact terms.
         virtual PackedRowIdSequence GetRows(const Term& term) const = 0;
 
-        // Returns the RowId at the specified offset in the TermTable.
-        virtual RowId GetRowId(size_t rowOffset) const = 0;
+        //
+        // Reader methods called by RowIdSequence::const_iterator.
+        //
+
+        // Returns a RowId from the bank of Explicit term rows.
+        virtual RowId GetRowIdExplicit(size_t index) const = 0;
+
+        // Constructs and returns a RowId according to the recipe for Adhoc
+        // terms.
+        virtual RowId GetRowIdAdhoc(Term::Hash hash,
+                                    size_t index,
+                                    size_t variant) const = 0;
     };
 }

@@ -62,8 +62,10 @@ namespace BitFunnel
 #endif
 
 
-    RowId::RowId(const RowId& other)
-        : m_shard(other.m_shard), m_rank(other.m_rank), m_index(other.m_index)
+    RowId::RowId(const RowId& other, RowIndex index)
+      : m_shard(other.m_shard),
+        m_rank(other.m_rank),
+        m_index(static_cast<uint32_t>(other.m_index + index))
     {
     }
 

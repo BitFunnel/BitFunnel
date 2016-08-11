@@ -84,6 +84,8 @@ namespace BitFunnel
         // (note that the entries are sorted in order of decreasing frequency).
         for (auto dfEntry : terms)
         {
+            // TODO: Consider handling disposed terms here.
+
             //std::cout << "Term: ";
             //dfEntry.GetTerm().Print(std::cout);
             //std::cout << "; frequency = " << dfEntry.GetFrequency() << std::endl;
@@ -110,12 +112,30 @@ namespace BitFunnel
         }
 
 
+        // For each (IdfX10, GramSize) pair.
+        for (Term::IdfX10 idf = 0; idf < Term::c_maxIdfX10Value; ++idf)
+        {
+            for (Term::GramSize gramSize = 1; gramSize < Term::c_maxGramSize; ++gramSize)
+            {
+                const Term::Hash hash = 0ull;
+                const Term::StreamId streamId = 0;
+
+                m_termTable.OpenTerm();
+                Term term(hash, streamId, idf, gramSize);
+                auto configuration = treatment.GetTreatment(term);
+                m_termTable.CloseAdhocTerm(idf, gramSize);
+            }
+        }
+
+
         for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
         {
             m_termTable.SetRowCounts(rank,
                                      m_rowAssigners[rank]->GetExplicitRowCount(),
                                      m_rowAssigners[rank]->GetAdhocRowCount());
         }
+
+        m_termTable.Seal();
     }
 
 

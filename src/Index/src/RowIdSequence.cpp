@@ -87,27 +87,27 @@ namespace BitFunnel
             throw error;
         }
 
-        // TODO: implement handling for adhoc
-        // TODO: implement handling for fact
-        return m_termTable.GetRowId(m_rowIdStart + row);
+        if (m_type == PackedRowIdSequence::Type::Explicit)
+        {
+            return m_termTable.GetRowIdExplicit(m_rowIdStart + row);
+        }
+        else if(m_type == PackedRowIdSequence::Type::Adhoc)
+        {
+            // TODO: can hash variant be created here in order to eliminate
+            // third argument.
+            return m_termTable.GetRowIdAdhoc(m_hash,
+                                             m_rowIdStart + row,
+                                             row);
+        }
+        else
+        {
+            // TODO: implement handling for fact
+            NotImplemented error("Fact rows not implemented.");
+            throw error;
+        }
 
-        //// No special clause for ITermTable::Disposed as they return an empty
-        //// PackedTermInfo which does not support enumeration.
-        //if (m_termKind == ITermTable::Adhoc)
-        //{
-        //    // TODO: can hash variant be created here in order to eliminate third argument.
-        //    return m_termTable.GetRowIdAdhoc(m_hash,
-        //                                     m_rowIdStart + row,
-        //                                     row);
-        //}
-        //else if (m_termKind == ITermTable::Fact)
-        //{
-        //    return m_termTable.GetRowIdForFact(m_rowIdStart + row);
-        //}
-        //else
-        //{
-        //    return m_termTable.GetRowId(m_rowIdStart + row);
-        //}
+        // No special clause for ITermTable::Disposed as they return an empty
+        // PackedTermInfo which does not support enumeration.
     }
 
 
@@ -115,5 +115,6 @@ namespace BitFunnel
     {
         m_rowIdStart = packed.GetStart();
         m_rowIdCount = packed.GetEnd() - packed.GetStart();
+        m_type = packed.GetType();
     }
 }

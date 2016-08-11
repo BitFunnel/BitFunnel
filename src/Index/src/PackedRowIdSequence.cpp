@@ -32,6 +32,14 @@ namespace BitFunnel
     // TermTable::PackedRowIdSequence
     //
     //*************************************************************************
+    PackedRowIdSequence::PackedRowIdSequence()
+      : m_start(0ul),
+        m_count(0ul),
+        m_type(static_cast<uint32_t>(Type::Adhoc))
+    {
+    }
+
+
     PackedRowIdSequence::PackedRowIdSequence(RowIndex start,
                                              RowIndex end,
                                              Type type)

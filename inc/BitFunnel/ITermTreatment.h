@@ -23,6 +23,7 @@
 #pragma once
 
 #include <iosfwd>                       // std::ostream parameter.
+#include <iterator>                     // std::iterator base class.
 
 #include "BitFunnel/BitFunnelTypes.h"   // Rank parameter.
 #include "BitFunnel/IInterface.h"       // Inherits from IInterface.

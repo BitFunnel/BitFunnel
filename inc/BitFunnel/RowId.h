@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include <string>
+#include <inttypes.h>                   // For uint32_t.
 
-#include "BitFunnel/BitFunnelTypes.h"  // For Rank, ShardId.
+#include "BitFunnel/BitFunnelTypes.h"   // For Rank, ShardId.
 
 
 namespace BitFunnel
@@ -47,11 +47,9 @@ namespace BitFunnel
         // TODO: Why do we need shard?
         RowId(ShardId shard, Rank rank, RowIndex index);
 
-        // RowId is used as a value type and is often copied. Cannot generate
-        // default copy constructor because of bit fields.
-        // Primary copy scenario is in PlanRow::operator[]. Other usage is
-        // TermAllocator::ExportTermTable.
-        RowId(const RowId& other);
+        // Constructs a new RowId by adding index to the RowIndex of an
+        // existing RowId. Used by the TermTable::Seal().
+        RowId(const RowId& other, RowIndex index);
 
         // Constructs a RowId from a 32-bit packed representation.
         // DESIGN NOTE: The packed representation provides more compact storage
@@ -90,17 +88,17 @@ namespace BitFunnel
                       "Expect m_shard, m_rank, and m_index to use 32 bits.");
 
         // ShardId number.
-        unsigned m_shard: c_log2MaxShardIdValue;
+        uint32_t m_shard: c_log2MaxShardIdValue;
 
         // Rank.
-        unsigned m_rank: c_log2MaxRankValue;
+        uint32_t m_rank: c_log2MaxRankValue;
 
         // Index is the row number within a row table.
         // We are limited to 8M rows because of the 32 bit size of RowId. At
         // 10% bit density that means that bit funnel is limited to 800K
         // postings per document per tier per rank or approximately 100K terms
         // in a document
-        unsigned m_index: c_log2MaxRowIndexValue;
+        uint32_t m_index: c_log2MaxRowIndexValue;
     };
 
     static_assert(sizeof(RowId) == 4,

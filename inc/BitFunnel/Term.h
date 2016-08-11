@@ -51,20 +51,32 @@ namespace BitFunnel
     class Term
     {
     public:
+        // Terms are ngrams (n-word phrases). GramSize is the number of words
+        // in the phrase.
         typedef uint8_t GramSize;
+
+        // Hash of the term's text.
         typedef uint64_t Hash;
+
+        // 10 times an IDF (inverse document frequeny) value. The IDF is
+        // 1/log(f) where f is the fraction of documents in the corpus
+        // containing the term.
         typedef uint8_t IdfX10;
+
+        // Terms come from various streams in documents (e.g. title stream,
+        // body stream, etc.).
         typedef uint8_t StreamId;
 
 
+        // Number of bits required to represent a GramSize.
         static const GramSize c_log2MaxGramSize = 3;
-        static const GramSize c_maxGramSize = 1 << c_log2MaxGramSize;
+        static const GramSize c_maxGramSize = (1 << c_log2MaxGramSize) - 1;
         static const IdfX10 c_maxIdfX10Value = 60;
 
         // TODO: Should terms store IDF values? Why?
         // TODO: Should terms store ngram sizes? Why?
 
-        // Creates a Term for a unigram based on its raw hash
+        // Constructs a Term for a unigram based on its raw hash
         // and classification. Its document frequency provides the term's
         // IdfSum value. The IMetaWordTierHintMap is used to set the term's
         // TierHint value.
@@ -72,21 +84,35 @@ namespace BitFunnel
              StreamId stream,
              IDocumentFrequencyTable const & docFreqTable);
 
+        // Constructs a term from its components. Common use case it to
+        // construct a unigram (GramSize == 1). GramSize parameter exists
+        // for TermTableBuilder scenario where adhoc term prototypes are
+        // enumerated for idf in (0..c_maxIdfValue) and gramSize in
+        // (1..c_maxGramSize).
         Term(Hash rawHash,
              StreamId stream,
-             IdfX10 idf);
+             IdfX10 idf,
+             GramSize = 1);
 
+
+        // Construct a term from data previously persisted to a stream via the
+        // Write() method.
         Term(std::istream& input);
 
+        // Expands this term's ngram by incorporating another term.
+        // Terms must have identical StreamId values. Note that the term hashes
+        // are combined using a technique that is not commutative. Therefore
+        // a.AddTerm(b) will not be equal to b.AddTerm(b). Therefore care must
+        // be taken that phrases are formed the same way during query as they
+        // were formed during document ingestion.
         void AddTerm(Term const & term);
 
         // Equality operator provided for use by unordered_map in Document class.
         bool operator==(const Term& rhs) const;
 
         // Returns the raw hash value for the term. For most terms, the raw
-        // hash is based solely on the term's text. Terms with classification
-        // Click and ClickExperimental also incorporate the stream suffix in
-        // the raw hash value.
+        // hash is based solely on the term's text.
+        // TODO: Explain difference between raw hash and general hash.
         Hash GetRawHash() const;
 
         // Returns the general hash. This is the raw hash combined with the
@@ -96,7 +122,7 @@ namespace BitFunnel
         // Returns the StreamId of this term.
         StreamId GetStream() const;
 
-        // Returns the Gram size of this term (e.g. bigram = 2).
+        // Returns the Gram size of this term (e.g. unigram = 1, bigram = 2, etc.).
         GramSize GetGramSize() const;
 
         // Returns the term's IDF Sum value. IDF stands for inverse document
@@ -116,13 +142,18 @@ namespace BitFunnel
 
         void Print(std::ostream& output) const;
 
+        // Persists the term to a stream in a form that can be read by
+        // Term::Term(std::istream&).
         void Write(std::ostream& output) const;
 
-        // Convert a double precision IDF value to IdfX10
+        // Convert a double precision IDF value to IdfX10.
         static IdfX10 IdfToIdfX10(double idf);
 
+        // Convert an IdfX10 value to frequency.
         static double IdfX10ToFrequency(IdfX10 idf);
 
+        // Convert a frequency at rank 0 to an equivalent frequency at higher
+        // rank.
         static double FrequencyAtRank(double frequency, Rank rank);
 
         // Static method that calculates IDF value from document frequency and

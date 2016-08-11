@@ -29,6 +29,12 @@
 
 namespace BitFunnel
 {
+    // PackedRowIdSequence defines a sequence of consecutive slots in the
+    // TermTable's m_rowIds vector of RowId. Designed to be unpacked and used
+    // by the RowIdSequence class which provides a const_iterator. Class
+    // TermTable stores PackedRowIdSequence values for Explicit Terms in an
+    // std::map. It stores PackedRowIdSequence values for Adhoc Term recipes
+    // and an array.
     class PackedRowIdSequence
     {
     public:
@@ -41,8 +47,14 @@ namespace BitFunnel
             // WARNING: update c_log2MaxTypeValue, c_maxTypeValue when
             // adding new enumeration values to Types.
         };
+
         static const size_t c_log2MaxTypeValue = 2;
         static const Type c_maxTypeValue = Type::Last;
+
+        // Default constructor creates an empty sequence marked as Type::Adhoc.
+        // This constructor is used to initialize the array of Adhoc term
+        // recipes in the TermTable.
+        PackedRowIdSequence();
 
         PackedRowIdSequence(RowIndex start,
                             RowIndex end,

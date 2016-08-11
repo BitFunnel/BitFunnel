@@ -52,19 +52,24 @@ namespace BitFunnel
     TermTable::TermTable()
         : m_explicitRowCounts(c_maxRankValue + 1, 0),
           m_adhocRowCounts(c_maxRankValue + 1, 0),
-          m_factRowCount(0)
+          m_sharedRowCounts(c_maxRankValue + 1, 0),
+          m_factRowCount(0),
+          m_setRowCountsCalled(false),
+          m_sealed(false)
     {
     }
 
 
     void TermTable::OpenTerm()
     {
+        ThrowIfSealed();
         m_start = static_cast<RowIndex>(m_rowIds.size());
     }
 
 
     void TermTable::AddRowId(RowId row)
     {
+        ThrowIfSealed();
         m_rowIds.push_back(row);
     }
 
@@ -72,6 +77,8 @@ namespace BitFunnel
     // TODO: PackedRowIdSequence::Type parameter.
     void TermTable::CloseTerm(Term::Hash hash)
     {
+        ThrowIfSealed();
+
         // Verify that this Term::Hash hasn't been added previously.
         auto it = m_termHashToRows.find(hash);
         if (it != m_termHashToRows.end())
@@ -92,20 +99,67 @@ namespace BitFunnel
     }
 
 
+    void TermTable::CloseAdhocTerm(Term::IdfX10 idf, Term::GramSize gramSize)
+    {
+        ThrowIfSealed();
+
+        if (idf > Term::c_maxIdfX10Value || gramSize > Term::c_maxGramSize)
+        {
+            RecoverableError error("TermTable::CloseAdhocTerm(): parameter value out of range.");
+            throw error;
+        }
+
+        RowIndex end = static_cast<RowIndex>(m_rowIds.size());
+
+        // Use placement new syntax to overwrite exiting PackedRowIdSequence.
+        // This is necessary because the members of PackedRowIdSequence are
+        // const, preventing assignment.
+        new (&m_adhocRows[idf][gramSize])
+            PackedRowIdSequence(m_start, end, PackedRowIdSequence::Type::Adhoc);
+    }
+
+
+
     void TermTable::SetRowCounts(Rank rank,
                                  size_t explicitCount,
                                  size_t adhocCount)
     {
+        ThrowIfSealed();
+
         m_explicitRowCounts[rank] = explicitCount;
         m_adhocRowCounts[rank] = adhocCount;
+        m_sharedRowCounts[rank] = explicitCount + adhocCount;
+    }
+
+
+    void TermTable::Seal()
+    {
+        ThrowIfSealed();
+        m_sealed = true;
+
+        // Convert explicit term RowIds to use absolute RowIndex values
+        // instead of values relative to the end of the block of Adhoc
+
+        // For each explicit term.
+        for (auto rows : m_termHashToRows)
+        {
+            // For each RowId associated with the term.
+            RowIndex start = rows.second.GetStart();
+            RowIndex end = rows.second.GetEnd();
+            for (RowIndex r = start; r < end; ++r)
+            {
+                // Convert RowIndex from relative to absolute.
+                RowId rowId = m_rowIds[r];
+                m_rowIds[r] = RowId(rowId, m_adhocRowCounts[rowId.GetRank()]);
+            }
+        }
     }
 
 
     size_t TermTable::GetTotalRowCount(Rank rank) const
     {
         return
-            m_explicitRowCounts[rank] +
-            m_adhocRowCounts[rank] +
+            m_sharedRowCounts[rank] +
             ((rank == 0) ? m_factRowCount : 0);
     }
 
@@ -119,26 +173,71 @@ namespace BitFunnel
 
     PackedRowIdSequence TermTable::GetRows(const Term& term) const
     {
-        // TODO: Implement adhoc.
         // TODO: Implement facts.
 
         auto it = m_termHashToRows.find(term.GetRawHash());
         if (it != m_termHashToRows.end())
         {
-            // For now, treat all terms as explicit.
             return (*it).second;
         }
         else
         {
-            // For now, if term isn't found, just return and empty row sequence.
-            return PackedRowIdSequence(0, 0, PackedRowIdSequence::Type::Adhoc);
+            // If term isn't found, assume it is adhoc.
+            // Return a PackedRowIdSequence that will be used as a recipe for
+            // generating adhoc term RowIds.
+            return m_adhocRows[term.GetIdfMax()][term.GetGramSize()];
         }
     }
 
 
-    RowId TermTable::GetRowId(size_t rowOffset) const
+    RowId TermTable::GetRowIdExplicit(size_t index) const
     {
         // TODO: Error checking - rowOffset in range?
-        return m_rowIds[rowOffset];
+
+        return m_rowIds[index];
+    }
+
+
+    static uint64_t RotateRight(uint64_t x, uint64_t bits)
+    {
+        // TODO: Investigate `_rotl64` intrinsics; this exists on Windows, but
+        // does not seem to on Clang.
+        return (x >> bits) | (x << (64 - bits));
+    }
+
+
+    RowId TermTable::GetRowIdAdhoc(Term::Hash hash,
+                                   size_t index,
+                                   size_t variant) const
+    {
+        const RowId rowId = m_rowIds[index];
+
+        const ShardId shard = rowId.GetShard();
+        const Rank rank = rowId.GetRank();
+        const RowIndex rowIndex = rowId.GetIndex();
+
+        const size_t sharedRowCount = m_sharedRowCounts[rank];
+
+        // Derive adhoc row index from a combination of the term hash and the
+        // variant. Want to ensure that all rows generated for the same 
+        // (ShardId, Rank) are different.
+        // Rotating by the variant gives a dramatically different number than
+        // the original hash and adding in the variant ensures a different
+        // value even after 64 rotations.
+        hash = RotateRight(hash, variant & 0x3f) + variant;
+
+        // Adhoc rows start at RowIndex 0.
+        return RowId(shard, rank, (hash % sharedRowCount));
+    }
+
+
+    void TermTable::ThrowIfSealed() const
+    {
+        if (m_sealed)
+        {
+            RecoverableError
+                error("TermTable: operation disallowed because TermTable is sealed.");
+            throw error;
+        }
     }
 }
