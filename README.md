@@ -2,8 +2,7 @@
 
 This is an experiment in text search/retrieval. It doesn't work (yet). We're making this available in the spirit of doing development out in the open, but nothing here has been cleaned up for public consumption. The documentation is non-existent and the code is in an incomplete state.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/7366qvv6hc292iwk/branch/master?svg=true)](https://ci.appveyor.com/project/hausdorff/bitfunnel/branch/master)
-
+[![Build status](https://ci.appveyor.com/api/projects/status/b65lb8wn2r7ux7d2/branch/master?svg=true)](https://ci.appveyor.com/project/danluu/bitfunnel/branch/master)
 
 Dependencies
 ------------
