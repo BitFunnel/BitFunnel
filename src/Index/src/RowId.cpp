@@ -61,6 +61,13 @@ namespace BitFunnel
 #pragma clang diagnostic pop
 #endif
 
+    RowId::RowId()
+      : m_shard(0),
+        m_rank(0),
+        m_index(0)
+    {
+    }
+
 
     RowId::RowId(const RowId& other, RowIndex index)
       : m_shard(other.m_shard),

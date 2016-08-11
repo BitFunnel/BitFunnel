@@ -23,6 +23,7 @@
 #pragma once
 
 #include <unordered_map>            // std::unordered_map member.
+#include <array>                    // std::array member.
 #include <vector>                   // std::vector member.
 
 #include "BitFunnel/ITermTable2.h"   // Base class.
@@ -37,6 +38,12 @@ namespace BitFunnel
     {
     public:
         TermTable();
+
+        // Constructs a TermTable from data previously serialized via the
+        // Write() method.
+        TermTable(std::istream& input);
+
+        virtual void Write(std::ostream& output) const override;
 
         virtual void OpenTerm() override;
 
@@ -81,7 +88,19 @@ namespace BitFunnel
         // structure.
         std::unordered_map<Term::Hash, PackedRowIdSequence> m_termHashToRows;
 
-        PackedRowIdSequence m_adhocRows[Term::c_maxIdfX10Value + 1][Term::c_maxGramSize + 1];
+        typedef 
+            std::array<
+                std::array<PackedRowIdSequence,
+                           Term::c_maxGramSize + 1>,
+                Term::c_maxIdfX10Value + 1>
+            AdhocRecipes;
+
+        // Require AdhocRecipes to be trivailly copyable to allow for binary
+        // serialization.
+        static_assert(std::is_trivially_copyable<AdhocRecipes>::value,
+                      "TermTable: AdhocRecipes must be trivially copyable.");
+
+        AdhocRecipes m_adhocRows;
 
         std::vector<RowId> m_rowIds;
 

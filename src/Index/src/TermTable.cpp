@@ -27,8 +27,8 @@
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Utilities/StreamUtilities.h"
 #include "TermTable.h"
-
 
 
 namespace BitFunnel
@@ -59,6 +59,50 @@ namespace BitFunnel
     {
     }
 
+    TermTable::TermTable(std::istream& input)
+      : m_setRowCountsCalled(true),
+        m_sealed(true),
+        m_start(0)
+    {
+        size_t count = StreamUtilities::ReadField<size_t>(input);
+        for (size_t i = 0; i < count; ++i)
+        {
+            const Term::Hash hash = StreamUtilities::ReadField<Term::Hash>(input);
+            const PackedRowIdSequence rows = StreamUtilities::ReadField<PackedRowIdSequence>(input);
+
+            m_termHashToRows.insert(std::make_pair(hash, rows));
+        }
+
+        m_adhocRows = StreamUtilities::ReadField<AdhocRecipes>(input);
+        m_rowIds = StreamUtilities::ReadVector<RowId>(input);
+        m_explicitRowCounts = StreamUtilities::ReadVector<RowIndex>(input);
+        m_adhocRowCounts = StreamUtilities::ReadVector<RowIndex>(input);
+        m_sharedRowCounts = StreamUtilities::ReadVector<RowIndex>(input);
+        m_factRowCount = StreamUtilities::ReadField<RowIndex>(input);
+    }
+
+
+    void TermTable::Write(std::ostream& output) const
+    {
+        StreamUtilities::WriteField<size_t>(output, m_termHashToRows.size());
+        for (auto entry : m_termHashToRows)
+        {
+            const Term::Hash hash = entry.first;
+            const PackedRowIdSequence rows = entry.second;
+
+            StreamUtilities::WriteField<Term::Hash>(output, hash);
+            StreamUtilities::WriteField<PackedRowIdSequence>(output, rows);
+        }
+
+        StreamUtilities::WriteField<AdhocRecipes>(output, m_adhocRows);
+        StreamUtilities::WriteVector(output, m_rowIds);
+        StreamUtilities::WriteVector(output, m_explicitRowCounts);
+        StreamUtilities::WriteVector(output, m_adhocRowCounts);
+        StreamUtilities::WriteVector(output, m_sharedRowCounts);
+        StreamUtilities::WriteField<RowIndex>(output, m_factRowCount);
+    }
+
+    static_assert(std::is_trivially_copyable<std::array<std::array<PackedRowIdSequence, 10>, 10>>::value, "foo");
 
     void TermTable::OpenTerm()
     {

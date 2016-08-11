@@ -20,8 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 #pragma once
+
+#include <iosfwd>                           // std::ostream parameter.
 
 #include "BitFunnel/IInterface.h"           // Base class.
 #include "BitFunnel/PackedRowIdSequence.h"  // RowId parameter.
@@ -114,6 +115,9 @@ namespace BitFunnel
         // by RowIdSequence to implement RowId enumeration for regular, adhoc
         // and fact terms.
         virtual PackedRowIdSequence GetRows(const Term& term) const = 0;
+
+        // Writes the contents of the ITermTable2 to a stream.
+        virtual void Write(std::ostream& output) const = 0;
 
         //
         // Reader methods called by RowIdSequence::const_iterator.

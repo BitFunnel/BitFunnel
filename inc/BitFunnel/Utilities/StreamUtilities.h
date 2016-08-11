@@ -27,6 +27,7 @@
 #include <istream>  // Used in template definition.
 #include <ostream>  // Used in template definition.
 #include <string>   // std::string parameter.
+#include <vector>   // std::vector parameter.
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Utilities/IInputStream.h"
@@ -41,7 +42,7 @@ namespace BitFunnel
     namespace StreamUtilities
     {
         //
-        // Methods for reading from an input stream.
+        // Methods for reading from an IInputStream.
         //
 
         // Reads a specified number of bytes from stream into buffer.
@@ -82,6 +83,10 @@ namespace BitFunnel
         template <typename T>
         void ReadArray(std::istream& stream, T* buffer, size_t itemCount);
 
+        // Read an std::vector<T> from stream.
+        template <typename T>
+        std::vector<T> ReadVector(std::istream& stream);
+
 
         //
         // Methods for writing to an output stream.
@@ -103,6 +108,10 @@ namespace BitFunnel
         // Writes an array of T to stream.
         template <typename T>
         void WriteArray(std::ostream& stream, const T* buffer, size_t itemCount);
+
+        // Writes an std::vector<T> to stream.
+        template <typename T>
+        void WriteVector(std::ostream& stream, std::vector<T> const & vector);
 
         // The chunk size in bytes to read from istream or write to ostream.
         // The reasons are:
@@ -181,6 +190,16 @@ namespace BitFunnel
     }
 
 
+    template <typename T>
+    std::vector<T> StreamUtilities::ReadVector(std::istream& stream)
+    {
+        size_t count = ReadField<size_t>(stream);
+        std::vector<T> vector(count);
+        ReadArray(stream, vector.data(), count);
+        return vector;
+    }
+
+
     //
     // Implementations for methods for writing to an output stream.
     //
@@ -206,5 +225,14 @@ namespace BitFunnel
     {
         WriteBytes(stream, reinterpret_cast<const char*>(buffer),
                    itemCount * sizeof(T));
+    }
+
+
+    template <typename T>
+    void StreamUtilities::WriteVector(std::ostream& stream,
+                                      std::vector<T> const & vector)
+    {
+        WriteField<size_t>(stream, vector.size());
+        WriteArray(stream, vector.data(), vector.size());
     }
 }

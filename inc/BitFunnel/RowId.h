@@ -43,6 +43,11 @@ namespace BitFunnel
     class RowId
     {
     public:
+        // Constructs a RowId with shard, rank, and index initialized to 0.
+        // Default constructor used to initialized std::vector in
+        // StreamUtilities::ReadVector().
+        RowId();
+
         // Constructor for primary use case.
         // TODO: Replace size_t with ShardID, Rank, RowIndex.
         // TODO: Why do we need shard?
