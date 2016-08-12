@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
 
 #include <chrono>
 
@@ -45,7 +44,7 @@ namespace BitFunnel
 
     double Stopwatch::ElapsedTime() const
     {
-        return 
+        return
             duration_cast<duration<double>>(
                 high_resolution_clock::now() - m_start).count();
     };
