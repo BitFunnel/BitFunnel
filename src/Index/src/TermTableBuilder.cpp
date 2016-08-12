@@ -126,7 +126,8 @@ namespace BitFunnel
 
                 m_termTable.OpenTerm();
                 Term term(hash, streamId, idf, gramSize);
-                auto configuration = treatment.GetTreatment(term);
+                // TODO: this function is wrong. Need to fix.
+                // auto configuration = treatment.GetTreatment(term);
                 m_termTable.CloseAdhocTerm(idf, gramSize);
             }
         }

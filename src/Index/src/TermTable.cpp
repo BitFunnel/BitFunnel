@@ -50,17 +50,17 @@ namespace BitFunnel
     //
     //*************************************************************************
     TermTable::TermTable()
-        : m_explicitRowCounts(c_maxRankValue + 1, 0),
+        : /*m_setRowCountsCalled(false),*/
+          m_sealed(false),
+          m_explicitRowCounts(c_maxRankValue + 1, 0),
           m_adhocRowCounts(c_maxRankValue + 1, 0),
           m_sharedRowCounts(c_maxRankValue + 1, 0),
-          m_factRowCount(0),
-          m_setRowCountsCalled(false),
-          m_sealed(false)
+          m_factRowCount(0)
     {
     }
 
     TermTable::TermTable(std::istream& input)
-      : m_setRowCountsCalled(true),
+        : /*m_setRowCountsCalled(true),*/
         m_sealed(true),
         m_start(0)
     {
@@ -254,12 +254,11 @@ namespace BitFunnel
 
         const ShardId shard = rowId.GetShard();
         const Rank rank = rowId.GetRank();
-        const RowIndex rowIndex = rowId.GetIndex();
 
         const size_t sharedRowCount = m_sharedRowCounts[rank];
 
         // Derive adhoc row index from a combination of the term hash and the
-        // variant. Want to ensure that all rows generated for the same 
+        // variant. Want to ensure that all rows generated for the same
         // (ShardId, Rank) are different.
         // Rotating by the variant gives a dramatically different number than
         // the original hash and adding in the variant ensures a different

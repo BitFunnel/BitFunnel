@@ -76,7 +76,8 @@ namespace BitFunnel
     private:
         void ThrowIfSealed() const;
 
-        bool m_setRowCountsCalled;
+        // TODO: this should actually be used.
+        // bool m_setRowCountsCalled;
         bool m_sealed;
 
         RowIndex m_start;
@@ -88,7 +89,7 @@ namespace BitFunnel
         // structure.
         std::unordered_map<Term::Hash, PackedRowIdSequence> m_termHashToRows;
 
-        typedef 
+        typedef
             std::array<
                 std::array<PackedRowIdSequence,
                            Term::c_maxGramSize + 1>,
