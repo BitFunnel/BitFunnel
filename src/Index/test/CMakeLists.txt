@@ -5,6 +5,7 @@ set(CPPFILES
     ChunkTaskProcessorTest.cpp
     DocTableDescriptorTest.cpp
     DocumentDataSchemaTest.cpp
+    DocumentFrequencyTableTest.cpp
     DocumentHandleTest.cpp
     DocumentLengthHistogramTest.cpp
     IndexUtilsTest.cpp

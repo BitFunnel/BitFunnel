@@ -25,6 +25,7 @@
 #include <utility>
 #include <vector>
 
+#include "DocumentFrequencyTable.h"
 #include "DocumentFrequencyTableBuilder.h"
 #include "IndexedIdfTable.h"
 
@@ -46,19 +47,7 @@ namespace BitFunnel
     // Write out sorted truncated list, sorted by count (TODO: frequency).
     void DocumentFrequencyTableBuilder::WriteFrequencies(std::ostream& output, double truncateBelowFrequency) const
     {
-        typedef std::pair<Term, double> Entry;
-
-        struct
-        {
-            bool operator() (Entry a, Entry b)
-            {
-                // Sorts by decreasing frequency.
-                return a.second > b.second;
-            }
-        } compare;
-
-        // Storage for sorted entries.
-        std::vector<Entry> entries;
+        DocumentFrequencyTable table;
 
         // For each term count record, compute the document frequency then
         // add to entries if frequency is above threshold.
@@ -67,25 +56,11 @@ namespace BitFunnel
             double frequency = static_cast<double>(entry.second) / m_cumulativeTermCounts.size();
             if (frequency >= truncateBelowFrequency)
             {
-                entries.push_back(std::make_pair(entry.first, frequency));
+                table.AddEntry(DocumentFrequencyTable::Entry(entry.first, frequency));
             }
         }
 
-        // Sort document frequency records by decreasing frequency.
-        std::sort(entries.begin(), entries.end(), compare);
-
-        // Write sorted list to stream.
-        for (auto const & entry : entries)
-        {
-            output << std::hex << entry.first.GetRawHash()
-                   << ","
-                   << std::dec << static_cast<unsigned>(entry.first.GetGramSize())
-                   << ","
-                   << static_cast<unsigned>(entry.first.GetStream())
-                   << ","
-                   << entry.second
-                   << std::endl;
-        }
+        table.Write(output, nullptr);
     }
 
 

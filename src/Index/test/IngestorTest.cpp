@@ -318,6 +318,8 @@ namespace BitFunnel
             std::stringstream stream;
             index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream);
 
+            std::cout << stream.str() << std::endl;
+
             DocumentFrequencyTable table(stream);
 
             EXPECT_EQ(table.size(), 6u);

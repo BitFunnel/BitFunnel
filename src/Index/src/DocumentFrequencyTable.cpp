@@ -20,11 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <cctype>                           // For isspace.
+#include <algorithm>    // std::sort()
+#include <cctype>       // For isspace.
 #include <istream>
 
-#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Index/ITermToText.h"
+#include "CsvTsv/Csv.h"
 #include "DocumentFrequencyTable.h"
 
 
@@ -49,53 +52,61 @@ namespace BitFunnel
     // DocumentFrequencyTable
     //
     //*************************************************************************
-    static void SkipWhitespace(std::istream& input)
+    DocumentFrequencyTable::DocumentFrequencyTable()
     {
-        while(std::isspace(input.peek()))
-        {
-            input.get();
-        }
-    }
-
-
-    static void Consume(std::istream& input, char expected)
-    {
-        char c;
-        input >> c;
-        if (c != expected)
-        {
-            FatalError error("DocumentFrequencyTable: bad input format.");
-            throw error;
-        }
     }
 
 
     DocumentFrequencyTable::DocumentFrequencyTable(std::istream& input)
     {
-        while (input.peek() != EOF)
+        //
+        // Read sorted entries from stream.
+        //
+
+        CsvTsv::CsvTableParser parser(input);
+        CsvTsv::TableReader reader(parser);
+
+        CsvTsv::InputColumn<Term::Hash> hash(
+            "hash",
+            "Term's raw hash.");
+        hash.SetHexMode(true);
+
+        // NOTE: Cannot use OutputColumn<Term::GramSize> because OutputColumn
+        // does not implement a specialization for char.
+        CsvTsv::InputColumn<unsigned> gramSize(
+            "gramSize",
+            "Term's gram size.");
+
+        // NOTE: Cannot use OutputColumn<Term::StreamId> because OutputColumn
+        // does not implement a specialization for char.
+        CsvTsv::InputColumn<unsigned> streamId(
+            "streamId",
+            "Term's stream id.");
+
+        CsvTsv::InputColumn<double> frequency(
+            "frequency",
+            "Term's frequency.");
+
+        CsvTsv::InputColumn<std::string> text(
+            "text",
+            "Term's text.");
+
+        reader.DefineColumn(hash);
+        reader.DefineColumn(gramSize);
+        reader.DefineColumn(streamId);
+        reader.DefineColumn(frequency);
+        reader.DefineColumn(text);
+
+        reader.ReadPrologue();
+
+        while (!reader.AtEOF())
         {
-            unsigned temp;
+            reader.ReadDataRow();
 
-            Term::Hash rawHash;
-            input >> std::hex >> rawHash;
-            Consume(input, ',');
-
-            Term::GramSize gramSize;
-            input >> std::dec >> temp;
-            gramSize = static_cast<Term::GramSize>(temp);
-            Consume(input, ',');
-
-            Term::StreamId streamId;
-            input >> std::dec >> temp;
-            streamId = static_cast<Term::StreamId>(temp);
-
-            Consume(input, ',');
-
-            double frequency;
-            input >> frequency;
-
-            const Term::IdfX10 maxIdf = 60;
-            Term t(rawHash, streamId, Term::ComputeIdfX10(frequency, maxIdf));
+            Term term(hash,
+                      static_cast<Term::StreamId>(streamId),
+                      Term::ComputeIdfX10(frequency, Term::c_maxIdfX10Value),
+                      static_cast<Term::GramSize>(gramSize));
 
             if (m_entries.size() > 0 && m_entries.back().GetFrequency() < frequency)
             {
@@ -104,12 +115,101 @@ namespace BitFunnel
                 throw error;
             }
 
-            m_entries.push_back(Entry(t, frequency));
-
-            // Need to delete whitespace so that peeking for EOF doesn't get a
-            // '\n'.
-            SkipWhitespace(input);
+            m_entries.push_back(Entry(term, frequency));
         }
+
+        // TODO: Seems like this would read past EOF.
+        reader.ReadEpilogue();
+    }
+
+
+    void DocumentFrequencyTable::Write(std::ostream & output,
+                                       ITermToText const * termToText)
+    {
+        //
+        // Sort entries by descending frequency.
+        //
+
+        struct
+        {
+            bool operator() (Entry a, Entry b)
+            {
+                // Sorts by decreasing frequency.
+                return a.GetFrequency() > b.GetFrequency();
+            }
+        } compare;
+
+        // Sort document frequency records by decreasing frequency.
+        std::sort(m_entries.begin(), m_entries.end(), compare);
+
+
+        //
+        // Write sorted entries to stream.
+        //
+
+        CsvTsv::CsvTableFormatter formatter(output);
+        CsvTsv::TableWriter writer(formatter);
+
+        CsvTsv::OutputColumn<Term::Hash> hash(
+            "hash",
+            "Term's raw hash.");
+        hash.SetHexMode(true);
+
+        // NOTE: Cannot use OutputColumn<Term::GramSize> because OutputColumn
+        // does not implement a specialization for char.
+        CsvTsv::OutputColumn<unsigned> gramSize(
+            "gramSize",
+            "Term's gram size.");
+
+        // NOTE: Cannot use OutputColumn<Term::StreamId> because OutputColumn
+        // does not implement a specialization for char.
+        CsvTsv::OutputColumn<unsigned> streamId(
+            "streamId",
+            "Term's stream id.");
+
+        CsvTsv::OutputColumn<double> frequency(
+            "frequency",
+            "Term's frequency.");
+
+        CsvTsv::OutputColumn<std::string> text(
+            "text",
+            "Term's text.");
+
+        writer.DefineColumn(hash);
+        writer.DefineColumn(gramSize);
+        writer.DefineColumn(streamId);
+        writer.DefineColumn(frequency);
+        writer.DefineColumn(text);
+
+        writer.WritePrologue();
+
+        for (auto & entry : m_entries)
+        {
+            Term const & term = entry.GetTerm();
+            hash = term.GetRawHash();
+            gramSize = term.GetGramSize();
+            streamId = term.GetStream();
+            frequency = entry.GetFrequency();
+
+            if (termToText != nullptr)
+            {
+                text = termToText->Lookup(term.GetRawHash());
+            }
+            else
+            {
+                text = std::string("");
+            }
+
+            writer.WriteDataRow();
+        }
+
+        writer.WriteEpilogue();
+    }
+
+
+    void DocumentFrequencyTable::AddEntry(Entry const & entry)
+    {
+        m_entries.push_back(entry);
     }
 
 

@@ -22,12 +22,13 @@
 
 #pragma once
 
-#include <iosfwd>           // std::istream parameter.
-#include <memory>           // std::unique_ptr
-#include <string>           // std::string template parameter.
-#include <unordered_map>    // std::unordered_map embedded.
+#include <iosfwd>                           // std::istream parameter.
+#include <memory>                           // std::unique_ptr
+#include <string>                           // std::string template parameter.
+#include <unordered_map>                    // std::unordered_map embedded.
 
-#include "BitFunnel/Term.h" // Term::Hash parameter.
+#include "BitFunnel/Index/ITermToText.h"    // Base class.
+#include "BitFunnel/Term.h"                 // Term::Hash parameter.
 
 
 namespace BitFunnel
@@ -41,7 +42,7 @@ namespace BitFunnel
     // structures.
     //
     //*************************************************************************
-    class TermToText
+    class TermToText : public ITermToText
     {
     public:
         // Constructs an empty map. New (Term::Hash, std::string) pairs can
@@ -65,7 +66,7 @@ namespace BitFunnel
 
         // Returns the text for a particular Term::Hash, if that hash is in the
         // map. Otherwise returns an empty string.
-        std::string const & Lookup(Term::Hash hash);
+        virtual std::string const & Lookup(Term::Hash hash) const override;
 
     private:
         // Empty string returned by Lookup() when hash is not in the map.

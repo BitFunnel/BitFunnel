@@ -83,7 +83,7 @@ namespace BitFunnel
         {
             // For this test, configurations will be indexed by the Term::Hash
             // values which we expect will be presented to the TermTableBuilder
-            // in increasing order from 0 to ??.
+            // in increasing order from 0 to 6.
 
             // Therefore we add RowConfigurations() in the order that we expect
             // they will be used by the TermTableBuilder. Each RowConfiguration
@@ -92,26 +92,34 @@ namespace BitFunnel
             //
             // Construct DocumentFrequencyTable
             //
-            std::stringstream input;
-            input <<                  // Rank:RowIndex
-                "0,1,1,.9\n"          // 0:0
-                "1,1,1,.7\n"          // 0:1
-                "2,1,1,.07\n"         // 0:2
-                "3,1,1,.05\n"         // 0:3
-                "4,1,1,.02\n"         // 0:2
-                "5,1,1,.0099\n"       // 0:2, 0:3
-                "6,1,1,.0098\n"       // 0:3, 4:0
-                "";
+            m_documentFrequencyTable.reset(new DocumentFrequencyTable());
 
-            m_documentFrequencyTable.reset(new DocumentFrequencyTable(input));
+            // Expect Rank:0, RowIndex: 0
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(0, 1, 1, 1), 0.9));
+
+            // Expect Rank:0, RowIndex: 1
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(1, 1, 1, 1), 0.7));
+
+            // Expect Rank:0, RowIndex: 2
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(2, 1, 1, 1), 0.07));
+
+            // Expect Rank:0, RowIndex: 3
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(3, 1, 1, 1), 0.05));
+
+            // Expect Rank:0, RowIndex: 2
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(4, 1, 1, 1), 0.02));
+
+            // Expect Rank:0, RowIndex: 2 and Rank: 0, RowIndex: 3
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(5, 1, 1, 1), 0.0099));
+
+            // Expect Rank:0, RowIndex: 3 and Rank: 4, RowIndex: 0
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(6, 1, 1, 1), 0.0098));
+
 
             //
-            // Construct TermTreatment data.
+            // Construct TermTreatment and TermTable.
             //
 
-            //
-            // Construct expected TermTable.
-            //
             std::vector<RowIndex> rows;
             for (Rank r = 0; r <= c_maxRankValue; ++r)
             {

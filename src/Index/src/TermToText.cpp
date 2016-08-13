@@ -99,7 +99,7 @@ namespace BitFunnel
     }
 
 
-    std::string const & TermToText::Lookup(Term::Hash hash)
+    std::string const & TermToText::Lookup(Term::Hash hash) const
     {
         auto it = m_termToText.find(hash);
         if (it == m_termToText.end())
@@ -108,7 +108,6 @@ namespace BitFunnel
         }
         else
         {
-            //return (*it).second.get();
             return (*it).second;
         }
     }
