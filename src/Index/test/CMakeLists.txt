@@ -14,6 +14,7 @@ set(CPPFILES
     ShardTest.cpp
     SliceTest.cpp
     TermTableBuilderTest.cpp
+    TermToTextTest.cpp
     TrackingSliceBufferAllocator.cpp
 )
 

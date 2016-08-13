@@ -57,6 +57,8 @@ namespace BitFunnel
         virtual void CloseStream() = 0;
 
         // CloseDocument() should be called once all terms have been added.
+        // Parameter indicates the number of bytes in the source representation
+        // of the document. Used to compute ingestion date (bytes/second).
         virtual void CloseDocument(size_t sourceByteSize) = 0;
     };
 }

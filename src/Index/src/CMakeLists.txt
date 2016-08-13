@@ -33,6 +33,7 @@ set(CPPFILES
     TermTable.cpp
     TermTableBuilder.cpp
     TermTableHelpers.cpp
+    TermToText.cpp
     TermTreatments.cpp
 )
 
