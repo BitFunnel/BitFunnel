@@ -22,49 +22,15 @@
 
 #pragma once
 
-#include <vector>                       // std::vector return value.
-
 #include "BitFunnel/IInterface.h"       // Base class.
-#include "BitFunnel/Term.h"             // Term member.
+#include "BitFunnel/Term.h"             // Term::Hash parameter..
 
 
 namespace BitFunnel
 {
-    class IDocumentFrequencyTable : public IInterface
+    class IIndexedIdfTable : public IInterface
     {
     public:
-        class Entry;
-
-        // Returns the entry corresponding a specific index.
-        virtual Entry const & operator[](size_t index) const = 0;
-
-        virtual std::vector<Entry>::const_iterator begin() const = 0;
-        virtual std::vector<Entry>::const_iterator end() const = 0;
-
-        virtual size_t size() const = 0;
-
-        class Entry
-        {
-        public:
-            Entry(Term term, double frequency)
-              : m_term(term),
-                m_frequency(frequency)
-            {
-            }
-
-            Term GetTerm() const
-            {
-                return m_term;
-            }
-
-            double GetFrequency() const
-            {
-                return m_frequency;
-            }
-
-        private:
-            Term m_term;
-            double m_frequency;
-        };
+        virtual Term::IdfX10 GetIdf(Term::Hash) const = 0; 
     };
 }

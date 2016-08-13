@@ -51,6 +51,7 @@ namespace BitFunnel
           m_docFreqTable(new ParameterizedFile1(indexDirectory, "DocFreqTable", ".csv")),
           m_documentLengthHistogram(new ParameterizedFile0(intermediateDirectory,
                                                            "DocumentLengthHistogram",".csv" )),
+          m_indexedIdfTable(new ParameterizedFile1(indexDirectory, "IndexedIdfTable", ".bin")),
           m_termTable(new ParameterizedFile1(indexDirectory, "TermTable", ".bin"))
         //m_docTable(new ParameterizedFile1(indexDirectory, "DocTable", ".bin")),
         //m_indexSlice(new ParameterizedFile2(backupDirectory, "IndexSlice", ".bin"))
@@ -73,6 +74,12 @@ namespace BitFunnel
     FileDescriptor1 FileManager::DocFreqTable(size_t shard)
     {
         return FileDescriptor1(*m_docFreqTable, shard);
+    }
+
+
+    FileDescriptor1 FileManager::IndexedIdfTable(size_t shard)
+    {
+        return FileDescriptor1(*m_indexedIdfTable, shard);
     }
 
 

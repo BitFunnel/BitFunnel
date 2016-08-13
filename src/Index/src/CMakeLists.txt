@@ -15,6 +15,7 @@ set(CPPFILES
     DocumentLengthHistogram.cpp
     DocumentMap.cpp
     FactSetBase.cpp
+    IndexedIdfTable.cpp
     IngestChunks.cpp
     Ingestor.cpp
     PackedRowIdSequence.cpp
@@ -56,6 +57,7 @@ set(PRIVATE_HFILES
     DocumentLengthHistogram.h
     DocumentMap.h
     FactSetBase.h
+    IndexedIdfTable.h
     Ingestor.h
     IRecyclable.h
     IRecycler.h

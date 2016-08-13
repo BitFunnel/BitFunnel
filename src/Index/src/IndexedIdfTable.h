@@ -22,49 +22,31 @@
 
 #pragma once
 
-#include <vector>                       // std::vector return value.
+#include <iosfwd>                               // std::istream parameter.
+#include <unordered_map>                        // Embedded.
 
-#include "BitFunnel/IInterface.h"       // Base class.
-#include "BitFunnel/Term.h"             // Term member.
+#include "BitFunnel/Index/IIndexedIdfTable.h"   // Base class.
 
 
 namespace BitFunnel
 {
-    class IDocumentFrequencyTable : public IInterface
+    class IndexedIdfTable : public IIndexedIdfTable
     {
     public:
-        class Entry;
+        IndexedIdfTable(std::istream& input, Term::IdfX10 defaultIdf);
 
-        // Returns the entry corresponding a specific index.
-        virtual Entry const & operator[](size_t index) const = 0;
+        static void WriteHeader(std::ostream& output, size_t entryCount);
+        static void WriteEntry(std::ostream& output, Term::Hash hash, Term::IdfX10 idf);
 
-        virtual std::vector<Entry>::const_iterator begin() const = 0;
-        virtual std::vector<Entry>::const_iterator end() const = 0;
+        //
+        // IIndexedIdfTable methods.
+        //
+        virtual Term::IdfX10 GetIdf(Term::Hash hash) const override;
 
-        virtual size_t size() const = 0;
+    private:
+        Term::IdfX10 m_defaultIdf;
 
-        class Entry
-        {
-        public:
-            Entry(Term term, double frequency)
-              : m_term(term),
-                m_frequency(frequency)
-            {
-            }
-
-            Term GetTerm() const
-            {
-                return m_term;
-            }
-
-            double GetFrequency() const
-            {
-                return m_frequency;
-            }
-
-        private:
-            Term m_term;
-            double m_frequency;
-        };
+        typedef std::unordered_map<Term::Hash, Term::IdfX10> TermToIdfX10;
+        TermToIdfX10 m_terms;
     };
 }

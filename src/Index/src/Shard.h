@@ -22,14 +22,11 @@
 
 #pragma once
 
-//#include <iosfwd>
+
 #include <memory>                               // std::unique_ptr member.
 #include <mutex>                                // std::mutex member.
 #include <ostream>                              // TODO: Remove this temporary include.
 #include <vector>
-//
-//#include "BitFunnel/Internal/IShardIndex.h"  // Inherits from IShardIndex.
-//#include "BitFunnel/RowId.h"                 // Embeds RowId.
 
 #include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/Term.h"
@@ -82,6 +79,7 @@ namespace BitFunnel
         void TemporaryAddPosting(Term const & term, DocIndex index);
         void TemporaryRecordDocument();
         void TemporaryWriteDocumentFrequencyTable(std::ostream& out) const;
+        void TemporaryWriteIndexedIdfTable(std::ostream& out) const;
         void TemporaryWriteCumulativeTermCounts(std::ostream& out) const;
 
 
