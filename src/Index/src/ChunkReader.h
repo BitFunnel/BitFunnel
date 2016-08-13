@@ -49,7 +49,7 @@ namespace BitFunnel
             virtual void OnStreamEnter(Term::StreamId id) = 0;
             virtual void OnTerm(char const * term) = 0;
             virtual void OnStreamExit() = 0;
-            virtual void OnDocumentExit() = 0;
+            virtual void OnDocumentExit(size_t bytesRead) = 0;
             virtual void OnFileExit() = 0;
         };
 

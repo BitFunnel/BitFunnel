@@ -89,7 +89,7 @@ namespace BitFunnel
             }
 
 
-            void OnDocumentExit() override
+            void OnDocumentExit(size_t /*sourceByteSize*/) override
             {
                 m_trace << "OnDocumentExit" << std::endl;
             }

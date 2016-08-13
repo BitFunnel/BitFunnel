@@ -63,7 +63,7 @@ namespace BitFunnel
         virtual void OnStreamEnter(Term::StreamId id) override;
         virtual void OnTerm(char const * term) override;
         virtual void OnStreamExit() override;
-        virtual void OnDocumentExit() override;
+        virtual void OnDocumentExit(size_t bytesRead) override;
         virtual void OnFileExit() override;
 
     private:

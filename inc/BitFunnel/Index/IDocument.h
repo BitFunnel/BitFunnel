@@ -37,6 +37,10 @@ namespace BitFunnel
         // will hold the document.
         virtual size_t GetPostingCount() const = 0;
 
+        // Returns the number of bytes of the source representation of this
+        // document. Used to compute ingestion rate (bytes/second) statistic.
+        virtual size_t GetSourceByteSize() const = 0;
+
         // Ingests the contents of this document into the index at via
         // the supplied DocumentHandle.
         virtual void Ingest(DocumentHandle handle) const = 0;
@@ -51,5 +55,8 @@ namespace BitFunnel
 
         // Closes the current stream.
         virtual void CloseStream() = 0;
+
+        // CloseDocument() should be called once all terms have been added.
+        virtual void CloseDocument(size_t sourceByteSize) = 0;
     };
 }

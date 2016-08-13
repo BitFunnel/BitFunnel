@@ -53,6 +53,7 @@ namespace BitFunnel
 
     void ChunkReader::ProcessDocument()
     {
+        char const * start = m_next;
         uint64_t id = GetDocId();
         m_processor.OnDocumentEnter(id);
         while (PeekChar() != 0) {
@@ -61,7 +62,7 @@ namespace BitFunnel
 
         Consume(0);
 
-        m_processor.OnDocumentExit();
+        m_processor.OnDocumentExit(m_next - start);
     }
 
 

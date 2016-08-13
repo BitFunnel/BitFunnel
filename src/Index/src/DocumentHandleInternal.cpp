@@ -108,16 +108,16 @@ namespace BitFunnel
         m_slice->GetShard().TemporaryAddPosting(term, m_index);
 
 #ifndef HORRIBLE_HACK_DONT_CHECK_IN
-        ITermTable const & termTable = m_slice->GetShard().GetTermTable();
-        TermInfo termInfo(term, termTable);
-        while (termInfo.MoveNext())
-        {
-            const RowId row = termInfo.Current();
-            m_slice->GetRowTable(row.GetRank()).
-                SetBit(m_slice->GetSliceBuffer(),
-                       row.GetIndex(),
-                       m_index);
-        }
+        //ITermTable const & termTable = m_slice->GetShard().GetTermTable();
+        //TermInfo termInfo(term, termTable);
+        //while (termInfo.MoveNext())
+        //{
+        //    const RowId row = termInfo.Current();
+        //    m_slice->GetRowTable(row.GetRank()).
+        //        SetBit(m_slice->GetSliceBuffer(),
+        //               row.GetIndex(),
+        //               m_index);
+        //}
 #endif
     }
 

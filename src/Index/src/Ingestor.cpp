@@ -65,6 +65,7 @@ namespace BitFunnel
           m_recycler(recycler),
           m_shardDefinition(shardDefinition),
           m_documentCount(0),   // TODO: This member is now redundant (with m_documentMap).
+          m_totalSourceByteSize(0),
           m_documentMap(new DocumentMap()),
           m_tokenManager(Factories::CreateTokenManager()),
           m_sliceBufferAllocator(sliceBufferAllocator)
@@ -88,8 +89,13 @@ namespace BitFunnel
     {
         std::cout << "Shard count:" << m_shards.size() << std::endl;
         std::cout << "Document count: " << m_documentCount << std::endl;
+        std::cout
+            << "Bytes/Document: "
+            << static_cast<double>(m_totalSourceByteSize) / m_documentCount
+            << std::endl;
+        std::cout << "Total bytes read: " << m_totalSourceByteSize << std::endl;
         std::cout << "Posting count: " << m_histogram.GetPostingCount() << std::endl;
-        // TODO: print out term count?
+        // TODO: print out term count? Not sure how to do this since they are spread across shards.
     }
 
 
@@ -121,6 +127,7 @@ namespace BitFunnel
     void Ingestor::Add(DocId id, IDocument const & document)
     {
         ++m_documentCount;
+        m_totalSourceByteSize += document.GetSourceByteSize();
 
         // Add postingCount to the DocumentLengthHistogram
         m_histogram.AddDocument(document.GetPostingCount());
@@ -233,6 +240,12 @@ namespace BitFunnel
     size_t Ingestor::GetUsedCapacityInBytes() const
     {
         throw NotImplemented();
+    }
+
+
+    size_t Ingestor::GetTotalSouceBytesIngested() const
+    {
+        return m_totalSourceByteSize;
     }
 
 

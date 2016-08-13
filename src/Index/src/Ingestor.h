@@ -100,6 +100,10 @@ namespace BitFunnel
         // entire ingestion index.
         virtual size_t GetUsedCapacityInBytes() const override;
 
+        // Returns the total number of bytes in the source representation of
+        // all IDocuments ingested so far.
+        virtual size_t GetTotalSouceBytesIngested() const override;
+
         // Returns a number of Shards and a Shard with the given ShardId.
         virtual size_t GetShardCount() const override;
         virtual Shard& GetShard(size_t shard) const override;
@@ -144,6 +148,7 @@ namespace BitFunnel
         // the size of the unordered_map in m_documentMap. The reason
         // is that documents may have been deleted.
         std::atomic<size_t> m_documentCount;
+        std::atomic<size_t> m_totalSourceByteSize;
 
         std::unique_ptr<DocumentMap> m_documentMap;
 

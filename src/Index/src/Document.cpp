@@ -36,6 +36,7 @@ namespace BitFunnel
         : m_docId(id),
           m_maxGramSize(config.GetMaxGramSize()),
           m_docFreqTable(config.GetDocumentFrequencyTable()),
+          m_sourceByteSize(0),
           m_streamIsOpen(false)
     {
     }
@@ -50,6 +51,12 @@ namespace BitFunnel
     size_t Document::GetPostingCount() const
     {
         return m_postings.size();
+    }
+
+
+    size_t Document::GetSourceByteSize() const
+    {
+        return m_sourceByteSize;
     }
 
 
@@ -118,6 +125,12 @@ namespace BitFunnel
             // Process ngrams at end of document.
             PurgeRingBuffer();
         }
+    }
+
+
+    void Document::CloseDocument(size_t sourceByteSize)
+    {
+        m_sourceByteSize = sourceByteSize;
     }
 
 

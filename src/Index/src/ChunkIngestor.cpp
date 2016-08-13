@@ -68,8 +68,9 @@ namespace BitFunnel
     }
 
 
-    void ChunkIngestor::OnDocumentExit()
+    void ChunkIngestor::OnDocumentExit(size_t bytesRead)
     {
+        m_currentDocument->CloseDocument(bytesRead);
         m_ingestor.Add(m_currentDocument->GetDocId(), *m_currentDocument);
         m_currentDocument.reset(nullptr);
     }

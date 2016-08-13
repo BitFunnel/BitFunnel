@@ -144,9 +144,11 @@ namespace BitFunnel
         IngestChunks(filePaths, *configuration, *ingestor, threadCount);
 
         double elapsedTime = stopwatch.ElapsedTime();
+        size_t totalSourceBytes = ingestor->GetTotalSouceBytesIngested();
 
         std::cout << "Ingestion complete." << std::endl;
         std::cout << "  Ingestion time = " << elapsedTime << std::endl;
+        std::cout << "  Ingestion rate (bytes/s): " << totalSourceBytes / elapsedTime << std::endl;
 
         ingestor->PrintStatistics();
 

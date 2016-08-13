@@ -40,6 +40,7 @@ namespace BitFunnel
     public:
         Document(IConfiguration const & config, DocId id);
 
+        // TODO: Should GetDocId() be part of IDocument?
         DocId GetDocId() const;
 
         //
@@ -50,6 +51,10 @@ namespace BitFunnel
         // to the index. This method is used to determine which shard
         // will hold the document.
         virtual size_t GetPostingCount() const override;
+
+        // Returns the number of bytes of the source representation of this
+        // document. Used to compute ingestion rate (bytes/second) statistic.
+        virtual size_t GetSourceByteSize() const override;
 
         // Ingests the contents of this document into the index at via
         // the supplied DocumentHandle.
@@ -65,6 +70,9 @@ namespace BitFunnel
 
         // Closes the current stream.
         virtual void CloseStream() override;
+
+        // CloseDocument() should be called once all terms have been added.
+        virtual void CloseDocument(size_t sourceByteSize) override;
 
     private:
         // Invoke AddPosting() for each ngram starting at the front of
@@ -96,6 +104,8 @@ namespace BitFunnel
         //
         // Other members.
         //
+
+        size_t m_sourceByteSize;
 
         // Ring buffer used to generate ngram postings.
         static const size_t c_ringBufferSize = Term::c_log2MaxGramSize + 1;

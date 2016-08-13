@@ -102,6 +102,10 @@ namespace BitFunnel
         // entire ingestion index.
         virtual size_t GetUsedCapacityInBytes() const = 0;
 
+        // Returns the total number of bytes in the source representation of
+        // all IDocuments ingested so far.
+        virtual size_t GetTotalSouceBytesIngested() const = 0;
+
         // Returns a number of Shards and a Shard with the given ShardId.
         virtual size_t GetShardCount() const = 0;
         virtual Shard& GetShard(size_t shard) const = 0;
