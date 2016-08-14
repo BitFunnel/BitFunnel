@@ -33,7 +33,7 @@
 namespace BitFunnel
 {
     class IConfiguration;
-    class IDocumentFrequencyTable;
+
 
     class Document : public IDocument
     {
@@ -92,13 +92,12 @@ namespace BitFunnel
         // Constructor parameters.
         //
 
+        IConfiguration const & m_configuration;
+
         const DocId m_docId;
 
         // Maximum size of ngrams that will be indexed.
         const size_t m_maxGramSize;
-
-        // The document frequency table is used in term constructor.
-        IDocumentFrequencyTable const & m_docFreqTable;
 
 
         //

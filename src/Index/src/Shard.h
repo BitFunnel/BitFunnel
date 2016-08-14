@@ -46,6 +46,8 @@ namespace BitFunnel
     class IIngestor;
     class Slice;
     class Term;     // TODO: Remove this temporary declaration.
+    class TermToText;
+
 
     //*************************************************************************
     //
@@ -78,7 +80,8 @@ namespace BitFunnel
 
         void TemporaryAddPosting(Term const & term, DocIndex index);
         void TemporaryRecordDocument();
-        void TemporaryWriteDocumentFrequencyTable(std::ostream& out) const;
+        void TemporaryWriteDocumentFrequencyTable(std::ostream& out,
+                                                  TermToText const * termToText) const;
         void TemporaryWriteIndexedIdfTable(std::ostream& out) const;
         void TemporaryWriteCumulativeTermCounts(std::ostream& out) const;
 

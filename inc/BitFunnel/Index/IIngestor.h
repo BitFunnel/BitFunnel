@@ -35,6 +35,7 @@ namespace BitFunnel
     class IRecycler;
     class ITokenManager;
     class Shard;
+    class TermToText;
 
     // BITFUNNELTYPES
     // The documents in the BitFunnel index can be grouped into conceptual
@@ -64,7 +65,16 @@ namespace BitFunnel
         // TODO: Remove this temporary method.
         virtual void PrintStatistics() const = 0;
 
-        virtual void WriteStatistics() const = 0;
+        // Writes out the following data structions in locations defined by the
+        // FileManager:
+        //
+        //   Per IIngester
+        //      DocumentLengthHistogram
+        //   Per Shard
+        //      CumulativeTermCountd
+        //      DocumentFrequencyTable (with term text if termToText provided)
+        //      IndexedIdfTable
+        virtual void WriteStatistics(TermToText const * termToText) const = 0;
 
         // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.

@@ -22,25 +22,41 @@
 
 #pragma once
 
+#include <memory>                               // Embeds std::unique_ptr.
+
 #include "BitFunnel/Index/IConfiguration.h"     // Inherits from IConfiguration.
+#include "TermToText.h"                         // Parameterizes std::unique_ptr.
 
 
 namespace BitFunnel
 {
-    class IDocumentFrequencyTable;
-
-
     class Configuration : public IConfiguration
     {
     public:
-        Configuration(size_t maxGramSize);
+        Configuration(size_t maxGramSize,
+                      bool keepTermText,
+                      IIndexedIdfTable const & idfTable);
 
+        // Returns the maximum ngram size to be indexed.
         virtual size_t GetMaxGramSize() const override;
 
-        virtual IDocumentFrequencyTable const &
-            GetDocumentFrequencyTable() const override;
+        // Returns true if the configuration is keeping term text in a
+        // TermToText mapping.
+        bool KeepTermText() const;
+
+        // Returns the TermToText mapping. This diagnostic class provides
+        // a mapping from Term hash to the Term's text in the corpus.
+        // Note: behavior is undefined if KeepTermText() is false.
+        virtual TermToText & GetTermToText() const override;
+
+        // Returns an IIndexedIdfTable used to set the IDF values in each
+        // Term as it is constructed. The IIndexedIdfTable should be
+        // representative of the distribution of terms in the corpus.
+        virtual IIndexedIdfTable const & GetIdfTable() const override;
 
     private:
         size_t m_maxGramSize;
+        std::unique_ptr<TermToText> m_termToText;
+        IIndexedIdfTable const & m_idfTable;
     };
 }

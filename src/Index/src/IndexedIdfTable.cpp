@@ -20,12 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Utilities/StreamUtilities.h"
 #include "IndexedIdfTable.h"
 
 
 namespace BitFunnel
 {
+    std::unique_ptr<IIndexedIdfTable> Factories::CreateIndexedIdfTable()
+    {
+        return std::unique_ptr<IIndexedIdfTable>(
+            new IndexedIdfTable());
+    }
+
+
+    // TODO: Proper implementation or remove.
+    IndexedIdfTable::IndexedIdfTable()
+        : m_defaultIdf(60)
+    {
+    }
+
+
     IndexedIdfTable::IndexedIdfTable(std::istream& input, Term::IdfX10 defaultIdf)
         : m_defaultIdf(defaultIdf)
     {
@@ -55,7 +70,6 @@ namespace BitFunnel
         StreamUtilities::WriteField<size_t>(output, hash);
         StreamUtilities::WriteField<size_t>(output, idf);
     }
-
 
 
     Term::IdfX10 IndexedIdfTable::GetIdf(Term::Hash hash) const

@@ -45,7 +45,9 @@ namespace BitFunnel
 
 
     // Write out sorted truncated list, sorted by count (TODO: frequency).
-    void DocumentFrequencyTableBuilder::WriteFrequencies(std::ostream& output, double truncateBelowFrequency) const
+    void DocumentFrequencyTableBuilder::WriteFrequencies(std::ostream& output,
+                                                         double truncateBelowFrequency,
+                                                         TermToText const * termToText) const
     {
         DocumentFrequencyTable table;
 
@@ -60,7 +62,7 @@ namespace BitFunnel
             }
         }
 
-        table.Write(output, nullptr);
+        table.Write(output, termToText);
     }
 
 

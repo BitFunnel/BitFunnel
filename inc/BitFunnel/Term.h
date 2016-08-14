@@ -30,7 +30,7 @@
 
 namespace BitFunnel
 {
-    class IDocumentFrequencyTable;
+    class IConfiguration;
     class NGramBuilder;
 
     //*************************************************************************
@@ -82,7 +82,7 @@ namespace BitFunnel
         // TierHint value.
         Term(char const * text,
              StreamId stream,
-             IDocumentFrequencyTable const & docFreqTable);
+             IConfiguration const & configuration);
 
         // Constructs a term from its components. Common use case it to
         // construct a unigram (GramSize == 1). GramSize parameter exists
@@ -105,7 +105,8 @@ namespace BitFunnel
         // a.AddTerm(b) will not be equal to b.AddTerm(b). Therefore care must
         // be taken that phrases are formed the same way during query as they
         // were formed during document ingestion.
-        void AddTerm(Term const & term);
+        void AddTerm(Term const & term,
+                     IConfiguration const & configuration);
 
         // Equality operator provided for use by unordered_map in Document class.
         bool operator==(const Term& rhs) const;

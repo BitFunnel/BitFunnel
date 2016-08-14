@@ -35,6 +35,7 @@
 #include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/Row.h"
@@ -129,11 +130,17 @@ namespace BitFunnel
                                                *shardDefinition,
                                                *sliceAllocator));
 
+        const std::unique_ptr<IIndexedIdfTable>
+            idfTable(Factories::CreateIndexedIdfTable());
+
+
         // Arbitrary maxGramSize that is greater than 1. For initial tests.
         // TODO: Choose correct maxGramSize.
-        const size_t maxGramSize = 1;
+        const size_t maxGramSize = 2;
         std::unique_ptr<IConfiguration>
-            configuration(Factories::CreateConfiguration(maxGramSize));
+            configuration(Factories::CreateConfiguration(maxGramSize,
+                                                         true,
+                                                         *idfTable));
 
         std::cout << "Ingesting . . ." << std::endl;
 
@@ -154,7 +161,12 @@ namespace BitFunnel
 
         if (generateStatistics)
         {
-            ingestor->WriteStatistics();
+            TermToText const * termToText = nullptr;
+            if (configuration->KeepTermText())
+            {
+                termToText = &configuration->GetTermToText();
+            }
+            ingestor->WriteStatistics(termToText);
         }
 
         ingestor->Shutdown();

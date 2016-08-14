@@ -21,8 +21,6 @@
 // THE SOFTWARE.
 
 
-#include <memory>
-
 #include "BitFunnel/Index/Factories.h"
 #include "Configuration.h"
 
@@ -30,15 +28,26 @@
 namespace BitFunnel
 {
     std::unique_ptr<IConfiguration>
-        Factories::CreateConfiguration(size_t maxGramSize)
+        Factories::CreateConfiguration(size_t maxGramSize,
+                                       bool keepTermText,
+                                       IIndexedIdfTable const & idfTable)
     {
-        return std::unique_ptr<IConfiguration>(new Configuration(maxGramSize));
+        return std::unique_ptr<IConfiguration>(new Configuration(maxGramSize,
+                                                                 keepTermText,
+                                                                 idfTable));
     }
 
 
-    Configuration::Configuration(size_t maxGramSize)
-        : m_maxGramSize(maxGramSize)
+    Configuration::Configuration(size_t maxGramSize,
+                                 bool keepTermText,
+                                 IIndexedIdfTable const & idfTable)
+        : m_maxGramSize(maxGramSize),
+          m_idfTable(idfTable)
     {
+        if (keepTermText)
+        {
+            m_termToText.reset(new TermToText());
+        }
     }
 
 
@@ -48,10 +57,20 @@ namespace BitFunnel
     }
 
 
-    IDocumentFrequencyTable const &
-        Configuration::GetDocumentFrequencyTable() const
+    bool Configuration::KeepTermText() const
     {
-        // TODO: Implement this method.
-        return *static_cast<IDocumentFrequencyTable *>(nullptr);
+        return (m_termToText.get() != nullptr);
+    }
+
+
+    TermToText & Configuration::GetTermToText() const
+    {
+        return *(m_termToText.get());
+    }
+
+
+    IIndexedIdfTable const & Configuration::GetIdfTable() const
+    {
+        return m_idfTable;
     }
 }

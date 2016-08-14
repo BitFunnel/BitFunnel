@@ -24,18 +24,18 @@
 #include <new>
 
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/Index/DocumentHandle.h"  // for DocumentHandle
-#include "BitFunnel/Index/IConfiguration.h"  // for IConfiguration
+#include "BitFunnel/Index/DocumentHandle.h"
+#include "BitFunnel/Index/IConfiguration.h"
 #include "Document.h"
-#include "LoggerInterfaces/Logging.h"        // for LogAssertB
+#include "LoggerInterfaces/Logging.h"
 
 
 namespace BitFunnel
 {
-    Document::Document(IConfiguration const & config, DocId id)
+    Document::Document(IConfiguration const & configuration, DocId id)
         : m_docId(id),
-          m_maxGramSize(config.GetMaxGramSize()),
-          m_docFreqTable(config.GetDocumentFrequencyTable()),
+          m_configuration(configuration),
+          m_maxGramSize(configuration.GetMaxGramSize()),
           m_sourceByteSize(0),
           m_streamIsOpen(false)
     {
@@ -101,7 +101,7 @@ namespace BitFunnel
             // TODO: should we use the dfThreshold parameter instead of the fixed value?
             new(m_ringBuffer.PushBack()) Term(termText,
                                               m_currentStreamId,
-                                              m_docFreqTable);
+                                              m_configuration);
 
             if (m_ringBuffer.GetCount() == m_maxGramSize)
             {
@@ -144,7 +144,7 @@ namespace BitFunnel
         AddPosting(term);
         for (size_t n = 1; n < count; ++n)
         {
-            term.AddTerm(m_ringBuffer[n]);
+            term.AddTerm(m_ringBuffer[n], m_configuration);
             AddPosting(term);
         }
     }

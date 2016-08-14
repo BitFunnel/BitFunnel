@@ -23,16 +23,15 @@
 #pragma once
 
 #include <atomic>                           // std::atomic member.
-#include <iosfwd>
-#include <memory>
+#include <memory>                           // std::unique_ptr embedded.
 #include <mutex>                            // std::mutex member.
 #include <stddef.h>                         // size_t template parameter.
-#include <vector>
+#include <vector>                           // std::vector embedded.
 
-#include "BitFunnel/BitFunnelTypes.h"
+#include "BitFunnel/BitFunnelTypes.h"       // DocId parameter.
 #include "BitFunnel/Index/IIngestor.h"      // Inherits from IIngestor.
-#include "BitFunnel/NonCopyable.h"
-#include "BitFunnel/Token.h"
+#include "BitFunnel/NonCopyable.h"          // Base class.
+#include "BitFunnel/Token.h"                // ITokenManager parameterizes std::unique_ptr.
 #include "DocumentLengthHistogram.h"        // Embeds DocumentLengthHistogram.
 #include "DocumentMap.h"                    // DocumentMap template parameter.
 #include "Shard.h"                          // std::unique_ptr template parameter.
@@ -43,6 +42,7 @@ namespace BitFunnel
     class IDocument;
     class IDocumentDataSchema;
     class IFileManager;
+    class IIndexedIdfTable;
     class IRecycler;
     class IShardDefinition;
     class ISliceBufferAllocator;
@@ -62,7 +62,16 @@ namespace BitFunnel
         // TODO: Remove this temporary method.
         virtual void PrintStatistics() const override;
 
-        virtual void WriteStatistics() const override;
+        // Writes out the following data structions in locations defined by the
+        // FileManager:
+        //
+        //   Per IIngester
+        //      DocumentLengthHistogram
+        //   Per Shard
+        //      CumulativeTermCountd
+        //      DocumentFrequencyTable (with term text if termToText provided)
+        //      IndexedIdfTable
+        virtual void WriteStatistics(TermToText const * termToText) const override;
 
         // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.

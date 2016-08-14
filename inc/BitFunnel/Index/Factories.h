@@ -33,6 +33,7 @@ namespace BitFunnel
     class IDocumentFrequencyTable;
     class IFactSet;
     class IFileManager;
+    class IIndexedIdfTable;
     class IIngestor;
     class IRecycler;
     class IShardDefinition;
@@ -44,7 +45,10 @@ namespace BitFunnel
 
     namespace Factories
     {
-        std::unique_ptr<IConfiguration> CreateConfiguration(size_t maxGramSize);
+        std::unique_ptr<IConfiguration>
+            CreateConfiguration(size_t maxGramSize,
+                                bool keepTermText,
+                                IIndexedIdfTable const & idfTable);
 
         std::unique_ptr<IIngestor>
             CreateIngestor(IFileManager& filemanager,
@@ -60,6 +64,8 @@ namespace BitFunnel
             CreateDocumentFrequencyTable(std::istream& input);
 
         std::unique_ptr<IFactSet> CreateFactSet();
+
+        std::unique_ptr<IIndexedIdfTable> CreateIndexedIdfTable();
 
         std::unique_ptr<ITermTable2> CreateTermTable();
 

@@ -27,8 +27,11 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Term.h"
+#include "BitFunnel/Index/IConfiguration.h"
+#include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "LoggerInterfaces/Logging.h"
 #include "MurmurHash2.h"
+#include "TermToText.h"
 
 
 namespace BitFunnel
@@ -48,13 +51,26 @@ namespace BitFunnel
     //*************************************************************************
     Term::Term(char const * text,
                StreamId stream,
-               IDocumentFrequencyTable const & /*docFreqTable*/)
+               IConfiguration const & configuration)
         : m_rawHash(ComputeRawHash(text)),
           m_stream(stream),
-          m_gramSize(1),
-          m_idfSum(0),      // TODO: use correct value
-          m_idfMax(0)       // TODO: use correct value
+          m_gramSize(1)
     {
+        m_idfSum = m_idfMax = configuration.GetIdfTable().GetIdf(m_rawHash);
+
+        // If we're maintaining a term-to-text mapping.
+        if (configuration.KeepTermText())
+        {
+            auto & termToText = configuration.GetTermToText();
+
+            // If this term isn't already in the table.
+            auto const termText = termToText.Lookup(m_rawHash);
+            if (termText.size() == 0)
+            {
+                // Add the term to the table.
+                termToText.AddTerm(m_rawHash, std::string(text));
+            }
+        }
     }
 
 
@@ -87,17 +103,43 @@ namespace BitFunnel
     }
 
 
-    void Term::AddTerm(Term const & term)
+    void Term::AddTerm(Term const & term,
+                       IConfiguration const & configuration)
     {
         if (m_stream != term.m_stream)
         {
             throw FatalError("Attempting to combine terms with different streams.");
         }
 
+        Hash leftHash = m_rawHash;
+
         m_rawHash = rotl64By1(m_rawHash) ^ term.m_rawHash;
         m_gramSize += term.m_gramSize;
         m_idfSum += term.m_idfSum;
         m_idfMax = std::max(m_idfMax, term.m_idfMax);
+
+
+        // If we're maintaining a term-to-text mapping.
+        if (configuration.KeepTermText())
+        {
+            auto & termToText = configuration.GetTermToText();
+
+            // If this phrase isn't already in the table.
+            if (termToText.Lookup(m_rawHash).size() == 0)
+            {
+                // Concatenate old text with new text.
+                auto const left = termToText.Lookup(leftHash);
+                auto const right = termToText.Lookup(term.m_rawHash);
+                std::string phrase;
+                phrase.reserve(left.size() + 1 + right.size());
+                phrase.append(left);
+                phrase.push_back(' ');
+                phrase.append(right);
+
+                // Add the phrase to the IDF table.
+                termToText.AddTerm(m_rawHash, phrase);
+            }
+        }
     }
 
 

@@ -22,29 +22,40 @@
 
 #pragma once
 
-#include "BitFunnel/IInterface.h"   // Inherits from IInterface.
+#include "BitFunnel/IInterface.h"   // Base class.
 
 
 namespace BitFunnel
 {
-    class IDocumentFrequencyTable;
+    class IIndexedIdfTable;
+    class TermToText;
 
 
     //*************************************************************************
     //
     // IConfiguration is an abstract base class or interface for classes that
-    // provide configuration data for the document ingestion pipeline.
+    // configure Term construction and maintain a mapping from Term hash to
+    // the Term's text.
     //
     //*************************************************************************
     class IConfiguration : public IInterface
     {
     public:
-        // Returns the maximum ngram size that will be indexed.
+        // Returns the maximum ngram size to be indexed.
         virtual size_t GetMaxGramSize() const = 0;
 
-        // Returns an IDocumentFrequenyTable that is representative of the
-        // distribution of terms in the corpus.
-        virtual IDocumentFrequencyTable const &
-            GetDocumentFrequencyTable() const = 0;
+        // Returns true if the configuration is keeping term text in a
+        // TermToText mapping.
+        virtual bool KeepTermText() const = 0;
+
+        // Returns the TermToText mapping. This diagnostic class provides
+        // a mapping from Term hash to the Term's text in the corpus.
+        // Note: behavior is undefined if KeepTermText() is false.
+        virtual TermToText & GetTermToText() const = 0;
+
+        // Returns an IIndexedIdfTable used to set the IDF values in each
+        // Term as it is constructed. The IIndexedIdfTable should be
+        // representative of the distribution of terms in the corpus.
+        virtual IIndexedIdfTable const & GetIdfTable() const = 0;
     };
 }

@@ -9,6 +9,8 @@
 
 namespace BitFunnel
 {
+    class TermToText;
+
     //*************************************************************************
     //
     // DocumentFrequencyTableBuilder
@@ -49,7 +51,8 @@ namespace BitFunnel
         // Entries are ordered by decreasing frequency.
         // The list is truncated at the truncateBelowFrequency.
         void WriteFrequencies(std::ostream& output,
-                              double truncateBelowFrequency) const;
+                              double truncateBelowFrequency,
+                              TermToText const * termToText) const;
 
 
         // Writes the document frequency data to a stream in the binary format

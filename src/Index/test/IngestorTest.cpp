@@ -36,6 +36,7 @@
 #include "Document.h"
 #include "DocumentDataSchema.h"
 #include "DocumentFrequencyTable.h"
+#include "IndexedIdfTable.h"
 #include "IndexUtils.h"
 #include "Ingestor.h"
 #include "IRecycler.h"
@@ -170,11 +171,14 @@ namespace BitFunnel
         {
         public:
             SyntheticIndex(unsigned documentCount)
-              : m_config(c_maxGramSize),
-                m_documentCount(documentCount)
+              : m_documentCount(documentCount)
             {
+                m_idfTable.reset(new IndexedIdfTable());
+                m_config.reset(new Configuration(c_maxGramSize,
+                                                 false,
+                                                *m_idfTable));
+
                 AddDocumentsToIngestor(m_index.GetIngestor(),
-                                       m_config,
                                        m_documentCount);
             }
 
@@ -195,16 +199,17 @@ namespace BitFunnel
                     EXPECT_EQ(actualMatches[i], expectedMatches[i]);
                 }
             }
+
+
         private:
             // Ingests documents from 0..docCount, using a formula that maps
             // those numbers into documents.
             void AddDocumentsToIngestor(IIngestor& ingestor,
-                                        IConfiguration const & config,
                                         unsigned docCount)
             {
                 for (unsigned i = 0; i < docCount; ++i)
                 {
-                    std::unique_ptr<IDocument> document(new Document(config, i));
+                    std::unique_ptr<IDocument> document(new Document(*m_config, i));
                     document->OpenStream(c_streamId);
                     auto terms = GenerateDocumentText(i);
                     for (const auto & term : terms)
@@ -271,7 +276,9 @@ namespace BitFunnel
                 }
                 return results;
             }
-            Configuration m_config;
+
+            std::unique_ptr<IndexedIdfTable> m_idfTable;
+            std::unique_ptr<Configuration> m_config;
             unsigned m_documentCount;
             IndexWrapper m_index;
         };
@@ -316,7 +323,7 @@ namespace BitFunnel
             const int c_documentCount = 64;
             SyntheticIndex index(c_documentCount);
             std::stringstream stream;
-            index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream);
+            index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
 
             std::cout << stream.str() << std::endl;
 
@@ -333,7 +340,7 @@ namespace BitFunnel
             const int c_documentCount = 63;
             SyntheticIndex index(c_documentCount);
             std::stringstream stream;
-            index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream);
+            index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
 
             DocumentFrequencyTable table(stream);
 
@@ -348,7 +355,7 @@ namespace BitFunnel
             const int c_documentCount = 62;
             SyntheticIndex index(c_documentCount);
             std::stringstream stream;
-            index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream);
+            index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
 
             DocumentFrequencyTable table(stream);
 

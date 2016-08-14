@@ -2,7 +2,6 @@
 
 set(CPPFILES
     ChunkReaderTest.cpp
-    ChunkTaskProcessorTest.cpp
     DocTableDescriptorTest.cpp
     DocumentDataSchemaTest.cpp
     DocumentFrequencyTableTest.cpp

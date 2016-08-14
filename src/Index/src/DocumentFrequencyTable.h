@@ -33,7 +33,7 @@ namespace BitFunnel
         // via the ITermToText. Note: method is not const because it sorts
         // the entries.
         virtual void Write(std::ostream & output,
-                           ITermToText const * termToText) override;
+                           TermToText const * termToText) override;
 
         // Adds an Entry to the table. Note that this method does not guard
         // against duplicate Term::Hash values and it does not enforce any

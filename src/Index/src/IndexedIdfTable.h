@@ -33,6 +33,9 @@ namespace BitFunnel
     class IndexedIdfTable : public IIndexedIdfTable
     {
     public:
+        // TODO: Remove this temporary constructor.
+        IndexedIdfTable();
+
         IndexedIdfTable(std::istream& input, Term::IdfX10 defaultIdf);
 
         static void WriteHeader(std::ostream& output, size_t entryCount);
@@ -46,7 +49,6 @@ namespace BitFunnel
     private:
         Term::IdfX10 m_defaultIdf;
 
-        typedef std::unordered_map<Term::Hash, Term::IdfX10> TermToIdfX10;
-        TermToIdfX10 m_terms;
+        std::unordered_map<Term::Hash, Term::IdfX10> m_terms;
     };
 }

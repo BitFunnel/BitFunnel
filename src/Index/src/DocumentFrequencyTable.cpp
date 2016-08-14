@@ -26,9 +26,9 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/Index/ITermToText.h"
 #include "CsvTsv/Csv.h"
 #include "DocumentFrequencyTable.h"
+#include "TermToText.h"
 
 
 namespace BitFunnel
@@ -124,7 +124,7 @@ namespace BitFunnel
 
 
     void DocumentFrequencyTable::Write(std::ostream & output,
-                                       ITermToText const * termToText)
+                                       TermToText const * termToText)
     {
         //
         // Sort entries by descending frequency.
