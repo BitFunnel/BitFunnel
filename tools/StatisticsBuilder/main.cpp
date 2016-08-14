@@ -32,6 +32,7 @@
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IShardDefinition.h"
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/Factories.h"
@@ -78,8 +79,16 @@ namespace BitFunnel
 
     static void LoadAndIngestChunkList(char const * intermediateDirectory,
                                        char const * chunkListFileName,
-                                       bool generateStatistics)
+                                       // TODO: gramSize should be unsigned once CmdLineParser supports unsigned.
+                                       int gramSize,
+                                       bool generateStatistics,
+                                       bool generateTermToText)
     {
+        if (gramSize < 0 || gramSize > Term::c_maxGramSize)
+        {
+            throw FatalError("ngram size out of range.");
+        }
+
         auto fileManager = Factories::CreateFileManager(intermediateDirectory,
                                                         intermediateDirectory,
                                                         intermediateDirectory);
@@ -136,22 +145,23 @@ namespace BitFunnel
 
         // Arbitrary maxGramSize that is greater than 1. For initial tests.
         // TODO: Choose correct maxGramSize.
-        const size_t maxGramSize = 2;
         std::unique_ptr<IConfiguration>
-            configuration(Factories::CreateConfiguration(maxGramSize,
-                                                         true,
-                                                         *idfTable));
+            configuration(
+                Factories::CreateConfiguration(
+                    static_cast<Term::GramSize>(gramSize),
+                    generateTermToText,
+                    *idfTable));
 
         std::cout << "Ingesting . . ." << std::endl;
 
         Stopwatch stopwatch;
 
         // TODO: Use correct thread count.
-        size_t threadCount = 1;
+        const size_t threadCount = 1;
         IngestChunks(filePaths, *configuration, *ingestor, threadCount);
 
-        double elapsedTime = stopwatch.ElapsedTime();
-        size_t totalSourceBytes = ingestor->GetTotalSouceBytesIngested();
+        const double elapsedTime = stopwatch.ElapsedTime();
+        const size_t totalSourceBytes = ingestor->GetTotalSouceBytesIngested();
 
         std::cout << "Ingestion complete." << std::endl;
         std::cout << "  Ingestion time = " << elapsedTime << std::endl;
@@ -197,9 +207,22 @@ int main(int argc, char** argv)
         "Generate index statistics such as document frequency table, "
         "document length histogram, and cumulative term counts.");
 
+    CmdLine::OptionalParameterList termToText(
+        "text",
+        "Create mapping from Term::Hash to term text.");
+
+    // TODO: This parameter should be unsigned, but it doesn't seem to work
+    // with CmdLineParser.
+    CmdLine::OptionalParameter<int> gramSize(
+        "gramsize",
+        "Set the maximum ngram size for phrases.",
+        1u);
+
     parser.AddParameter(chunkListFileName);
     parser.AddParameter(tempPath);
     parser.AddParameter(statistics);
+    parser.AddParameter(termToText);
+    parser.AddParameter(gramSize);
 
     int returnCode = 0;
 
@@ -209,11 +232,16 @@ int main(int argc, char** argv)
         {
             BitFunnel::LoadAndIngestChunkList(tempPath,
                                               chunkListFileName,
-                                              statistics.IsActivated());
+                                              gramSize,
+                                              statistics.IsActivated(),
+                                              termToText.IsActivated());
             returnCode = 0;
         }
         catch (...)
         {
+            // TODO: Do we really want to catch all exceptions here?
+            // Seems we want to at least print out the error message for BitFunnel exceptions.
+
             std::cout << "Unexpected error.";
             returnCode = 1;
         }
