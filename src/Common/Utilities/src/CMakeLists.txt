@@ -39,7 +39,6 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     AlignedBuffer.h
     BlockAllocator.h
-    BlockingQueue.h
     MurmurHash2.h
     PackedArray.h
     Rounding.h

@@ -20,9 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "BlockingQueue.h"
+#include "BitFunnel/Utilities/BlockingQueue.h"
 #include "ThreadManager.h"
 #include "gtest/gtest.h"
+
 
 namespace BitFunnel
 {
