@@ -185,6 +185,7 @@ enable_testing()
 #
 add_subdirectory(src)
 add_subdirectory(test/Shared)
+add_subdirectory(tools/IngestAndQuery)
 add_subdirectory(tools/StatisticsBuilder)
 add_subdirectory(tools/TermTableBuilder)
 
