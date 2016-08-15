@@ -307,7 +307,7 @@ namespace BitFunnel
         const ShardId shard = rowId.GetShard();
         const Rank rank = rowId.GetRank();
 
-        const size_t sharedRowCount = m_sharedRowCounts[rank];
+        const size_t adhocRowCount = m_adhocRowCounts[rank];
 
         // Derive adhoc row index from a combination of the term hash and the
         // variant. Want to ensure that all rows generated for the same
@@ -318,7 +318,7 @@ namespace BitFunnel
         hash = RotateRight(hash, variant & 0x3f) + variant;
 
         // Adhoc rows start at RowIndex 0.
-        return RowId(shard, rank, (hash % sharedRowCount));
+        return RowId(shard, rank, (hash % adhocRowCount));
     }
 
 
