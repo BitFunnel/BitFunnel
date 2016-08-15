@@ -39,7 +39,8 @@ namespace BitFunnel
         IndexedIdfTable(std::istream& input, Term::IdfX10 defaultIdf);
 
         static void WriteHeader(std::ostream& output, size_t entryCount);
-        static void WriteEntry(std::ostream& output, Term::Hash hash, Term::IdfX10 idf);
+        static void WriteEntry(std::ostream& output,
+                               Term::Hash hash, Term::IdfX10 idf);
 
         //
         // IIndexedIdfTable methods.

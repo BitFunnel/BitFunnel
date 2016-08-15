@@ -27,12 +27,33 @@
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // Factory methods.
+    //
+    //*************************************************************************
+
     std::unique_ptr<IIndexedIdfTable> Factories::CreateIndexedIdfTable()
     {
         return std::unique_ptr<IIndexedIdfTable>(
             new IndexedIdfTable());
     }
 
+
+    std::unique_ptr<IIndexedIdfTable> 
+        Factories::CreateIndexedIdfTable(std::istream & input,
+                                         Term::IdfX10 defaultIdf)
+    {
+        return std::unique_ptr<IIndexedIdfTable>(
+            new IndexedIdfTable(input, defaultIdf));
+    }
+
+
+    //*************************************************************************
+    //
+    // IndexedIdfTable
+    //
+    //*************************************************************************
 
     // TODO: Proper implementation or remove.
     IndexedIdfTable::IndexedIdfTable()
@@ -41,7 +62,8 @@ namespace BitFunnel
     }
 
 
-    IndexedIdfTable::IndexedIdfTable(std::istream& input, Term::IdfX10 defaultIdf)
+    IndexedIdfTable::IndexedIdfTable(std::istream& input,
+                                     Term::IdfX10 defaultIdf)
         : m_defaultIdf(defaultIdf)
     {
         // TODO: Should defaultIdf be part of the file?

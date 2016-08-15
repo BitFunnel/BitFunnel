@@ -22,9 +22,10 @@
 
 #pragma once
 
-#include <iosfwd>   // std::istream parameter.
-#include <memory>   // std::unique_ptr return type.
+#include <iosfwd>               // std::istream parameter.
+#include <memory>               // std::unique_ptr return type.
 
+#include "BitFunnel/Term.h"     // Term::IdfX10 parameter.
 
 namespace BitFunnel
 {
@@ -66,6 +67,9 @@ namespace BitFunnel
         std::unique_ptr<IFactSet> CreateFactSet();
 
         std::unique_ptr<IIndexedIdfTable> CreateIndexedIdfTable();
+        std::unique_ptr<IIndexedIdfTable>
+            CreateIndexedIdfTable(std::istream& input,
+                                  Term::IdfX10 defaultIdf);
 
         std::unique_ptr<ITermTable2> CreateTermTable();
 
