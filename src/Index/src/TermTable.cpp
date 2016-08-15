@@ -331,8 +331,11 @@ namespace BitFunnel
         }
 
         // Facts are always rank 0 and are indexed starting after the blocks of
-        // adhoc and explicit and system rows.
-        index += m_adhocRowCounts[0] + m_explicitRowCounts[0] + SystemTerm::Count;
+        // adhoc and explicit. Note that the system defined terms occupy
+        // the first SystemTerm::Count rows after the adhoc and explicit rows.
+        // Another way of saying this is that the system terms are associated
+        // with FactHandles 0..SystemTerm::Last.
+        index += m_adhocRowCounts[0] + m_explicitRowCounts[0];
 
         // AnyRow is used to get a shard.
         // TODO: investigate if we should split RowId to shard + 

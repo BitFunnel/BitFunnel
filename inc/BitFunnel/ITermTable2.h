@@ -123,6 +123,18 @@ namespace BitFunnel
         virtual Term GetMatchAllTerm() const = 0;
         virtual Term GetMatchNoneTerm() const = 0;
 
+        // Enumeration defines the FactHandles for each of the system defined
+        // terms. Used by FactSet to generate user-defined handles that don't
+        // conflict with system handles.
+        enum SystemTerm
+        {
+            SoftDeleted = 0,
+            MatchAll = 1,
+            MatchNone = 2,
+            Last = MatchNone,
+            Count = 3
+        };
+
         // Writes the contents of the ITermTable2 to a stream.
         virtual void Write(std::ostream& output) const = 0;
 

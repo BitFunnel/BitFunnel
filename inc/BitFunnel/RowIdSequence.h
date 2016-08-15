@@ -72,6 +72,11 @@ namespace BitFunnel
                        (&m_rowIds != &other.m_rowIds);
             }
 
+            bool operator==(const_iterator const & other) const
+            {
+                return !(*this != other);
+            }
+
             const_iterator& operator++()
             {
                 if (m_current == m_rowIds.m_rowIdCount)

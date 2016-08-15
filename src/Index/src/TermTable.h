@@ -119,15 +119,6 @@ namespace BitFunnel
     private:
         void ThrowIfSealed() const;
 
-        enum SystemTerm
-        {
-            SoftDeleted = 0,
-            MatchAll = 1,
-            MatchNone = 2,
-            Last = MatchNone,
-            Count = 3
-        };
-
         static Term CreateSystemTerm(SystemTerm term);
 
         bool m_sealed;
