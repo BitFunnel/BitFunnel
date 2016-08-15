@@ -3,7 +3,6 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/Row.h"                  // For c_systemRowCount.
 #include "FactSetBase.h"
 
 
@@ -77,10 +76,7 @@ namespace BitFunnel
             }
         }
 
-        // Fact handles are allocated starting with the value of c_systemRowCount
-        // to accommodate system internal rows. System internal rows are not visible to
-        // the user and are not stored in IFactSet explicitly.
-        FactHandle handle = static_cast<FactHandle>(m_facts.size()) + c_systemRowCount;
+        FactHandle handle = static_cast<FactHandle>(m_facts.size());
         m_facts.emplace_back(friendlyName, isMutable, handle);
 
         return handle;
@@ -115,10 +111,7 @@ namespace BitFunnel
 
     FactSetBase::FactInfo const & FactSetBase::GetFactInfoByHandle(FactHandle handle) const
     {
-        // Facts are assigned sequential handles starting at c_systemRowCount.
-        // To avoid O(n) complexity in looking up a fact in the list, obtain an index of a
-        // fact from its handle.
-        const unsigned factIndex = static_cast<unsigned>(handle) - c_systemRowCount;
+        const size_t factIndex = handle;
         return m_facts.at(factIndex);
     }
 }

@@ -27,7 +27,6 @@
 #include <vector>                   // std::vector member.
 
 #include "BitFunnel/ITermTable2.h"   // Base class.
-//#include "ITermTreatment.h"         // RowConfiguration::Entry::c_maxRowCount.
 #include "BitFunnel/RowId.h"        // RowId template parameter.
 #include "BitFunnel/Term.h"         // Term::Hash parameter.
 
@@ -43,38 +42,94 @@ namespace BitFunnel
         // Write() method.
         TermTable(std::istream& input);
 
+        // Writes the contents of the ITermTable2 to a stream.
         virtual void Write(std::ostream& output) const override;
 
+        // Instructs the TermTable to start recording RowIds added by AddRowId.
         virtual void OpenTerm() override;
 
+        // Adds a single RowId to the term table's RowId buffer.
         virtual void AddRowId(RowId id) override;
 
+        // Constructs a PackedRowIdSequence from RowIds recorded since the last
+        // call to OpenTerm. Stores this sequence in a map of explicit terms,
+        // indexed by the supplied hash.
         virtual void CloseTerm(Term::Hash hash) override;
 
+        // Constructs a PackedRowIdSequence from RowIds recorded since the last
+        // call to OpenTerm. Stores this sequence in an array of adhoc term
+        // recipes, indexed by the supplied idf and gramSize values.
         virtual void CloseAdhocTerm(Term::IdfX10 idf,
                                     Term::GramSize gramSize) override;
 
-        virtual PackedRowIdSequence GetRows(const Term& term) const override;
-
-        virtual RowId GetRowIdExplicit(size_t index) const override;
-
-        virtual RowId GetRowIdAdhoc(Term::Hash hash,
-                                    size_t index,
-                                    size_t variant) const override;
-
-
+        // Set the number of explicit and adhoc rows at each Rank.
+        // Should be invoked once for rank values in [0..c_maxRankValue] during
+        // TermTable build.
         virtual void SetRowCounts(Rank rank,
                                   size_t explicitCount,
                                   size_t adhocCount) override;
 
+        virtual void SetFactCount(size_t factCount) override;
+
+        // Completes the TermTable build process by converting relative
+        // RowIndex values to absolute RowIndex values. This can only be done
+        // after the row counts are set via a call to SetRowCounts().
         virtual void Seal() override;
 
+        //
+        // TermTable reader methods.
+        //
+
+        // Returns the total number of rows (private + shared) associated with
+        // the row table for (rank). This includes rows allocated for
+        // facts, if applicable.
         virtual size_t GetTotalRowCount(Rank rank) const override;
 
+        // Returns the number of bytes of Row data required to store each
+        // document using this TermTable.
         virtual double GetBytesPerDocument(Rank rank) const override;
+
+        // Returns a PackedRowIdSequence structure associated with the
+        // specified term. The PackedRowIdSequence structure contains
+        // information about the term's rows. PackedRowIdSequence is used
+        // by RowIdSequence to implement RowId enumeration for regular, adhoc
+        // and fact terms.
+        virtual PackedRowIdSequence GetRows(const Term& term) const override;
+
+        // Getters for system defined terms.
+        virtual Term GetSoftDeletedTerm() const override;
+        virtual Term GetMatchAllTerm() const override;
+        virtual Term GetMatchNoneTerm() const override;
+
+        //
+        // Reader methods called by RowIdSequence::const_iterator.
+        //
+
+        // Returns a RowId from the bank of Explicit term rows.
+        virtual RowId GetRowIdExplicit(size_t index) const override;
+
+        // Constructs and returns a RowId according to the recipe for Adhoc
+        // terms.
+        virtual RowId GetRowIdAdhoc(Term::Hash hash,
+                                    size_t index,
+                                    size_t variant) const override;
+
+        virtual RowId GetRowIdFact(size_t index) const override;
 
     private:
         void ThrowIfSealed() const;
+
+        enum SystemTerm
+        {
+            SoftDeleted = 0,
+            MatchAll = 1,
+            MatchNone = 2,
+            Last = MatchNone,
+            Count = 3
+        };
+
+        static Term CreateSystemTerm(SystemTerm term);
+
 
         // TODO: this should actually be used.
         // bool m_setRowCountsCalled;

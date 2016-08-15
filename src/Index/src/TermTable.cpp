@@ -50,18 +50,17 @@ namespace BitFunnel
     //
     //*************************************************************************
     TermTable::TermTable()
-        : /*m_setRowCountsCalled(false),*/
-          m_sealed(false),
-          m_explicitRowCounts(c_maxRankValue + 1, 0),
-          m_adhocRowCounts(c_maxRankValue + 1, 0),
-          m_sharedRowCounts(c_maxRankValue + 1, 0),
-          m_factRowCount(0)
+      : m_sealed(false),
+        m_explicitRowCounts(c_maxRankValue + 1, 0),
+        m_adhocRowCounts(c_maxRankValue + 1, 0),
+        m_sharedRowCounts(c_maxRankValue + 1, 0),
+        m_factRowCount(0)                               // TODO: What about system terms?
     {
     }
 
+
     TermTable::TermTable(std::istream& input)
-        : /*m_setRowCountsCalled(true),*/
-        m_sealed(true),
+      : m_sealed(true),
         m_start(0)
     {
         size_t count = StreamUtilities::ReadField<size_t>(input);
@@ -172,6 +171,17 @@ namespace BitFunnel
     }
 
 
+    void TermTable::SetFactCount(size_t factCount)
+    {
+        ThrowIfSealed();
+
+        // Fact rows include the SystemTerm rows and one row for each user
+        // defined fact.
+        m_factRowCount = factCount + SystemTerm::Count;
+    }
+
+
+
     void TermTable::Seal()
     {
         ThrowIfSealed();
@@ -198,9 +208,10 @@ namespace BitFunnel
 
     size_t TermTable::GetTotalRowCount(Rank rank) const
     {
-        return
-            m_sharedRowCounts[rank] +
-            ((rank == 0) ? m_factRowCount : 0);
+        // System term rows and fact rows are included in Rank 0, but not other
+        // ranks.
+        return m_sharedRowCounts[rank] +
+               ((rank == 0) ? (SystemTerm::Count + m_factRowCount) : 0);
     }
 
 
@@ -213,28 +224,63 @@ namespace BitFunnel
 
     PackedRowIdSequence TermTable::GetRows(const Term& term) const
     {
-        // TODO: Implement facts.
+        const Term::Hash hash = term.GetRawHash();
 
-        auto it = m_termHashToRows.find(term.GetRawHash());
-        if (it != m_termHashToRows.end())
+        if (hash < m_factRowCount)
         {
-            return (*it).second;
+            return PackedRowIdSequence(hash, hash + 1, PackedRowIdSequence::Type::Fact);
         }
         else
         {
-            // If term isn't found, assume it is adhoc.
-            // Return a PackedRowIdSequence that will be used as a recipe for
-            // generating adhoc term RowIds.
-            return m_adhocRows[term.GetIdfMax()][term.GetGramSize()];
+            auto it = m_termHashToRows.find(term.GetRawHash());
+            if (it != m_termHashToRows.end())
+            {
+                return (*it).second;
+            }
+            else
+            {
+                // If term isn't found, assume it is adhoc.
+                // Return a PackedRowIdSequence that will be used as a recipe for
+                // generating adhoc term RowIds.
+                return m_adhocRows[term.GetIdfMax()][term.GetGramSize()];
+            }
         }
+    }
+
+
+    Term TermTable::GetSoftDeletedTerm() const
+    {
+        return CreateSystemTerm(SystemTerm::SoftDeleted);
+    }
+
+
+    Term TermTable::GetMatchAllTerm() const
+    {
+        return CreateSystemTerm(SystemTerm::MatchAll);
+    }
+
+
+    Term TermTable::GetMatchNoneTerm() const
+    {
+        return CreateSystemTerm(SystemTerm::MatchNone);
     }
 
 
     RowId TermTable::GetRowIdExplicit(size_t index) const
     {
-        // TODO: Error checking - rowOffset in range?
+        if (index >= m_rowIds.size())
+        {
+            RecoverableError error("TermTable::GetRowIdExplicit: index out of range.");
+            throw error;
+        }
 
         return m_rowIds[index];
+    }
+
+
+    Term TermTable::CreateSystemTerm(SystemTerm term)
+    {
+        return Term(term, 0, 0);
     }
 
 
@@ -250,6 +296,12 @@ namespace BitFunnel
                                    size_t index,
                                    size_t variant) const
     {
+        if (index >= m_rowIds.size())
+        {
+            RecoverableError error("TermTable::GetRowIdAdhoc: index out of range.");
+            throw error;
+        }
+
         const RowId rowId = m_rowIds[index];
 
         const ShardId shard = rowId.GetShard();
@@ -267,6 +319,35 @@ namespace BitFunnel
 
         // Adhoc rows start at RowIndex 0.
         return RowId(shard, rank, (hash % sharedRowCount));
+    }
+
+
+    RowId TermTable::GetRowIdFact(size_t index) const
+    {
+        if (index >= m_factRowCount)
+        {
+            RecoverableError error("TermTable::GetRowIdFact: index out of range.");
+            throw error;
+        }
+
+        // Facts are always rank 0 and are indexed starting after the blocks of
+        // adhoc and explicit and system rows.
+        index += m_adhocRowCounts[0] + m_explicitRowCounts[0] + SystemTerm::Count;
+
+        // AnyRow is used to get a shard.
+        // TODO: investigate if we should split RowId to shard + 
+        // shard-independent structure and keep m_shard in the TermTable.
+        // TFS 15153.
+        const RowId anyRow = m_rowIds[0];
+
+        // Soft-deleted document row is the first one after all regular
+        // rows. The caller specifies rowOffset = 0 in this case. The rationale
+        // for this value is that a soft-deleted rowId must be consistent
+        // between query planner and query runner regardless of the number of
+        // user facts defined. This is to guarantee consistency of this row 
+        // in case of canary deployment of the code that changes the list of
+        // facts.
+        return RowId(anyRow.GetShard(), 0, index);
     }
 
 

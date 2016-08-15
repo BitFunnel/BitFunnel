@@ -90,6 +90,8 @@ namespace BitFunnel
                                   size_t explicitCount,
                                   size_t adhocCount) = 0;
 
+        virtual void SetFactCount(size_t factCount) = 0;
+
         // Completes the TermTable build process by converting relative
         // RowIndex values to absolute RowIndex values. This can only be done
         // after the row counts are set via a call to SetRowCounts().
@@ -116,6 +118,11 @@ namespace BitFunnel
         // and fact terms.
         virtual PackedRowIdSequence GetRows(const Term& term) const = 0;
 
+        // Getters for system defined terms.
+        virtual Term GetSoftDeletedTerm() const = 0;
+        virtual Term GetMatchAllTerm() const = 0;
+        virtual Term GetMatchNoneTerm() const = 0;
+
         // Writes the contents of the ITermTable2 to a stream.
         virtual void Write(std::ostream& output) const = 0;
 
@@ -131,5 +138,7 @@ namespace BitFunnel
         virtual RowId GetRowIdAdhoc(Term::Hash hash,
                                     size_t index,
                                     size_t variant) const = 0;
+
+        virtual RowId GetRowIdFact(size_t index) const = 0;
     };
 }
