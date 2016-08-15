@@ -78,6 +78,7 @@ namespace BitFunnel
                                    double adhocFrequency,
                                    ITermTreatment const & treatment,
                                    IDocumentFrequencyTable const & terms,
+                                   IFactSet const & facts,
                                    ITermTable2 & termTable);
 
         std::unique_ptr<ITermTreatment> CreateTreatmentPrivateRank0();

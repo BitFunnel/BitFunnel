@@ -28,11 +28,14 @@
 
 #include <iostream>         // TODO: Remove this temporary include.
 #include <sstream>
+#include <unordered_map>
+#include <vector>
 
 #include "gtest/gtest.h"
 
 #include "BitFunnel/RowIdSequence.h"
 #include "DocumentFrequencyTable.h"
+#include "FactSetBase.h"
 #include "TermTable.h"
 #include "TermTableBuilder.h"
 #include "TermTreatments.h"
@@ -50,7 +53,12 @@ namespace BitFunnel
 
         virtual RowConfiguration GetTreatment(Term term) const override
         {
-            return m_configurations[term.GetRawHash()];
+            auto it = m_configurations.find(term.GetRawHash());
+            if (it == m_configurations.end())
+            {
+                throw 0;
+            }
+            return (*it).second;
         }
 
         void OpenConfiguration()
@@ -63,17 +71,17 @@ namespace BitFunnel
             m_current.push_front(RowConfiguration::Entry(rank, count, isPrivate));
         }
 
-        void CloseConfiguration()
+        void CloseConfiguration(Term::Hash hash)
         {
-            m_configurations.push_back(m_current);
+            m_configurations.insert(std::make_pair(hash, m_current));
         }
 
     private:
         RowConfiguration m_current;
 
-        // MockTermTreatment uses the Term::Hash as the index into the vector
-        // of RowConfigurations.
-        std::vector<RowConfiguration> m_configurations;
+        // MockTermTreatment uses the Term::Hash as the index into the
+        // unordered_map of RowConfigurations.
+        std::unordered_map<Term::Hash, RowConfiguration> m_configurations;
     };
 
     class TestEnvironment
@@ -81,39 +89,44 @@ namespace BitFunnel
     public:
         TestEnvironment()
         {
-            // For this test, configurations will be indexed by the Term::Hash
+            // For this test, RowConfigurations will be indexed by the Term::Hash
             // values which we expect will be presented to the TermTableBuilder
-            // in increasing order from 0 to 6.
+            // in increasing order from 1000 to 1006 (the hashes start at 1000,
+            // rather than 0 to ensure they are well above the hashes reserved
+            // for system rows and facts).
 
-            // Therefore we add RowConfigurations() in the order that we expect
-            // they will be used by the TermTableBuilder. Each RowConfiguration
-            // will be used once.
+            // We add one RowConfigurations() for each term hash. Each
+            // RowConfiguration will be used once.
 
             //
             // Construct DocumentFrequencyTable
             //
             m_documentFrequencyTable.reset(new DocumentFrequencyTable());
 
+            // Start hash at 1000 to be well above the hashes reserved for system rows and facts.
+            const Term::Hash c_firstHash = 1000ull;
+            Term::Hash hash = c_firstHash;
+
             // Expect Rank:0, RowIndex: 0
-            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(0, 1, 1, 1), 0.9));
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1, 1), 0.9));
 
             // Expect Rank:0, RowIndex: 1
-            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(1, 1, 1, 1), 0.7));
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1, 1), 0.7));
 
             // Expect Rank:0, RowIndex: 2
-            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(2, 1, 1, 1), 0.07));
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1, 1), 0.07));
 
             // Expect Rank:0, RowIndex: 3
-            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(3, 1, 1, 1), 0.05));
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1, 1), 0.05));
 
             // Expect Rank:0, RowIndex: 2
-            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(4, 1, 1, 1), 0.02));
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1, 1), 0.02));
 
             // Expect Rank:0, RowIndex: 2 and Rank: 0, RowIndex: 3
-            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(5, 1, 1, 1), 0.0099));
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1, 1), 0.0099));
 
             // Expect Rank:0, RowIndex: 3 and Rank: 4, RowIndex: 0
-            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(6, 1, 1, 1), 0.0098));
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1, 1), 0.0098));
 
 
             //
@@ -126,13 +139,14 @@ namespace BitFunnel
                 rows.push_back(0);
             }
 
-            Term::Hash hash = 0ull;
+            // Restart hash at 1000 to be well above the hashes reserved for system rows and facts.
+            hash = c_firstHash;
 
             // First term configured as private rank 0 so it should go in its
             // own row.
             m_termTreatment.OpenConfiguration();
             m_termTreatment.AddEntry(0, 1, true);
-            m_termTreatment.CloseConfiguration();
+            m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, rows[0]++));
@@ -142,7 +156,7 @@ namespace BitFunnel
             // will be placed in its own row because of its high density of 0.7.
             m_termTreatment.OpenConfiguration();
             m_termTreatment.AddEntry(0, 1, false);
-            m_termTreatment.CloseConfiguration();
+            m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, rows[0]++));
@@ -153,7 +167,7 @@ namespace BitFunnel
             // row.
             m_termTreatment.OpenConfiguration();
             m_termTreatment.AddEntry(0, 1, false);
-            m_termTreatment.CloseConfiguration();
+            m_termTreatment.CloseConfiguration(hash);
 
             RowIndex third = rows[0];
             m_termTable.OpenTerm();
@@ -165,7 +179,7 @@ namespace BitFunnel
             // and seventh rows.
             m_termTreatment.OpenConfiguration();
             m_termTreatment.AddEntry(0, 1, false);
-            m_termTreatment.CloseConfiguration();
+            m_termTreatment.CloseConfiguration(hash);
 
             RowIndex fourth = rows[0];
             m_termTable.OpenTerm();
@@ -177,7 +191,7 @@ namespace BitFunnel
             // third row.
             m_termTreatment.OpenConfiguration();
             m_termTreatment.AddEntry(0, 1, false);
-            m_termTreatment.CloseConfiguration();
+            m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, third));
@@ -188,7 +202,7 @@ namespace BitFunnel
             // and fourth rows.
             m_termTreatment.OpenConfiguration();
             m_termTreatment.AddEntry(0, 2, false);
-            m_termTreatment.CloseConfiguration();
+            m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, third));
@@ -201,7 +215,7 @@ namespace BitFunnel
             m_termTreatment.OpenConfiguration();
             m_termTreatment.AddEntry(4, 1, false);
             m_termTreatment.AddEntry(0, 1, false);
-            m_termTreatment.CloseConfiguration();
+            m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
             m_termTable.AddRowId(RowId(0, 0, fourth));
@@ -210,6 +224,8 @@ namespace BitFunnel
 
             m_termTable.SetRowCounts(0, 4, 0);
             m_termTable.SetRowCounts(4, 1, 0);
+
+            m_termTable.SetFactCount(0);
         }
 
 
@@ -230,10 +246,16 @@ namespace BitFunnel
             return m_termTreatment;
         }
 
+        IFactSet const & GetFactSet() const
+        {
+            return m_factSet;
+        }
+
 private:
         std::unique_ptr<DocumentFrequencyTable> m_documentFrequencyTable;
         MockTermTreatment m_termTreatment;
         TermTable m_termTable;
+        FactSetBase m_factSet;
     };
 
 
@@ -250,10 +272,11 @@ private:
             // Run the TermTableBuilder to configure a TermTable.
             ITermTreatment const & treatment = environment.GetTermTreatment();
             DocumentFrequencyTable const & terms = environment.GetDocFrequencyTable();
+            IFactSet const & facts = environment.GetFactSet();
             TermTable termTable;
             double density = 0.1;
             double adhocFrequency = 0.0001;
-            TermTableBuilder builder(density, adhocFrequency, treatment, terms, termTable);
+            TermTableBuilder builder(density, adhocFrequency, treatment, terms, facts, termTable);
 
             builder.Print(std::cout);
 

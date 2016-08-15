@@ -39,6 +39,7 @@
 namespace BitFunnel
 {
     class DocumentFrequencyTable;   // TODO: IDocumentFrequencyTable
+    class IFactSet;
     class ITermTreatment;
     class ITermTable2;
 
@@ -49,6 +50,7 @@ namespace BitFunnel
                          double adhocFrequency,
                          ITermTreatment const & treatment,
                          IDocumentFrequencyTable const & terms,
+                         IFactSet const & facts,
                          ITermTable2 & termTable);
 
         virtual void Print(std::ostream& output) const override;

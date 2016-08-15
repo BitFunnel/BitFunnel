@@ -28,6 +28,7 @@
 #include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocumentFrequencyTable.h"
+#include "BitFunnel/Index/IFactSet.h"
 #include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/Index/ITermTableBuilder.h"
 #include "BitFunnel/ITermTreatment.h"
@@ -53,6 +54,8 @@ namespace BitFunnel
 
         auto treatment(Factories::CreateTreatmentPrivateShardRank0And3(density, snr));
 
+        auto facts(Factories::CreateFactSet());
+
         auto termTable(Factories::CreateTermTable());
 
         std::cout << "Starting TermTable build." << std::endl;
@@ -61,6 +64,7 @@ namespace BitFunnel
                                                                 adhocFrequency,
                                                                 *treatment,
                                                                 *terms,
+                                                                *facts,
                                                                 *termTable));
 
         termTableBuilder->Print(std::cout);

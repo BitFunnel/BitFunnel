@@ -130,9 +130,6 @@ namespace BitFunnel
 
         static Term CreateSystemTerm(SystemTerm term);
 
-
-        // TODO: this should actually be used.
-        // bool m_setRowCountsCalled;
         bool m_sealed;
 
         RowIndex m_start;

@@ -27,6 +27,7 @@
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Index/IFactSet.h"
 #include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/ITermTreatment.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
@@ -46,6 +47,7 @@ namespace BitFunnel
                                           double adhocFrequency,
                                           ITermTreatment const & treatment,
                                           IDocumentFrequencyTable const & terms,
+                                          IFactSet const & facts,
                                           ITermTable2 & termTable)
     {
         return
@@ -53,6 +55,7 @@ namespace BitFunnel
                                                                     adhocFrequency,
                                                                     treatment,
                                                                     terms,
+                                                                    facts,
                                                                     termTable));
     }
 
@@ -66,6 +69,7 @@ namespace BitFunnel
                                        double adhocFrequency,
                                        ITermTreatment const & treatment,
                                        IDocumentFrequencyTable const & terms,
+                                       IFactSet const & facts,
                                        ITermTable2 & termTable)
         : m_termTable(termTable),
           m_buildTime(0.0)
@@ -139,6 +143,8 @@ namespace BitFunnel
                                      m_rowAssigners[rank]->GetExplicitRowCount(),
                                      m_rowAssigners[rank]->GetAdhocRowCount());
         }
+
+        m_termTable.SetFactCount(facts.GetCount());
 
         m_termTable.Seal();
 
