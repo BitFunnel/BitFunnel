@@ -101,9 +101,7 @@ namespace BitFunnel
         }
         else
         {
-            // TODO: implement handling for fact
-            NotImplemented error("Fact rows not implemented.");
-            throw error;
+            return m_termTable.GetRowIdFact(m_rowIdStart + row);
         }
 
         // No special clause for ITermTable::Disposed as they return an empty
