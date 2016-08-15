@@ -60,7 +60,7 @@ namespace BitFunnel
     }
 
 
-    void TermToText::Write(std::ostream& output)
+    void TermToText::Write(std::ostream& output) const
     {
         CsvTsv::CsvTableFormatter formatter(output);
         CsvTsv::TableWriter writer(formatter);

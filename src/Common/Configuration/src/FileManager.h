@@ -41,6 +41,7 @@ namespace BitFunnel
         // IFileManager methods.
         //
         //virtual FileDescriptor0 BandTable() override;
+        //virtual FileDescriptor0 ClickStreamSuffixToMarketMap() override;
         //virtual FileDescriptor0 CommonNegatedTerms() override;
         //virtual FileDescriptor0 CommonPhrases() override;
         //virtual FileDescriptor0 DocFreqTable() override;
@@ -56,7 +57,7 @@ namespace BitFunnel
         //virtual FileDescriptor0 SortRankerConfig() override;
         //virtual FileDescriptor0 StreamNameToSuffixMap() override;
         //virtual FileDescriptor0 SuffixToClassificationMap() override;
-        //virtual FileDescriptor0 ClickStreamSuffixToMarketMap() override;
+        virtual FileDescriptor0 TermToText() override;
         //virtual FileDescriptor0 TierDefinition() override;
         //virtual FileDescriptor0 TermDisposeDefinition() override;
         //virtual FileDescriptor0 MetaWordTierHintMap() override;
@@ -79,5 +80,6 @@ namespace BitFunnel
         std::unique_ptr<IParameterizedFile0> m_documentLengthHistogram;
         std::unique_ptr<IParameterizedFile1> m_indexedIdfTable;
         std::unique_ptr<IParameterizedFile1> m_termTable;
+        std::unique_ptr<IParameterizedFile0> m_termToText;
     };
 }

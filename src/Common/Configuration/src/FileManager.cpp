@@ -52,18 +52,33 @@ namespace BitFunnel
           m_documentLengthHistogram(new ParameterizedFile0(intermediateDirectory,
                                                            "DocumentLengthHistogram",".csv" )),
           m_indexedIdfTable(new ParameterizedFile1(indexDirectory, "IndexedIdfTable", ".bin")),
-          m_termTable(new ParameterizedFile1(indexDirectory, "TermTable", ".bin"))
+          m_termTable(new ParameterizedFile1(indexDirectory, "TermTable", ".bin")),
+          m_termToText(new ParameterizedFile0(indexDirectory, "TermToText", ".bin"))
         //m_docTable(new ParameterizedFile1(indexDirectory, "DocTable", ".bin")),
         //m_indexSlice(new ParameterizedFile2(backupDirectory, "IndexSlice", ".bin"))
     {
     }
 
 
+    //
+    // FileDescriptor0 files.
+    //
+
     FileDescriptor0 FileManager::DocumentLengthHistogram()
     {
         return FileDescriptor0(*m_documentLengthHistogram);
     }
 
+
+    FileDescriptor0 FileManager::TermToText()
+    {
+        return FileDescriptor0(*m_termToText);
+    }
+
+
+    //
+    // FileDescriptor1 files.
+    //
 
     FileDescriptor1 FileManager::CumulativeTermCounts(size_t shard)
     {
@@ -94,6 +109,10 @@ namespace BitFunnel
     //    return FileDescriptor1(*m_docTable, shard);
     //}
 
+
+    //
+    // FileDescriptor2 files.
+    //
 
     //FileDescriptor2 FileManager::IndexSlice(size_t shard, size_t slice)
     //{

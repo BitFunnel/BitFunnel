@@ -67,6 +67,7 @@ namespace BitFunnel
         // files.
 
         //virtual FileDescriptor0 BandTable() = 0;
+        //virtual FileDescriptor0 ClickStreamSuffixToMarketMap() = 0;
         //virtual FileDescriptor0 CommonNegatedTerms() = 0;
         //virtual FileDescriptor0 CommonPhrases() = 0;
         //virtual FileDescriptor0 DocFreqTable() = 0;
@@ -82,7 +83,7 @@ namespace BitFunnel
         //virtual FileDescriptor0 SortRankerConfig() = 0;
         //virtual FileDescriptor0 StreamNameToSuffixMap() = 0;
         //virtual FileDescriptor0 SuffixToClassificationMap() = 0;
-        //virtual FileDescriptor0 ClickStreamSuffixToMarketMap() = 0;
+        virtual FileDescriptor0 TermToText() = 0;
         //virtual FileDescriptor0 TierDefinition() = 0;
         //virtual FileDescriptor0 TermDisposeDefinition() = 0;
         //virtual FileDescriptor0 MetaWordTierHintMap() = 0;

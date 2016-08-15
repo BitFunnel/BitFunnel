@@ -35,6 +35,7 @@
 #include "IRecycler.h"
 #include "ISliceBufferAllocator.h"
 #include "LoggerInterfaces/Logging.h"
+#include "TermToText.h"
 
 
 namespace BitFunnel
@@ -102,6 +103,12 @@ namespace BitFunnel
 
     void Ingestor::WriteStatistics(TermToText const * termToText) const
     {
+        if (termToText != nullptr)
+        {
+            auto out = m_fileManager.TermToText().OpenForWrite();
+            termToText->Write(*out);
+        }
+
         {
             auto out = m_fileManager.DocumentLengthHistogram().OpenForWrite();
             m_histogram.Write(*out);

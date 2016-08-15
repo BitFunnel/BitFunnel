@@ -57,7 +57,7 @@ namespace BitFunnel
         //   hash: Hexidecimal representation of the term hash
         //   text: Unquoted term text. May contain spaces if term's ngram size
         //         is greater than 1.
-        void Write(std::ostream& output);
+        void Write(std::ostream& output) const;
 
         // Adds a (Term::Hash, std::string) mapping. Note that only the first
         // mapping for a particular Term::Hash will be recorded. Subsequent
