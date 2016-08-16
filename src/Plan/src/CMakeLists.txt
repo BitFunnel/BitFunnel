@@ -1,6 +1,7 @@
 # BitFunnel/src/Plan/src
 
 set(CPPFILES
+    AbstractRow.cpp
     CompileNodes.cpp
 )
 

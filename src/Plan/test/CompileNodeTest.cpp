@@ -1,7 +1,7 @@
 // #include "gtest/gtest.h"
 
 // // #include "CompileNodes.h"
-// // #include "PlainTextCodeGenerator.h"
+// #include "PlainTextCodeGenerator.h"
 // #include "BlockAllocator.h"
 // #include "TextObjectFormatter.h"
 // #include "TextObjectParser.h"

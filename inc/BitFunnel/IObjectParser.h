@@ -5,10 +5,7 @@
 
 namespace BitFunnel
 {
-    namespace Allocators
-    {
-        class IAllocator;
-    }
+    class IAllocator;
 
     class IObjectParser
     {

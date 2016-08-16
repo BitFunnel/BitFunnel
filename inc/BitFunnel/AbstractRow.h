@@ -65,9 +65,9 @@ namespace BitFunnel
         bool IsInverted() const;
 
     private:
-        unsigned __int16 m_id;
-        unsigned __int16 m_rank;
-        unsigned __int16 m_rankDelta;
+        uint16_t m_id;
+        uint16_t m_rank;
+        uint16_t m_rankDelta;
         bool m_inverted;
     };
 }
