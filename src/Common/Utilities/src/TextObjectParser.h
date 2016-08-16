@@ -19,10 +19,10 @@ namespace BitFunnel
         typedef int (*TypenameConverter)(const char* name);
 
         TextObjectParser(std::istream& input,
-                         Allocators::IAllocator& allocator,
+                         IAllocator& allocator,
                          TypenameConverter typenameConverter);
 
-        Allocators::IAllocator& GetAllocator() const;
+        IAllocator& GetAllocator() const;
 
         int ReadTypeTag();
 
@@ -41,7 +41,7 @@ namespace BitFunnel
         bool ParseBool();
         unsigned ParseInt();
         unsigned ParseUInt();
-        unsigned __int64 ParseUInt64();
+        uint64_t ParseUInt64();
         double ParseDouble();
         char const * ParseStringLiteral();
         void ParseToken(std::string& token);
@@ -51,11 +51,10 @@ namespace BitFunnel
         void Expect(char c);
         void Expect(const char* text);
 
-        Allocators::IAllocator& m_allocator;
+        IAllocator& m_allocator;
         TypenameConverter m_typenameConverter;
 
         std::istream& m_input;
-        unsigned m_indentation;
 
         std::stack<unsigned> m_objectFields;
         std::stack<unsigned> m_listItems;

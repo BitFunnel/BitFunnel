@@ -14,4 +14,4 @@ add_subdirectory(Common/Configuration)
 add_subdirectory(Common/CsvTsv)
 add_subdirectory(Common/Utilities)
 add_subdirectory(Index)
-
+add_subdirectory(Plan)

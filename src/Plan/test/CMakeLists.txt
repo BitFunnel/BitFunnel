@@ -1,6 +1,7 @@
 # BitFunnel/src/Plan/test
 
 set(CPPFILES
+    CompileNodeTest.cpp
 )
 
 set(WINDOWS_CPPFILES

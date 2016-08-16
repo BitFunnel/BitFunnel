@@ -1,28 +1,24 @@
-#include "stdafx.h"
-
+#include <cstring>
 #include <iomanip>
 
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
+#include "BitFunnel/Allocators/IAllocator.h"
 #include "LoggerInterfaces/Logging.h"
 #include "BitFunnel/Term.h"
 #include "TextObjectParser.h"
-#include "BitFunnel/Tier.h"
-
 
 namespace BitFunnel
 {
     TextObjectParser::TextObjectParser(std::istream& input,
-                                       Allocators::IAllocator& allocator,
+                                       IAllocator& allocator,
                                        TypenameConverter typenameConverter)
-        : m_input(input),
-          m_allocator(allocator),
+        : m_allocator(allocator),
           m_typenameConverter(typenameConverter),
-          m_indentation(0)
+          m_input(input)
     {
     }
 
 
-    Allocators::IAllocator& TextObjectParser::GetAllocator() const
+    IAllocator& TextObjectParser::GetAllocator() const
     {
         return m_allocator;
     }
@@ -55,7 +51,8 @@ namespace BitFunnel
         std::string token;
         ParseToken(token);
 
-        LogAssertB(token.compare(name) == 0);
+        // TODO: what does compare do?
+        LogAssertB(token.compare(name) == 0, "");
 
         Expect(':');
     }
@@ -148,7 +145,8 @@ namespace BitFunnel
         }
         else if (token.compare("false") != 0)
         {
-            LogAbortB();
+            // TODO: what does compare do?
+            LogAbortB("");
         }
 
         return result;
@@ -159,7 +157,7 @@ namespace BitFunnel
     {
         int value = 0;
         m_input >> value;
-        LogAssertB(!m_input.fail());
+        LogAssertB(!m_input.fail(), "Unexpected input for ParseInt");
         return value;
     }
 
@@ -168,16 +166,16 @@ namespace BitFunnel
     {
         unsigned value = 0;
         m_input >> value;
-        LogAssertB(!m_input.fail());
+        LogAssertB(!m_input.fail(), "Unexpected input for ParseUInt");
         return value;
     }
 
 
-    unsigned __int64 TextObjectParser::ParseUInt64()
+    uint64_t TextObjectParser::ParseUInt64()
     {
-        unsigned __int64 value = 0;
+        uint64_t value = 0;
         m_input >> value;
-        LogAssertB(!m_input.fail());
+        LogAssertB(!m_input.fail(), "Unexpected input for ParseUint64");
         return value;
     }
 
@@ -186,7 +184,7 @@ namespace BitFunnel
     {
         double value = 0;
         m_input >> value;
-        LogAssertB(!m_input.fail());
+        LogAssertB(!m_input.fail(), "Unexpected input for ParseDouble");
         return value;
     }
 
@@ -210,7 +208,7 @@ namespace BitFunnel
 
         size_t bufferSize = resultString.size() + 1;
         char* result = static_cast<char*>(m_allocator.Allocate(sizeof(char) * bufferSize));
-        resultString._Copy_s(result, bufferSize, bufferSize - 1, 0);
+        strcpy(result, resultString.c_str());
         result[bufferSize - 1] = '\0';
 
         return result;
@@ -239,7 +237,7 @@ namespace BitFunnel
     void TextObjectParser::Expect(char c)
     {
         SkipWhite();
-        LogAssertB(m_input.peek() == c);
+        LogAssertB(m_input.peek() == c, "Unexpected character");
         m_input.get();
     }
 
@@ -252,6 +250,6 @@ namespace BitFunnel
             text++;
             m_input.get();
         }
-        LogAssertB(*text == '\0');
+        LogAssertB(*text == '\0', "Missing null byte");
     }
 }
