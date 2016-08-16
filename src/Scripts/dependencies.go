@@ -84,10 +84,11 @@ func main() {
 		if _, ok := seen[rawName]; !ok {
 			seen[rawName] = struct{}{}
 
-			fmt.Println("----",rawName)
+			fmt.Println("----", rawName)
 			paths := getFullPath(rawName, basepath)
 			for _, pp := range paths {
 				if (pp != "") {
+					fmt.Println("--", pp)
 					scanFile(pp, &queue)
 				}
 			}
