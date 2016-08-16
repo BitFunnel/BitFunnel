@@ -2,6 +2,7 @@
 
 set(CPPFILES
     main.cpp
+    TaskFactory.cpp
 )
 
 set(WINDOWS_CPPFILES

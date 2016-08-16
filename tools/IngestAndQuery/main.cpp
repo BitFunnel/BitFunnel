@@ -51,6 +51,8 @@
 #include "SliceBufferAllocator.h"
 // #include "TrackingSliceBufferAllocator.h"
 
+#include "Headers.h"
+
 
 namespace BitFunnel
 {
@@ -186,7 +188,7 @@ namespace BitFunnel
 }
 
 
-int main(int argc, char** argv)
+int main2(int argc, char** argv)
 {
     CmdLine::CmdLineParser parser(
         "StatisticsBuilder",
@@ -253,4 +255,56 @@ int main(int argc, char** argv)
     }
 
     return returnCode;
+}
+
+
+namespace BitFunnel
+{
+    void Test()
+    {
+        TaskFactory factory;
+
+        DelayedPrint::Register(factory);
+        Exit::Register(factory);
+
+        for (;;)
+        {
+            try
+            {
+                std::cout << factory.GetNextTaskId() << ": ";
+                std::cout.flush();
+
+                std::string line;
+                std::getline(std::cin, line);
+
+                std::unique_ptr<ITask> task(factory.CreateTask(line.c_str()));
+
+                if (task->GetType() == ITask::Type::Exit)
+                {
+                    break;
+                }
+
+                task->Execute();
+            }
+            catch (RecoverableError e)
+            {
+                std::cout
+                    << "Error: "
+                    << e.what()
+                    << std::endl;
+            }
+        }
+
+        //std::unique_ptr<ITask> task(factory.CreateTask("delay hello"));
+
+        //task->Execute();
+
+//        auto v = factory.Tokenize("one two \"three four\" five");
+    }
+}
+
+
+int main(int /*argc*/, char** /*argv*/)
+{
+    BitFunnel::Test();
 }
