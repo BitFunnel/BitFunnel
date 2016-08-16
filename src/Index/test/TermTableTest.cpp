@@ -318,7 +318,6 @@ namespace BitFunnel
             {
                 RowIdSequence rows(termTable.GetSoftDeletedTerm(), termTable);
                 auto it = rows.begin();
-                RowId observed = *it;
                 EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable2::SystemTerm::SoftDeleted));
 
                 // Verify that iterator contains a single row. NOTE: Cannot use
@@ -331,7 +330,6 @@ namespace BitFunnel
                 // Match All Term
                 RowIdSequence rows(termTable.GetMatchAllTerm(), termTable);
                 auto it = rows.begin();
-                RowId observed = *it;
                 EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable2::SystemTerm::MatchAll));
 
                 // Verify that iterator contains a single row. NOTE: Cannot use
@@ -344,7 +342,6 @@ namespace BitFunnel
                 // Soft Deleted Term
                 RowIdSequence rows(termTable.GetMatchNoneTerm(), termTable);
                 auto it = rows.begin();
-                RowId observed = *it;
                 EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable2::SystemTerm::MatchNone));
 
                 // Verify that iterator contains a single row. NOTE: Cannot use

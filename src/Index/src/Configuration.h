@@ -42,7 +42,7 @@ namespace BitFunnel
 
         // Returns true if the configuration is keeping term text in a
         // TermToText mapping.
-        bool KeepTermText() const;
+        bool KeepTermText() const override;
 
         // Returns the TermToText mapping. This diagnostic class provides
         // a mapping from Term hash to the Term's text in the corpus.

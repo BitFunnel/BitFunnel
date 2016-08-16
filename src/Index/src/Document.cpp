@@ -33,8 +33,8 @@
 namespace BitFunnel
 {
     Document::Document(IConfiguration const & configuration, DocId id)
-        : m_docId(id),
-          m_configuration(configuration),
+        : m_configuration(configuration),
+          m_docId(id),
           m_maxGramSize(configuration.GetMaxGramSize()),
           m_sourceByteSize(0),
           m_streamIsOpen(false)
