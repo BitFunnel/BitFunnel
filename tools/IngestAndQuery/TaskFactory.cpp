@@ -28,11 +28,59 @@
 #include <thread>
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Utilities/Factories.h"
 #include "Headers.h"
 
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // TaskPool
+    //
+    //*************************************************************************
+    TaskPool::TaskPool(size_t threadCount)
+        : m_queue(100)
+    {
+        for (size_t i = 0; i < threadCount; ++i)
+        {
+            m_threads.push_back(new Thread(*this));
+        }
+        m_threadManager = Factories::CreateThreadManager(m_threads);
+    }
+
+
+    bool TaskPool::TryEnqueue(std::unique_ptr<ITask> task)
+    {
+        return m_queue.TryEnqueue(std::move(task));
+    }
+
+
+    TaskPool::Thread::Thread(TaskPool& pool)
+        : m_pool(pool)
+    {
+    }
+
+
+    void TaskPool::Thread::EntryPoint()
+    {
+        std::cout << "Thread entered." << std::endl;
+        std::unique_ptr<ITask> task;
+        while (m_pool.m_queue.TryDequeue(task))
+        {
+            task->Execute();
+        }
+        std::cout << "Thread exited." << std::endl;
+    }
+
+
+    void TaskPool::Shutdown()
+    {
+        m_queue.Shutdown();
+        m_threadManager->WaitForThreads();
+    }
+
+
     //*************************************************************************
     //
     // TaskFactory
@@ -221,8 +269,8 @@ namespace BitFunnel
     //
     //*************************************************************************
     DelayedPrint::DelayedPrint(Id id, char const * message)
-        : TaskBase(id, Type::Synchronous),
-          m_sleepTime(1),
+        : TaskBase(id, Type::Asynchronous),
+          m_sleepTime(5),
           m_message(message)
     {
     }

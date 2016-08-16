@@ -99,18 +99,21 @@ namespace BitFunnel
 
         bool TryEnqueue(std::unique_ptr<ITask> task);
 
+        void Shutdown();
+
     private:
         class Thread : public IThreadBase
         {
         public:
             Thread(TaskPool& pool);
 
-            void EntryPoint();
+            virtual void EntryPoint() override;
 
         private:
             TaskPool& m_pool;
         };
 
+        // TODO: Convert ThreadManager to use std::vector<std::unique_ptr<IThreadBase>>
         std::vector<IThreadBase*> m_threads;
         std::unique_ptr<IThreadManager> m_threadManager;
 

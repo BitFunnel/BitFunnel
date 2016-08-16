@@ -24,14 +24,12 @@
 #include <stddef.h>
 
 #include "BitFunnel/Utilities/Factories.h"
-//#include "LoggerInterfaces/Logging.h"
 #include "ThreadManager.h"
 
 
 namespace BitFunnel
 {
     std::unique_ptr<IThreadManager> Factories::CreateThreadManager(
-// const std::vector<std::unique_ptr<IThreadBase>>& threads)
         const std::vector<IThreadBase*>& threads)
     {
         return std::unique_ptr<IThreadManager>(new ThreadManager(threads));

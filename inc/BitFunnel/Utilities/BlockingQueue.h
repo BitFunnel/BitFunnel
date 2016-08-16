@@ -28,6 +28,7 @@
 #include <deque>
 #include <mutex>
 
+#include "BitFunnel/NonCopyable.h"
 #include "LoggerInterfaces/Logging.h"
 
 namespace BitFunnel
@@ -40,7 +41,7 @@ namespace BitFunnel
     //
     //*************************************************************************
     template <typename T>
-    class BlockingQueue
+    class BlockingQueue : public NonCopyable
     {
     public:
         // Construct a BlockingQueue with a specified capacity.
@@ -136,7 +137,7 @@ namespace BitFunnel
         {
             return false;
         }
-        m_queue.push_back(value);
+        m_queue.push_back(std::move(value));
         m_dequeueCond.notify_one();
         return true;
     }
@@ -155,7 +156,7 @@ namespace BitFunnel
             m_finished = true;
             return false;
         }
-        value = m_queue.front();
+        value = std::move(m_queue.front());
         m_queue.pop_front();
         m_enqueueCond.notify_one();
         if (m_shutdown && m_queue.empty())
