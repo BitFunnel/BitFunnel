@@ -61,7 +61,7 @@ namespace BitFunnel
                                      size_t rowCount,
                                      size_t sharedRowCount) override;
         virtual size_t GetMutableFactRowCount(Rank rank) const override;
-        virtual PackedTermInfo GetTermInfo(const Term& term, TermKind& termKind) const override;
+        virtual std::tuple<PackedTermInfo, TermKind> GetTermInfo(const Term& term) const override;
 
     private:
         const std::vector<RowIndex> m_rowCounts;

@@ -24,6 +24,7 @@
 #pragma once
 
 #include <ostream>
+#include <tuple>
 
 #include "BitFunnel/BitFunnelTypes.h"   // Rank parameter.
 #include "BitFunnel/IInterface.h"       // Base class.
@@ -125,7 +126,7 @@ namespace BitFunnel
         // term. The PackedTermInfo structure contains information about the
         // term's rows. PackedTermInfo is used by TermInfo to implement RowId
         // enumeration for regular, adhoc and fact terms.
-        virtual PackedTermInfo GetTermInfo(const Term& term, TermKind& termKind) const = 0;
+        virtual std::tuple<PackedTermInfo, TermKind> GetTermInfo(const Term& term) const = 0;
 
         // Creates a term which is used to mark documents as soft-deleted.
         static Term GetSoftDeletedTerm();

@@ -41,8 +41,9 @@ namespace BitFunnel
         : m_hash(term.GetRawHash()),
           m_termTable(termTable)
     {
-        const PackedTermInfo info = termTable.GetTermInfo(term, m_termKind);
-        Initialize(info);
+        const auto info = termTable.GetTermInfo(term);
+        m_termKind = std::get<1>(info);
+        Initialize(std::get<0>(info));
     }
 
 
@@ -54,8 +55,9 @@ namespace BitFunnel
                         StreamId::MetaWord,
                         static_cast<Term::IdfX10>(0));
 
-        const PackedTermInfo info = termTable.GetTermInfo(term, m_termKind);
-        Initialize(info);
+        const auto info = termTable.GetTermInfo(term);
+        m_termKind = std::get<1>(info);
+        Initialize(std::get<0>(info));
     }
 
 
