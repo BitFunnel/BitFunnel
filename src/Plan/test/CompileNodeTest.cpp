@@ -2,7 +2,7 @@
 
 // // #include "CompileNodes.h"
 // // #include "PlainTextCodeGenerator.h"
-// // #include "PrivateHeapAllocator.h"
+// #include "BlockAllocator.h"
 // #include "TextObjectFormatter.h"
 // #include "TextObjectParser.h"
 
@@ -329,7 +329,7 @@
 //         {
 //             std::stringstream input(text);
 
-//             PrivateHeapAllocator allocator;
+//             BlockAllocator allocator;
 //             TextObjectParser parser(input, allocator, &CompileNode::GetType);
 
 //             CompileNode const & node = CompileNode::Parse(parser);
@@ -364,7 +364,7 @@
 //         {
 //             std::stringstream input(testCase.m_input);
 
-//             PrivateHeapAllocator allocator;
+//             BlockAllocator allocator;
 //             TextObjectParser parser(input, allocator, &CompileNode::GetType);
 
 //             CompileNode const & node = CompileNode::Parse(parser);

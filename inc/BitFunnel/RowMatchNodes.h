@@ -145,10 +145,10 @@ namespace BitFunnel
     {
     public:
         Builder(RowMatchNode const & parent,
-                Allocators::IAllocator& allocator);
+                IAllocator& allocator);
 
         Builder(RowMatchNode::NodeType nodeType,
-                Allocators::IAllocator& allocator);
+                IAllocator& allocator);
 
         void AddChild(RowMatchNode const * child);
 
@@ -156,14 +156,14 @@ namespace BitFunnel
 
         static RowMatchNode const *
         CreateReportNode(RowMatchNode const * child,
-                         Allocators::IAllocator& allocator);
+                         IAllocator& allocator);
 
         static RowMatchNode const *
         CreateRowNode(AbstractRow const & row,
-                      Allocators::IAllocator& allocator);
+                      IAllocator& allocator);
 
     private:
-        Allocators::IAllocator& m_allocator;
+        IAllocator& m_allocator;
         RowMatchNode::NodeType m_targetType;
         RowMatchNode const * m_firstChild;
         RowMatchNode const * m_node;

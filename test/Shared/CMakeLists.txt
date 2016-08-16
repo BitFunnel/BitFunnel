@@ -1,20 +1,20 @@
 # BitFunnel/test/Shared
 
 set(CPPFILES
-  IndexUtils.cpp
-  EmptyTermTable.cpp
-  MockFileManager.cpp
-  MockTermTable.cpp
+    IndexUtils.cpp
+    EmptyTermTable.cpp
+    MockFileManager.cpp
+    MockTermTable.cpp
 )
 
 set(PRIVATE_HFILES
 )
 
 set(PUBLIC_HFILES
-  IndexUtils.h
-  EmptyTermTable.h
-  MockFileManager.h
-  MockTermTable.h
+    IndexUtils.h
+    EmptyTermTable.h
+    MockFileManager.h
+    MockTermTable.h
 )
 
 COMBINE_FILE_LISTS()

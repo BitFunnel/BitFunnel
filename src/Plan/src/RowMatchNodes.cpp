@@ -337,7 +337,7 @@ namespace BitFunnel
     //
     //*************************************************************************
     RowMatchNode::Builder::Builder(RowMatchNode const & parent,
-                                   Allocators::IAllocator& allocator)
+                                   IAllocator& allocator)
         : m_allocator(allocator),
           m_targetType(parent.GetType()),
           m_firstChild(nullptr),
@@ -351,7 +351,7 @@ namespace BitFunnel
 
 
     RowMatchNode::Builder::Builder(RowMatchNode::NodeType nodeType,
-                                   Allocators::IAllocator& allocator)
+                                   IAllocator& allocator)
         : m_allocator(allocator),
           m_targetType(nodeType),
           m_firstChild(nullptr),
@@ -445,7 +445,7 @@ namespace BitFunnel
 
     RowMatchNode const *
     RowMatchNode::Builder::CreateReportNode(RowMatchNode const * child,
-                                            Allocators::IAllocator& allocator)
+                                            IAllocator& allocator)
     {
         return new (allocator.Allocate(sizeof(Report))) Report(child);
     }
@@ -453,7 +453,7 @@ namespace BitFunnel
 
     RowMatchNode const *
     RowMatchNode::Builder::CreateRowNode(AbstractRow const & row,
-                                         Allocators::IAllocator& allocator)
+                                         IAllocator& allocator)
     {
         return new (allocator.Allocate(sizeof(Row))) Row(row);
     }

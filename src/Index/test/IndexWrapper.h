@@ -89,7 +89,7 @@ namespace BitFunnel
         std::unique_ptr<ISliceBufferAllocator> m_sliceBufferAllocator;
         std::unique_ptr<SingleShardTermTableCollection> m_termTables;
         SynchronousRecycler m_recycler;
-        std::unique_ptr<Allocators::IAllocatorFactory> m_offlinePerDocumentDataAllocatorFactory;
+        std::unique_ptr<IAllocatorFactory> m_offlinePerDocumentDataAllocatorFactory;
         OfflinePerDocumentDataConfig m_offlinePerDocumentDataConfig;
         std::unique_ptr<IngestionIndex> m_index;
 
