@@ -35,7 +35,7 @@ namespace BitFunnel
         void Format(bool value);
         void Format(int value);
         void Format(unsigned value);
-        void Format(uint64_t value);
+        void Format(unsigned long value);
         void Format(double value);
         void Format(char const * value);
         void FormatStringLiteral(char const * value);

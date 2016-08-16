@@ -22,8 +22,8 @@ namespace BitFunnel
 
         parser.OpenList();
 
-        // Binary nodes must have exactly two children.
-        LogAssertB(parser.OpenListItem());
+        LogAssertB(parser.OpenListItem(),
+                   "binary nodes must have exactly two children; only found one?");
         T const & node = dynamic_cast<T const &>(ParseList<CompileNode, T>(parser));
 
         parser.CloseList();

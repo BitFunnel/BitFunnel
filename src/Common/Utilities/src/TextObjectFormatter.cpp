@@ -143,7 +143,7 @@ namespace BitFunnel
     }
 
 
-    void TextObjectFormatter::Format(uint64_t value)
+    void TextObjectFormatter::Format(unsigned long value)
     {
         m_output << value;
     }
