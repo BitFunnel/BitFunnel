@@ -1,12 +1,8 @@
-#include "stdafx.h"
-
 #include <iomanip>
 
 #include "BitFunnel/IPersistableObject.h"
 #include "BitFunnel/Term.h"
 #include "TextObjectFormatter.h"
-#include "BitFunnel/Tier.h"
-
 
 namespace BitFunnel
 {
@@ -147,7 +143,7 @@ namespace BitFunnel
     }
 
 
-    void TextObjectFormatter::Format(unsigned __int64 value)
+    void TextObjectFormatter::Format(uint64_t value)
     {
         m_output << value;
     }

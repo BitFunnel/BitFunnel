@@ -23,6 +23,7 @@ set(CPPFILES
     StreamUtilities.cpp
     TaskDistributor.cpp
     TaskDistributorThread.cpp
+    TextObjectFormatter.cpp
     TextObjectParser.cpp
     ThreadManager.cpp
     Token.cpp
@@ -50,6 +51,7 @@ set(PRIVATE_HFILES
     SimpleHashTable.h
     TaskDistributor.h
     TaskDistributorThread.h
+    TextObjectFormatter.h
     TextObjectParser.h
     TokenManager.h
     TokenTracker.h

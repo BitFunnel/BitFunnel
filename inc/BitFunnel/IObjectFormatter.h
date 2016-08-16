@@ -26,7 +26,7 @@ namespace BitFunnel
         virtual void Format(bool value) = 0;
         virtual void Format(int value) = 0;
         virtual void Format(unsigned value) = 0;
-        virtual void Format(unsigned __int64 value) = 0;
+        virtual void Format(uint64_t value) = 0;
         virtual void Format(double value) = 0;
         virtual void Format(const char* value) = 0;
         virtual void FormatStringLiteral(const char* value) = 0;
