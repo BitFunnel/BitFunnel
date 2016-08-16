@@ -63,11 +63,56 @@ namespace BitFunnel
     class ITaskFactory : public IInterface
     {
     public:
-        virtual void Register(char const * name,
-                              char const * documentation,
-                              ITask::Create create) = 0;
+        class Descriptor;
+
+        virtual void Register(std::unique_ptr<Descriptor> descriptor) = 0;
 
         virtual std::unique_ptr<ITask> CreateTask(char const * line) = 0;
+
+        virtual void Help(std::ostream& output, char const * command) const = 0;
+
+        class Descriptor
+        {
+        public:
+            Descriptor(char const * name,
+                       char const * oneLineDescription,
+                       char const * verboseDescription,
+                       ITask::Create creator)
+                : m_name(name),
+                m_oneLineDescription(oneLineDescription),
+                m_verboseDescription(verboseDescription),
+                m_creator(creator)
+            {
+            }
+
+            char const * GetName() const
+            {
+                return m_name;
+            }
+
+            char const * GetOneLineDescription() const
+            {
+                return m_oneLineDescription;
+            }
+
+            char const * GetVerboseDescription() const
+            {
+                return m_verboseDescription;
+            }
+
+            std::unique_ptr<ITask> Create(
+                ITask::Id id,
+                std::vector<std::string> const & tokens) const
+            {
+                return m_creator(id, tokens);
+            }
+
+        private:
+            char const * m_name;
+            char const * m_oneLineDescription;
+            char const * m_verboseDescription;
+            ITask::Create m_creator;
+        };
     };
 
 
@@ -76,19 +121,20 @@ namespace BitFunnel
     public:
         TaskFactory();
 
-        virtual void Register(char const * name,
-                              char const * documentation,
-                              ITask::Create create) override;
+        virtual void Register(std::unique_ptr<Descriptor> descriptor) override;
 
         virtual std::unique_ptr<ITask> CreateTask(char const * line) override;
+
+        virtual void Help(std::ostream& output, char const * command) const override;
 
         ITask::Id GetNextTaskId() const;
 
     private:
-        std::vector<std::string> Tokenize(char const * text);
+        static std::vector<std::string> Tokenize(char const * text);
 
         ITask::Id m_nextId;
-        std::map<std::string, ITask::Create> m_taskMap;
+        size_t m_maxNameLength;
+        std::map<std::string, std::unique_ptr<Descriptor>> m_taskMap;
     };
 
 
@@ -175,5 +221,27 @@ namespace BitFunnel
     private:
         size_t m_sleepTime;
         std::string m_message;
+    };
+
+
+    class Help : public TaskBase
+    {
+    public:
+        Help(Id id, char const * command);
+
+        static void Register(TaskFactory & factory);
+
+        static std::unique_ptr<ITask>
+            Create(Id id, std::vector<std::string> const & tokens);
+
+
+        //
+        // ITask methods
+        //
+
+        virtual void Execute() override;
+
+    private:
+        std::string m_command;
     };
 }

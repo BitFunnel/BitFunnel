@@ -21,7 +21,9 @@
 // THE SOFTWARE.
 
 
+#include <algorithm>
 #include <chrono>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -88,16 +90,16 @@ namespace BitFunnel
     //*************************************************************************
 
     TaskFactory::TaskFactory()
-      : m_nextId(0)
+      : m_nextId(0),
+        m_maxNameLength(0)
     {
     }
 
 
-    void TaskFactory::Register(char const * name,
-                               char const * /*documentation*/,
-                               ITask::Create create)
+    void TaskFactory::Register(std::unique_ptr<Descriptor> descriptor)
     {
-        std::string s(name);
+        std::string s(descriptor->GetName());
+        m_maxNameLength = std::max(m_maxNameLength, s.size());
         auto it = m_taskMap.find(s);
         if (it != m_taskMap.end())
         {
@@ -105,7 +107,7 @@ namespace BitFunnel
             throw error;
         }
 
-        m_taskMap.insert(std::make_pair(s, create));
+        m_taskMap.insert(std::make_pair(s, std::move(descriptor)));
     }
 
 
@@ -129,7 +131,7 @@ namespace BitFunnel
             throw error;
         }
 
-        return (*it).second(m_nextId++, tokens);
+        return (*it).second->Create(m_nextId++, tokens);
     }
 
 
@@ -208,6 +210,30 @@ namespace BitFunnel
         return tokens;
     }
 
+
+    void TaskFactory::Help(std::ostream & output,
+                           char const * /*command*/) const
+    {
+        output << "Available commands:" << std::endl;
+        for (auto & entry : m_taskMap)
+        {
+            Descriptor const & descriptor = *entry.second;
+            output
+                << "  "
+                << std::setw(m_maxNameLength) << std::left
+                << descriptor.GetName()
+                << "  "
+                << descriptor.GetOneLineDescription()
+                << std::endl;
+        }
+
+        output
+            << std::endl
+            << "Type help <command> for more information on a particular command."
+            << std::endl;
+    }
+
+
     //*************************************************************************
     //
     // TaskBase
@@ -245,7 +271,15 @@ namespace BitFunnel
 
     void Exit::Register(TaskFactory & factory)
     {
-        factory.Register("quit", "message", Create);
+        std::unique_ptr<ITaskFactory::Descriptor>
+            descriptor(new ITaskFactory::Descriptor(
+                "quit",
+                "waits for all current tasks to complete then exits.",
+                "quit\n"
+                "  Waits for all current tasks to complete then exits.",
+                Create));
+
+        factory.Register(std::move(descriptor));
     }
 
 
@@ -270,15 +304,23 @@ namespace BitFunnel
     //*************************************************************************
     DelayedPrint::DelayedPrint(Id id, char const * message)
         : TaskBase(id, Type::Asynchronous),
-          m_sleepTime(5),
-          m_message(message)
+        m_sleepTime(5),
+        m_message(message)
     {
     }
 
 
     void DelayedPrint::Register(TaskFactory & factory)
     {
-        factory.Register("delay", "<message>", Create);
+        std::unique_ptr<ITaskFactory::Descriptor>
+            descriptor(new ITaskFactory::Descriptor(
+                "delay",
+                "Prints a message after certain number of seconds",
+                "delay <message>\n"
+                "  Waits for 5 seconds then prints <message> to the console."
+                ,
+                Create));
+        factory.Register(std::move(descriptor));
     }
 
 
@@ -295,5 +337,55 @@ namespace BitFunnel
     {
         std::this_thread::sleep_for(std::chrono::seconds(m_sleepTime));
         std::cout << GetId() << ": " << m_message << std::endl;
+    }
+
+
+    //*************************************************************************
+    //
+    // Help
+    //
+    //*************************************************************************
+    Help::Help(Id id, char const * command)
+        : TaskBase(id, Type::Synchronous),
+          m_command((command == nullptr)? "" : command)
+    {
+    }
+
+
+    void Help::Register(TaskFactory & factory)
+    {
+        std::unique_ptr<ITaskFactory::Descriptor>
+            descriptor(new ITaskFactory::Descriptor(
+                "help",
+                "Displays a list of available commands.",
+                "help [<command>]\n"
+                "  Displays help on a specific command.\n"
+                "  If no command is specified, help displays\n"
+                "  a list of available commands."
+                ,
+                Create));
+        factory.Register(std::move(descriptor));
+    }
+
+
+    std::unique_ptr<ITask>
+        Help::Create(Id id,
+                     std::vector<std::string> const & tokens)
+    {
+        // TODO: error checking
+        if (tokens.size() == 1)
+        {
+            return std::unique_ptr<ITask>(new Help(id, nullptr));
+        }
+        else
+        {
+            return std::unique_ptr<ITask>(new Help(id, tokens[1].c_str()));
+        }
+    }
+
+
+    void Help::Execute()
+    {
+        std::cout << GetId() << ": " << "Help on " << m_command << std::endl;
     }
 }

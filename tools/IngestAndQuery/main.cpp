@@ -267,6 +267,9 @@ namespace BitFunnel
 
         DelayedPrint::Register(factory);
         Exit::Register(factory);
+        Help::Register(factory);
+
+        factory.Help(std::cout, nullptr);
 
         for (;;)
         {
