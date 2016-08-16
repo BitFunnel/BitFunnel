@@ -18,6 +18,13 @@ namespace BitFunnel
         class Binary;
         class Unary;
 
+        // RankDown are "normal" nodes. AndRowJz ands something into an
+        // accumulator.
+        //
+        // RankZero nodes are for things that can't be done as vectored
+        // calculations -- they produce a single bit. AndTree gives you a single
+        // bit.
+
         // RankDown nodes
         class AndRowJz;
         class LoadRowJz;

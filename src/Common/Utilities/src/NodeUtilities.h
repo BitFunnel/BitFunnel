@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stddef.h>                                  // For nullptr.
+#include <stddef.h>                           // For nullptr.
 
 #include "BitFunnel/Allocators/IAllocator.h"  // Used by template definitions.
 #include "BitFunnel/Classification.h"         // Used by template definitions.
