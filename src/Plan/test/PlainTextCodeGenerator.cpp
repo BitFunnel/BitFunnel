@@ -1,8 +1,4 @@
-#include "stdafx.h"
-
-#include "BitFunnel/AbstractRow.h"
 #include "PlainTextCodeGenerator.h"
-#include "BitFunnel/RowMatchNodes.h"
 #include "TextObjectFormatter.h"
 
 

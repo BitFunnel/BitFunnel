@@ -2,6 +2,7 @@
 
 set(CPPFILES
     CompileNodeTest.cpp
+    PlainTextCodeGenerator.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -11,6 +12,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    PlainTextCodeGenerator.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
