@@ -7,7 +7,7 @@ namespace BitFunnel
     class IObjectFormatter
     {
     public:
-        virtual ~IObjectFormatter() {};
+        virtual ~IObjectFormatter() {}
 
         virtual void OpenObject(const IPersistableObject& object) = 0;
         virtual void OpenObjectField(const char* name) = 0;

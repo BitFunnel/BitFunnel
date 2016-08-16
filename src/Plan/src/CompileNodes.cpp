@@ -216,7 +216,15 @@ namespace BitFunnel
 
     void CompileNode::AndRowJz::Compile(ICodeGenerator & code) const
     {
+// TODO: fix types so we don't lose precision here.
+#ifdef _MSC_VER
+#pragma warning (push)
+#pragma warning (disable:4267)
+#endif
         code.AndRow(m_row.GetId(), m_row.IsInverted(), m_row.GetRankDelta());
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
         ICodeGenerator::Label label = code.AllocateLabel();
         code.Jz(label);
         m_child.Compile(code);
@@ -288,7 +296,15 @@ namespace BitFunnel
 
     void CompileNode::LoadRowJz::Compile(ICodeGenerator & code) const
     {
+// TODO: fix types so we don't lose precision here.
+#ifdef _MSC_VER
+#pragma warning (push)
+#pragma warning (disable:4267)
+#endif
         code.LoadRow(m_row.GetId(), m_row.IsInverted(), m_row.GetRankDelta());
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
         ICodeGenerator::Label label = code.AllocateLabel();
         code.Jz(label);
         m_child.Compile(code);
@@ -571,7 +587,15 @@ namespace BitFunnel
 
     void CompileNode::LoadRow::Compile(ICodeGenerator & code) const
     {
+// TODO: fix types so we don't lose precision here.
+#ifdef _MSC_VER
+#pragma warning (push)
+#pragma warning (disable:4267)
+#endif
         code.LoadRow(m_row.GetId(), m_row.IsInverted(), m_row.GetRankDelta());
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
     }
 
 

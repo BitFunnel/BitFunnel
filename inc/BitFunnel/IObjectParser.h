@@ -10,7 +10,7 @@ namespace BitFunnel
     class IObjectParser
     {
     public:
-        virtual ~IObjectParser() {};
+        virtual ~IObjectParser() {}
 
         virtual IAllocator& GetAllocator() const = 0;
 

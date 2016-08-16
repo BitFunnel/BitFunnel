@@ -208,7 +208,14 @@ namespace BitFunnel
 
         size_t bufferSize = resultString.size() + 1;
         char* result = static_cast<char*>(m_allocator.Allocate(sizeof(char) * bufferSize));
+#ifdef _MSC_VER
+#pragma warning (push)
+#pragma warning (disable:4996)
+#endif
         strcpy(result, resultString.c_str());
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
         result[bufferSize - 1] = '\0';
 
         return result;
