@@ -33,20 +33,27 @@
 
 namespace BitFunnel
 {
-    void REPL(char const * /*directory*/,
+    void REPL(char const * directory,
+              size_t gramSize,
               size_t threadCount)
     {
         std::cout
             << "Welcome to BitFunnel!" << std::endl
             << "Starting " << threadCount
-            << " thread" << ((threadCount == 1) ? "" : "s") << std::endl;
+            << " thread" << ((threadCount == 1) ? "" : "s") << std::endl
+            << std::endl
+            << "directory = \"" << directory << "\"" << std::endl
+            << "gram size = " << gramSize << std::endl
+            << std::endl;
 
         std::cout
             << std::endl
             << "Type \"help\" to get started." << std::endl
             << std::endl;
 
-        Environment environment(threadCount);
+        Environment environment(directory,
+                                gramSize,
+                                threadCount);
         TaskFactory & factory = environment.GetTaskFactory();
         TaskPool & taskPool = environment.GetTaskPool();
 

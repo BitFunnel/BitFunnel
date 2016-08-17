@@ -29,5 +29,6 @@ namespace BitFunnel
     // Provides interactive console with commands for ingesting documents
     // and running queries.
     void REPL(char const * directory,
+              size_t gramSize,
               size_t threadCount);
 }

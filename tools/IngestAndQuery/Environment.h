@@ -24,18 +24,22 @@
 
 #include <memory>                   // std::unique_ptr embedded.
 
+#include "BitFunnel/IFileManager.h" // Parameterizes std::unique_ptr.
 #include "BitFunnel/Noncopyable.h"  // Base class.
 
 
 namespace BitFunnel
 {
+    class IFileManager;
     class TaskFactory;
     class TaskPool;
 
     class Environment : public NonCopyable
     {
     public:
-        Environment(size_t threadCount);
+        Environment(char const * directory,
+                    size_t gramSize,
+                    size_t threadCount);
 
         TaskFactory & GetTaskFactory() const;
 
@@ -46,5 +50,7 @@ namespace BitFunnel
 
         std::unique_ptr<TaskFactory> m_taskFactory;
         std::unique_ptr<TaskPool> m_taskPool;
+
+        std::unique_ptr<IFileManager> m_fileManager;
     };
 }

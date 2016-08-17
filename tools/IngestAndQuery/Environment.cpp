@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include "BitFunnel/Configuration/Factories.h"
 #include "Commands.h"
 #include "Environment.h"
 #include "TaskPool.h"
@@ -29,13 +30,56 @@
 
 namespace BitFunnel
 {
-    Environment::Environment(size_t threadCount)
+    Environment::Environment(char const * directory,
+                             size_t /*gramSize*/,
+                             size_t threadCount)
         // TODO: Don't like passing *this to TaskFactory.
         // What if TaskFactory calls back before Environment is fully initialized?
         : m_taskFactory(new TaskFactory(*this)),
           m_taskPool(new TaskPool(threadCount))
     {
         RegisterCommands();
+
+        m_fileManager = Factories::CreateFileManager(directory,
+                                                     directory,
+                                                     directory);
+
+        //DocumentDataSchema schema;
+
+        //std::unique_ptr<IRecycler> recycler =
+        //    std::unique_ptr<IRecycler>(new Recycler());
+        //auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
+
+        //static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
+        //const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, schema, *termTable);
+
+        //std::unique_ptr<SliceBufferAllocator>
+        //    sliceAllocator(new SliceBufferAllocator(sliceBufferSize, 16));
+
+        //auto shardDefinition = Factories::CreateShardDefinition();
+        //// shardDefinition->AddShard(1000);
+        //// shardDefinition->AddShard(2000);
+        //// shardDefinition->AddShard(3000);
+
+        //const std::unique_ptr<IIngestor>
+        //    ingestor(Factories::CreateIngestor(*fileManager,
+        //                                       schema,
+        //                                       *recycler,
+        //                                       *termTable,
+        //                                       *shardDefinition,
+        //                                       *sliceAllocator));
+
+        //const std::unique_ptr<IIndexedIdfTable>
+        //    idfTable(Factories::CreateIndexedIdfTable());
+
+        //// Arbitrary maxGramSize that is greater than 1. For initial tests.
+        //// TODO: Choose correct maxGramSize.
+        //std::unique_ptr<IConfiguration>
+        //    configuration(
+        //        Factories::CreateConfiguration(
+        //            static_cast<Term::GramSize>(gramSize),
+        //            generateTermToText,
+        //            *idfTable));
     }
 
 
