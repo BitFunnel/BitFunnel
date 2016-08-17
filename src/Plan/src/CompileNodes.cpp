@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "BitFunnel/AbstractRow.h"
 #include "CompileNodes.h"
 #include "CompileNodeUtilities.h"
