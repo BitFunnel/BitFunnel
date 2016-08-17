@@ -35,8 +35,10 @@ namespace BitFunnel
     // Exit
     //
     //*************************************************************************
-    Exit::Exit(Environment & environment)
-        : TaskBase(environment, 0, Type::Exit)
+    Exit::Exit(Environment & environment,
+               Id id,
+               std::vector<std::string> const & /*tokens*/)
+        : TaskBase(environment, id, Type::Exit)
     {
     }
 
@@ -49,20 +51,9 @@ namespace BitFunnel
                 "waits for all current tasks to complete then exits.",
                 "quit\n"
                 "  Waits for all current tasks to complete then exits.",
-                Create));
+                Create<Exit>));
 
         factory.Register(std::move(descriptor));
-    }
-
-
-    std::unique_ptr<ITask>
-        Exit::Create(Environment & environment,
-                     Id /*id*/,
-                     std::vector<std::string> const & /*tokens*/)
-    {
-        // TODO: error checking
-        return std::unique_ptr<ITask>(
-            new Exit(environment));
     }
 
 
@@ -77,11 +68,20 @@ namespace BitFunnel
     // DelayedPrint
     //
     //*************************************************************************
-    DelayedPrint::DelayedPrint(Environment & environment, Id id, char const * message)
+    DelayedPrint::DelayedPrint(Environment & environment,
+                               Id id,
+                               std::vector<std::string> const & tokens)
         : TaskBase(environment, id, Type::Asynchronous),
-        m_sleepTime(5),
-        m_message(message)
+        m_sleepTime(5)
     {
+        if (tokens.size() > 1)
+        {
+            m_message = tokens[1];
+        }
+        else
+        {
+            m_message = "(no message)";
+        }
     }
 
 
@@ -94,19 +94,8 @@ namespace BitFunnel
                 "delay <message>\n"
                 "  Waits for 5 seconds then prints <message> to the console."
                 ,
-                Create));
+                Create<DelayedPrint>));
         factory.Register(std::move(descriptor));
-    }
-
-
-    std::unique_ptr<ITask>
-        DelayedPrint::Create(Environment & environment,
-                             Id id,
-                             std::vector<std::string> const & tokens)
-    {
-        // TODO: error checking
-        return std::unique_ptr<ITask>(
-            new DelayedPrint(environment, id, tokens[1].c_str()));
     }
 
 
@@ -144,18 +133,8 @@ namespace BitFunnel
                 "  Displays help on a specific command.\n"
                 "  If no command is specified, help displays\n"
                 "  a list of available commands.",
-                Create));
+                Create<Help>));
         factory.Register(std::move(descriptor));
-    }
-
-
-    std::unique_ptr<ITask>
-        Help::Create(Environment & environment,
-                     Id id,
-                     std::vector<std::string> const & tokens)
-    {
-        return std::unique_ptr<ITask>(
-            new Help(environment, id, tokens));
     }
 
 

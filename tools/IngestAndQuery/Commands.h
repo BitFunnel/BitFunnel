@@ -30,14 +30,11 @@ namespace BitFunnel
     class Exit : public TaskBase
     {
     public:
-        Exit(Environment & environment);
+        Exit(Environment & environment,
+             Id id,
+             std::vector<std::string> const & tokens);
 
         static void Register(TaskFactory & factory);
-
-        static std::unique_ptr<ITask>
-            Create(Environment & environment,
-                   Id id,
-                   std::vector<std::string> const & tokens);
 
 
         //
@@ -51,14 +48,11 @@ namespace BitFunnel
     class DelayedPrint : public TaskBase
     {
     public:
-        DelayedPrint(Environment & environment, Id id, char const * message);
+        DelayedPrint(Environment & environment,
+                     Id id,
+                     std::vector<std::string> const & tokens);
 
         static void Register(TaskFactory & factory);
-
-        static std::unique_ptr<ITask>
-            Create(Environment & environment,
-                   Id id,
-                   std::vector<std::string> const & tokens);
 
 
         //
@@ -81,11 +75,6 @@ namespace BitFunnel
              std::vector<std::string> const & tokens);
 
         static void Register(TaskFactory & factory);
-
-        static std::unique_ptr<ITask>
-            Create(Environment & environment,
-                   Id id,
-                   std::vector<std::string> const & tokens);
 
 
         //

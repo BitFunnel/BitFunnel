@@ -40,6 +40,15 @@ namespace BitFunnel
 
         virtual Environment & GetEnvironment() const override;
 
+        template <class T>
+        static std::unique_ptr<ITask> Create(Environment & environment,
+                                             Id id,
+                                             std::vector<std::string> const & tokens)
+        {
+            return std::unique_ptr<ITask>(
+                new T(environment, id, tokens));
+        };
+
     private:
         Environment & m_environment;
         Id m_id;
