@@ -27,6 +27,7 @@
 
 #include "BitFunnel/Index/IDocumentDataSchema.h"
 
+
 namespace BitFunnel
 {
     //*************************************************************************

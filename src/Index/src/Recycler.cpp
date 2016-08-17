@@ -21,10 +21,12 @@
 // THE SOFTWARE.
 
 
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Token.h"
 #include "LoggerInterfaces/Logging.h"
 #include "Recycler.h"
 #include "Slice.h"
+
 
 namespace BitFunnel
 {
@@ -33,6 +35,12 @@ namespace BitFunnel
     // Recycler.
     //
     //*************************************************************************
+    std::unique_ptr<IRecycler> Factories::CreateRecycler()
+    {
+        return std::unique_ptr<IRecycler>(new Recycler());
+    }
+
+
     // TODO: put this arbitrary 100 constant somewhere
     Recycler::Recycler()
         : m_queue (std::unique_ptr<BlockingQueue<IRecyclable*>>

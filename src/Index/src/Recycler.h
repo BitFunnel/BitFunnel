@@ -27,9 +27,9 @@
 #include <vector>
 
 #include "BitFunnel/NonCopyable.h"
+#include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Utilities/BlockingQueue.h"
 #include "IRecyclable.h"
-#include "IRecycler.h"
 
 
 namespace BitFunnel

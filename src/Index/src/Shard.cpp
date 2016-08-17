@@ -23,10 +23,10 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/TermInfo.h"
 #include "IRecyclable.h"
-#include "IRecycler.h"
 #include "ISliceBufferAllocator.h"
 #include "LoggerInterfaces/Logging.h"
 #include "Recycler.h"

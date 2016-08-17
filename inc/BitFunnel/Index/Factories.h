@@ -71,9 +71,11 @@ namespace BitFunnel
             CreateIndexedIdfTable(std::istream& input,
                                   Term::IdfX10 defaultIdf);
 
+        std::unique_ptr<IRecycler> CreateRecycler();
+
         std::unique_ptr<ITermTable2> CreateTermTable();
 
-        std::unique_ptr<ITermTableBuilder> 
+        std::unique_ptr<ITermTableBuilder>
             CreateTermTableBuilder(double density,
                                    double adhocFrequency,
                                    ITermTreatment const & treatment,

@@ -22,10 +22,12 @@
 
 #pragma once
 
-#include <memory>                   // std::unique_ptr embedded.
+#include <memory>                                   // std::unique_ptr embedded.
 
-#include "BitFunnel/IFileManager.h" // Parameterizes std::unique_ptr.
-#include "BitFunnel/Noncopyable.h"  // Base class.
+#include "BitFunnel/IFileManager.h"                 // Parameterizes std::unique_ptr.
+#include "BitFunnel/Index/IDocumentDataSchema.h"    // Parameterizes std::unique_ptr.
+#include "BitFunnel/Index/IRecycler.h"              // Parameterizes std::unique_ptr.
+#include "BitFunnel/Noncopyable.h"                  // Base class.
 
 
 namespace BitFunnel
@@ -45,12 +47,24 @@ namespace BitFunnel
 
         TaskPool & GetTaskPool() const;
 
+        void StartIndex();
+        void StopIndex();
+
     private:
         void RegisterCommands();
+
+        std::string m_directory;
 
         std::unique_ptr<TaskFactory> m_taskFactory;
         std::unique_ptr<TaskPool> m_taskPool;
 
+
+        //
+        // Members initialized by StartIndex().
+        //
+
         std::unique_ptr<IFileManager> m_fileManager;
+        std::unique_ptr<IDocumentDataSchema> m_schema;
+        std::unique_ptr<IRecycler> m_recycler;
     };
 }

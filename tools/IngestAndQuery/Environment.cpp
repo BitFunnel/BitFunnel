@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Index/Factories.h"
 #include "Commands.h"
 #include "Environment.h"
 #include "TaskPool.h"
@@ -33,20 +34,53 @@ namespace BitFunnel
                              size_t threadCount)
         // TODO: Don't like passing *this to TaskFactory.
         // What if TaskFactory calls back before Environment is fully initialized?
-        : m_taskFactory(new TaskFactory(*this)),
+        : m_directory(directory),
+          m_taskFactory(new TaskFactory(*this)),
           m_taskPool(new TaskPool(threadCount))
     {
         RegisterCommands();
 
+    }
+
+
+    TaskFactory & Environment::GetTaskFactory() const
+    {
+        return *m_taskFactory;
+    }
+
+
+    TaskPool & Environment::GetTaskPool() const
+    {
+        return *m_taskPool;
+    }
+
+
+    void Environment::RegisterCommands()
+    {
+        m_taskFactory->RegisterCommand<DelayedPrint>();
+        m_taskFactory->RegisterCommand<Exit>();
+        m_taskFactory->RegisterCommand<Help>();
+        m_taskFactory->RegisterCommand<Ingest>();
+        m_taskFactory->RegisterCommand<Query>();
+        m_taskFactory->RegisterCommand<Script>();
+        m_taskFactory->RegisterCommand<Show>();
+        m_taskFactory->RegisterCommand<Status>();
+    }
+
+
+    void Environment::StartIndex()
+    {
+        char const * directory = m_directory.c_str();
         m_fileManager = Factories::CreateFileManager(directory,
                                                      directory,
                                                      directory);
 
-        //DocumentDataSchema schema;
+        m_schema = Factories::CreateDocumentDataSchema();
 
-        //std::unique_ptr<IRecycler> recycler =
-        //    std::unique_ptr<IRecycler>(new Recycler());
-        //auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
+        m_recycler = Factories::CreateRecycler();
+
+//        auto background = std::async(std::launch::async, &IRecycler::Run, m_recycler.get());
+
 
         //static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
         //const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, schema, *termTable);
@@ -81,27 +115,8 @@ namespace BitFunnel
     }
 
 
-    TaskFactory & Environment::GetTaskFactory() const
+    void Environment::StopIndex()
     {
-        return *m_taskFactory;
-    }
-
-
-    TaskPool & Environment::GetTaskPool() const
-    {
-        return *m_taskPool;
-    }
-
-
-    void Environment::RegisterCommands()
-    {
-        m_taskFactory->RegisterCommand<DelayedPrint>();
-        m_taskFactory->RegisterCommand<Exit>();
-        m_taskFactory->RegisterCommand<Help>();
-        m_taskFactory->RegisterCommand<Ingest>();
-        m_taskFactory->RegisterCommand<Query>();
-        m_taskFactory->RegisterCommand<Script>();
-        m_taskFactory->RegisterCommand<Show>();
-        m_taskFactory->RegisterCommand<Status>();
+        m_recycler->Shutdown();
     }
 }

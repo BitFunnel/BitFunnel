@@ -44,14 +44,25 @@ namespace BitFunnel
             << "gram size = " << gramSize << std::endl
             << std::endl;
 
+        Environment environment(directory,
+                                gramSize,
+                                threadCount);
+
+        std::cout
+            << "Starting index ..."
+            << std::endl;
+
+        environment.StartIndex();
+
+        std::cout
+            << "Index started successfully."
+            << std::endl;
+
         std::cout
             << std::endl
             << "Type \"help\" to get started." << std::endl
             << std::endl;
 
-        Environment environment(directory,
-                                gramSize,
-                                threadCount);
         TaskFactory & factory = environment.GetTaskFactory();
         TaskPool & taskPool = environment.GetTaskPool();
 
@@ -91,5 +102,6 @@ namespace BitFunnel
         }
 
         taskPool.Shutdown();
+        environment.StopIndex();
     }
 }
