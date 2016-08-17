@@ -106,7 +106,6 @@ namespace BitFunnel
         template <class T>
         void RegisterCommand()
         {
-            auto docs = T::GetDocumentation();
             std::unique_ptr<Descriptor> descriptor(
                 new Descriptor(T::GetDocumentation(),
                                Create<T>));
