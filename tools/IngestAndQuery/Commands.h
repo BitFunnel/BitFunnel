@@ -27,18 +27,6 @@
 
 namespace BitFunnel
 {
-    class Exit : public TaskBase
-    {
-    public:
-        Exit(Environment & environment,
-             Id id,
-             char const * parameters);
-
-        virtual void Execute() override;
-        static ITask::Documentation GetDocumentation();
-    };
-
-
     class DelayedPrint : public TaskBase
     {
     public:
@@ -55,6 +43,18 @@ namespace BitFunnel
     };
 
 
+    class Exit : public TaskBase
+    {
+    public:
+        Exit(Environment & environment,
+             Id id,
+             char const * parameters);
+
+        virtual void Execute() override;
+        static ITask::Documentation GetDocumentation();
+    };
+
+
     class Help : public TaskBase
     {
     public:
@@ -67,5 +67,49 @@ namespace BitFunnel
 
     private:
         std::string m_command;
+    };
+
+
+    class Ingest : public TaskBase
+    {
+    public:
+        Ingest(Environment & environment,
+               Id id,
+               char const * parameters);
+
+        virtual void Execute() override;
+        static ITask::Documentation GetDocumentation();
+
+    private:
+        bool m_manifest;
+        std::string m_path;
+    };
+
+
+    class Query : public TaskBase
+    {
+    public:
+        Query(Environment & environment,
+              Id id,
+              char const * parameters);
+
+        virtual void Execute() override;
+        static ITask::Documentation GetDocumentation();
+
+    private:
+        bool m_isSingleQuery;
+        std::string m_query;
+    };
+
+
+    class Status : public TaskBase
+    {
+    public:
+        Status(Environment & environment,
+               Id id,
+               char const * parameters);
+
+        virtual void Execute() override;
+        static ITask::Documentation GetDocumentation();
     };
 }

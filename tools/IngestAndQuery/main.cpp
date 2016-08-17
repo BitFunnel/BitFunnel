@@ -20,65 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>
-
-#include "BitFunnel/Exceptions.h"
-#include "Environment.h"
-#include "TaskFactory.h"
-#include "TaskPool.h"
-
-
-namespace BitFunnel
-{
-    void Test()
-    {
-        const size_t threadCount = 1;
-
-        Environment environment(threadCount);
-        TaskFactory & factory = environment.GetTaskFactory();
-        TaskPool & taskPool = environment.GetTaskPool();
-
-        for (;;)
-        {
-            try
-            {
-                std::cout << factory.GetNextTaskId() << ": ";
-                std::cout.flush();
-
-                std::string line;
-                std::getline(std::cin, line);
-
-                std::unique_ptr<ITask> task(factory.CreateTask(line.c_str()));
-
-                if (task->GetType() == ITask::Type::Exit)
-                {
-                    task->Execute();
-                    break;
-                }
-                else if (task->GetType() == ITask::Type::Asynchronous)
-                {
-                    taskPool.TryEnqueue(std::move(task));
-                }
-                else
-                {
-                    task->Execute();
-                }
-            }
-            catch (RecoverableError e)
-            {
-                std::cout
-                    << "Error: "
-                    << e.what()
-                    << std::endl;
-            }
-        }
-
-        taskPool.Shutdown();
-    }
-}
+#include "REPL.h"
 
 
 int main(int /*argc*/, char** /*argv*/)
 {
-    BitFunnel::Test();
+    BitFunnel::REPL("c:\\temp\\foobar", 2);
 }

@@ -4,6 +4,7 @@ set(CPPFILES
     main.cpp
     Commands.cpp
     Environment.cpp
+    REPL.cpp
     TaskFactory.cpp
     TaskPool.cpp
 )
@@ -17,6 +18,7 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     Commands.h
     Environment.h
+    REPL.h
     TaskBase.h
     TaskFactory.h
     TaskPool.h

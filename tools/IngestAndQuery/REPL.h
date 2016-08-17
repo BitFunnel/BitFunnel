@@ -22,42 +22,12 @@
 
 #pragma once
 
-#include "Commands.h"
-#include "Environment.h"
-#include "TaskPool.h"
-
 
 namespace BitFunnel
 {
-    Environment::Environment(size_t threadCount)
-        // TODO: Don't like passing *this to TaskFactory.
-        // What if TaskFactory calls back before Environment is fully initialized?
-        : m_taskFactory(new TaskFactory(*this)),
-          m_taskPool(new TaskPool(threadCount))
-    {
-        RegisterCommands();
-    }
-
-
-    TaskFactory & Environment::GetTaskFactory() const
-    {
-        return *m_taskFactory;
-    }
-
-
-    TaskPool & Environment::GetTaskPool() const
-    {
-        return *m_taskPool;
-    }
-
-
-    void Environment::RegisterCommands()
-    {
-        m_taskFactory->RegisterCommand<DelayedPrint>();
-        m_taskFactory->RegisterCommand<Exit>();
-        m_taskFactory->RegisterCommand<Help>();
-        m_taskFactory->RegisterCommand<Ingest>();
-        m_taskFactory->RegisterCommand<Query>();
-        m_taskFactory->RegisterCommand<Status>();
-    }
+    // Read-Eval-Print-Loop for BitFunnel Index.
+    // Provides interactive console with commands for ingesting documents
+    // and running queries.
+    void REPL(char const * directory,
+              size_t threadCount);
 }

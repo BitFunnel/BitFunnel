@@ -86,7 +86,8 @@ namespace BitFunnel
 
             output
                 << std::endl
-                << "Type help <command> for more information on a particular command."
+                << "Type \"help <command>\" for more information on a particular command."
+                << std::endl
                 << std::endl;
         }
         else

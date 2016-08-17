@@ -46,12 +46,13 @@ namespace BitFunnel
         class Thread : public IThreadBase
         {
         public:
-            Thread(TaskPool& pool);
+            Thread(TaskPool& pool, size_t id);
 
             virtual void EntryPoint() override;
 
         private:
             TaskPool& m_pool;
+            size_t m_id;
         };
 
         // TODO: Convert ThreadManager to use std::vector<std::unique_ptr<IThreadBase>>

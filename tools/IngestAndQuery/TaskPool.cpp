@@ -35,11 +35,11 @@ namespace BitFunnel
     //
     //*************************************************************************
     TaskPool::TaskPool(size_t threadCount)
-        : m_queue(100)
+      : m_queue(100)
     {
         for (size_t i = 0; i < threadCount; ++i)
         {
-            m_threads.push_back(new Thread(*this));
+            m_threads.push_back(new Thread(*this, i));
         }
         m_threadManager = Factories::CreateThreadManager(m_threads);
     }
@@ -51,21 +51,21 @@ namespace BitFunnel
     }
 
 
-    TaskPool::Thread::Thread(TaskPool& pool)
-        : m_pool(pool)
+    TaskPool::Thread::Thread(TaskPool& pool, size_t id)
+      : m_pool(pool),
+        m_id(id)
     {
     }
 
 
     void TaskPool::Thread::EntryPoint()
     {
-        std::cout << "Thread entered." << std::endl;
         std::unique_ptr<ITask> task;
         while (m_pool.m_queue.TryDequeue(task))
         {
             task->Execute();
         }
-        std::cout << "Thread exited." << std::endl;
+        std::cout << "Thread " << m_id << " exited." << std::endl;
     }
 
 
