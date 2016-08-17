@@ -1,9 +1,8 @@
-#include "stdafx.h"
-
 #include <new>          // For placement new.
 #include <stddef.h>     // For nullptr.
 
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
+#include "BitFunnel/Allocators/IAllocator.h"
+#include "BitFunnel/RowMatchNodes.h"
 #include "LoggerInterfaces/Logging.h"
 #include "MatchTreeRewriter.h"
 
@@ -96,8 +95,10 @@ namespace BitFunnel
     // MatchTreeRewriter::Partition
     //
     //*************************************************************************
+#ifdef _MSC_VER 
 #pragma warning(push)
 #pragma warning(disable:4351)
+#endif
     MatchTreeRewriter::Partition::Partition(Allocators::IAllocator& allocator)
         : m_allocator(allocator),
           m_rowCount(0),
@@ -110,11 +111,13 @@ namespace BitFunnel
           m_otherTree(nullptr)
     {
     }
+#ifdef _MSC_VER 
 #pragma warning(pop)
 
 
 #pragma warning(push)
 #pragma warning(disable:4351)
+#endif
     MatchTreeRewriter::Partition::Partition(Partition const & parent,
                                             RowMatchNode const & node)
         : m_allocator(parent.m_allocator),
@@ -136,8 +139,9 @@ namespace BitFunnel
             AddNode(m_rankNTree, m_rows[rank]);
         }
     }
+#ifdef _MSC_VER 
 #pragma warning(pop)
-
+#endif
 
     bool MatchTreeRewriter::Partition::HasOrTree() const
     {
