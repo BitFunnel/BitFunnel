@@ -49,21 +49,6 @@ namespace BitFunnel
     }
 
 
-    void TaskFactory::Register(std::unique_ptr<ITask::Descriptor> descriptor)
-    {
-        std::string s(descriptor->GetName());
-        m_maxNameLength = std::max(m_maxNameLength, s.size());
-        auto it = m_taskMap.find(s);
-        if (it != m_taskMap.end())
-        {
-            RecoverableError error("TaskFactory::Register: duplicate task name.");
-            throw error;
-        }
-
-        m_taskMap.insert(std::make_pair(s, std::move(descriptor)));
-    }
-
-
     std::unique_ptr<ITask> TaskFactory::CreateTask(char const * line)
     {
         auto tokens = Tokenize(line);
@@ -85,6 +70,72 @@ namespace BitFunnel
         }
 
         return (*it).second->Create(m_environment, m_nextId++, tokens);
+    }
+
+
+    void TaskFactory::Help(std::ostream & output,
+                           char const * command) const
+    {
+        if (command == nullptr)
+        {
+            output << "Available commands:" << std::endl;
+            for (auto & entry : m_taskMap)
+            {
+                auto const & documentation = entry.second->GetDocumentation();
+                output
+                    << "  "
+                    << std::setw(m_maxNameLength) << std::left
+                    << documentation.GetName()
+                    << "  "
+                    << documentation.GetParameters()
+                    << std::endl;
+            }
+
+            output
+                << std::endl
+                << "Type help <command> for more information on a particular command."
+                << std::endl;
+        }
+        else
+        {
+            auto it = m_taskMap.find(command);
+            if (it != m_taskMap.end())
+            {
+                auto const & documentation = (*it).second->GetDocumentation();
+
+                output
+                    << documentation.GetDescription()
+                    << std::endl;
+            }
+            else
+            {
+                output
+                    << "Unknown command "
+                    << command
+                    << std::endl;
+            }
+        }
+    }
+
+
+    ITask::Id TaskFactory::GetNextTaskId() const
+    {
+        return m_nextId;
+    }
+
+
+    void TaskFactory::RegisterHelper(std::unique_ptr<Descriptor> descriptor)
+    {
+        std::string s(descriptor->GetDocumentation().GetName());
+        m_maxNameLength = std::max(m_maxNameLength, s.size());
+        auto it = m_taskMap.find(s);
+        if (it != m_taskMap.end())
+        {
+            RecoverableError error("TaskFactory::Register: duplicate task name.");
+            throw error;
+        }
+
+        m_taskMap.insert(std::make_pair(s, std::move(descriptor)));
     }
 
 
@@ -112,12 +163,6 @@ namespace BitFunnel
             RecoverableError error("Syntax error.");
             throw error;
         }
-    }
-
-
-    ITask::Id TaskFactory::GetNextTaskId() const
-    {
-        return m_nextId;
     }
 
 
@@ -161,51 +206,6 @@ namespace BitFunnel
         }
 
         return tokens;
-    }
-
-
-    void TaskFactory::Help(std::ostream & output,
-                           char const * command) const
-    {
-        if (command == nullptr)
-        {
-            output << "Available commands:" << std::endl;
-            for (auto & entry : m_taskMap)
-            {
-                ITask::Descriptor const & descriptor = *entry.second;
-                output
-                    << "  "
-                    << std::setw(m_maxNameLength) << std::left
-                    << descriptor.GetName()
-                    << "  "
-                    << descriptor.GetOneLineDescription()
-                    << std::endl;
-            }
-
-            output
-                << std::endl
-                << "Type help <command> for more information on a particular command."
-                << std::endl;
-        }
-        else
-        {
-            auto it = m_taskMap.find(command);
-            if (it != m_taskMap.end())
-            {
-                ITask::Descriptor const & descriptor = *(*it).second;
-
-                output
-                    << descriptor.GetVerboseDescription()
-                    << std::endl;
-            }
-            else
-            {
-                output
-                    << "Unknown command "
-                    << command
-                    << std::endl;
-            }
-        }
     }
 
 

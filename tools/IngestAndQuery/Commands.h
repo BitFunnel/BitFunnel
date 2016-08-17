@@ -34,14 +34,8 @@ namespace BitFunnel
              Id id,
              std::vector<std::string> const & tokens);
 
-        static void Register(TaskFactory & factory);
-
-
-        //
-        // ITask methods
-        //
-
         virtual void Execute() override;
+        static ITask::Documentation GetDocumentation();
     };
 
 
@@ -52,14 +46,8 @@ namespace BitFunnel
                      Id id,
                      std::vector<std::string> const & tokens);
 
-        static void Register(TaskFactory & factory);
-
-
-        //
-        // ITask methods
-        //
-
         virtual void Execute() override;
+        static ITask::Documentation GetDocumentation();
 
     private:
         size_t m_sleepTime;
@@ -74,14 +62,8 @@ namespace BitFunnel
              Id id,
              std::vector<std::string> const & tokens);
 
-        static void Register(TaskFactory & factory);
-
-
-        //
-        // ITask methods
-        //
-
         virtual void Execute() override;
+        static ITask::Documentation GetDocumentation();
 
     private:
         std::string m_command;

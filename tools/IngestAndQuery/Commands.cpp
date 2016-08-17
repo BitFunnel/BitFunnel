@@ -43,23 +43,20 @@ namespace BitFunnel
     }
 
 
-    void Exit::Register(TaskFactory & factory)
-    {
-        std::unique_ptr<Descriptor>
-            descriptor(new Descriptor(
-                "quit",
-                "waits for all current tasks to complete then exits.",
-                "quit\n"
-                "  Waits for all current tasks to complete then exits.",
-                Create<Exit>));
-
-        factory.Register(std::move(descriptor));
-    }
-
-
     void Exit::Execute()
     {
         // Don't expect the Exit command to execute.
+    }
+
+
+    ITask::Documentation Exit::GetDocumentation()
+    {
+        return Documentation(
+            "quit",
+            "waits for all current tasks to complete then exits.",
+            "quit\n"
+            "  Waits for all current tasks to complete then exits."
+            );
     }
 
 
@@ -85,24 +82,21 @@ namespace BitFunnel
     }
 
 
-    void DelayedPrint::Register(TaskFactory & factory)
-    {
-        std::unique_ptr<Descriptor>
-            descriptor(new Descriptor(
-                "delay",
-                "Prints a message after certain number of seconds",
-                "delay <message>\n"
-                "  Waits for 5 seconds then prints <message> to the console."
-                ,
-                Create<DelayedPrint>));
-        factory.Register(std::move(descriptor));
-    }
-
-
     void DelayedPrint::Execute()
     {
         std::this_thread::sleep_for(std::chrono::seconds(m_sleepTime));
         std::cout << GetId() << ": " << m_message << std::endl;
+    }
+
+
+    ITask::Documentation DelayedPrint::GetDocumentation()
+    {
+        return Documentation(
+            "delay",
+            "Prints a message after certain number of seconds",
+            "delay <message>\n"
+            "  Waits for 5 seconds then prints <message> to the console."
+            );
     }
 
 
@@ -123,21 +117,6 @@ namespace BitFunnel
     }
 
 
-    void Help::Register(TaskFactory & factory)
-    {
-        std::unique_ptr<Descriptor>
-            descriptor(new Descriptor(
-                "help",
-                "Displays a list of available commands.",
-                "help [<command>]\n"
-                "  Displays help on a specific command.\n"
-                "  If no command is specified, help displays\n"
-                "  a list of available commands.",
-                Create<Help>));
-        factory.Register(std::move(descriptor));
-    }
-
-
     void Help::Execute()
     {
         if (m_command.size() > 0)
@@ -148,5 +127,18 @@ namespace BitFunnel
         {
             GetEnvironment().GetTaskFactory().Help(std::cout, nullptr);
         }
+    }
+
+
+    ITask::Documentation Help::GetDocumentation()
+    {
+        return Documentation(
+            "help",
+            "Displays a list of available commands.",
+            "help [<command>]\n"
+            "  Displays help on a specific command.\n"
+            "  If no command is specified, help displays\n"
+            "  a list of available commands."
+            );
     }
 }

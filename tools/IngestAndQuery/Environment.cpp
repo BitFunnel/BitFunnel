@@ -53,8 +53,8 @@ namespace BitFunnel
 
     void Environment::RegisterCommands()
     {
-        DelayedPrint::Register(*m_taskFactory);
-        Exit::Register(*m_taskFactory);
-        Help::Register(*m_taskFactory);
+        m_taskFactory->RegisterCommand<DelayedPrint>();
+        m_taskFactory->RegisterCommand<Exit>();
+        m_taskFactory->RegisterCommand<Help>();
     }
 }
