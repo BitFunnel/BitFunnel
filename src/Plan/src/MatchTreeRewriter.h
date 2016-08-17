@@ -60,7 +60,7 @@ namespace BitFunnel
         static RowMatchNode const & Rewrite(RowMatchNode const & root,
                                             unsigned targetRowCount,
                                             unsigned targetCrossProductTermCount,
-                                            Allocators::IAllocator& allocator);
+                                            IAllocator& allocator);
 
     private:
         // Partition is a helper class that divides the and-expression at the
@@ -69,7 +69,7 @@ namespace BitFunnel
         class Partition : NonCopyable
         {
         public:
-            Partition(Allocators::IAllocator& allocator);
+            Partition(IAllocator& allocator);
             Partition(Partition const & parent,
                       RowMatchNode const & node);
 
@@ -108,7 +108,7 @@ namespace BitFunnel
             // chosen to compile the returned RowMatchTree.
             RowMatchNode const & RankUpToRankZero(RowMatchNode const & node, bool& notNodeEncountered) const;
 
-            Allocators::IAllocator& m_allocator;
+            IAllocator& m_allocator;
 
             // Maintains the total number of rows on the path from the match
             // tree root through all parent partitions and all rows in the tio
