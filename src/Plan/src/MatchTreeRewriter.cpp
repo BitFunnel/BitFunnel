@@ -17,7 +17,7 @@ namespace BitFunnel
     RowMatchNode const & MatchTreeRewriter::Rewrite(RowMatchNode const & root,
                                                     unsigned targetRowCount,
                                                     unsigned targetCrossProductTermCount,
-                                                    Allocators::IAllocator& allocator)
+                                                    IAllocator& allocator)
     {
         Partition partition(allocator);
 
@@ -61,18 +61,18 @@ namespace BitFunnel
         else
         {
             RowMatchNode const * rankNTree = partition.RemoveRankNTree();
-            RowMatchNode::Or const & or(partition.PopFromOrTree());
+            RowMatchNode::Or const & orNode(partition.PopFromOrTree());
 
             // Multiply out the left node of the OR tree to the partition.
             RowMatchNode const & left = BuildCompileTree(partition, 
-                                                         or.GetLeft(), 
+                                                         orNode.GetLeft(),
                                                          targetRowCount, 
                                                          targetCrossProductTermCount, 
                                                          currentCrossProductTermCount);
 
             // Multiply out the right node of the OR tree to the partition.
             RowMatchNode const & right = BuildCompileTree(partition, 
-                                                          or.GetRight(), 
+                                                          orNode.GetRight(),
                                                           targetRowCount, 
                                                           targetCrossProductTermCount, 
                                                           currentCrossProductTermCount);
@@ -99,7 +99,7 @@ namespace BitFunnel
 #pragma warning(push)
 #pragma warning(disable:4351)
 #endif
-    MatchTreeRewriter::Partition::Partition(Allocators::IAllocator& allocator)
+    MatchTreeRewriter::Partition::Partition(IAllocator& allocator)
         : m_allocator(allocator),
           m_rowCount(0),
           m_parentRank(c_maxRankValue),
