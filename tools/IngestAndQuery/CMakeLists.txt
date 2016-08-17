@@ -2,7 +2,10 @@
 
 set(CPPFILES
     main.cpp
+    Commands.cpp
+    Environment.cpp
     TaskFactory.cpp
+    TaskPool.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -12,6 +15,11 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    Commands.h
+    Environment.h
+    TaskBase.h
+    TaskFactory.h
+    TaskPool.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

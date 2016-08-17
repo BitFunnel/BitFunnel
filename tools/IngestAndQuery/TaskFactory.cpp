@@ -22,81 +22,34 @@
 
 
 #include <algorithm>
-#include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <thread>
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Utilities/Factories.h"
-#include "Headers.h"
+#include "TaskBase.h"
+#include "TaskFactory.h"
 
 
 namespace BitFunnel
 {
     //*************************************************************************
     //
-    // TaskPool
-    //
-    //*************************************************************************
-    TaskPool::TaskPool(size_t threadCount)
-        : m_queue(100)
-    {
-        for (size_t i = 0; i < threadCount; ++i)
-        {
-            m_threads.push_back(new Thread(*this));
-        }
-        m_threadManager = Factories::CreateThreadManager(m_threads);
-    }
-
-
-    bool TaskPool::TryEnqueue(std::unique_ptr<ITask> task)
-    {
-        return m_queue.TryEnqueue(std::move(task));
-    }
-
-
-    TaskPool::Thread::Thread(TaskPool& pool)
-        : m_pool(pool)
-    {
-    }
-
-
-    void TaskPool::Thread::EntryPoint()
-    {
-        std::cout << "Thread entered." << std::endl;
-        std::unique_ptr<ITask> task;
-        while (m_pool.m_queue.TryDequeue(task))
-        {
-            task->Execute();
-        }
-        std::cout << "Thread exited." << std::endl;
-    }
-
-
-    void TaskPool::Shutdown()
-    {
-        m_queue.Shutdown();
-        m_threadManager->WaitForThreads();
-    }
-
-
-    //*************************************************************************
-    //
     // TaskFactory
     //
     //*************************************************************************
 
-    TaskFactory::TaskFactory()
-      : m_nextId(0),
+    TaskFactory::TaskFactory(Environment & environment)
+      : m_environment(environment),
+        m_nextId(0),
         m_maxNameLength(0)
     {
     }
 
 
-    void TaskFactory::Register(std::unique_ptr<Descriptor> descriptor)
+    void TaskFactory::Register(std::unique_ptr<ITask::Descriptor> descriptor)
     {
         std::string s(descriptor->GetName());
         m_maxNameLength = std::max(m_maxNameLength, s.size());
@@ -131,7 +84,7 @@ namespace BitFunnel
             throw error;
         }
 
-        return (*it).second->Create(m_nextId++, tokens);
+        return (*it).second->Create(m_environment, m_nextId++, tokens);
     }
 
 
@@ -212,25 +165,47 @@ namespace BitFunnel
 
 
     void TaskFactory::Help(std::ostream & output,
-                           char const * /*command*/) const
+                           char const * command) const
     {
-        output << "Available commands:" << std::endl;
-        for (auto & entry : m_taskMap)
+        if (command == nullptr)
         {
-            Descriptor const & descriptor = *entry.second;
+            output << "Available commands:" << std::endl;
+            for (auto & entry : m_taskMap)
+            {
+                ITask::Descriptor const & descriptor = *entry.second;
+                output
+                    << "  "
+                    << std::setw(m_maxNameLength) << std::left
+                    << descriptor.GetName()
+                    << "  "
+                    << descriptor.GetOneLineDescription()
+                    << std::endl;
+            }
+
             output
-                << "  "
-                << std::setw(m_maxNameLength) << std::left
-                << descriptor.GetName()
-                << "  "
-                << descriptor.GetOneLineDescription()
+                << std::endl
+                << "Type help <command> for more information on a particular command."
                 << std::endl;
         }
+        else
+        {
+            auto it = m_taskMap.find(command);
+            if (it != m_taskMap.end())
+            {
+                ITask::Descriptor const & descriptor = *(*it).second;
 
-        output
-            << std::endl
-            << "Type help <command> for more information on a particular command."
-            << std::endl;
+                output
+                    << descriptor.GetVerboseDescription()
+                    << std::endl;
+            }
+            else
+            {
+                output
+                    << "Unknown command "
+                    << command
+                    << std::endl;
+            }
+        }
     }
 
 
@@ -239,8 +214,9 @@ namespace BitFunnel
     // TaskBase
     //
     //*************************************************************************
-    TaskBase::TaskBase(Id id, Type type)
-        : m_id(id),
+    TaskBase::TaskBase(Environment & environment, Id id, Type type)
+        : m_environment(environment),
+          m_id(id),
           m_type(type)
     {
     }
@@ -258,134 +234,8 @@ namespace BitFunnel
     }
 
 
-    //*************************************************************************
-    //
-    // Exit
-    //
-    //*************************************************************************
-    Exit::Exit()
-        : TaskBase(0, Type::Exit)
+    Environment & TaskBase::GetEnvironment() const
     {
-    }
-
-
-    void Exit::Register(TaskFactory & factory)
-    {
-        std::unique_ptr<ITaskFactory::Descriptor>
-            descriptor(new ITaskFactory::Descriptor(
-                "quit",
-                "waits for all current tasks to complete then exits.",
-                "quit\n"
-                "  Waits for all current tasks to complete then exits.",
-                Create));
-
-        factory.Register(std::move(descriptor));
-    }
-
-
-    std::unique_ptr<ITask>
-        Exit::Create(Id /*id*/,
-                     std::vector<std::string> const & /*tokens*/)
-    {
-        // TODO: error checking
-        return std::unique_ptr<ITask>(new Exit());
-    }
-
-
-    void Exit::Execute()
-    {
-    }
-
-
-    //*************************************************************************
-    //
-    // DelayedPrint
-    //
-    //*************************************************************************
-    DelayedPrint::DelayedPrint(Id id, char const * message)
-        : TaskBase(id, Type::Asynchronous),
-        m_sleepTime(5),
-        m_message(message)
-    {
-    }
-
-
-    void DelayedPrint::Register(TaskFactory & factory)
-    {
-        std::unique_ptr<ITaskFactory::Descriptor>
-            descriptor(new ITaskFactory::Descriptor(
-                "delay",
-                "Prints a message after certain number of seconds",
-                "delay <message>\n"
-                "  Waits for 5 seconds then prints <message> to the console."
-                ,
-                Create));
-        factory.Register(std::move(descriptor));
-    }
-
-
-    std::unique_ptr<ITask>
-        DelayedPrint::Create(Id id,
-                             std::vector<std::string> const & tokens)
-    {
-        // TODO: error checking
-        return std::unique_ptr<ITask>(new DelayedPrint(id, tokens[1].c_str()));
-    }
-
-
-    void DelayedPrint::Execute()
-    {
-        std::this_thread::sleep_for(std::chrono::seconds(m_sleepTime));
-        std::cout << GetId() << ": " << m_message << std::endl;
-    }
-
-
-    //*************************************************************************
-    //
-    // Help
-    //
-    //*************************************************************************
-    Help::Help(Id id, char const * command)
-        : TaskBase(id, Type::Synchronous),
-          m_command((command == nullptr)? "" : command)
-    {
-    }
-
-
-    void Help::Register(TaskFactory & factory)
-    {
-        std::unique_ptr<ITaskFactory::Descriptor>
-            descriptor(new ITaskFactory::Descriptor(
-                "help",
-                "Displays a list of available commands.",
-                "help [<command>]\n"
-                "  Displays help on a specific command.\n"
-                "  If no command is specified, help displays\n"
-                "  a list of available commands."
-                ,
-                Create));
-        factory.Register(std::move(descriptor));
-    }
-
-
-    std::unique_ptr<ITask>
-        Help::Create(Id id,
-                     std::vector<std::string> const & tokens)
-    {
-        // TODO: error checking
-        if (tokens.size() == 1)
-        {
-            return std::unique_ptr<ITask>(new Help(id, nullptr));
-        }
-        else
-        {
-            return std::unique_ptr<ITask>(new Help(id, tokens[1].c_str()));
-        }
-    }
-
-
-    void Help::Execute()
-    {
-        std::cout << GetId() << ": " << "Help on " << m_command << std::endl;
+        return m_environment;
     }
 }
