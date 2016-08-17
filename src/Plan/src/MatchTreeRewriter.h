@@ -1,15 +1,12 @@
 #pragma once
 
 #include "BitFunnel/NonCopyable.h"        // Inherits from NonCopyable.
-#include "BitFunnel/RowMatchNodes.h"      // Use of nested types.
+// #include "BitFunnel/RowMatchNodes.h"      // Use of nested types.
 
 
 namespace BitFunnel
 {
-    namespace Allocators
-    {
-        class IAllocator;
-    }
+    class IAllocator;
 
 
     //*************************************************************************
