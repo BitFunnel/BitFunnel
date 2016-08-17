@@ -74,6 +74,7 @@ namespace BitFunnel
         std::unique_ptr<IRecycler> CreateRecycler();
 
         std::unique_ptr<ITermTable2> CreateTermTable();
+        std::unique_ptr<ITermTable2> CreateTermTable(std::istream & input);
 
         std::unique_ptr<ITermTableBuilder>
             CreateTermTableBuilder(double density,

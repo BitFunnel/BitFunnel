@@ -30,11 +30,12 @@
 namespace BitFunnel
 {
     Environment::Environment(char const * directory,
-                             size_t /*gramSize*/,
+                             size_t gramSize,
                              size_t threadCount)
         // TODO: Don't like passing *this to TaskFactory.
         // What if TaskFactory calls back before Environment is fully initialized?
         : m_directory(directory),
+          m_gramSize(static_cast<Term::GramSize>(gramSize)),
           m_taskFactory(new TaskFactory(*this))
     {
         // Start one extra thread for the Recycler.
@@ -101,6 +102,23 @@ namespace BitFunnel
         m_taskPool->TryEnqueue(
             std::unique_ptr<RecyclerTask>(new RecyclerTask(*m_recycler)));
 
+
+        // Load the TermTable
+        {
+            auto input = m_fileManager->TermTable(0).OpenForRead();
+            m_termTable = Factories::CreateTermTable(*input);
+        }
+
+        // Load the IndexedIdfTable
+        {
+            auto input = m_fileManager->IndexedIdfTable(0).OpenForRead();
+            Term::IdfX10 defaultIdf = 60;   // TODO: use proper value here.
+            m_idfTable = Factories::CreateIndexedIdfTable(*input, defaultIdf);
+        }
+
+        m_configuration =
+            Factories::CreateConfiguration(m_gramSize, false, *m_idfTable);
+
         //static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
         //const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, schema, *termTable);
 
@@ -123,19 +141,23 @@ namespace BitFunnel
         //const std::unique_ptr<IIndexedIdfTable>
         //    idfTable(Factories::CreateIndexedIdfTable());
 
-        //// Arbitrary maxGramSize that is greater than 1. For initial tests.
-        //// TODO: Choose correct maxGramSize.
-        //std::unique_ptr<IConfiguration>
-        //    configuration(
-        //        Factories::CreateConfiguration(
-        //            static_cast<Term::GramSize>(gramSize),
-        //            generateTermToText,
-        //            *idfTable));
     }
 
 
     void Environment::StopIndex()
     {
         m_recycler->Shutdown();
+    }
+
+
+    ITermTable2 const & Environment::GetTermTable() const
+    {
+        return *m_termTable;
+    }
+
+
+    IConfiguration const & Environment::GetConfiguration() const
+    {
+        return *m_configuration;
     }
 }

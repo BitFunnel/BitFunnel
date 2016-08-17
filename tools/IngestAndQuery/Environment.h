@@ -25,14 +25,19 @@
 #include <memory>                                   // std::unique_ptr embedded.
 
 #include "BitFunnel/IFileManager.h"                 // Parameterizes std::unique_ptr.
+#include "BitFunnel/Index/IConfiguration.h"         // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IDocumentDataSchema.h"    // Parameterizes std::unique_ptr.
+#include "BitFunnel/Index/IIndexedIdfTable.h"       // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IRecycler.h"              // Parameterizes std::unique_ptr.
+#include "BitFunnel/ITermTable2.h"                  // Parameterizes std::unique_ptr.
 #include "BitFunnel/Noncopyable.h"                  // Base class.
+#include "BitFunnel/Term.h"                         // Term::GramSize embedded.
 
 
 namespace BitFunnel
 {
     class IFileManager;
+    class ITermTable2;
     class TaskFactory;
     class TaskPool;
 
@@ -50,10 +55,14 @@ namespace BitFunnel
         void StartIndex();
         void StopIndex();
 
+        ITermTable2 const & GetTermTable() const;
+        IConfiguration const & GetConfiguration() const;
+
     private:
         void RegisterCommands();
 
         std::string m_directory;
+        Term::GramSize m_gramSize;
 
         std::unique_ptr<TaskFactory> m_taskFactory;
         std::unique_ptr<TaskPool> m_taskPool;
@@ -66,5 +75,10 @@ namespace BitFunnel
         std::unique_ptr<IFileManager> m_fileManager;
         std::unique_ptr<IDocumentDataSchema> m_schema;
         std::unique_ptr<IRecycler> m_recycler;
+
+        // Following members may become per-shard.
+        std::unique_ptr<ITermTable2> m_termTable;
+        std::unique_ptr<IIndexedIdfTable> m_idfTable;
+        std::unique_ptr<IConfiguration> m_configuration;
     };
 }

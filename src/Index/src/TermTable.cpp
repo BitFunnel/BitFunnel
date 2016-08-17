@@ -44,6 +44,13 @@ namespace BitFunnel
     }
 
 
+    std::unique_ptr<ITermTable2>
+        Factories::CreateTermTable(std::istream & input)
+    {
+        return std::unique_ptr<ITermTable2>(new TermTable(input));
+    }
+
+
     //*************************************************************************
     //
     // TermTable

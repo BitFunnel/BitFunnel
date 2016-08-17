@@ -25,6 +25,8 @@
 #include <thread>       // sleep_for, this_thread
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/RowIdSequence.h"
+#include "BitFunnel/Term.h"
 #include "Commands.h"
 #include "Environment.h"
 
@@ -295,18 +297,43 @@ namespace BitFunnel
     //*************************************************************************
     Show::Show(Environment & environment,
                    Id id,
-                   char const * /*parameters*/)
+                   char const * parameters)
         : TaskBase(environment, id, Type::Synchronous)
     {
+        auto command = TaskFactory::GetNextToken(parameters);
+        if (command.compare("term") == 0)
+        {
+            m_term = TaskFactory::GetNextToken(parameters);
+        }
+        else
+        {
+            RecoverableError error("Show expects \"term\" (for now).");
+            throw error;
+        }
     }
 
 
     void Show::Execute()
     {
+        auto & environment = GetEnvironment();
+        Term term(m_term.c_str(), 0, environment.GetConfiguration());
+        RowIdSequence rows(term, environment.GetTermTable());
+
         std::cout
-            << "Showing data ..." << std::endl
-            << "NOT IMPLEMENTED" << std::endl
-            << std::endl;
+            << "Term("
+            << "\"" << m_term << "\""
+            << ")" << std::endl;
+
+        for (auto row : rows)
+        {
+            std::cout
+                << "  RowId("
+                << row.GetRank()
+                << ", "
+                << row.GetIndex()
+                << ")"
+                << std::endl;
+        }
     }
 
 

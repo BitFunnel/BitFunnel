@@ -31,6 +31,19 @@
 
 namespace BitFunnel
 {
+    static void Advice()
+    {
+        std::cout
+            << "Index failed to load." << std::endl
+            << std::endl
+            << "Verify that directory path is valid and that the folder contains index files." << std::endl
+            << "You can generate new index files with" << std::endl
+            << "  StatisticsBuilder <manifest> <directory> -statistics" << std::endl
+            << "  TermTableBuilder <directory>" << std::endl
+            << "For more information run \"StatisticsBuilder -help\" and" << std::endl
+            << "\"TermTableBuilder -help\"." << std::endl;
+    }
+
     void REPL(char const * directory,
               size_t gramSize,
               size_t threadCount)
@@ -53,7 +66,15 @@ namespace BitFunnel
             << "Starting index ..."
             << std::endl;
 
-        environment.StartIndex();
+        try
+        {
+            environment.StartIndex();
+        }
+        catch (...)
+        {
+            Advice();
+            throw;
+        }
 
         std::cout
             << "Index started successfully."
@@ -100,11 +121,11 @@ namespace BitFunnel
                     << e.what()
                     << std::endl;
             }
-        }
 
-        // NOTE: Must shutdown the index before the TaskPool because one of the
-        // TaskPool threads is waiting for the Recycler to shutdown.
-        environment.StopIndex();
-        taskPool.Shutdown();
+            // NOTE: Must shutdown the index before the TaskPool because one of the
+            // TaskPool threads is waiting for the Recycler to shutdown.
+            environment.StopIndex();
+            taskPool.Shutdown();
+        }
     }
 }
