@@ -153,26 +153,23 @@ namespace BitFunnel
     }
 
 
-    PackedTermInfo MockTermTable::GetTermInfo(const Term& term,
-                                              TermKind& termKind) const
+    std::tuple<PackedTermInfo, ITermTable::TermKind> MockTermTable::GetTermInfo(const Term& term) const
     {
         // m_factsCount = count from IFactSet + c_systemRowCount for system
         // internal rows, hence deliberately using "less than" here.
         if (term.GetRawHash() < m_factsCount)
         {
             // Facts are private rank 0 rows with the special row offsets.
-            termKind = Fact;
             const unsigned factIndex = static_cast<unsigned>(term.GetRawHash());
-            return PackedTermInfo(factIndex, 1);
+            return std::make_tuple(PackedTermInfo(factIndex, 1), Fact);
         }
         else
         {
             // Note: the real term table should also have adhoc (and maybe disposed) terms.
-            termKind = Explicit;
             auto it = m_entries.find(term.GetRawHash());
             LogAssertB(it != m_entries.end(),
                        "Term not found.");
-            return it->second;
+            return std::make_tuple(it->second, Explicit);
         }
     }
 

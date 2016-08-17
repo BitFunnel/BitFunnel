@@ -133,16 +133,15 @@ namespace BitFunnel
     }
 
 
-    PackedTermInfo EmptyTermTable::GetTermInfo(const Term& term,
-                                               TermKind& termKind) const
+    std::tuple<PackedTermInfo, ITermTable::TermKind> EmptyTermTable::GetTermInfo(const Term& term) const
     {
         // Soft-deleted row.
         if (static_cast<unsigned>(term.GetRawHash()) < c_systemRowCount)
         {
             LogAssertB(m_rowCounts[0] >= c_systemRowCount,
                        "Rank 0 must contain at least c_systemRowCount rows when calling GetTermInfo()");
-            termKind = TermKind::Fact;
-            return PackedTermInfo(static_cast<unsigned>(term.GetRawHash()), 1);
+            return std::make_tuple(PackedTermInfo(static_cast<unsigned>(term.GetRawHash()), 1),
+                                   TermKind::Fact);
         }
         else
         {

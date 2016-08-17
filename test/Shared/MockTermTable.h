@@ -94,8 +94,7 @@ namespace BitFunnel
         // term. The PackedTermInfo structure contains information about the
         // term's rows. PackedTermInfo is used by TermInfo to implement RowId
         // enumeration for regular and adhoc terms.
-        virtual PackedTermInfo GetTermInfo(const Term& term,
-                                           TermKind& termKind) const override;
+        virtual std::tuple<PackedTermInfo, TermKind> GetTermInfo(const Term& term) const override;
 
     private:
         mutable std::unordered_map<Term::Hash, PackedTermInfo> m_entries;
