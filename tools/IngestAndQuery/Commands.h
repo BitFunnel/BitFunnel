@@ -102,6 +102,35 @@ namespace BitFunnel
     };
 
 
+    class Script : public TaskBase
+    {
+    public:
+        Script(Environment & environment,
+               Id id,
+               char const * parameters);
+
+        virtual void Execute() override;
+        static ITask::Documentation GetDocumentation();
+
+    private:
+        std::vector<std::string> m_script;
+    };
+
+
+    class Show : public TaskBase
+    {
+    public:
+        Show(Environment & environment,
+             Id id,
+             char const * parameters);
+
+        virtual void Execute() override;
+        static ITask::Documentation GetDocumentation();
+
+    private:
+    };
+
+
     class Status : public TaskBase
     {
     public:

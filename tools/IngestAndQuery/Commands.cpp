@@ -59,6 +59,7 @@ namespace BitFunnel
             "delay",
             "Prints a message after certain number of seconds",
             "delay <message>\n"
+            "  Sample command to test multi-threading architecture.\n"
             "  Waits for 5 seconds then prints <message> to the console."
             );
     }
@@ -172,6 +173,8 @@ namespace BitFunnel
             << "Ingesting "
             << (m_manifest ? "manifest " : "chunk ")
             << "\"" << m_path << "\""
+            << std::endl
+            << "NOT IMPLEMENTED"
             << std::endl;
     }
 
@@ -180,10 +183,11 @@ namespace BitFunnel
     {
         return Documentation(
             "ingest",
-            "Ingests documents into the index.",
+            "Ingests documents into the index. (TODO)",
             "ingest (manifest | chunk) <path>\n"
             "  Ingests a single chunk file or a list of chunk\n"
-            "  files specified by a manifest."
+            "  files specified by a manifest.\n"
+            "  NOT IMPLEMENTED"
             );
     }
 
@@ -233,6 +237,7 @@ namespace BitFunnel
                 << m_query
                 << "\"" << std::endl;
         }
+        std::cout << "NOT IMPLEMENTED" << std::endl;
     }
 
 
@@ -240,10 +245,82 @@ namespace BitFunnel
     {
         return Documentation(
             "query",
-            "Process a single query or list of queries.",
+            "Process a single query or list of queries. (TODO)",
             "query (one <expression>) | (log <file>)\n"
             "  Processes a single query or a list of queries\n"
-            "  specified by a file."
+            "  specified by a file.\n"
+            "  NOT IMPLEMENTED"
+            );
+    }
+
+
+    //*************************************************************************
+    //
+    // Script
+    //
+    //*************************************************************************
+    Script::Script(Environment & environment,
+                   Id id,
+                   char const * /*parameters*/)
+        : TaskBase(environment, id, Type::Synchronous)
+    {
+    }
+
+
+    void Script::Execute()
+    {
+        std::cout
+            << "Running script ..." << std::endl
+            << "NOT IMPLEMENTED" << std::endl
+            << std::endl;
+    }
+
+
+    ITask::Documentation Script::GetDocumentation()
+    {
+        return Documentation(
+            "script",
+            "Runs commands from a file.(TODO)",
+            "script <filename>\n"
+            "  Runs commands from a file.\n"
+            "  NOT IMPLEMENTED"
+            );
+    }
+
+
+    //*************************************************************************
+    //
+    // Show
+    //
+    //*************************************************************************
+    Show::Show(Environment & environment,
+                   Id id,
+                   char const * /*parameters*/)
+        : TaskBase(environment, id, Type::Synchronous)
+    {
+    }
+
+
+    void Show::Execute()
+    {
+        std::cout
+            << "Showing data ..." << std::endl
+            << "NOT IMPLEMENTED" << std::endl
+            << std::endl;
+    }
+
+
+    ITask::Documentation Show::GetDocumentation()
+    {
+        return Documentation(
+            "show",
+            "Shows information about various data structures. (TODO)",
+            "show (rows <term> [<docstart> <docend>])\n"
+            "   | (term <term>)\n"
+            "   | shards\n"
+            "   | shard <shardid>\n"
+            "  Shows information about various data structures."
+            "  NOT IMPLEMENTED\n"
             );
     }
 
@@ -265,6 +342,8 @@ namespace BitFunnel
     {
         std::cout
             << "Printing system status ..."
+            << std::endl
+            << "NOT IMPLEMENTED"
             << std::endl;
     }
 
@@ -276,6 +355,7 @@ namespace BitFunnel
             "Prints system status.",
             "status\n"
             "  Prints system status."
+            "  NOT IMPLEMENTED\n"
             );
     }
 }

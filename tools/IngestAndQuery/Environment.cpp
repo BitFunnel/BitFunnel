@@ -100,6 +100,8 @@ namespace BitFunnel
         m_taskFactory->RegisterCommand<Help>();
         m_taskFactory->RegisterCommand<Ingest>();
         m_taskFactory->RegisterCommand<Query>();
+        m_taskFactory->RegisterCommand<Script>();
+        m_taskFactory->RegisterCommand<Show>();
         m_taskFactory->RegisterCommand<Status>();
     }
 }
