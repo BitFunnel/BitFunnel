@@ -76,14 +76,14 @@ namespace BitFunnel
                 std::string line;
                 std::getline(std::cin, line);
 
-                std::unique_ptr<ITask> task(factory.CreateTask(line.c_str()));
+                std::unique_ptr<ICommand> task(factory.CreateTask(line.c_str()));
 
-                if (task->GetType() == ITask::Type::Exit)
+                if (task->GetType() == ICommand::Type::Exit)
                 {
                     task->Execute();
                     break;
                 }
-                else if (task->GetType() == ITask::Type::Asynchronous)
+                else if (task->GetType() == ICommand::Type::Asynchronous)
                 {
                     taskPool.TryEnqueue(std::move(task));
                 }

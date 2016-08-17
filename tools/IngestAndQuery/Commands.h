@@ -35,7 +35,7 @@ namespace BitFunnel
                      char const * parameters);
 
         virtual void Execute() override;
-        static ITask::Documentation GetDocumentation();
+        static ICommand::Documentation GetDocumentation();
 
     private:
         size_t m_sleepTime;
@@ -51,7 +51,7 @@ namespace BitFunnel
              char const * parameters);
 
         virtual void Execute() override;
-        static ITask::Documentation GetDocumentation();
+        static ICommand::Documentation GetDocumentation();
     };
 
 
@@ -63,7 +63,7 @@ namespace BitFunnel
              char const * parameters);
 
         virtual void Execute() override;
-        static ITask::Documentation GetDocumentation();
+        static ICommand::Documentation GetDocumentation();
 
     private:
         std::string m_command;
@@ -78,7 +78,7 @@ namespace BitFunnel
                char const * parameters);
 
         virtual void Execute() override;
-        static ITask::Documentation GetDocumentation();
+        static ICommand::Documentation GetDocumentation();
 
     private:
         bool m_manifest;
@@ -94,7 +94,7 @@ namespace BitFunnel
               char const * parameters);
 
         virtual void Execute() override;
-        static ITask::Documentation GetDocumentation();
+        static ICommand::Documentation GetDocumentation();
 
     private:
         bool m_isSingleQuery;
@@ -110,7 +110,7 @@ namespace BitFunnel
                char const * parameters);
 
         virtual void Execute() override;
-        static ITask::Documentation GetDocumentation();
+        static ICommand::Documentation GetDocumentation();
 
     private:
         std::vector<std::string> m_script;
@@ -125,7 +125,7 @@ namespace BitFunnel
              char const * parameters);
 
         virtual void Execute() override;
-        static ITask::Documentation GetDocumentation();
+        static ICommand::Documentation GetDocumentation();
 
     private:
     };
@@ -139,6 +139,6 @@ namespace BitFunnel
                char const * parameters);
 
         virtual void Execute() override;
-        static ITask::Documentation GetDocumentation();
+        static ICommand::Documentation GetDocumentation();
     };
 }

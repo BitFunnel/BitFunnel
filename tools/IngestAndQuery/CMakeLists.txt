@@ -18,6 +18,8 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     Commands.h
     Environment.h
+    ICommand.h
+    ITask.h
     REPL.h
     TaskBase.h
     TaskFactory.h

@@ -49,7 +49,7 @@ namespace BitFunnel
     }
 
 
-    std::unique_ptr<ITask> TaskFactory::CreateTask(char const * line)
+    std::unique_ptr<ICommand> TaskFactory::CreateTask(char const * line)
     {
         auto name = GetNextToken(line);
 
@@ -112,7 +112,7 @@ namespace BitFunnel
     }
 
 
-    ITask::Id TaskFactory::GetNextTaskId() const
+    ICommand::Id TaskFactory::GetNextTaskId() const
     {
         return m_nextId;
     }
@@ -253,13 +253,13 @@ namespace BitFunnel
     }
 
 
-    ITask::Type TaskBase::GetType() const
+    ICommand::Type TaskBase::GetType() const
     {
         return m_type;
     }
 
 
-    ITask::Id TaskBase::GetId() const
+    ICommand::Id TaskBase::GetId() const
     {
         return m_id;
     }

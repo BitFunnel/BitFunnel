@@ -22,43 +22,14 @@
 
 #pragma once
 
-#include <memory>                               // std::unique_ptr embedded.
-#include <vector>                               // std::vector embedded.
-
-#include "BitFunnel/Utilities/BlockingQueue.h"  // BlockingQueue embedded.
-#include "BitFunnel/Utilities/IThreadManager.h" // IThreadBase base class.
+#include "BitFunnel/IInterface.h"   // Base class.
 
 
 namespace BitFunnel
 {
-    class ICommand;
-
-    class TaskPool
+    class ITask : public IInterface
     {
     public:
-        TaskPool(size_t threadCount);
-
-        bool TryEnqueue(std::unique_ptr<ICommand> task);
-
-        void Shutdown();
-
-    private:
-        class Thread : public IThreadBase
-        {
-        public:
-            Thread(TaskPool& pool, size_t id);
-
-            virtual void EntryPoint() override;
-
-        private:
-            TaskPool& m_pool;
-            size_t m_id;
-        };
-
-        // TODO: Convert ThreadManager to use std::vector<std::unique_ptr<IThreadBase>>
-        std::vector<IThreadBase*> m_threads;
-        std::unique_ptr<IThreadManager> m_threadManager;
-
-        BlockingQueue<std::unique_ptr<ICommand>> m_queue;
+        virtual void Execute() = 0;
     };
 }

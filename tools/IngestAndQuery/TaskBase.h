@@ -22,14 +22,14 @@
 
 #pragma once
 
-#include "TaskFactory.h"    // ITask base class.
+#include "TaskFactory.h"    // ICommand base class.
 
 
 namespace BitFunnel
 {
     class Environment;
 
-    class TaskBase : public ITask
+    class TaskBase : public ICommand
     {
     public:
         TaskBase(Environment & environment, Id id, Type type);
@@ -41,11 +41,11 @@ namespace BitFunnel
         virtual Environment & GetEnvironment() const override;
 
         template <class T>
-        static std::unique_ptr<ITask> Create(Environment & environment,
+        static std::unique_ptr<ICommand> Create(Environment & environment,
                                              Id id,
                                              std::vector<std::string> const & tokens)
         {
-            return std::unique_ptr<ITask>(
+            return std::unique_ptr<ICommand>(
                 new T(environment, id, tokens));
         };
 

@@ -53,7 +53,7 @@ namespace BitFunnel
     }
 
 
-    ITask::Documentation DelayedPrint::GetDocumentation()
+    ICommand::Documentation DelayedPrint::GetDocumentation()
     {
         return Documentation(
             "delay",
@@ -87,7 +87,7 @@ namespace BitFunnel
     }
 
 
-    ITask::Documentation Exit::GetDocumentation()
+    ICommand::Documentation Exit::GetDocumentation()
     {
         return Documentation(
             "quit",
@@ -125,7 +125,7 @@ namespace BitFunnel
     }
 
 
-    ITask::Documentation Help::GetDocumentation()
+    ICommand::Documentation Help::GetDocumentation()
     {
         return Documentation(
             "help",
@@ -179,7 +179,7 @@ namespace BitFunnel
     }
 
 
-    ITask::Documentation Ingest::GetDocumentation()
+    ICommand::Documentation Ingest::GetDocumentation()
     {
         return Documentation(
             "ingest",
@@ -241,7 +241,7 @@ namespace BitFunnel
     }
 
 
-    ITask::Documentation Query::GetDocumentation()
+    ICommand::Documentation Query::GetDocumentation()
     {
         return Documentation(
             "query",
@@ -276,7 +276,7 @@ namespace BitFunnel
     }
 
 
-    ITask::Documentation Script::GetDocumentation()
+    ICommand::Documentation Script::GetDocumentation()
     {
         return Documentation(
             "script",
@@ -310,7 +310,7 @@ namespace BitFunnel
     }
 
 
-    ITask::Documentation Show::GetDocumentation()
+    ICommand::Documentation Show::GetDocumentation()
     {
         return Documentation(
             "show",
@@ -348,7 +348,7 @@ namespace BitFunnel
     }
 
 
-    ITask::Documentation Status::GetDocumentation()
+    ICommand::Documentation Status::GetDocumentation()
     {
         return Documentation(
             "status",

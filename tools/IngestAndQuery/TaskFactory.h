@@ -25,79 +25,26 @@
 #include <iosfwd>                   // std::ostream parameter.
 #include <map>                      // std::map embedded.
 #include <memory>                   // std::unique_ptr return value.
-#include <string>
-#include <vector>
+#include <string>                   // std::string return value.
+#include <vector>                   // std::vector return value.
 
 #include "BitFunnel/IInterface.h"   // Base class.
 #include "BitFunnel/Noncopyable.h"  // Base class.
+#include "ICommand.h"               // Base class.
 
 
 namespace BitFunnel
 {
     class Environment;
 
-
-    class ITask : public IInterface
-    {
-    public:
-        typedef size_t Id;
-
-        enum Type {
-            Synchronous,
-            Asynchronous,
-            Exit
-        };
-
-
-        virtual Type GetType() const = 0;
-        virtual Id GetId() const = 0;
-        virtual Environment & GetEnvironment() const = 0;
-        virtual void Execute() = 0;
-
-
-        class Documentation
-        {
-        public:
-            Documentation(char const * name,
-                          char const * parameters,
-                          char const * description)
-              : m_name(name),
-                m_parameters(parameters),
-                m_description(description)
-            {
-            }
-
-            char const * GetName() const
-            {
-                return m_name;
-            }
-
-            char const * GetParameters() const
-            {
-                return m_parameters;
-            }
-
-            char const * GetDescription() const
-            {
-                return m_description;
-            }
-
-        private:
-            char const * m_name;
-            char const * m_parameters;
-            char const * m_description;
-        };
-    };
-
-
     class TaskFactory : public NonCopyable
     {
     public:
         TaskFactory(Environment & environment);
 
-        virtual std::unique_ptr<ITask> CreateTask(char const * line);
+        virtual std::unique_ptr<ICommand> CreateTask(char const * line);
         virtual void Help(std::ostream& output, char const * command) const;
-        ITask::Id GetNextTaskId() const;
+        ICommand::Id GetNextTaskId() const;
 
     private:
         class Descriptor;
@@ -119,36 +66,36 @@ namespace BitFunnel
         void RegisterHelper(std::unique_ptr<Descriptor> descriptor);
 
         Environment & m_environment;
-        ITask::Id m_nextId;
+        ICommand::Id m_nextId;
         size_t m_maxNameLength;
         std::map<std::string, std::unique_ptr<Descriptor>> m_taskMap;
 
 
-        typedef std::unique_ptr<ITask>(*Creator)(
+        typedef std::unique_ptr<ICommand>(*Creator)(
             Environment & environment,
-            ITask::Id id,
+            ICommand::Id id,
             char const * parameters);
 
 
         class Descriptor
         {
         public:
-            Descriptor(ITask::Documentation documentation,
+            Descriptor(ICommand::Documentation documentation,
                        Creator creator)
               : m_documentation(documentation),
                 m_creator(creator)
             {
             }
 
-            ITask::Documentation GetDocumentation() const
+            ICommand::Documentation GetDocumentation() const
             {
                 return m_documentation;
             }
 
 
-            std::unique_ptr<ITask> Create(
+            std::unique_ptr<ICommand> Create(
                 Environment & environment,
-                ITask::Id id,
+                ICommand::Id id,
                 char const * parameters)
             {
                 return m_creator(environment,
@@ -157,18 +104,18 @@ namespace BitFunnel
             }
 
         private:
-            ITask::Documentation m_documentation;
+            ICommand::Documentation m_documentation;
             Creator m_creator;
         };
 
 
         template <class T>
-        static std::unique_ptr<ITask> Create(
+        static std::unique_ptr<ICommand> Create(
             Environment & environment,
-            ITask::Id id,
+            ICommand::Id id,
             char const * parameters)
         {
-            return std::unique_ptr<ITask>(new T(environment, id, parameters));
+            return std::unique_ptr<ICommand>(new T(environment, id, parameters));
         }
     };
 }

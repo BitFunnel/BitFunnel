@@ -22,43 +22,63 @@
 
 #pragma once
 
-#include <memory>                               // std::unique_ptr embedded.
-#include <vector>                               // std::vector embedded.
+#include <cstddef>      // size_t parameter.
 
-#include "BitFunnel/Utilities/BlockingQueue.h"  // BlockingQueue embedded.
-#include "BitFunnel/Utilities/IThreadManager.h" // IThreadBase base class.
+#include "ITask.h"      // Base class.
 
 
 namespace BitFunnel
 {
-    class ICommand;
+    class Environment;
 
-    class TaskPool
+    class ICommand : public ITask
     {
     public:
-        TaskPool(size_t threadCount);
+        typedef size_t Id;
 
-        bool TryEnqueue(std::unique_ptr<ICommand> task);
-
-        void Shutdown();
-
-    private:
-        class Thread : public IThreadBase
-        {
-        public:
-            Thread(TaskPool& pool, size_t id);
-
-            virtual void EntryPoint() override;
-
-        private:
-            TaskPool& m_pool;
-            size_t m_id;
+        enum Type {
+            Synchronous,
+            Asynchronous,
+            Exit
         };
 
-        // TODO: Convert ThreadManager to use std::vector<std::unique_ptr<IThreadBase>>
-        std::vector<IThreadBase*> m_threads;
-        std::unique_ptr<IThreadManager> m_threadManager;
 
-        BlockingQueue<std::unique_ptr<ICommand>> m_queue;
+        virtual Type GetType() const = 0;
+        virtual Id GetId() const = 0;
+        virtual Environment & GetEnvironment() const = 0;
+
+
+        class Documentation
+        {
+        public:
+            Documentation(char const * name,
+                          char const * parameters,
+                          char const * description)
+                : m_name(name),
+                m_parameters(parameters),
+                m_description(description)
+            {
+            }
+
+            char const * GetName() const
+            {
+                return m_name;
+            }
+
+            char const * GetParameters() const
+            {
+                return m_parameters;
+            }
+
+            char const * GetDescription() const
+            {
+                return m_description;
+            }
+
+        private:
+            char const * m_name;
+            char const * m_parameters;
+            char const * m_description;
+        };
     };
 }
