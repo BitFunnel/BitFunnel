@@ -6,11 +6,7 @@
 
 namespace BitFunnel
 {
-    namespace Allocators
-    {
-        class IAllocator;
-    }
-
+    class IAllocator;
     class IObjectParser;
 
     class RowMatchNode : public RowPlanBase
