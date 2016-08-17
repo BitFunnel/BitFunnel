@@ -81,34 +81,22 @@ namespace BitFunnel
         {
         case opAndRowJz:
             return &ParseNode<AndRowJz>(parser);
-            break;
         case opLoadRowJz:
             return &ParseNode<LoadRowJz>(parser);
-            break;
         case opOr:
             return &Or::Parse(parser);
-            break;
         case opRankDown:
             return &ParseNode<RankDown>(parser);
-            break;
         case opReport:
             return &ParseNode<Report>(parser);
-            break;
-
         case opAndTree:
             return &AndTree::Parse(parser);
-            break;
         case opLoadRow:
             return &ParseNode<LoadRow>(parser);
-            break;
         case opNot:
             return &ParseNode<Not>(parser);
-            break;
         case opOrTree:
             return &OrTree::Parse(parser);
-            break;
-
-
         case Null:
             return nullptr;
         default:

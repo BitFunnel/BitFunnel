@@ -15,7 +15,7 @@ namespace BitFunnel
     public:
         typedef unsigned Label;
 
-        virtual ~ICodeGenerator() {};
+        virtual ~ICodeGenerator() {}
 
         // RankDown compiler primitives
         virtual void AndRow(unsigned id, bool inverted, unsigned rankDelta) = 0;

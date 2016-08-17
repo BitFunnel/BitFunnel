@@ -43,11 +43,12 @@ endif()
 # TODO: can we fix format-non-literal?
 # TODO: we can remove -Wno-switch-enum when we get rid of StreamId as an enum.
 # TODO: only disable shorten-64-to-32 where we check for overflow and then throw. This is done in RowId.
+# TODO: see issue #147 about non-virtual destructor.
 # Wno-missing-prototypes is because we commonly declare functions without prototypes in tests.
 # Wno-float-equal is because we have tests for serializing and deserialization of floats that compare exact values.
 # Wno-exit-time-destructors is for Logging
 set(GTEST_REQUIRED_FLAGS "-Wno-shift-sign-overflow -Wno-missing-noreturn -Wno-used-but-marked-unused -Wno-deprecated -Wno-missing-variable-declarations -Wno-global-constructors")
-set(WEVERYTHING_TODO_FLAGS "-Wno-weak-vtables -Wno-sign-conversion -Wno-format-nonliteral -Wno-switch-enum")
+set(WEVERYTHING_TODO_FLAGS "-Wno-weak-vtables -Wno-sign-conversion -Wno-format-nonliteral -Wno-switch-enum -Wno-non-virtual-dtor")
 set(WEVERYTHING_FLAGS "-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-undef -Wno-missing-prototypes -Wno-float-equal -Wno-exit-time-destructors ${GTEST_REQUIRED_FLAGS} ${WEVERYTHING_TODO_FLAGS}")
 
 if(MSVC)
