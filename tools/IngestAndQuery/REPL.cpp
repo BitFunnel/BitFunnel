@@ -39,6 +39,7 @@ namespace BitFunnel
             << "Welcome to BitFunnel!" << std::endl
             << "Starting " << threadCount
             << " thread" << ((threadCount == 1) ? "" : "s") << std::endl
+            << "(plus one extra thread for the Recycler." << std::endl
             << std::endl
             << "directory = \"" << directory << "\"" << std::endl
             << "gram size = " << gramSize << std::endl
@@ -101,7 +102,9 @@ namespace BitFunnel
             }
         }
 
-        taskPool.Shutdown();
+        // NOTE: Must shutdown the index before the TaskPool because one of the
+        // TaskPool threads is waiting for the Recycler to shutdown.
         environment.StopIndex();
+        taskPool.Shutdown();
     }
 }

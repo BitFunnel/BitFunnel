@@ -35,9 +35,11 @@ namespace BitFunnel
         // TODO: Don't like passing *this to TaskFactory.
         // What if TaskFactory calls back before Environment is fully initialized?
         : m_directory(directory),
-          m_taskFactory(new TaskFactory(*this)),
-          m_taskPool(new TaskPool(threadCount))
+          m_taskFactory(new TaskFactory(*this))
     {
+        // Start one extra thread for the Recycler.
+        m_taskPool.reset(new TaskPool(threadCount + 1));
+
         RegisterCommands();
 
     }
@@ -68,6 +70,24 @@ namespace BitFunnel
     }
 
 
+    class RecyclerTask : public ITask
+    {
+    public:
+        RecyclerTask(IRecycler & recycler)
+          : m_recycler(recycler)
+        {
+        }
+
+        virtual void Execute() override
+        {
+            m_recycler.Run();
+        }
+
+    private:
+        IRecycler & m_recycler;
+    };
+
+
     void Environment::StartIndex()
     {
         char const * directory = m_directory.c_str();
@@ -78,9 +98,8 @@ namespace BitFunnel
         m_schema = Factories::CreateDocumentDataSchema();
 
         m_recycler = Factories::CreateRecycler();
-
-//        auto background = std::async(std::launch::async, &IRecycler::Run, m_recycler.get());
-
+        m_taskPool->TryEnqueue(
+            std::unique_ptr<RecyclerTask>(new RecyclerTask(*m_recycler)));
 
         //static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
         //const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, schema, *termTable);

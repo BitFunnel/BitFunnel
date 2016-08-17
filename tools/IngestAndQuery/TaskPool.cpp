@@ -45,7 +45,7 @@ namespace BitFunnel
     }
 
 
-    bool TaskPool::TryEnqueue(std::unique_ptr<ICommand> task)
+    bool TaskPool::TryEnqueue(std::unique_ptr<ITask> task)
     {
         return m_queue.TryEnqueue(std::move(task));
     }
@@ -60,7 +60,7 @@ namespace BitFunnel
 
     void TaskPool::Thread::EntryPoint()
     {
-        std::unique_ptr<ICommand> task;
+        std::unique_ptr<ITask> task;
         while (m_pool.m_queue.TryDequeue(task))
         {
             task->Execute();
