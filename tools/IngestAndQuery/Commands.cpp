@@ -315,6 +315,8 @@ namespace BitFunnel
 
     void Show::Execute()
     {
+        // TODO: Consider parsing phrase terms here.
+
         auto & environment = GetEnvironment();
         Term term(m_term.c_str(), 0, environment.GetConfiguration());
         RowIdSequence rows(term, environment.GetTermTable());
