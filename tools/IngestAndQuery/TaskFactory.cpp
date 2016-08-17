@@ -51,14 +51,7 @@ namespace BitFunnel
 
     std::unique_ptr<ITask> TaskFactory::CreateTask(char const * line)
     {
-        auto tokens = Tokenize(line);
-
-        if (tokens.size() == 0)
-        {
-            RecoverableError error("Expected a command.");
-            throw error;
-        }
-        std::string const & name = tokens[0];
+        auto name = GetNextToken(line);
 
         auto it = m_taskMap.find(name);
         if (it == m_taskMap.end())
@@ -69,7 +62,7 @@ namespace BitFunnel
             throw error;
         }
 
-        return (*it).second->Create(m_environment, m_nextId++, tokens);
+        return (*it).second->Create(m_environment, m_nextId++, line);
     }
 
 
@@ -206,6 +199,43 @@ namespace BitFunnel
         }
 
         return tokens;
+    }
+
+
+    std::string TaskFactory::GetNextToken(char const * & text)
+    {
+        std::string token;
+
+        SkipWhite(text);
+
+        if (*text == '"')
+        {
+            // Quoted string literal
+            ++text;
+            while (*text != '"')
+            {
+                if (*text == '\0')
+                {
+                    RecoverableError error("Expected closing \" in string literal.");
+                    throw error;
+                }
+                token.push_back(*text);
+                ++text;
+            }
+            Consume(text, '"');
+        }
+        else if (*text != '\0')
+        {
+            // Non-quoted literal.
+            std::string s;
+            while (!isspace(*text) && *text != '\0')
+            {
+                token.push_back(*text);
+                ++text;
+            }
+        }
+
+        return token;
     }
 
 

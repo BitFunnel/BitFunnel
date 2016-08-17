@@ -52,6 +52,7 @@ namespace BitFunnel
 
                 if (task->GetType() == ITask::Type::Exit)
                 {
+                    task->Execute();
                     break;
                 }
                 else if (task->GetType() == ITask::Type::Asynchronous)

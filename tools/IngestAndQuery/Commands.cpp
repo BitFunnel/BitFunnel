@@ -37,7 +37,7 @@ namespace BitFunnel
     //*************************************************************************
     Exit::Exit(Environment & environment,
                Id id,
-               std::vector<std::string> const & /*tokens*/)
+               char const * /*parameters*/)
         : TaskBase(environment, id, Type::Exit)
     {
     }
@@ -45,7 +45,9 @@ namespace BitFunnel
 
     void Exit::Execute()
     {
-        // Don't expect the Exit command to execute.
+        std::cout
+            << "Initiating shutdown sequence ..."
+            << std::endl;
     }
 
 
@@ -67,18 +69,11 @@ namespace BitFunnel
     //*************************************************************************
     DelayedPrint::DelayedPrint(Environment & environment,
                                Id id,
-                               std::vector<std::string> const & tokens)
+                               char const * parameters)
         : TaskBase(environment, id, Type::Asynchronous),
         m_sleepTime(5)
     {
-        if (tokens.size() > 1)
-        {
-            m_message = tokens[1];
-        }
-        else
-        {
-            m_message = "(no message)";
-        }
+        m_message = parameters;
     }
 
 
@@ -107,13 +102,10 @@ namespace BitFunnel
     //*************************************************************************
     Help::Help(Environment & environment,
                Id id,
-               std::vector<std::string> const & tokens)
+               char const * parameters)
         : TaskBase(environment, id, Type::Synchronous)
     {
-        if (tokens.size() > 1)
-        {
-            m_command = tokens[1];
-        }
+        m_command = TaskFactory::GetNextToken(parameters);
     }
 
 

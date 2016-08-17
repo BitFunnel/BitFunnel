@@ -61,7 +61,7 @@ namespace BitFunnel
             Documentation(char const * name,
                           char const * parameters,
                           char const * description)
-                : m_name(name),
+              : m_name(name),
                 m_parameters(parameters),
                 m_description(description)
             {
@@ -113,9 +113,11 @@ namespace BitFunnel
             RegisterHelper(std::move(descriptor));
         }
 
+        static std::vector<std::string> Tokenize(char const * text);
+        static std::string GetNextToken(char const * & text);
+
     private:
         void RegisterHelper(std::unique_ptr<Descriptor> descriptor);
-        static std::vector<std::string> Tokenize(char const * text);
 
         Environment & m_environment;
         ITask::Id m_nextId;
@@ -126,7 +128,7 @@ namespace BitFunnel
         typedef std::unique_ptr<ITask>(*Creator)(
             Environment & environment,
             ITask::Id id,
-            std::vector<std::string> const & tokens);
+            char const * parameters);
 
 
         class Descriptor
@@ -134,7 +136,7 @@ namespace BitFunnel
         public:
             Descriptor(ITask::Documentation documentation,
                        Creator creator)
-                : m_documentation(documentation),
+              : m_documentation(documentation),
                 m_creator(creator)
             {
             }
@@ -148,11 +150,11 @@ namespace BitFunnel
             std::unique_ptr<ITask> Create(
                 Environment & environment,
                 ITask::Id id,
-                std::vector<std::string> const & tokens)
+                char const * parameters)
             {
                 return m_creator(environment,
                                  id,
-                                 tokens);
+                                 parameters);
             }
 
         private:
@@ -165,9 +167,9 @@ namespace BitFunnel
         static std::unique_ptr<ITask> Create(
             Environment & environment,
             ITask::Id id,
-            std::vector<std::string> const & tokens)
+            char const * parameters)
         {
-            return std::unique_ptr<ITask>(new T(environment, id, tokens));
+            return std::unique_ptr<ITask>(new T(environment, id, parameters));
         }
     };
 }

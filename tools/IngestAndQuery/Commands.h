@@ -32,7 +32,7 @@ namespace BitFunnel
     public:
         Exit(Environment & environment,
              Id id,
-             std::vector<std::string> const & tokens);
+             char const * parameters);
 
         virtual void Execute() override;
         static ITask::Documentation GetDocumentation();
@@ -44,7 +44,7 @@ namespace BitFunnel
     public:
         DelayedPrint(Environment & environment,
                      Id id,
-                     std::vector<std::string> const & tokens);
+                     char const * parameters);
 
         virtual void Execute() override;
         static ITask::Documentation GetDocumentation();
@@ -60,7 +60,7 @@ namespace BitFunnel
     public:
         Help(Environment & environment,
              Id id,
-             std::vector<std::string> const & tokens);
+             char const * parameters);
 
         virtual void Execute() override;
         static ITask::Documentation GetDocumentation();
