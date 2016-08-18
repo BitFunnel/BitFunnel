@@ -32,10 +32,18 @@ namespace BitFunnel
     }
 
 
+    void PlainTextCodeGenerator::EmitSizeTArg(char const* name,
+                                              size_t shift)
+    {
+        Indent();
+        m_output << name << "(" << shift << ")" << std::endl;
+    }
+
+
     void PlainTextCodeGenerator::EmitRowArg(char const* name,
-                                            unsigned id,
+                                            size_t id,
                                             bool inverted,
-                                            unsigned rankDelta)
+                                            size_t rankDelta)
     {
         Indent();
         m_output << name << "(" << id;
@@ -52,27 +60,27 @@ namespace BitFunnel
     }
 
 
-    void PlainTextCodeGenerator::LoadRow(unsigned id, bool inverted, unsigned rankDelta)
+    void PlainTextCodeGenerator::LoadRow(size_t id, bool inverted, size_t rankDelta)
     {
         EmitRowArg("LoadRow", id, inverted, rankDelta);
     }
 
 
-    void PlainTextCodeGenerator::AndRow(unsigned id, bool inverted, unsigned rankDelta)
+    void PlainTextCodeGenerator::AndRow(size_t id, bool inverted, size_t rankDelta)
     {
         EmitRowArg("AndRow", id, inverted, rankDelta);
     }
 
 
-    void PlainTextCodeGenerator::LeftShiftOffset(unsigned shift)
+    void PlainTextCodeGenerator::LeftShiftOffset(size_t shift)
     {
-        EmitUnsignedArg("LeftShiftOffset", shift);
+        EmitSizeTArg("LeftShiftOffset", shift);
     }
 
 
-    void PlainTextCodeGenerator::RightShiftOffset(unsigned shift)
+    void PlainTextCodeGenerator::RightShiftOffset(size_t shift)
     {
-        EmitUnsignedArg("RightShiftOffset", shift);
+        EmitSizeTArg("RightShiftOffset", shift);
     }
 
 

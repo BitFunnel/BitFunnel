@@ -47,7 +47,7 @@ namespace BitFunnel
         {
             return std::unique_ptr<ICommand>(
                 new T(environment, id, tokens));
-        };
+        }
 
     private:
         Environment & m_environment;

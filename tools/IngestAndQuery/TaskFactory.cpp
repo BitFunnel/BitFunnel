@@ -121,7 +121,10 @@ namespace BitFunnel
     void TaskFactory::RegisterHelper(std::unique_ptr<Descriptor> descriptor)
     {
         std::string s(descriptor->GetDocumentation().GetName());
-        m_maxNameLength = std::max(m_maxNameLength, s.size());
+        // TODO: could check for name length overflow, although it seems
+        // unlikely.
+        m_maxNameLength = std::max(m_maxNameLength,
+                                   static_cast<int>(s.size()));
         auto it = m_taskMap.find(s);
         if (it != m_taskMap.end())
         {

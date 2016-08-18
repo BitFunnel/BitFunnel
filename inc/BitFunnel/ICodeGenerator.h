@@ -18,11 +18,11 @@ namespace BitFunnel
         virtual ~ICodeGenerator() {}
 
         // RankDown compiler primitives
-        virtual void AndRow(unsigned id, bool inverted, unsigned rankDelta) = 0;
-        virtual void LoadRow(unsigned id, bool inverted, unsigned rankDelta) = 0;
+        virtual void AndRow(size_t id, bool inverted, size_t rankDelta) = 0;
+        virtual void LoadRow(size_t id, bool inverted, size_t rankDelta) = 0;
 
-        virtual void LeftShiftOffset(unsigned shift) = 0;
-        virtual void RightShiftOffset(unsigned shift) = 0;
+        virtual void LeftShiftOffset(size_t shift) = 0;
+        virtual void RightShiftOffset(size_t shift) = 0;
         virtual void IncrementOffset() = 0;
 
         virtual void Push() = 0;

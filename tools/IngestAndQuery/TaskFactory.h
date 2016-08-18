@@ -67,7 +67,8 @@ namespace BitFunnel
 
         Environment & m_environment;
         ICommand::Id m_nextId;
-        size_t m_maxNameLength;
+        // m_maxNameLength is an int because setw takes an int.
+        int m_maxNameLength;
         std::map<std::string, std::unique_ptr<Descriptor>> m_taskMap;
 
 
