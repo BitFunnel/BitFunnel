@@ -85,7 +85,9 @@ namespace BitFunnel
     }
 
 
-    Shard::~Shard() {}
+    Shard::~Shard() {
+        delete m_sliceBuffers;
+    }
 
 
     DocumentHandleInternal Shard::AllocateDocument(DocId id)
