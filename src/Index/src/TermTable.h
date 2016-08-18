@@ -80,6 +80,14 @@ namespace BitFunnel
         // TermTable reader methods.
         //
 
+        // Returns true if the term table has been configured to return RowIds
+        // at the specified rank.
+        virtual bool IsRankUsed(Rank rank) const override;
+
+        // Returns the maximum rank value in any RowId, according to the
+        // TermTable's present configuration.
+        virtual Rank GetMaxRankUsed() const override;
+
         // Returns the total number of rows (private + shared) associated with
         // the row table for (rank). This includes rows allocated for
         // facts, if applicable.
@@ -124,13 +132,16 @@ namespace BitFunnel
         bool operator==(TermTable const & other) const;
 
     private:
-        void ThrowIfSealed() const;
+        void ThrowIfSealed(bool value) const;
 
         static Term CreateSystemTerm(SystemTerm term);
 
         bool m_sealed;
 
         RowIndex m_start;
+
+        std::array<bool, c_maxRankValue + 1> m_ranksInUse{};
+        Rank m_maxRankInUse;
 
         // TODO: Is the term table big enough that we would benefit from
         // a more compact class than std::pair<RowIndex, RowIndex>>? Would this

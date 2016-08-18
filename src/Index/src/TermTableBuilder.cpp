@@ -153,10 +153,15 @@ namespace BitFunnel
             // For small term table, the builder sees no terms and therefore reserves
             // zero adhoc rows. For now ensure that adhoc row count is at least 1000.
             // https://github.com/BitFunnel/BitFunnel/issues/155
+
+            size_t adhocRowCount = m_rowAssigners[rank]->GetAdhocRowCount();
+            if (m_termTable.IsRankUsed(rank))
+            {
+                adhocRowCount = std::max(adhocRowCount, 1000ull);
+            }
             m_termTable.SetRowCounts(rank,
                                      m_rowAssigners[rank]->GetExplicitRowCount(),
-                                     std::max(m_rowAssigners[rank]->GetAdhocRowCount(),
-                                              static_cast<RowIndex>(1000)));
+                                     adhocRowCount);
         }
 
         m_termTable.SetFactCount(facts.GetCount());

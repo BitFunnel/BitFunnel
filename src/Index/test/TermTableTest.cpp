@@ -366,6 +366,39 @@ namespace BitFunnel
 
         //*********************************************************************
         //
+        // Test ranks in use.
+        //
+        //*********************************************************************
+
+        TEST(TermTable, RanksInUse)
+        {
+            std::array<bool, c_maxRankValue + 1> ranksInUse{};
+            ranksInUse[0] = true;
+            ranksInUse[4] = true;
+
+            TermTable termTable;
+            termTable.OpenTerm();
+            for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
+            {
+                if (ranksInUse[rank])
+                {
+                    termTable.AddRowId(RowId(0, rank, 0));
+                }
+            }
+            termTable.CloseTerm(0ull);
+            termTable.Seal();
+
+            EXPECT_EQ(termTable.GetMaxRankUsed(), 4);
+
+            for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
+            {
+                EXPECT_EQ(ranksInUse[rank], termTable.IsRankUsed(rank));
+            }
+        }
+
+
+        //*********************************************************************
+        //
         // Test fact rows.
         //
         //*********************************************************************

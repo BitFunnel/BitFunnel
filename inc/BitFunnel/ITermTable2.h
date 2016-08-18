@@ -102,6 +102,14 @@ namespace BitFunnel
         // TermTable reader methods.
         //
 
+        // Returns true if the term table has been configured to return RowIds
+        // at the specified rank.
+        virtual bool IsRankUsed(Rank rank) const = 0;
+
+        // Returns the maximum rank value in any RowId, according to the
+        // TermTable's present configuration.
+        virtual Rank GetMaxRankUsed() const = 0;
+
         // Returns the total number of rows (private + shared) associated with
         // the row table for (rank). This includes rows allocated for
         // facts, if applicable.

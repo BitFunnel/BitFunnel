@@ -22,6 +22,7 @@
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Row.h"
 #include "Commands.h"
 #include "Environment.h"
 #include "TaskPool.h"
@@ -119,8 +120,8 @@ namespace BitFunnel
         m_configuration =
             Factories::CreateConfiguration(m_gramSize, false, *m_idfTable);
 
-        //static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
-        //const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, schema, *termTable);
+        static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
+//        const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, schema, *termTable);
 
         //std::unique_ptr<SliceBufferAllocator>
         //    sliceAllocator(new SliceBufferAllocator(sliceBufferSize, 16));
@@ -137,9 +138,6 @@ namespace BitFunnel
         //                                       *termTable,
         //                                       *shardDefinition,
         //                                       *sliceAllocator));
-
-        //const std::unique_ptr<IIndexedIdfTable>
-        //    idfTable(Factories::CreateIndexedIdfTable());
 
     }
 

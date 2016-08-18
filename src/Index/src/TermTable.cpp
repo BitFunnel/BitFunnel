@@ -112,14 +112,15 @@ namespace BitFunnel
 
     void TermTable::OpenTerm()
     {
-        ThrowIfSealed();
+        ThrowIfSealed(true);
         m_start = static_cast<RowIndex>(m_rowIds.size());
     }
 
 
     void TermTable::AddRowId(RowId row)
     {
-        ThrowIfSealed();
+        ThrowIfSealed(true);
+        m_ranksInUse[row.GetRank()] = true;
         m_rowIds.push_back(row);
     }
 
@@ -127,7 +128,7 @@ namespace BitFunnel
     // TODO: PackedRowIdSequence::Type parameter.
     void TermTable::CloseTerm(Term::Hash hash)
     {
-        ThrowIfSealed();
+        ThrowIfSealed(true);
 
         // Verify that this Term::Hash hasn't been added previously.
         auto it = m_termHashToRows.find(hash);
@@ -151,7 +152,7 @@ namespace BitFunnel
 
     void TermTable::CloseAdhocTerm(Term::IdfX10 idf, Term::GramSize gramSize)
     {
-        ThrowIfSealed();
+        ThrowIfSealed(true);
 
         if (idf > Term::c_maxIdfX10Value || gramSize > Term::c_maxGramSize)
         {
@@ -170,7 +171,7 @@ namespace BitFunnel
                                  size_t explicitCount,
                                  size_t adhocCount)
     {
-        ThrowIfSealed();
+        ThrowIfSealed(true);
 
         m_explicitRowCounts[rank] = explicitCount;
         m_adhocRowCounts[rank] = adhocCount;
@@ -180,7 +181,7 @@ namespace BitFunnel
 
     void TermTable::SetFactCount(size_t factCount)
     {
-        ThrowIfSealed();
+        ThrowIfSealed(true);
 
         // Fact rows include the SystemTerm rows and one row for each user
         // defined fact.
@@ -191,8 +192,18 @@ namespace BitFunnel
 
     void TermTable::Seal()
     {
-        ThrowIfSealed();
+        ThrowIfSealed(true);
         m_sealed = true;
+
+        // Determine maximum rank in use.
+        m_maxRankInUse = 0;
+        for (Rank r = 0; r <= c_maxRankValue; ++r)
+        {
+            if (m_ranksInUse[r])
+            {
+                m_maxRankInUse = r;
+            }
+        }
 
         // Convert explicit term RowIds to use absolute RowIndex values
         // instead of values relative to the end of the block of Adhoc
@@ -210,6 +221,19 @@ namespace BitFunnel
                 m_rowIds[r] = RowId(rowId, m_adhocRowCounts[rowId.GetRank()]);
             }
         }
+    }
+
+
+    bool TermTable::IsRankUsed(Rank rank) const
+    {
+        return m_ranksInUse[rank];
+    }
+
+
+    Rank TermTable::GetMaxRankUsed() const
+    {
+        ThrowIfSealed(false);
+        return m_maxRankInUse;
     }
 
 
@@ -376,12 +400,15 @@ namespace BitFunnel
     }
 
 
-    void TermTable::ThrowIfSealed() const
+    void TermTable::ThrowIfSealed(bool value) const
     {
-        if (m_sealed)
+        if (m_sealed == value)
         {
+            char const * message = value ?
+                "TermTable: operation disallowed because TermTable is sealed." :
+                "TermTable: operation disallowed before TermTable is sealed.";
             RecoverableError
-                error("TermTable: operation disallowed because TermTable is sealed.");
+                error(message);
             throw error;
         }
     }

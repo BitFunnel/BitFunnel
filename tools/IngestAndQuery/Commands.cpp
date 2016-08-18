@@ -374,6 +374,36 @@ namespace BitFunnel
             << std::endl
             << "NOT IMPLEMENTED"
             << std::endl;
+
+        double bytesPerDocument = 0;
+        for (Rank rank = 0; rank < c_maxRankValue; ++rank)
+        {
+            bytesPerDocument += GetEnvironment().GetTermTable().GetBytesPerDocument(rank);
+            std::cout
+                << rank
+                << ": "
+                << GetEnvironment().GetTermTable().GetBytesPerDocument(rank)
+                << " bytes/document"
+                << std::endl;
+        }
+
+        std::cout
+            << "Total: "
+            << bytesPerDocument
+            << " bytes/document"
+            << std::endl;
+
+        std::cout << std::endl;
+
+        for (Rank rank = 0; rank < c_maxRankValue; ++rank)
+        {
+            std::cout
+                << rank
+                << ": "
+                << GetEnvironment().GetTermTable().GetTotalRowCount(rank)
+                << " rows."
+                << std::endl;
+        }
     }
 
 
