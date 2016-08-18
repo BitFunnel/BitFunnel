@@ -120,7 +120,7 @@ namespace BitFunnel
         m_configuration =
             Factories::CreateConfiguration(m_gramSize, false, *m_idfTable);
 
-        static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
+        //        static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
 //        const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, schema, *termTable);
 
         //std::unique_ptr<SliceBufferAllocator>

@@ -388,7 +388,7 @@ namespace BitFunnel
             termTable.CloseTerm(0ull);
             termTable.Seal();
 
-            EXPECT_EQ(termTable.GetMaxRankUsed(), 4);
+            EXPECT_EQ(termTable.GetMaxRankUsed(), 4u);
 
             for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
             {

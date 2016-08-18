@@ -157,7 +157,7 @@ namespace BitFunnel
             size_t adhocRowCount = m_rowAssigners[rank]->GetAdhocRowCount();
             if (m_termTable.IsRankUsed(rank))
             {
-                adhocRowCount = std::max(adhocRowCount, 1000ull);
+                adhocRowCount = std::max(adhocRowCount, std::size_t{1000});
             }
             m_termTable.SetRowCounts(rank,
                                      m_rowAssigners[rank]->GetExplicitRowCount(),
