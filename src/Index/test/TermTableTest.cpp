@@ -291,6 +291,18 @@ namespace BitFunnel
                     VerifyTwoTerms(term, termTable);
                 }
             }
+
+            // Verify roundtrip
+            // Normally one wants to do black box testing, but it is hard to
+            // devise a solid black box test because it is not possible for a
+            // test to enumerate all of the terms in the TermTable and all of
+            // the adhoc term recipes.
+            std::stringstream stream;
+            termTable.Write(stream);
+
+            TermTable termTable2(stream);
+
+            EXPECT_EQ(termTable, termTable2);
         }
 
 

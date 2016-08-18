@@ -361,6 +361,21 @@ namespace BitFunnel
     }
 
 
+    bool TermTable::operator==(TermTable const & other) const
+    {
+        bool equals = true;
+        equals = equals && (m_termHashToRows == other.m_termHashToRows);
+        equals = equals && (m_adhocRows == other.m_adhocRows);
+        equals = equals && (m_rowIds == other.m_rowIds);
+        equals = equals && (m_explicitRowCounts == other.m_explicitRowCounts);
+        equals = equals && (m_adhocRowCounts == other.m_adhocRowCounts);
+        equals = equals && (m_sharedRowCounts == other.m_sharedRowCounts);
+        equals = equals && (m_factRowCount == other.m_factRowCount);
+
+        return equals;
+    }
+
+
     void TermTable::ThrowIfSealed() const
     {
         if (m_sealed)

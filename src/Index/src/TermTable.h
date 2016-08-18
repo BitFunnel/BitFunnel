@@ -116,6 +116,13 @@ namespace BitFunnel
 
         virtual RowId GetRowIdFact(size_t index) const override;
 
+        // NOTE: Included operator== for write-to-stream/read-from-stream
+        // roundtrip test. Normally one wants to do black box testing, but it
+        // is hard to devise a solid black box test because it is not possible
+        // for a test to enumerate all of the terms in the TermTable and all
+        // of the adhoc term recipes.
+        bool operator==(TermTable const & other) const;
+
     private:
         void ThrowIfSealed() const;
 

@@ -76,6 +76,13 @@ namespace BitFunnel
             return static_cast<Type>(m_type);
         }
 
+        // NOTE: Included operator== for write-to-stream/read-from-stream
+        // roundtrip test for TermTable. Normally one wants to do black box
+        // testing, but it is hard to devise a solid black box test for 
+        // TermTable because it is not possible for a test to enumerate all of
+        // the terms in the TermTable and all of the adhoc term recipes.
+        bool operator==(PackedRowIdSequence const & other) const;
+
     private:
         // DESIGN NOTE: members would normally be const, but we want this class
         // to be trivially_copyable to allow for binary serialization.

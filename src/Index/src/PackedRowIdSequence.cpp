@@ -57,4 +57,13 @@ namespace BitFunnel
             throw error;
         }
     }
+
+
+    bool PackedRowIdSequence::operator==(
+        PackedRowIdSequence const & other) const
+    {
+        return (m_start == other.m_start)
+            && (m_count == other.m_count)
+            && (m_type == other.m_type);
+    }
 }

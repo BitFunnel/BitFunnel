@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <algorithm>
 #include <iostream>     // TODO: Remove this temporary include.
 #include <math.h>
 #include <ostream>
@@ -121,7 +122,7 @@ namespace BitFunnel
 
 
         // For each (IdfX10, GramSize) pair.
-        for (Term::IdfX10 idf = 0; idf < Term::c_maxIdfX10Value; ++idf)
+        for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
             for (Term::GramSize gramSize = 1; gramSize < Term::c_maxGramSize; ++gramSize)
             {
@@ -129,9 +130,18 @@ namespace BitFunnel
                 const Term::StreamId streamId = 0;
 
                 m_termTable.OpenTerm();
+
                 Term term(hash, streamId, idf, gramSize);
-                // TODO: this function is wrong. Need to fix.
-                // auto configuration = treatment.GetTreatment(term);
+                auto configuration = treatment.GetTreatment(term);
+                for (auto rcEntry : configuration)
+                {
+                    for (size_t i = 0; i < rcEntry.GetRowCount(); ++i)
+                    {
+                        // TODO: figure out ShardId value here.
+                        m_termTable.AddRowId(RowId(0, rcEntry.GetRank(), 0u));
+                    }
+                }
+
                 m_termTable.CloseAdhocTerm(idf, gramSize);
             }
         }
@@ -139,9 +149,14 @@ namespace BitFunnel
 
         for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
         {
+            // TODO: Remove the following hack.
+            // For small term table, the builder sees no terms and therefore reserves
+            // zero adhoc rows. For now ensure that adhoc row count is at least 1000.
+            // https://github.com/BitFunnel/BitFunnel/issues/155
             m_termTable.SetRowCounts(rank,
                                      m_rowAssigners[rank]->GetExplicitRowCount(),
-                                     m_rowAssigners[rank]->GetAdhocRowCount());
+                                     std::max(m_rowAssigners[rank]->GetAdhocRowCount(),
+                                              static_cast<RowIndex>(1000)));
         }
 
         m_termTable.SetFactCount(facts.GetCount());
@@ -263,9 +278,10 @@ namespace BitFunnel
 
             // All of the bins for this term have been identified.
 
-            // Now add the appropriate RowIds to the TermTableBuilder.
+            // Now add the appropriate RowIds to the TermTable.
             for (auto b : currentBins)
             {
+                // TODO: figure out ShardId value here.
                 m_termTable.AddRowId(RowId(0, m_rank, b.GetIndex()));
             }
 
