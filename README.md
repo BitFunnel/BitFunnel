@@ -21,6 +21,8 @@ make
 make test
 ~~~
 
+Note that while these instructions are for a `make` build, it's also possible to build using `ninja` by changing the `cmake` command to create `ninja` files instead of `Makefiles`. These aren't listed in the instructions because `ninja` requires installing an extra dependency for some developers, but if you want to use `ninja` it's available via `apt-get`, `brew`, etc., and is susbtantially faster than `make`.
+
 #### Ubuntu
 
 If you're on Ubuntu 15+, you can install dependencies with:
