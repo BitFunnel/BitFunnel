@@ -24,10 +24,12 @@
 
 #include <memory>                                   // std::unique_ptr embedded.
 
+#include "BitFunnel/Configuration/IShardDefinition.h"  // Parameterizes std::unique_ptr.
 #include "BitFunnel/IFileManager.h"                 // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IConfiguration.h"         // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IDocumentDataSchema.h"    // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IIndexedIdfTable.h"       // Parameterizes std::unique_ptr.
+//#include "BitFunnel/Index/IIngestor.h"              // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IRecycler.h"              // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/ISliceBufferAllocator.h"  // Parameterizes std::unique_ptr.
 #include "BitFunnel/ITermTable2.h"                  // Parameterizes std::unique_ptr.
@@ -81,5 +83,8 @@ namespace BitFunnel
         std::unique_ptr<IConfiguration> m_configuration;
 
         std::unique_ptr<ISliceBufferAllocator> m_sliceAllocator;
+        std::unique_ptr<IShardDefinition> m_shardDefinition;
+
+//        std::unique_ptr<IIngestor> m_ingestor;
     };
 }

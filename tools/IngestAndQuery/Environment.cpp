@@ -131,18 +131,19 @@ namespace BitFunnel
         m_sliceAllocator = Factories::CreateSliceBufferAllocator(blockSize,
                                                                  initialBlockCount);
 
-        //auto shardDefinition = Factories::CreateShardDefinition();
-        //// shardDefinition->AddShard(1000);
-        //// shardDefinition->AddShard(2000);
-        //// shardDefinition->AddShard(3000);
+        // TODO: Load shard definition from FileManager stream.
+        // TODO: Optimal shard.
+        m_shardDefinition = Factories::CreateShardDefinition();
+        // m_shardDefinition->AddShard(1000);
+        // m_shardDefinition->AddShard(2000);
+        // m_shardDefinition->AddShard(3000);
 
-        //const std::unique_ptr<IIngestor>
-        //    ingestor(Factories::CreateIngestor(*fileManager,
-        //                                       schema,
-        //                                       *recycler,
-        //                                       *termTable,
-        //                                       *shardDefinition,
-        //                                       *sliceAllocator));
+        //m_ingestor = Factories::CreateIngestor(*m_fileManager,
+        //                                       *m_schema,
+        //                                       *m_recycler,
+        //                                       *m_termTable,
+        //                                       *m_shardDefinition,
+        //                                       *m_sliceAllocator));
 
     }
 
