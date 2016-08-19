@@ -30,10 +30,10 @@
 #include "BitFunnel/Index/IDocument.h"
 #include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "BitFunnel/Index/IRecycler.h"
+#include "BitFunnel/Index/ISliceBufferAllocator.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "DocumentHandleInternal.h"
 #include "Ingestor.h"
-#include "ISliceBufferAllocator.h"
 #include "LoggerInterfaces/Logging.h"
 #include "TermToText.h"
 

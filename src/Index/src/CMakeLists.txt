@@ -62,7 +62,6 @@ set(PRIVATE_HFILES
     IndexedIdfTable.h
     Ingestor.h
     IRecyclable.h
-    ISliceBufferAllocator.h
     Recycler.h
     RowTableDescriptor.h
     Shard.h

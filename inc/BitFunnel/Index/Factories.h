@@ -73,6 +73,9 @@ namespace BitFunnel
 
         std::unique_ptr<IRecycler> CreateRecycler();
 
+        std::unique_ptr<ISliceBufferAllocator>
+            CreateSliceBufferAllocator(size_t blockSize, size_t blockCount);
+
         std::unique_ptr<ITermTable2> CreateTermTable();
         std::unique_ptr<ITermTable2> CreateTermTable(std::istream & input);
 

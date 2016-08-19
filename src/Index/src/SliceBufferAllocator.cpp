@@ -23,12 +23,22 @@
 
 #include <stdint.h>
 
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "LoggerInterfaces/Logging.h"
 #include "SliceBufferAllocator.h"
 
 namespace BitFunnel
 {
+    std::unique_ptr<ISliceBufferAllocator>
+        Factories::CreateSliceBufferAllocator(size_t blockSize,
+                                              size_t blockCount)
+    {
+        return std::unique_ptr<ISliceBufferAllocator>(
+            new SliceBufferAllocator(blockSize, blockCount));
+    }
+
+
     SliceBufferAllocator::SliceBufferAllocator(size_t blockSize,
                                                size_t blockCount)
         : m_blockAllocator(Factories::CreateBlockAllocator(blockSize,

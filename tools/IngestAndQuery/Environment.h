@@ -29,6 +29,7 @@
 #include "BitFunnel/Index/IDocumentDataSchema.h"    // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IIndexedIdfTable.h"       // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IRecycler.h"              // Parameterizes std::unique_ptr.
+#include "BitFunnel/Index/ISliceBufferAllocator.h"  // Parameterizes std::unique_ptr.
 #include "BitFunnel/ITermTable2.h"                  // Parameterizes std::unique_ptr.
 #include "BitFunnel/Noncopyable.h"                  // Base class.
 #include "BitFunnel/Term.h"                         // Term::GramSize embedded.
@@ -36,8 +37,6 @@
 
 namespace BitFunnel
 {
-    class IFileManager;
-    class ITermTable2;
     class TaskFactory;
     class TaskPool;
 
@@ -80,5 +79,7 @@ namespace BitFunnel
         std::unique_ptr<ITermTable2> m_termTable;
         std::unique_ptr<IIndexedIdfTable> m_idfTable;
         std::unique_ptr<IConfiguration> m_configuration;
+
+        std::unique_ptr<ISliceBufferAllocator> m_sliceAllocator;
     };
 }

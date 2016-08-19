@@ -26,9 +26,10 @@
 #include <memory>
 #include <stddef.h>
 
+#include "BitFunnel/Index/ISliceBufferAllocator.h"
 #include "BitFunnel/Utilities/IBlockAllocator.h"
 #include "BitFunnel/NonCopyable.h"
-#include "ISliceBufferAllocator.h"
+
 
 namespace BitFunnel
 {

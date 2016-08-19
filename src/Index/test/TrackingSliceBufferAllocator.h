@@ -26,7 +26,8 @@
 #include <mutex>
 #include <unordered_set>
 
-#include "ISliceBufferAllocator.h"
+#include "BitFunnel/Index/ISliceBufferAllocator.h"
+
 
 namespace BitFunnel
 {

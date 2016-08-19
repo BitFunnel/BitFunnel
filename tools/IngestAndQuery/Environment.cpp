@@ -25,6 +25,7 @@
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/Helpers.h"
+#include "BitFunnel/Index/ISliceBufferAllocator.h"
 #include "BitFunnel/Row.h"
 #include "Commands.h"
 #include "Environment.h"
@@ -125,10 +126,10 @@ namespace BitFunnel
 
         const size_t blockSize = GetMinimumBlockSize(*m_schema, *m_termTable);
         std::cout << "Blocksize: " << blockSize << std::endl;
-//        const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, schema, *termTable);
 
-        //std::unique_ptr<SliceBufferAllocator>
-        //    sliceAllocator(new SliceBufferAllocator(sliceBufferSize, 16));
+        const size_t initialBlockCount = 16;
+        m_sliceAllocator = Factories::CreateSliceBufferAllocator(blockSize,
+                                                                 initialBlockCount);
 
         //auto shardDefinition = Factories::CreateShardDefinition();
         //// shardDefinition->AddShard(1000);
