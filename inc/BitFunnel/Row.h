@@ -64,6 +64,7 @@ namespace BitFunnel
         // than documentCount, but it might be greater because of padding inserted
         // to ensure alignment of rows at all ranks.
         static DocIndex DocumentsInRank0Row(DocIndex documentCount);
+        static DocIndex DocumentsInRank0Row(DocIndex documentCount, Rank maxRankInUse);
 
     private:
         // Pointer to the actual row data.

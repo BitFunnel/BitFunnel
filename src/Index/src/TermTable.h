@@ -140,7 +140,8 @@ namespace BitFunnel
 
         RowIndex m_start;
 
-        std::array<bool, c_maxRankValue + 1> m_ranksInUse{};
+        typedef std::array<bool, c_maxRankValue + 1> RanksInUse;
+        RanksInUse m_ranksInUse{};
         Rank m_maxRankInUse;
 
         // TODO: Is the term table big enough that we would benefit from

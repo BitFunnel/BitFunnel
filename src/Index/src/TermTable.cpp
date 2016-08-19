@@ -79,6 +79,8 @@ namespace BitFunnel
             m_termHashToRows.insert(std::make_pair(hash, rows));
         }
 
+        m_ranksInUse = StreamUtilities::ReadField<RanksInUse>(input);
+        m_maxRankInUse = StreamUtilities::ReadField<Rank>(input);
         m_adhocRows = StreamUtilities::ReadField<AdhocRecipes>(input);
         m_rowIds = StreamUtilities::ReadVector<RowId>(input);
         m_explicitRowCounts = StreamUtilities::ReadVector<RowIndex>(input);
@@ -100,6 +102,8 @@ namespace BitFunnel
             StreamUtilities::WriteField<PackedRowIdSequence>(output, rows);
         }
 
+        StreamUtilities::WriteField<RanksInUse>(output, m_ranksInUse);
+        StreamUtilities::WriteField<Rank>(output, m_maxRankInUse);
         StreamUtilities::WriteField<AdhocRecipes>(output, m_adhocRows);
         StreamUtilities::WriteVector(output, m_rowIds);
         StreamUtilities::WriteVector(output, m_explicitRowCounts);
@@ -388,6 +392,8 @@ namespace BitFunnel
     bool TermTable::operator==(TermTable const & other) const
     {
         bool equals = true;
+        equals = equals && (m_ranksInUse == other.m_ranksInUse);
+        equals = equals && (m_maxRankInUse == other.m_maxRankInUse);
         equals = equals && (m_termHashToRows == other.m_termHashToRows);
         equals = equals && (m_adhocRows == other.m_adhocRows);
         equals = equals && (m_rowIds == other.m_rowIds);

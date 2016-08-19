@@ -15,6 +15,7 @@ set(CPPFILES
     DocumentLengthHistogram.cpp
     DocumentMap.cpp
     FactSetBase.cpp
+    Helpers.cpp
     IndexedIdfTable.cpp
     IngestChunks.cpp
     Ingestor.cpp

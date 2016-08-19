@@ -43,6 +43,7 @@ namespace BitFunnel
     //class IngestionIndex;
     class ISliceBufferAllocator;
     class ITermTable;
+    class ITermTable2;
     class IIngestor;
     class Slice;
     class Term;     // TODO: Remove this temporary declaration.
@@ -195,9 +196,16 @@ namespace BitFunnel
         // scenarios.
         // DESIGN NOTE: This is made public in order to be used in unit tests.
         static size_t InitializeDescriptors(Shard* shard,
-                                           DocIndex sliceCapacity,
-                                           IDocumentDataSchema const & docDataSchema,
-                                           ITermTable const & termTable);
+                                            DocIndex sliceCapacity,
+                                            IDocumentDataSchema const & docDataSchema,
+                                            ITermTable const & termTable);
+
+        // TODO: This is the new version of InitializeDescriptors, based on
+        // ITermTable2. Need to migrate away from old version.
+        static size_t InitializeDescriptors(Shard* shard,
+                                            DocIndex sliceCapacity,
+                                            IDocumentDataSchema const & docDataSchema,
+                                            ITermTable2 const & termTable);
 
         // Calculates the number of documents which can be hosted in a slice
         // buffer of the given byte size.

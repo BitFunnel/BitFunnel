@@ -76,14 +76,22 @@ namespace BitFunnel
     }
 
 
+    // TODO: Remove this overload. Force all users to be intentional about
+    // the second parameter.
     DocIndex Row::DocumentsInRank0Row(DocIndex documentCount)
+    {
+        return DocumentsInRank0Row(documentCount, c_maxRankValue);
+    }
+
+
+    DocIndex Row::DocumentsInRank0Row(DocIndex documentCount, Rank maxRankInUse)
     {
         // DESIGN NOTE: Because the matching engine does quadword loads, it
         // is necessary that c_byteAlignment be at least 8 so that
         // DocumentsInRank0Row() correctly pads the row length.
         static const unsigned c_documentsPerByte = 8;
         unsigned rowQuanta =
-            (c_byteAlignment * c_documentsPerByte) << c_maxRankValue;
+            (c_byteAlignment * c_documentsPerByte) << maxRankInUse;
 
         return RoundUp<size_t>(documentCount, rowQuanta);
     }

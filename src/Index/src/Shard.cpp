@@ -24,6 +24,8 @@
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IRecycler.h"
+#include "BitFunnel/ITermTable.h"
+#include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/TermInfo.h"
 #include "IRecyclable.h"
@@ -228,10 +230,58 @@ namespace BitFunnel
 
 
     /* static */
+    // WARNING: During a brief transition from ITermTable to ITermTable2, we
+    // are maintaining two versions of InitializeDescriptors. Please be sure
+    // to make changes to both versions.
     size_t Shard::InitializeDescriptors(Shard* shard,
                                         DocIndex sliceCapacity,
                                         IDocumentDataSchema const & docDataSchema,
                                         ITermTable const & termTable)
+    {
+        ptrdiff_t currentOffset = 0;
+
+        // Start of the DocTable is at offset 0.
+        if (shard != nullptr)
+        {
+            shard->m_docTable.reset(new DocTableDescriptor(sliceCapacity,
+                                                           docDataSchema,
+                                                           currentOffset));
+        }
+
+        currentOffset += DocTableDescriptor::GetBufferSize(sliceCapacity, docDataSchema);
+
+        for (Rank r = 0; r <= c_maxRankValue; ++r)
+        {
+            // TODO: see if this alignment matters.
+            // currentOffset = RoundUp(currentOffset, c_rowTableByteAlignment);
+
+            const RowIndex rowCount = termTable.GetTotalRowCount(r);
+
+            if (shard != nullptr)
+            {
+                shard->m_rowTables.emplace_back(sliceCapacity, rowCount, r, currentOffset);
+            }
+
+            currentOffset += RowTableDescriptor::GetBufferSize(sliceCapacity, rowCount, r);
+        }
+
+        // A pointer to a Slice is placed at the end of the slice buffer.
+        currentOffset += sizeof(void*);
+
+        const size_t sliceBufferSize = static_cast<size_t>(currentOffset);
+
+        return sliceBufferSize;
+    }
+
+
+    /* static */
+    // WARNING: During a brief transition from ITermTable to ITermTable2, we
+    // are maintaining two versions of InitializeDescriptors. Please be sure
+    // to make changes to both versions.
+    size_t Shard::InitializeDescriptors(Shard* shard,
+                                        DocIndex sliceCapacity,
+                                        IDocumentDataSchema const & docDataSchema,
+                                        ITermTable2 const & termTable)
     {
         ptrdiff_t currentOffset = 0;
 
