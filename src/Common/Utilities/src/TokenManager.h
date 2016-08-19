@@ -72,10 +72,10 @@ namespace BitFunnel
         virtual void OnTokenComplete(SerialNumber serialNumber) override;
 
         // Serial number for the next issued token.
-        std::atomic<unsigned> m_nextSerialNumber;
+        std::atomic<int64_t> m_nextSerialNumber;
 
         // Number of tokens currently in-flight.
-        std::atomic<unsigned> m_tokensInFlight;
+        std::atomic<uint64_t> m_tokensInFlight;
 
         // Flag indicating that TokenManager is shutting down.
         std::atomic<bool> m_isShuttingDown;

@@ -55,7 +55,7 @@ namespace BitFunnel
 
         // Constructs a tracker to track tokens issued before a cut off serial
         // number
-        TokenTracker(SerialNumber cutoffSerialNumber, unsigned remainingTokenCount);
+        TokenTracker(SerialNumber cutoffSerialNumber, int64_t remainingTokenCount);
 
         ~TokenTracker();
 
@@ -80,7 +80,7 @@ namespace BitFunnel
         const SerialNumber m_cutoffSerialNumber;
 
         // Number of tokens of interest which are still in flight.
-        std::atomic<unsigned int> m_remainingTokenCount;
+        std::atomic<int64_t> m_remainingTokenCount;
 
         std::condition_variable m_condition;
         std::mutex m_conditionLock;

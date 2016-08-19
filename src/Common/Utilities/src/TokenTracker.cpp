@@ -29,7 +29,7 @@
 namespace BitFunnel
 {
     TokenTracker::TokenTracker(SerialNumber cutoffSerialNumber,
-                               unsigned remainingTokenCount)
+                               int64_t remainingTokenCount)
         : m_cutoffSerialNumber(cutoffSerialNumber),
           m_remainingTokenCount(remainingTokenCount)
     {
@@ -53,7 +53,7 @@ namespace BitFunnel
         if (serialNumber < m_cutoffSerialNumber)
         {
 
-            unsigned newValue;
+            int64_t newValue;
             // This lock is to prevent a race between notification on the
             // condition variable and waiting on the condition varaible.
             {
@@ -61,11 +61,7 @@ namespace BitFunnel
                 newValue = --m_remainingTokenCount;
             }
 
-            // m_remainingTokenCount should always be >= 0 because we know the
-            // number of tokens in flight when starting the tracker.
-            // Decrementing 0 would result in an underflow.
-            LogAssertB(newValue != std::numeric_limits<unsigned int>::max(),
-                       "m_remainingTokenCount underflow.");
+            LogAssertB(newValue >= 0, "token count underflow");
 
             if (newValue == 0)
             {

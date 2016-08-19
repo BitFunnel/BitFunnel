@@ -29,7 +29,7 @@
 
 namespace BitFunnel
 {
-    typedef unsigned long long SerialNumber;
+    typedef int64_t SerialNumber;
 
     //*************************************************************************
     //
