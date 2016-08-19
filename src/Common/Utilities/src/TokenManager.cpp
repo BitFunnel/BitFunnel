@@ -103,26 +103,30 @@ namespace BitFunnel
         LogAssertB(m_tokensInFlight > 0,
                    "Token completed with <= 0 tokens in flight.");
 
-        m_lock.lock();
-        --m_tokensInFlight;
-
-        // m_trackers consists of a sequence of zero or more complete trackers,
-        // followed by a sequence of trackers that have not completed.
-
-        // First notify and remove the completed trackers at the head of m_trackers.
-        while (!m_trackers.empty() && m_trackers.front()->OnTokenComplete(serialNumber))
         {
-            m_trackers.pop_front();
-        }
+            std::lock_guard<std::mutex> lock(m_lock);
+            --m_tokensInFlight;
 
-        // Then notify the remaining trackers, starting with index 1, since we
-        // have already notified the first one in the while loop above.
-        for (unsigned i = 1; i < m_trackers.size(); ++i)
-        {
-            LogAssertB(!m_trackers[i]->OnTokenComplete(serialNumber),
-                       "Tracker completed when older tracker didn't complete.");
+            // m_trackers consists of a sequence of zero or more complete trackers,
+            // followed by a sequence of trackers that have not completed.
+
+            // First notify and remove the completed trackers at the head of m_trackers.
+            while (!m_trackers.empty() &&
+                   m_trackers.front()->OnTokenComplete(serialNumber))
+            {
+                m_trackers.pop_front();
+            }
+
+            // Then notify the remaining trackers, starting with index 1, since we
+            // have already notified the first one in the while loop above.
+            for (unsigned i = 1; i < m_trackers.size(); ++i)
+            {
+                // All older trackers must be complete for a tracker to
+                // complete.
+                LogAssertB(!m_trackers[i]->OnTokenComplete(serialNumber),
+                           "Tracker completed out of order.");
+            }
         }
-        m_lock.unlock();
 
         if (m_tokensInFlight == 0 && m_isShuttingDown)
         {
