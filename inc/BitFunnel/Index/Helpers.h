@@ -22,6 +22,9 @@
 
 #pragma once
 
+
+#include <stddef.h>
+
 namespace BitFunnel
 {
     class IDocumentDataSchema;
