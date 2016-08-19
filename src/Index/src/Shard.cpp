@@ -88,7 +88,7 @@ namespace BitFunnel
 
 
     Shard::~Shard() {
-        delete m_sliceBuffers;
+        delete static_cast<std::vector<void*>*>(m_sliceBuffers);
     }
 
 

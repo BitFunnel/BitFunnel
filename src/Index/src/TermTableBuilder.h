@@ -55,6 +55,28 @@ namespace BitFunnel
 
         virtual void Print(std::ostream& output) const override;
 
+        // TODO: Come up with a more principled solution.
+        // When building a TermTable based on a small IDocumentFrequencyTable,
+        // the builder may run into a situation where it encounters no adhoc
+        // terms (because all terms encountered are in the frequency table,
+        // and therefore treated as explicit).
+        //
+        // This could be a problem when ingesting a corpus that has adhoc terms
+        // since the TermTable would not be configured with adhoc rows. A
+        // TermTable with zero adhoc rows will cause a divide-by-zero when
+        // attempting to compute a RowIndex by taking the mod of the hash and
+        // zero.
+        //
+        // To avoid this problem, the TermTableBuilder always configures ranks
+        // that are used in the ITermTreatment with some minimal amount of
+        // adhoc rows. GetMinAdhocRowCount() returns this minimal number.
+        //
+        // Note that this approach also ensures there are sufficient adhoc rows
+        // to greatly reduce the chances that a single adhoc term will have
+        // duplicate rows.
+        // https://github.com/BitFunnel/BitFunnel/issues/155
+        static size_t GetMinAdhocRowCount();
+
     private:
         ITermTable2 & m_termTable;
 

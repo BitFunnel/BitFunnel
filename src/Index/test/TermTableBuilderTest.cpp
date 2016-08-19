@@ -56,7 +56,13 @@ namespace BitFunnel
             auto it = m_configurations.find(term.GetRawHash());
             if (it == m_configurations.end())
             {
-                throw 0;
+                // MockTermTreatment is designed to return RowConfigurations
+                // based on hash. TermTableBuilder calls GetTreatment() with
+                // hash == 0ull when configuriong the TermTable for adhoc
+                // rows. For current usage, it is suffices to return an empty
+                // row configuration here. If the test is extended to cover
+                // more adhoc cases, the logic here will need to change.
+                return RowConfiguration();
             }
             return (*it).second;
         }
@@ -222,10 +228,13 @@ namespace BitFunnel
             m_termTable.AddRowId(RowId(0, 4, rows[4]++));
             m_termTable.CloseTerm(hash++);
 
-            m_termTable.SetRowCounts(0, 4, 0);
-            m_termTable.SetRowCounts(4, 1, 0);
+            const size_t adhocRowCount =
+                TermTableBuilder::GetMinAdhocRowCount();
+            m_termTable.SetRowCounts(0, 4, adhocRowCount);
+            m_termTable.SetRowCounts(4, 1, adhocRowCount);
 
             m_termTable.SetFactCount(0);
+            m_termTable.Seal();
         }
 
 
@@ -271,12 +280,18 @@ private:
 
             // Run the TermTableBuilder to configure a TermTable.
             ITermTreatment const & treatment = environment.GetTermTreatment();
-            DocumentFrequencyTable const & terms = environment.GetDocFrequencyTable();
+            DocumentFrequencyTable const & terms = 
+                environment.GetDocFrequencyTable();
             IFactSet const & facts = environment.GetFactSet();
             TermTable termTable;
             double density = 0.1;
             double adhocFrequency = 0.0001;
-            TermTableBuilder builder(density, adhocFrequency, treatment, terms, facts, termTable);
+            TermTableBuilder builder(density,
+                                     adhocFrequency,
+                                     treatment,
+                                     terms,
+                                     facts,
+                                     termTable);
 
             builder.Print(std::cout);
 
@@ -289,13 +304,20 @@ private:
             // NOTE: This test relies on the existence of a separate unit test
             // for TermTable that ensures that RowIds and Terms are added
             // correctly. Without such a test, a bogus TermTable that ignores
-            // all RowId additions would allow TermTableBuilderTest to pass.
+            // all RowId additions would allow TermTableBuilderTest to pass
+            // (because they will both return the empty set of rows).
             for (auto term : terms)
             {
-                RowIdSequence expected(term.GetTerm(), environment.GetTermTable());
+                RowIdSequence expected(term.GetTerm(),
+                                       environment.GetTermTable());
                 RowIdSequence observed(term.GetTerm(), termTable);
-                EXPECT_TRUE(std::equal(observed.begin(), observed.end(), expected.begin()));
-                EXPECT_TRUE(std::equal(expected.begin(), expected.end(), observed.begin()));
+
+                EXPECT_TRUE(std::equal(observed.begin(),
+                                       observed.end(),
+                                       expected.begin()));
+                EXPECT_TRUE(std::equal(expected.begin(),
+                                       expected.end(),
+                                       observed.begin()));
             }
 
 
@@ -305,7 +327,8 @@ private:
             // all SetRowCounts would allow TermTableBuilderTest to pass.
             for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
             {
-                EXPECT_EQ(termTable.GetTotalRowCount(rank), environment.GetTermTable().GetTotalRowCount(rank));
+                EXPECT_EQ(termTable.GetTotalRowCount(rank),
+                          environment.GetTermTable().GetTotalRowCount(rank));
             }
 
             // TODO: Verify adhoc

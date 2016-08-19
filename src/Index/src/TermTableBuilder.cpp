@@ -149,15 +149,31 @@ namespace BitFunnel
 
         for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
         {
-            // TODO: Remove the following hack.
-            // For small term table, the builder sees no terms and therefore reserves
-            // zero adhoc rows. For now ensure that adhoc row count is at least 1000.
+            // TODO: Come up with a more principled solution.
+            // When building a TermTable based on a small IDocumentFrequencyTable,
+            // the builder may run into a situation where it encounters no adhoc
+            // terms (because all terms encountered are in the frequency table,
+            // and therefore treated as explicit).
+            //
+            // This could be a problem when ingesting a corpus that has adhoc terms
+            // since the TermTable would not be configured with adhoc rows. A
+            // TermTable with zero adhoc rows will cause a divide-by-zero when
+            // attempting to compute a RowIndex by taking the mod of the hash and
+            // zero.
+            //
+            // To avoid this problem, the TermTableBuilder always configures ranks
+            // that are used in the ITermTreatment with some minimal amount of
+            // adhoc rows. GetMinAdhocRowCount() returns this minimal number.
+            //
+            // Note that this approach also ensures there are sufficient adhoc rows
+            // to greatly reduce the chances that a single adhoc term will have
+            // duplicate rows.
             // https://github.com/BitFunnel/BitFunnel/issues/155
 
             size_t adhocRowCount = m_rowAssigners[rank]->GetAdhocRowCount();
             if (m_termTable.IsRankUsed(rank))
             {
-                adhocRowCount = std::max(adhocRowCount, std::size_t{1000});
+                adhocRowCount = std::max(adhocRowCount, GetMinAdhocRowCount());
             }
             m_termTable.SetRowCounts(rank,
                                      m_rowAssigners[rank]->GetExplicitRowCount(),
@@ -182,6 +198,32 @@ namespace BitFunnel
         }
     }
 
+
+    // TODO: Come up with a more principled solution.
+    // When building a TermTable based on a small IDocumentFrequencyTable,
+    // the builder may run into a situation where it encounters no adhoc
+    // terms (because all terms encountered are in the frequency table,
+    // and therefore treated as explicit).
+    //
+    // This could be a problem when ingesting a corpus that has adhoc terms
+    // since the TermTable would not be configured with adhoc rows. A
+    // TermTable with zero adhoc rows will cause a divide-by-zero when
+    // attempting to compute a RowIndex by taking the mod of the hash and
+    // zero.
+    //
+    // To avoid this problem, the TermTableBuilder always configures ranks
+    // that are used in the ITermTreatment with some minimal amount of
+    // adhoc rows. GetMinAdhocRowCount() returns this minimal number.
+    //
+    // Note that this approach also ensures there are sufficient adhoc rows
+    // to greatly reduce the chances that a single adhoc term will have
+    // duplicate rows.
+    // https://github.com/BitFunnel/BitFunnel/issues/155
+    size_t TermTableBuilder::GetMinAdhocRowCount()
+    {
+        const size_t c_minAdhocRowCount = 1000ull;
+        return c_minAdhocRowCount;
+    }
 
     //*************************************************************************
     //
@@ -328,7 +370,9 @@ namespace BitFunnel
         else
         {
             output << "  Terms" << std::endl;
-            output << "    Total: " << m_adhocTermCount + m_explicitTermCount + m_privateTermCount << std::endl;
+            output << "    Total: "
+                   << m_adhocTermCount + m_explicitTermCount + m_privateTermCount
+                   << std::endl;
             output << "    Adhoc: " << m_adhocTermCount << std::endl;
             output << "    Explicit: " << m_explicitTermCount << std::endl;
             output << "    Private: " << m_privateTermCount << std::endl;
@@ -336,21 +380,21 @@ namespace BitFunnel
             output << std::endl;
 
             output << "  Rows" << std::endl;
-            output << "    Total: " << GetAdhocRowCount() + m_currentRow << std::endl;
+            output << "    Total: " << GetAdhocRowCount() + m_currentRow
+                   << std::endl;
             output << "    Adhoc: " << GetAdhocRowCount() << std::endl;
             output << "    Explicit: " << m_bins.size() << std::endl;
             output << "    Private: " << m_privateRowCount << std::endl;
             output << std::endl;
 
-            output << "  Bytes per document: " << m_termTable.GetBytesPerDocument(m_rank) << std::endl;
+            output << "  Bytes per document: "
+                   << m_termTable.GetBytesPerDocument(m_rank) << std::endl;
 
             output << std::endl;
 
-            //output << "  Bins" << std::endl;
             Accumulator a;
             for (auto bin : m_bins)
             {
-//                output << "    " << bin.GetFrequency(m_density) << ", " << bin.GetIndex() << std::endl;
                 a.Record(bin.GetFrequency(m_density));
             }
 
