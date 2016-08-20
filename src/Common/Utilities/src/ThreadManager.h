@@ -22,11 +22,11 @@
 
 #pragma once
 
-#include <thread>
-#include <vector>                              // Member variable.
+#include <thread>                                   // std::thread embedded.
+#include <vector>                                   // std::vector embedded.
 
-#include "BitFunnel/Utilities/IThreadManager.h"          // Inherits from IThreadManager.
-#include "BitFunnel/NonCopyable.h"             // Inherits from NonCopyable.
+#include "BitFunnel/Utilities/IThreadManager.h"     // Base class.
+#include "BitFunnel/NonCopyable.h"                  // Base class.
 
 
 namespace BitFunnel

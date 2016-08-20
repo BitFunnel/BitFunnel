@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>
-
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "Commands.h"
@@ -40,12 +38,10 @@ namespace BitFunnel
         : m_taskFactory(new TaskFactory(*this)),
           // Start one extra thread for the Recycler.
           m_taskPool(new TaskPool(threadCount + 1)),
-          m_index(Factories::CreateSimpleIndex(directory, gramSize))
+          m_index(Factories::CreateSimpleIndex(directory, gramSize, false))
     {
         RegisterCommands();
     }
-
-
 
 
     void Environment::RegisterCommands()
@@ -93,11 +89,7 @@ namespace BitFunnel
 
     void Environment::StartIndex()
     {
-        m_index->StartIndex();
-
-        IRecycler & recycler = m_index->GetRecycler();
-        m_taskPool->TryEnqueue(
-            std::unique_ptr<RecyclerTask>(new RecyclerTask(recycler)));
+        m_index->StartIndex(false);
     }
 
 
@@ -110,6 +102,12 @@ namespace BitFunnel
     IConfiguration const & Environment::GetConfiguration() const
     {
         return m_index->GetConfiguration();
+    }
+
+
+    IIngestor & Environment::GetIngestor() const
+    {
+        return m_index->GetIngestor();
     }
 
 

@@ -45,239 +45,239 @@
 
 namespace BitFunnel
 {
-    namespace ShardTest
-    {
-        const size_t c_blockAllocatorBlockCount = 10;
+    // namespace ShardTest
+    // {
+    //     const size_t c_blockAllocatorBlockCount = 10;
 
-        void TestSliceBuffers(Shard const & shard, std::vector<Slice*> const & allocatedSlices)
-        {
-            std::vector<void*> const & sliceBuffers = shard.GetSliceBuffers();
-            EXPECT_EQ(sliceBuffers.size(), allocatedSlices.size());
+    //     void TestSliceBuffers(Shard const & shard, std::vector<Slice*> const & allocatedSlices)
+    //     {
+    //         std::vector<void*> const & sliceBuffers = shard.GetSliceBuffers();
+    //         EXPECT_EQ(sliceBuffers.size(), allocatedSlices.size());
 
-            for (size_t i = 0; i < sliceBuffers.size(); ++i)
-            {
-                EXPECT_EQ(allocatedSlices[i]->GetSliceBuffer(), sliceBuffers[i]);
+    //         for (size_t i = 0; i < sliceBuffers.size(); ++i)
+    //         {
+    //             EXPECT_EQ(allocatedSlices[i]->GetSliceBuffer(), sliceBuffers[i]);
 
-                // Slice buffer should contain a pointer to a Slice at the offset indicated by Shard.
-                char* sliceBuffer = reinterpret_cast<char*>(sliceBuffers[i]);
-                void** slicePtrInSliceBuffer = reinterpret_cast<void**>(sliceBuffer + shard.GetSlicePtrOffset());
-                EXPECT_EQ(allocatedSlices[i], *slicePtrInSliceBuffer);
-            }
-        }
-
-
-        TEST(Shard, Basic)
-        {
-            auto fileManager = CreateMockFileManager();
-
-            DocumentDataSchema schema;
-
-            std::unique_ptr<IRecycler> recycler =
-                std::unique_ptr<IRecycler>(new Recycler());
-            auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
-
-            static const std::vector<RowIndex>
-                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1, 0 };
-            std::shared_ptr<ITermTable const>
-                termTable(new EmptyTermTable(rowCounts));
-
-            static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
-            const size_t sliceBufferSize = GetEmptyTermTableBufferSize(c_sliceCapacity, rowCounts, schema);
-
-            auto shardDefinition = Factories::CreateShardDefinition();
-
-            std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
-                new TrackingSliceBufferAllocator(sliceBufferSize));
-
-            const std::unique_ptr<IIngestor>
-                ingestor(Factories::CreateIngestor(*fileManager,
-                                                   schema,
-                                                   *recycler,
-                                                   *termTable,
-                                                   *shardDefinition,
-                                                   *trackingAllocator));
-
-            Shard& shard = ingestor->GetShard(0);
-
-            // EXPECT_EQ(&shard.GetIndex(), &index->GetIndex());
-            EXPECT_EQ(shard.GetSliceCapacity(), c_sliceCapacity);
-
-            Slice* currentSlice = nullptr;
-            std::vector<Slice*> allocatedSlices;
-            TestSliceBuffers(shard, allocatedSlices);
-
-            for (DocIndex i = 0; i < c_sliceCapacity * 3; ++i)
-            {
-                DocId docId = static_cast<DocId>(i) + 1234;
-
-                const DocumentHandleInternal handle = shard.AllocateDocument(docId);
-
-                if ((i % c_sliceCapacity) == 0)
-                {
-                    if (currentSlice != nullptr)
-                    {
-                        // We must have advanced to another slice, so should have a new value
-                        // of the Slice*.
-                        EXPECT_NE(handle.GetSlice(), currentSlice);
-                    }
-
-                    currentSlice = handle.GetSlice();
-                    allocatedSlices.push_back(currentSlice);
-                }
-
-                currentSlice->GetDocTable().SetDocId(currentSlice->GetSliceBuffer(),
-                                                     i % c_sliceCapacity,
-                                                     docId);
-                currentSlice->CommitDocument();
-
-                EXPECT_EQ(handle.GetDocId(), docId);
-                EXPECT_EQ(handle.GetIndex(), i % c_sliceCapacity);
-                EXPECT_EQ(handle.GetSlice(), currentSlice);
-
-                TestSliceBuffers(shard, allocatedSlices);
-                currentSlice->ExpireDocument();
-            }
-
-            for (const auto & slice : allocatedSlices)
-            {
-                shard.RecycleSlice(*slice);
-            }
-
-            ingestor->Shutdown();
-            recycler->Shutdown();
-            background.wait();
-        }
+    //             // Slice buffer should contain a pointer to a Slice at the offset indicated by Shard.
+    //             char* sliceBuffer = reinterpret_cast<char*>(sliceBuffers[i]);
+    //             void** slicePtrInSliceBuffer = reinterpret_cast<void**>(sliceBuffer + shard.GetSlicePtrOffset());
+    //             EXPECT_EQ(allocatedSlices[i], *slicePtrInSliceBuffer);
+    //         }
+    //     }
 
 
-        // Returns the buffer size required to host a Slice with given schema properties.
-        size_t GetRequiredBufferSize(DocIndex capacity,
-                                     IDocumentDataSchema const & docDataSchema,
-                                     ITermTable const & termTable)
-        {
-            return Shard::InitializeDescriptors(nullptr, capacity, docDataSchema, termTable);
-        }
+    //     TEST(Shard, Basic)
+    //     {
+    //         auto fileManager = CreateMockFileManager();
+
+    //         DocumentDataSchema schema;
+
+    //         std::unique_ptr<IRecycler> recycler =
+    //             std::unique_ptr<IRecycler>(new Recycler());
+    //         auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
+
+    //         static const std::vector<RowIndex>
+    //             rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1, 0 };
+    //         std::shared_ptr<ITermTable const>
+    //             termTable(new EmptyTermTable(rowCounts));
+
+    //         static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
+    //         const size_t sliceBufferSize = GetEmptyTermTableBufferSize(c_sliceCapacity, rowCounts, schema);
+
+    //         auto shardDefinition = Factories::CreateShardDefinition();
+
+    //         std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
+    //             new TrackingSliceBufferAllocator(sliceBufferSize));
+
+    //         const std::unique_ptr<IIngestor>
+    //             ingestor(Factories::CreateIngestor(*fileManager,
+    //                                                schema,
+    //                                                *recycler,
+    //                                                *termTable,
+    //                                                *shardDefinition,
+    //                                                *trackingAllocator));
+
+    //         Shard& shard = ingestor->GetShard(0);
+
+    //         // EXPECT_EQ(&shard.GetIndex(), &index->GetIndex());
+    //         EXPECT_EQ(shard.GetSliceCapacity(), c_sliceCapacity);
+
+    //         Slice* currentSlice = nullptr;
+    //         std::vector<Slice*> allocatedSlices;
+    //         TestSliceBuffers(shard, allocatedSlices);
+
+    //         for (DocIndex i = 0; i < c_sliceCapacity * 3; ++i)
+    //         {
+    //             DocId docId = static_cast<DocId>(i) + 1234;
+
+    //             const DocumentHandleInternal handle = shard.AllocateDocument(docId);
+
+    //             if ((i % c_sliceCapacity) == 0)
+    //             {
+    //                 if (currentSlice != nullptr)
+    //                 {
+    //                     // We must have advanced to another slice, so should have a new value
+    //                     // of the Slice*.
+    //                     EXPECT_NE(handle.GetSlice(), currentSlice);
+    //                 }
+
+    //                 currentSlice = handle.GetSlice();
+    //                 allocatedSlices.push_back(currentSlice);
+    //             }
+
+    //             currentSlice->GetDocTable().SetDocId(currentSlice->GetSliceBuffer(),
+    //                                                  i % c_sliceCapacity,
+    //                                                  docId);
+    //             currentSlice->CommitDocument();
+
+    //             EXPECT_EQ(handle.GetDocId(), docId);
+    //             EXPECT_EQ(handle.GetIndex(), i % c_sliceCapacity);
+    //             EXPECT_EQ(handle.GetSlice(), currentSlice);
+
+    //             TestSliceBuffers(shard, allocatedSlices);
+    //             currentSlice->ExpireDocument();
+    //         }
+
+    //         for (const auto & slice : allocatedSlices)
+    //         {
+    //             shard.RecycleSlice(*slice);
+    //         }
+
+    //         ingestor->Shutdown();
+    //         recycler->Shutdown();
+    //         background.wait();
+    //     }
 
 
-        TEST(Shard, AddRemoveSlice)
-        {
-            auto fileManager = CreateMockFileManager();
+    //     // Returns the buffer size required to host a Slice with given schema properties.
+    //     size_t GetRequiredBufferSize(DocIndex capacity,
+    //                                  IDocumentDataSchema const & docDataSchema,
+    //                                  ITermTable const & termTable)
+    //     {
+    //         return Shard::InitializeDescriptors(nullptr, capacity, docDataSchema, termTable);
+    //     }
 
-            DocumentDataSchema schema;
 
-            std::unique_ptr<IRecycler> recycler =
-                std::unique_ptr<IRecycler>(new Recycler());
-            auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
+    //     TEST(Shard, AddRemoveSlice)
+    //     {
+    //         auto fileManager = CreateMockFileManager();
 
-            static const std::vector<RowIndex>
-                rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1, 0 };
-            std::shared_ptr<ITermTable const>
-                termTable(new EmptyTermTable(rowCounts));
+    //         DocumentDataSchema schema;
 
-            static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
-            const size_t sliceBufferSize = GetEmptyTermTableBufferSize(c_sliceCapacity, rowCounts, schema);
+    //         std::unique_ptr<IRecycler> recycler =
+    //             std::unique_ptr<IRecycler>(new Recycler());
+    //         auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
 
-            auto shardDefinition = Factories::CreateShardDefinition();
+    //         static const std::vector<RowIndex>
+    //             rowCounts = { c_systemRowCount, 0, 0, 1, 0, 0, 1, 0 };
+    //         std::shared_ptr<ITermTable const>
+    //             termTable(new EmptyTermTable(rowCounts));
 
-            std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
-                new TrackingSliceBufferAllocator(sliceBufferSize));
+    //         static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
+    //         const size_t sliceBufferSize = GetEmptyTermTableBufferSize(c_sliceCapacity, rowCounts, schema);
 
-            const std::unique_ptr<IIngestor>
-                ingestor(Factories::CreateIngestor(*fileManager,
-                                                   schema,
-                                                   *recycler,
-                                                   *termTable,
-                                                   *shardDefinition,
-                                                   *trackingAllocator));
+    //         auto shardDefinition = Factories::CreateShardDefinition();
 
-            Shard& shard = ingestor->GetShard(0);
+    //         std::unique_ptr<TrackingSliceBufferAllocator> trackingAllocator(
+    //             new TrackingSliceBufferAllocator(sliceBufferSize));
 
-            Slice* currentSlice = nullptr;
-            std::vector<Slice*> allocatedSlices;
-            TestSliceBuffers(shard, allocatedSlices);
+    //         const std::unique_ptr<IIngestor>
+    //             ingestor(Factories::CreateIngestor(*fileManager,
+    //                                                schema,
+    //                                                *recycler,
+    //                                                *termTable,
+    //                                                *shardDefinition,
+    //                                                *trackingAllocator));
 
-            for (DocIndex i = 0; i < c_sliceCapacity * c_blockAllocatorBlockCount; ++i)
-            {
-                const DocId docId = static_cast<DocId>(i) + 1234;
+    //         Shard& shard = ingestor->GetShard(0);
 
-                const DocumentHandleInternal handle = shard.AllocateDocument(docId);
+    //         Slice* currentSlice = nullptr;
+    //         std::vector<Slice*> allocatedSlices;
+    //         TestSliceBuffers(shard, allocatedSlices);
 
-                if ((i % c_sliceCapacity) == 0)
-                {
-                    if (currentSlice != nullptr)
-                    {
-                        // We must have advanced to another slice, so should have a new value
-                        // of the Slice*.
-                        EXPECT_NE(handle.GetSlice(), currentSlice);
-                    }
+    //         for (DocIndex i = 0; i < c_sliceCapacity * c_blockAllocatorBlockCount; ++i)
+    //         {
+    //             const DocId docId = static_cast<DocId>(i) + 1234;
 
-                    currentSlice = handle.GetSlice();
-                    allocatedSlices.push_back(currentSlice);
-                    EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), allocatedSlices.size());
-                }
+    //             const DocumentHandleInternal handle = shard.AllocateDocument(docId);
 
-                currentSlice->GetDocTable().SetDocId(currentSlice->GetSliceBuffer(),
-                                                     i % c_sliceCapacity,
-                                                     docId);
+    //             if ((i % c_sliceCapacity) == 0)
+    //             {
+    //                 if (currentSlice != nullptr)
+    //                 {
+    //                     // We must have advanced to another slice, so should have a new value
+    //                     // of the Slice*.
+    //                     EXPECT_NE(handle.GetSlice(), currentSlice);
+    //                 }
 
-                currentSlice->CommitDocument();
+    //                 currentSlice = handle.GetSlice();
+    //                 allocatedSlices.push_back(currentSlice);
+    //                 EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(), allocatedSlices.size());
+    //             }
 
-                EXPECT_EQ(handle.GetDocId(), docId);
-                EXPECT_EQ(handle.GetIndex(), i % c_sliceCapacity);
-                EXPECT_EQ(handle.GetSlice(), currentSlice);
+    //             currentSlice->GetDocTable().SetDocId(currentSlice->GetSliceBuffer(),
+    //                                                  i % c_sliceCapacity,
+    //                                                  docId);
 
-                TestSliceBuffers(shard, allocatedSlices);
-                EXPECT_EQ(shard.GetUsedCapacityInBytes(), allocatedSlices.size() * sliceBufferSize);
-            }
+    //             currentSlice->CommitDocument();
 
-            // Start removing slices one by one.
-            while (!allocatedSlices.empty())
-            {
-                Slice* const slice = allocatedSlices.back();
+    //             EXPECT_EQ(handle.GetDocId(), docId);
+    //             EXPECT_EQ(handle.GetIndex(), i % c_sliceCapacity);
+    //             EXPECT_EQ(handle.GetSlice(), currentSlice);
 
-                for (DocIndex i = 0; i < c_sliceCapacity; ++i)
-                {
-                    if (i == c_sliceCapacity - 1)
-                    {
-                        // Trying to recycle non-expired slice buffer - expect exception.
-                        EXPECT_ANY_THROW(shard.RecycleSlice(*slice));
-                    }
+    //             TestSliceBuffers(shard, allocatedSlices);
+    //             EXPECT_EQ(shard.GetUsedCapacityInBytes(), allocatedSlices.size() * sliceBufferSize);
+    //         }
 
-                    slice->ExpireDocument();
-                }
+    //         // Start removing slices one by one.
+    //         while (!allocatedSlices.empty())
+    //         {
+    //             Slice* const slice = allocatedSlices.back();
 
-                TestSliceBuffers(shard, allocatedSlices);
+    //             for (DocIndex i = 0; i < c_sliceCapacity; ++i)
+    //             {
+    //                 if (i == c_sliceCapacity - 1)
+    //                 {
+    //                     // Trying to recycle non-expired slice buffer - expect exception.
+    //                     EXPECT_ANY_THROW(shard.RecycleSlice(*slice));
+    //                 }
 
-                shard.RecycleSlice(*slice);
-                allocatedSlices.pop_back();
+    //                 slice->ExpireDocument();
+    //             }
 
-                TestSliceBuffers(shard, allocatedSlices);
-                EXPECT_EQ(shard.GetUsedCapacityInBytes(), allocatedSlices.size() * sliceBufferSize);
-            }
+    //             TestSliceBuffers(shard, allocatedSlices);
 
-            // Wait to make sure other thread has recycled. This is sort of
-            // heinous because it hangs the test instead of reporting a failure,
-            // but it prevents non-determistic pass/fail results. We should
-            // probably add a timeout.
-            while(trackingAllocator->GetInUseBuffersCount() != 0u) {}
+    //             shard.RecycleSlice(*slice);
+    //             allocatedSlices.pop_back();
 
-            // Trying to recycle a Slice which is not known to Shard - expect exception.
+    //             TestSliceBuffers(shard, allocatedSlices);
+    //             EXPECT_EQ(shard.GetUsedCapacityInBytes(), allocatedSlices.size() * sliceBufferSize);
+    //         }
 
-            Slice slice(shard);
-            for (DocIndex i = 0; i < shard.GetSliceCapacity(); ++i)
-            {
-                DocIndex docIndex = 0;
-                EXPECT_TRUE(slice.TryAllocateDocument(docIndex));
-                slice.CommitDocument();
+    //         // Wait to make sure other thread has recycled. This is sort of
+    //         // heinous because it hangs the test instead of reporting a failure,
+    //         // but it prevents non-determistic pass/fail results. We should
+    //         // probably add a timeout.
+    //         while(trackingAllocator->GetInUseBuffersCount() != 0u) {}
 
-                const bool isExpired = slice.ExpireDocument();
-                EXPECT_TRUE(isExpired == (i == shard.GetSliceCapacity() - 1));
-            }
+    //         // Trying to recycle a Slice which is not known to Shard - expect exception.
 
-            EXPECT_ANY_THROW(shard.RecycleSlice(slice));
+    //         Slice slice(shard);
+    //         for (DocIndex i = 0; i < shard.GetSliceCapacity(); ++i)
+    //         {
+    //             DocIndex docIndex = 0;
+    //             EXPECT_TRUE(slice.TryAllocateDocument(docIndex));
+    //             slice.CommitDocument();
 
-            ingestor->Shutdown();
-            recycler->Shutdown();
-            background.wait();
-        }
-    }
+    //             const bool isExpired = slice.ExpireDocument();
+    //             EXPECT_TRUE(isExpired == (i == shard.GetSliceCapacity() - 1));
+    //         }
+
+    //         EXPECT_ANY_THROW(shard.RecycleSlice(slice));
+
+    //         ingestor->Shutdown();
+    //         recycler->Shutdown();
+    //         background.wait();
+    //     }
+    // }
 }

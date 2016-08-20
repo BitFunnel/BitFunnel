@@ -22,14 +22,28 @@
 
 #pragma once
 
+#include <memory>                                   // std::unique_ptr embedded.
+#include <vector>                                   // std::vector embedded.
+
+#include "BitFunnel/BitFunnelTypes.h"               // ShardId parameter.
+#include "BitFunnel/Index/ITermTableCollection.h"   // Base class.
+
 
 namespace BitFunnel
 {
-    // IInterface is a base class for all interfaces in BitFunnel.Library.
-    // Its sole purpose is to define an empty virtual destructor.
-    class IInterface
+    class IFileManager;
+    class ITermTable2;
+
+    class TermTableCollection : public ITermTableCollection
     {
     public:
-        virtual ~IInterface() {}
+        TermTableCollection(ShardId shardCount);
+        TermTableCollection(IFileManager & fileManager, ShardId shardCount);
+
+        virtual ITermTable2 & GetTermTable(ShardId shard) const override;
+        virtual size_t size() const override;
+
+    private:
+        std::vector<std::unique_ptr<ITermTable2>> m_termTables;
     };
 }

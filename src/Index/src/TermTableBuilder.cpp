@@ -120,6 +120,7 @@ namespace BitFunnel
             m_termTable.CloseTerm(dfEntry.GetTerm().GetRawHash());
         }
 
+        // TODO: make entries for facts.
 
         // For each (IdfX10, GramSize) pair.
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
@@ -246,6 +247,14 @@ namespace BitFunnel
           m_privateTermCount(0),
           m_privateRowCount(0)
     {
+        // TODO: Is there a way to reduce this coupling between RowAssigner
+        // and the internals of TermTable?
+        // Reserve first SystemTerm::Count rows for system rows like soft
+        // deleted, match all, and match none.
+        if (rank == 0)
+        {
+            m_currentRow = ITermTable2::SystemTerm::Count;
+        }
     }
 
 

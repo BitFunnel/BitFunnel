@@ -28,7 +28,7 @@
 #include <ostream>                              // TODO: Remove this temporary include.
 #include <vector>
 
-#include "BitFunnel/NonCopyable.h"
+#include "BitFunnel/NonCopyable.h"          // Base class.
 #include "BitFunnel/Term.h"
 #include "DocTableDescriptor.h"              // Required for embedded std::unique_ptr.
 #include "DocumentFrequencyTableBuilder.h"   // std::unique_ptr to this.
@@ -40,7 +40,6 @@
 namespace BitFunnel
 {
     //class IDocumentDataSchema;
-    //class IngestionIndex;
     class ISliceBufferAllocator;
     class ITermTable;
     class ITermTable2;
@@ -65,21 +64,21 @@ namespace BitFunnel
     class Shard : private NonCopyable
     {
     public:
-        // typedef size_t Id;
-
         // Constructs an empty Shard with no slices. sliceBufferSize must be
         // sufficient to hold the minimum capacity Slice. The minimum capacity
         // is determined by a value returned by Row::DocumentsInRank0Row(1).
         Shard(IIngestor& ingestor,
               size_t id,
-              ITermTable const & termTable,
+              ITermTable2 const & termTable,
               IDocumentDataSchema const & docDataSchema,
               ISliceBufferAllocator& sliceBufferAllocator,
               size_t sliceBufferSize);
 
         virtual ~Shard();
 
-        void TemporaryAddPosting(Term const & term, DocIndex index);
+        void AddPosting(Term const & term, DocIndex index, void* sliceBuffer);
+        void AssertFact(FactHandle fact, bool value, DocIndex index, void* sliceBuffer);
+
         void TemporaryRecordDocument();
         void TemporaryWriteDocumentFrequencyTable(std::ostream& out,
                                                   TermToText const * termToText) const;
@@ -157,7 +156,7 @@ namespace BitFunnel
         IIngestor& GetIndex() const;
 
         // Returns term table associated with this shard.
-        ITermTable const & GetTermTable() const;
+        ITermTable2 const & GetTermTable() const;
 
         // Descriptor for RowTables and DocTable.
         DocTableDescriptor const & GetDocTable() const;
@@ -194,14 +193,8 @@ namespace BitFunnel
         // it also initializes its DocTable and RowTable descriptors.  The same
         // function combines both actions in order to avoid code for the two
         // scenarios.
-        // DESIGN NOTE: This is made public in order to be used in unit tests.
-        static size_t InitializeDescriptors(Shard* shard,
-                                            DocIndex sliceCapacity,
-                                            IDocumentDataSchema const & docDataSchema,
-                                            ITermTable const & termTable);
-
-        // TODO: This is the new version of InitializeDescriptors, based on
-        // ITermTable2. Need to migrate away from old version.
+        // DESIGN NOTE: This is made public to help determine the block size for
+        // the SliceBufferAllocator
         static size_t InitializeDescriptors(Shard* shard,
                                             DocIndex sliceCapacity,
                                             IDocumentDataSchema const & docDataSchema,
@@ -212,7 +205,7 @@ namespace BitFunnel
         static DocIndex
             GetCapacityForByteSize(size_t bufferByteSize,
                                    IDocumentDataSchema const & schema,
-                                   ITermTable const & termTable);
+                                   ITermTable2 const & termTable);
 
     private:
         // Tries to add a new slice. Throws if no memory in the allocator.
@@ -230,7 +223,7 @@ namespace BitFunnel
         size_t m_id;
 
         // TermTable for this shard.
-        ITermTable const & m_termTable;
+        ITermTable2 const & m_termTable;
 
         // Allocator that provides blocks of memory for Slice buffers.
         ISliceBufferAllocator& m_sliceBufferAllocator;

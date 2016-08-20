@@ -31,6 +31,7 @@
 #include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
+#include "BitFunnel/Index/ITermTableCollection.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "DocumentHandleInternal.h"
 #include "Ingestor.h"
@@ -41,30 +42,26 @@
 namespace BitFunnel
 {
     std::unique_ptr<IIngestor>
-    Factories::CreateIngestor(IFileManager& fileManager,
-                              IDocumentDataSchema const & docDataSchema,
+    Factories::CreateIngestor(IDocumentDataSchema const & docDataSchema,
                               IRecycler& recycler,
-                              ITermTable const & termTable,
+                              ITermTableCollection const & termTables,
                               IShardDefinition const & shardDefinition,
                               ISliceBufferAllocator& sliceBufferAllocator)
     {
-        return std::unique_ptr<IIngestor>(new Ingestor(fileManager,
-                                                       docDataSchema,
+        return std::unique_ptr<IIngestor>(new Ingestor(docDataSchema,
                                                        recycler,
-                                                       termTable,
+                                                       termTables,
                                                        shardDefinition,
                                                        sliceBufferAllocator));
     }
 
 
-    Ingestor::Ingestor(IFileManager& fileManager,
-                       IDocumentDataSchema const & docDataSchema,
+    Ingestor::Ingestor(IDocumentDataSchema const & docDataSchema,
                        IRecycler& recycler,
-                       ITermTable const & termTable,
+                       ITermTableCollection const & termTables,
                        IShardDefinition const & shardDefinition,
                        ISliceBufferAllocator& sliceBufferAllocator)
-        : m_fileManager(fileManager),
-          m_recycler(recycler),
+        : m_recycler(recycler),
           m_shardDefinition(shardDefinition),
           m_documentCount(0),   // TODO: This member is now redundant (with m_documentMap).
           m_totalSourceByteSize(0),
@@ -79,7 +76,7 @@ namespace BitFunnel
                 std::unique_ptr<Shard>(
                     new Shard(*this,
                               shardId,
-                              termTable,
+                              termTables.GetTermTable(shardId),
                               docDataSchema,
                               m_sliceBufferAllocator,
                               m_sliceBufferAllocator.GetSliceBufferSize())));
@@ -101,31 +98,32 @@ namespace BitFunnel
     }
 
 
-    void Ingestor::WriteStatistics(TermToText const * termToText) const
+    void Ingestor::WriteStatistics(IFileManager & fileManager,
+                                   TermToText const * termToText) const
     {
         if (termToText != nullptr)
         {
-            auto out = m_fileManager.TermToText().OpenForWrite();
+            auto out = fileManager.TermToText().OpenForWrite();
             termToText->Write(*out);
         }
 
         {
-            auto out = m_fileManager.DocumentLengthHistogram().OpenForWrite();
+            auto out = fileManager.DocumentLengthHistogram().OpenForWrite();
             m_histogram.Write(*out);
         }
 
         for (size_t shard = 0; shard < m_shards.size(); ++shard)
         {
             {
-                auto out = m_fileManager.CumulativeTermCounts(shard).OpenForWrite();
+                auto out = fileManager.CumulativeTermCounts(shard).OpenForWrite();
                 m_shards[shard]->TemporaryWriteCumulativeTermCounts(*out);
             }
             {
-                auto out = m_fileManager.DocFreqTable(shard).OpenForWrite();
+                auto out = fileManager.DocFreqTable(shard).OpenForWrite();
                 m_shards[shard]->TemporaryWriteDocumentFrequencyTable(*out, termToText);
             }
             {
-                auto out = m_fileManager.IndexedIdfTable(shard).OpenForWrite();
+                auto out = fileManager.IndexedIdfTable(shard).OpenForWrite();
                 m_shards[shard]->TemporaryWriteIndexedIdfTable(*out);
             }
         }
@@ -294,6 +292,21 @@ namespace BitFunnel
         m_documentMap->Find(id, isFound);
 
         return isFound;
+    }
+
+
+    DocumentHandle Ingestor::GetHandle(DocId id) const
+    {
+        bool isFound;
+        auto handle = m_documentMap->Find(id, isFound);
+
+        if (!isFound)
+        {
+            RecoverableError error("Ingestor::GetHandle(): DocId not found.");
+            throw error;
+        }
+
+        return handle;
     }
 
 
