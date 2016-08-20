@@ -22,14 +22,22 @@
 
 #pragma once
 
+#include <cstddef>                      // size_t return value.
+
+#include <BitFunnel/BitFunnelTypes.h>   // ShardId parameter.
+#include <BitFunnel/IInterface.h>       // Base class.
+
 
 namespace BitFunnel
 {
+    class ITermTable2;
+
     // IInterface is a base class for all interfaces in BitFunnel.Library.
     // Its sole purpose is to define an empty virtual destructor.
-    class IInterface
+    class ITermTableCollection
     {
     public:
-        virtual ~IInterface() {}
+        virtual ITermTable2 & GetTermTable(ShardId shard) const = 0;
+        virtual size_t size() const = 0;
     };
 }

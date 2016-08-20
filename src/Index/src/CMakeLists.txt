@@ -34,6 +34,7 @@ set(CPPFILES
     TermInfo.cpp
     TermTable.cpp
     TermTableBuilder.cpp
+    TermTableCollection.cpp
     TermTableHelpers.cpp
     TermToText.cpp
     TermTreatments.cpp
@@ -71,6 +72,7 @@ set(PRIVATE_HFILES
     SliceBufferAllocator.h
     TermTable.h
     TermTableBuilder.h
+    TermTableCollection.h
     TermTreatments.h
 )
 

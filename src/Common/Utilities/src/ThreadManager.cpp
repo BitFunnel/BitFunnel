@@ -44,10 +44,12 @@ namespace BitFunnel
         }
     }
 
+
     ThreadManager::~ThreadManager()
     {
         // REVIEW: what should this do if threads are still running?
     }
+
 
     void ThreadManager::WaitForThreads()
     {
@@ -56,6 +58,7 @@ namespace BitFunnel
             thread.join();
         }
     }
+
 
     void ThreadManager::ThreadEntryPoint(void* data)
     {

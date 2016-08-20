@@ -23,9 +23,9 @@
 
 #include <cstring>
 
-#include "BitFunnel/ITermTable.h"
+#include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/Row.h"
-#include "BitFunnel/TermInfo.h"
+#include "BitFunnel/RowIdSequence.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RowTableDescriptor.h"
 
@@ -62,22 +62,35 @@ namespace BitFunnel
     }
 
 
-    void RowTableDescriptor::Initialize(void* sliceBuffer, ITermTable const & termTable) const
+    void RowTableDescriptor::Initialize(void* sliceBuffer, ITermTable2 const & termTable) const
     {
         char* const rowTableBuffer = reinterpret_cast<char*>(sliceBuffer) + m_bufferOffset;
         memset(rowTableBuffer, 0, GetBufferSize(m_capacity, m_rowCount, m_rank));
 
         // The "match-all" row needs to be initialized differently.
-        TermInfo termInfo(ITermTable::GetMatchAllTerm(), termTable);
-        LogAssertB(termInfo.MoveNext(),""); // TODO: error message.
+        RowIdSequence rows(termTable.GetMatchAllTerm(), termTable);
 
-        const RowId matchAllRowId = termInfo.Current();
-        LogAssertB(!termInfo.MoveNext(), ""); // TODO: error message.
+        auto it = rows.begin();
+        if (it == rows.end())
+        {
+            RecoverableError error("RowTableDescriptor::Initialize: expected at least one row.");
+            throw error;
+        }
 
-        if (matchAllRowId.GetRank() == m_rank)
+        const RowId row = *it;
+
+        ++it;
+        if (it != rows.end())
+        {
+            RecoverableError error("RowTableDescriptor::Initialize: expected no more than one row.");
+            throw error;
+
+        }
+
+        if (row.GetRank() == m_rank)
         {
             // Fill up the match-all row with all ones.
-            uint64_t * rowData = GetRowData(sliceBuffer, matchAllRowId.GetIndex());
+            uint64_t * rowData = GetRowData(sliceBuffer, row.GetIndex());
             memset(rowData, 0xFF, m_bytesPerRow);
         }
     }

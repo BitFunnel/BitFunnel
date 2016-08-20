@@ -25,6 +25,8 @@
 #include <thread>       // sleep_for, this_thread
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/RowIdSequence.h"
 #include "BitFunnel/Term.h"
@@ -156,14 +158,14 @@ namespace BitFunnel
         {
             m_manifest = true;
         }
-        else
+        else if (command.compare("chunk") == 0)
         {
             m_manifest = false;
-            if (command.compare("chunk") != 0)
-            {
-                RecoverableError error("Ingest expects \"chunk\" or \"manifest\".");
-                throw error;
-            }
+        }
+        else
+        {
+            RecoverableError error("Ingest expects \"chunk\" or \"manifest\".");
+            throw error;
         }
 
         m_path = TaskFactory::GetNextToken(parameters);
@@ -172,13 +174,28 @@ namespace BitFunnel
 
     void Ingest::Execute()
     {
-        std::cout
-            << "Ingesting "
-            << (m_manifest ? "manifest " : "chunk ")
-            << "\"" << m_path << "\""
-            << std::endl
-            << "NOT IMPLEMENTED"
-            << std::endl;
+        if (m_manifest)
+        {
+            std::cout << "Ingest manifest not implemented." << std::endl;
+        }
+        else
+        {
+            std::vector<std::string> filePaths;
+            filePaths.push_back(m_path);
+            std::cout
+                << "Ingesting chunk file \""
+                << filePaths.back()
+                << "\"" << std::endl;
+
+            Environment & environment = GetEnvironment();
+            IConfiguration const & configuration = environment.GetConfiguration();
+            IIngestor & ingestor = environment.GetIngestor();
+            size_t threadCount = 1;
+
+            IngestChunks(filePaths, configuration, ingestor, threadCount);
+
+            std::cout << "Ingestion complete." << std::endl;
+        }
     }
 
 
@@ -297,18 +314,24 @@ namespace BitFunnel
     //
     //*************************************************************************
     Show::Show(Environment & environment,
-                   Id id,
-                   char const * parameters)
+               Id id,
+               char const * parameters)
         : TaskBase(environment, id, Type::Synchronous)
     {
         auto command = TaskFactory::GetNextToken(parameters);
         if (command.compare("term") == 0)
         {
+            m_mode = Mode::Term;
+            m_term = TaskFactory::GetNextToken(parameters);
+        }
+        else if (command.compare("rows") == 0)
+        {
+            m_mode = Mode::Rows;
             m_term = TaskFactory::GetNextToken(parameters);
         }
         else
         {
-            RecoverableError error("Show expects \"term\" (for now).");
+            RecoverableError error("Show expects \"term\" or \"rows\" (for now).");
             throw error;
         }
     }
@@ -334,8 +357,22 @@ namespace BitFunnel
                 << row.GetRank()
                 << ", "
                 << row.GetIndex()
-                << ")"
-                << std::endl;
+                << ")";
+
+            if (m_mode == Mode::Rows)
+            {
+                IIngestor & ingestor = GetEnvironment().GetIngestor();
+
+                // TODO: Figure out how to supply the DocId. The DocId is used
+                // to gain access to a Slice.
+                // For now use the DocId of the first document in
+                // Wikipedia chunk AA\wiki_00.
+                const DocId docId = 12;
+                auto handle = ingestor.GetHandle(docId);
+                std::cout << ": " << (handle.GetBit(row) ? "1" : "0");
+            }
+
+            std::cout << std::endl;
         }
     }
 

@@ -46,16 +46,15 @@ namespace BitFunnel
     class IRecycler;
     class IShardDefinition;
     class ISliceBufferAllocator;
-    class ITermTable;
+    class ITermTableCollection;
 
 
     class Ingestor : public IIngestor, NonCopyable
     {
     public:
-        Ingestor(IFileManager & fileManager,
-                 IDocumentDataSchema const & docDataSchema,
+        Ingestor(IDocumentDataSchema const & docDataSchema,
                  IRecycler& recycle,
-                 ITermTable const & termTable,
+                 ITermTableCollection const & termTables,
                  IShardDefinition const & shardDefinition,
                  ISliceBufferAllocator& sliceBufferAllocator);
 
@@ -71,7 +70,8 @@ namespace BitFunnel
         //      CumulativeTermCountd
         //      DocumentFrequencyTable (with term text if termToText provided)
         //      IndexedIdfTable
-        virtual void WriteStatistics(TermToText const * termToText) const override;
+        virtual void WriteStatistics(IFileManager & fileManager,
+                                     TermToText const * termToText) const override;
 
         // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.
@@ -104,6 +104,8 @@ namespace BitFunnel
         // false for DocIds that have never been added, DocIds that are
         // partially ingested, and DocIds that have been deleted.
         virtual bool Contains(DocId id) const override;
+
+        virtual DocumentHandle GetHandle(DocId id) const override;
 
         // Returns the size in bytes of the capacity of row tables in the
         // entire ingestion index.
@@ -146,7 +148,6 @@ namespace BitFunnel
         virtual void ExpireGroup(GroupId groupId) override;
 
     private:
-        IFileManager& m_fileManager;
         IRecycler& m_recycler;
         IShardDefinition const & m_shardDefinition;
 

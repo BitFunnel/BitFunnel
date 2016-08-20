@@ -132,6 +132,7 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ISimpleIndex.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ISliceBufferAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermToText.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTableCollection.h
 )
 
 set(UTILITIES_HFILES

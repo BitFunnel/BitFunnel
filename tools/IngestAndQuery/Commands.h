@@ -127,7 +127,14 @@ namespace BitFunnel
         virtual void Execute() override;
         static ICommand::Documentation GetDocumentation();
 
+        enum class Mode
+        {
+            Term,
+            Rows
+        };
+
     private:
+        Mode m_mode;
         std::string m_term;
     };
 

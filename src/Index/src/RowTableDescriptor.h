@@ -23,15 +23,15 @@
 
 #pragma once
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>                      // size_t embedded.
 
-#include "BitFunnel/BitFunnelTypes.h"
-#include "BitFunnel/RowId.h"  // RowIndex.
+#include "BitFunnel/BitFunnelTypes.h"   // DocIndex parameter.
+#include "BitFunnel/RowId.h"            // RowIndex parameter.
+
 
 namespace BitFunnel
 {
-    class ITermTable;
+    class ITermTable2;
 
     //*************************************************************************
     //
@@ -70,7 +70,7 @@ namespace BitFunnel
         // located.
         // Not thread safe with respect to calling *Bit methods at the same
         // time.
-        void Initialize(void* sliceBuffer, ITermTable const & termTable) const;
+        void Initialize(void* sliceBuffer, ITermTable2 const & termTable) const;
 
         // No cleanup method required.
 

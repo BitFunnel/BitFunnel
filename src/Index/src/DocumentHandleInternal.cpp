@@ -21,13 +21,11 @@
 // THE SOFTWARE.
 
 
-// #define HORRIBLE_HACK_DONT_CHECK_IN
-
-#include "BitFunnel/TermInfo.h"
+#include "BitFunnel/RowIdSequence.h"
 #include "DocumentHandleInternal.h"
 #include "DocTableDescriptor.h"
 #include "LoggerInterfaces/Logging.h"
-#include "Shard.h"                      // TODO: Remove this temporary include.
+#include "Shard.h"
 #include "Slice.h"
 
 
@@ -75,50 +73,16 @@ namespace BitFunnel
 
     void DocumentHandle::AssertFact(FactHandle fact, bool value)
     {
-        ITermTable const & termTable = m_slice->GetShard().GetTermTable();
-
-        TermInfo termInfo(fact, termTable);
-
-        LogAssertB(termInfo.MoveNext(),"Invalid FactHandle.");
-        const RowId rowIdForFact = termInfo.Current();
-
-        LogAssertB(!termInfo.MoveNext(),
-                   "Fact must correspond to a single row.");
-
-        RowTableDescriptor const & rowTable =
-            m_slice->GetRowTable(rowIdForFact.GetRank());
-
-        if (value)
-        {
-            rowTable.SetBit(m_slice->GetSliceBuffer(),
-                            rowIdForFact.GetIndex(),
-                            m_index);
-        }
-        else
-        {
-            rowTable.ClearBit(m_slice->GetSliceBuffer(),
-                              rowIdForFact.GetIndex(),
-                              m_index);
-        }
+        m_slice->GetShard().AssertFact(fact,
+                                       value,
+                                       m_index,
+                                       m_slice->GetSliceBuffer());
     }
 
 
     void DocumentHandle::AddPosting(Term const & term)
     {
-        m_slice->GetShard().TemporaryAddPosting(term, m_index);
-
-#ifndef HORRIBLE_HACK_DONT_CHECK_IN
-        ITermTable const & termTable = m_slice->GetShard().GetTermTable();
-        TermInfo termInfo(term, termTable);
-        while (termInfo.MoveNext())
-        {
-            const RowId row = termInfo.Current();
-            m_slice->GetRowTable(row.GetRank()).
-                SetBit(m_slice->GetSliceBuffer(),
-                       row.GetIndex(),
-                       m_index);
-        }
-#endif
+        m_slice->GetShard().AddPosting(term, m_index, m_slice->GetSliceBuffer());
     }
 
 
@@ -144,6 +108,19 @@ namespace BitFunnel
     {
         return m_slice->GetDocTable().GetDocId(m_slice->GetSliceBuffer(),
                                                m_index);
+    }
+
+
+    bool DocumentHandle::GetBit(RowId row) const
+    {
+        auto bit = 
+            m_slice->GetShard().GetRowTable(
+                row.GetRank()).GetBit(
+                    m_slice->GetSliceBuffer(),
+                    row.GetIndex(),
+                    m_index);
+
+        return bit == 1ull;
     }
 
 

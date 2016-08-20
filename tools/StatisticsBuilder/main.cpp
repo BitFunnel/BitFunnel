@@ -20,36 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <algorithm>
-#include <fstream>
-#include <future>
 #include <fstream>
 #include <iostream>
 #include <memory>
-#include <stddef.h>
 #include <string>
 #include <vector>
 
-#include "BitFunnel/Configuration/Factories.h"
-#include "BitFunnel/Configuration/IShardDefinition.h"
-#include "BitFunnel/Exceptions.h"
-#include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
-#include "BitFunnel/Index/IRecycler.h"
-#include "BitFunnel/Row.h"
-#include "BitFunnel/Stream.h"
+#include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "CmdLineParser/CmdLineParser.h"
-#include "DocumentDataSchema.h"
-#include "IndexUtils.h"
-#include "MockTermTable.h"
-#include "Recycler.h"
-#include "SliceBufferAllocator.h"
-// #include "TrackingSliceBufferAllocator.h"
 
 
 namespace BitFunnel
@@ -69,14 +52,6 @@ namespace BitFunnel
     }
 
 
-    void AddTerm(MockTermTable& termTable, char const * termText)
-    {
-        const Term term= Term(Term::ComputeRawHash(termText), StreamId::Full, 0);
-        // TODO: 0 is arbitrary.
-        termTable.AddTerm(term.GetRawHash(), 0, 1);
-    }
-
-
     static void LoadAndIngestChunkList(char const * intermediateDirectory,
                                        char const * chunkListFileName,
                                        // TODO: gramSize should be unsigned once CmdLineParser supports unsigned.
@@ -84,73 +59,24 @@ namespace BitFunnel
                                        bool generateStatistics,
                                        bool generateTermToText)
     {
-        if (gramSize < 0 || gramSize > Term::c_maxGramSize)
-        {
-            throw FatalError("ngram size out of range.");
-        }
+        auto index = Factories::CreateSimpleIndex(intermediateDirectory,
+                                                  gramSize,
+                                                  generateTermToText);
+        index->StartIndex(true);
 
-        auto fileManager = Factories::CreateFileManager(intermediateDirectory,
-                                                        intermediateDirectory,
-                                                        intermediateDirectory);
 
         // TODO: Add try/catch around file operations.
-        std::cout << "Loading chunk list file '" << chunkListFileName << "'"
-            << std::endl;
-        std::cout << "Temp dir: '" << intermediateDirectory << "'"
-            << std::endl;
+        std::cout 
+            << "Loading chunk list file '" << chunkListFileName << "'" << std::endl
+            << "Temp dir: '" << intermediateDirectory << "'"<< std::endl;
+
         std::vector<std::string> filePaths = ReadLines(chunkListFileName);
 
         std::cout << "Reading " << filePaths.size() << " files\n";
 
-        DocumentDataSchema schema;
 
-        std::unique_ptr<IRecycler> recycler =
-            std::unique_ptr<IRecycler>(new Recycler());
-        auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
-
-        static const std::vector<RowIndex>
-            // 4 rows for private terms, 1 row for a fact.
-            rowCounts = { c_systemRowCount + 4 + 1, 0, 0, 0, 0, 0, 0 };
-        std::shared_ptr<ITermTable const> termTable(new MockTermTable(0));
-        MockTermTable& mockTermTable = const_cast<MockTermTable&>(
-            dynamic_cast<MockTermTable const &>(*termTable));
-
-        AddTerm(mockTermTable, "this");
-        AddTerm(mockTermTable, "is");
-        AddTerm(mockTermTable, "a");
-        AddTerm(mockTermTable, "test");
-
-        static const DocIndex c_sliceCapacity = Row::DocumentsInRank0Row(1);
-        const size_t sliceBufferSize = GetBufferSize(c_sliceCapacity, schema, *termTable);
-
-        std::unique_ptr<SliceBufferAllocator>
-            sliceAllocator(new SliceBufferAllocator(sliceBufferSize, 16));
-
-        auto shardDefinition = Factories::CreateShardDefinition();
-        // shardDefinition->AddShard(1000);
-        // shardDefinition->AddShard(2000);
-        // shardDefinition->AddShard(3000);
-
-        const std::unique_ptr<IIngestor>
-            ingestor(Factories::CreateIngestor(*fileManager,
-                                               schema,
-                                               *recycler,
-                                               *termTable,
-                                               *shardDefinition,
-                                               *sliceAllocator));
-
-        const std::unique_ptr<IIndexedIdfTable>
-            idfTable(Factories::CreateIndexedIdfTable());
-
-
-        // Arbitrary maxGramSize that is greater than 1. For initial tests.
-        // TODO: Choose correct maxGramSize.
-        std::unique_ptr<IConfiguration>
-            configuration(
-                Factories::CreateConfiguration(
-                    static_cast<Term::GramSize>(gramSize),
-                    generateTermToText,
-                    *idfTable));
+        IConfiguration const & configuration = index->GetConfiguration();
+        IIngestor & ingestor = index->GetIngestor();
 
         std::cout << "Ingesting . . ." << std::endl;
 
@@ -158,30 +84,28 @@ namespace BitFunnel
 
         // TODO: Use correct thread count.
         const size_t threadCount = 1;
-        IngestChunks(filePaths, *configuration, *ingestor, threadCount);
+        IngestChunks(filePaths, configuration, ingestor, threadCount);
 
         const double elapsedTime = stopwatch.ElapsedTime();
-        const size_t totalSourceBytes = ingestor->GetTotalSouceBytesIngested();
+        const size_t totalSourceBytes = ingestor.GetTotalSouceBytesIngested();
 
         std::cout << "Ingestion complete." << std::endl;
         std::cout << "  Ingestion time = " << elapsedTime << std::endl;
         std::cout << "  Ingestion rate (bytes/s): " << totalSourceBytes / elapsedTime << std::endl;
 
-        ingestor->PrintStatistics();
+        ingestor.PrintStatistics();
 
         if (generateStatistics)
         {
             TermToText const * termToText = nullptr;
-            if (configuration->KeepTermText())
+            if (configuration.KeepTermText())
             {
-                termToText = &configuration->GetTermToText();
+                termToText = &configuration.GetTermToText();
             }
-            ingestor->WriteStatistics(termToText);
+            ingestor.WriteStatistics(index->GetFileManager(), termToText);
         }
 
-        ingestor->Shutdown();
-        recycler->Shutdown();
-        background.wait();
+        index->StopIndex();
     }
 }
 

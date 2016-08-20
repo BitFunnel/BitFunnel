@@ -22,14 +22,14 @@
 
 #pragma once
 
-#include <cstdint>                  // size_t parameter.
-
 #include "BitFunnel/IInterface.h"   // Base class.
 
 
 namespace BitFunnel
 {
     class IConfiguration;
+    class IFileManager;
+    class IIngestor;
     class IRecycler;
     class ITermTable2;
 
@@ -47,14 +47,29 @@ namespace BitFunnel
     {
     public:
         // Instantiates all of the classes necessary to form a BitFunnel Index.
-        // Then starts the index.
-        virtual void StartIndex() = 0;
+        // Then starts the index. If forStatistics == true, the index will be
+        // started for statistics generation, gathering data for
+        //      Document Frequency Table
+        //      Cumulative Term Counts
+        //      Document Length Histogram
+        //      Indexed Idf Table
+        // If forStatistics == false, the index will be started for document
+        // ingestion and query processing. In this case, it will read files
+        // like
+        //      Term Table
+        //      Indexed Idf Table
+        //
+        // Note: this method starts a background thread for the IRecycler.
+        // This thread is shut down in StopIndex().
+        virtual void StartIndex(bool forStatistics) = 0;
 
         // Performs an orderly shutdown, then tears down all of the classes
-        // created by StartIndex().
+        // created by StartIndex(). Must be called before class destruction.
         virtual void StopIndex() = 0;
 
         virtual IConfiguration const & GetConfiguration() const = 0;
+        virtual IFileManager & GetFileManager() const = 0;
+        virtual IIngestor & GetIngestor() const = 0;
         virtual IRecycler & GetRecycler() const = 0;
         virtual ITermTable2 const & GetTermTable() const = 0;
     };

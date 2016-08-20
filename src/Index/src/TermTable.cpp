@@ -63,6 +63,24 @@ namespace BitFunnel
         m_sharedRowCounts(c_maxRankValue + 1, 0),
         m_factRowCount(0)                               // TODO: What about system terms?
     {
+        // Make an entry for the system rows.
+        // TODO: Comment explaining why system rows are added first (rather than last).
+        // Partial answer: so newly constructed TermTable is viable without a TermTableBuilder.
+
+        // TODO: Need to figure out shard. Use zero for now.
+        ShardId shard = 0;
+
+        OpenTerm();
+        AddRowId(RowId(shard, 0, m_explicitRowCounts[0]++));
+        CloseTerm(SystemTerm::SoftDeleted);
+
+        OpenTerm();
+        AddRowId(RowId(shard, 0, m_explicitRowCounts[0]++));
+        CloseTerm(SystemTerm::MatchAll);
+
+        OpenTerm();
+        AddRowId(RowId(shard, 0, m_explicitRowCounts[0]++));
+        CloseTerm(SystemTerm::MatchNone);
     }
 
 
@@ -87,6 +105,8 @@ namespace BitFunnel
         m_adhocRowCounts = StreamUtilities::ReadVector<RowIndex>(input);
         m_sharedRowCounts = StreamUtilities::ReadVector<RowIndex>(input);
         m_factRowCount = StreamUtilities::ReadField<RowIndex>(input);
+
+        m_sealed = true;
     }
 
 
@@ -191,7 +211,6 @@ namespace BitFunnel
         // defined fact.
         m_factRowCount = factCount + SystemTerm::Count;
     }
-
 
 
     void TermTable::Seal()

@@ -32,6 +32,7 @@
 namespace BitFunnel
 {
     class IDocument;
+    class IFileManager;
     class IRecycler;
     class ITokenManager;
     class Shard;
@@ -74,7 +75,8 @@ namespace BitFunnel
         //      CumulativeTermCountd
         //      DocumentFrequencyTable (with term text if termToText provided)
         //      IndexedIdfTable
-        virtual void WriteStatistics(TermToText const * termToText) const = 0;
+        virtual void WriteStatistics(IFileManager & fileManager,
+                                     TermToText const * termToText) const = 0;
 
         // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.
@@ -107,6 +109,10 @@ namespace BitFunnel
         // false for DocIds that have never been added, DocIds that are
         // partially ingested, and DocIds that have been deleted.
         virtual bool Contains(DocId id) const = 0;
+
+        // This method exists so that IngestAndQuery REPL can display bits for
+        // various rows. Not sure it is needed in the long run.
+        virtual DocumentHandle GetHandle(DocId id) const = 0;
 
         // Returns the size in bytes of the capacity of row tables in the
         // entire ingestion index.

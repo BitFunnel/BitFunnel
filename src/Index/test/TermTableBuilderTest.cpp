@@ -142,7 +142,14 @@ namespace BitFunnel
             std::vector<RowIndex> rows;
             for (Rank r = 0; r <= c_maxRankValue; ++r)
             {
-                rows.push_back(0);
+                if (r == 0)
+                {
+                    rows.push_back(ITermTable2::SystemTerm::Count);
+                }
+                else
+                {
+                    rows.push_back(0);
+                }
             }
 
             // Restart hash at 1000 to be well above the hashes reserved for system rows and facts.
@@ -230,7 +237,7 @@ namespace BitFunnel
 
             const size_t adhocRowCount =
                 TermTableBuilder::GetMinAdhocRowCount();
-            m_termTable.SetRowCounts(0, 4, adhocRowCount);
+            m_termTable.SetRowCounts(0, 4 + ITermTable2::SystemTerm::Count, adhocRowCount);
             m_termTable.SetRowCounts(4, 1, adhocRowCount);
 
             m_termTable.SetFactCount(0);
@@ -327,8 +334,8 @@ private:
             // all SetRowCounts would allow TermTableBuilderTest to pass.
             for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
             {
-                EXPECT_EQ(termTable.GetTotalRowCount(rank),
-                          environment.GetTermTable().GetTotalRowCount(rank));
+                EXPECT_EQ(environment.GetTermTable().GetTotalRowCount(rank),
+                          termTable.GetTotalRowCount(rank));
             }
 
             // TODO: Verify adhoc

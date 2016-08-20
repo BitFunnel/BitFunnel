@@ -24,9 +24,10 @@
 
 #include <limits>
 
-#include "BitFunnel/BitFunnelTypes.h"  // For DocIndex, DocId.
+#include "BitFunnel/BitFunnelTypes.h"   // For DocIndex, DocId.
 #include "BitFunnel/Index/IDocumentDataSchema.h"  // VariableSizeBlobId and FixedSizeBlobId are parameters.
 #include "BitFunnel/Index/IFactSet.h"  // FactHandle is a parameter.
+#include "BitFunnel/RowId.h"            // RowId parameter.
 
 
 namespace BitFunnel
@@ -103,6 +104,10 @@ namespace BitFunnel
         // Returns the document's unique identifier that was assigned to it
         // at ingestion.
         DocId GetDocId() const;
+
+        // This method exists so that IngestAndQuery REPL can display bits for
+        // various rows. Not sure it is needed in the long run.
+        bool GetBit(RowId row) const;
 
         // TODO: Methods for JIT trees.
 
