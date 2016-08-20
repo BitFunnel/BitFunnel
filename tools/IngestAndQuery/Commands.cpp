@@ -25,6 +25,7 @@
 #include <thread>       // sleep_for, this_thread
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/RowIdSequence.h"
 #include "BitFunnel/Term.h"
 #include "Commands.h"

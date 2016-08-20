@@ -22,13 +22,11 @@
 
 #include <iostream>
 
-#include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/Index/Helpers.h"
-#include "BitFunnel/Index/ISliceBufferAllocator.h"
-#include "BitFunnel/Row.h"
+#include "BitFunnel/Index/IRecycler.h"
 #include "Commands.h"
 #include "Environment.h"
+#include "TaskFactory.h"
 #include "TaskPool.h"
 
 
@@ -39,28 +37,15 @@ namespace BitFunnel
                              size_t threadCount)
         // TODO: Don't like passing *this to TaskFactory.
         // What if TaskFactory calls back before Environment is fully initialized?
-        : m_directory(directory),
-          m_gramSize(static_cast<Term::GramSize>(gramSize)),
-          m_taskFactory(new TaskFactory(*this))
+        : m_taskFactory(new TaskFactory(*this)),
+          // Start one extra thread for the Recycler.
+          m_taskPool(new TaskPool(threadCount + 1)),
+          m_index(Factories::CreateSimpleIndex(directory, gramSize))
     {
-        // Start one extra thread for the Recycler.
-        m_taskPool.reset(new TaskPool(threadCount + 1));
-
         RegisterCommands();
-
     }
 
 
-    TaskFactory & Environment::GetTaskFactory() const
-    {
-        return *m_taskFactory;
-    }
-
-
-    TaskPool & Environment::GetTaskPool() const
-    {
-        return *m_taskPool;
-    }
 
 
     void Environment::RegisterCommands()
@@ -73,6 +58,18 @@ namespace BitFunnel
         m_taskFactory->RegisterCommand<Script>();
         m_taskFactory->RegisterCommand<Show>();
         m_taskFactory->RegisterCommand<Status>();
+    }
+
+
+    TaskFactory & Environment::GetTaskFactory() const
+    {
+        return *m_taskFactory;
+    }
+
+
+    TaskPool & Environment::GetTaskPool() const
+    {
+        return *m_taskPool;
     }
 
 
@@ -96,72 +93,28 @@ namespace BitFunnel
 
     void Environment::StartIndex()
     {
-        char const * directory = m_directory.c_str();
-        m_fileManager = Factories::CreateFileManager(directory,
-                                                     directory,
-                                                     directory);
+        m_index->StartIndex();
 
-        m_schema = Factories::CreateDocumentDataSchema();
-
-        m_recycler = Factories::CreateRecycler();
+        IRecycler & recycler = m_index->GetRecycler();
         m_taskPool->TryEnqueue(
-            std::unique_ptr<RecyclerTask>(new RecyclerTask(*m_recycler)));
-
-
-        // Load the TermTable
-        {
-            auto input = m_fileManager->TermTable(0).OpenForRead();
-            m_termTable = Factories::CreateTermTable(*input);
-        }
-
-        // Load the IndexedIdfTable
-        {
-            auto input = m_fileManager->IndexedIdfTable(0).OpenForRead();
-            Term::IdfX10 defaultIdf = 60;   // TODO: use proper value here.
-            m_idfTable = Factories::CreateIndexedIdfTable(*input, defaultIdf);
-        }
-
-        m_configuration =
-            Factories::CreateConfiguration(m_gramSize, false, *m_idfTable);
-
-        const size_t blockSize = GetMinimumBlockSize(*m_schema, *m_termTable);
-        std::cout << "Blocksize: " << blockSize << std::endl;
-
-        const size_t initialBlockCount = 16;
-        m_sliceAllocator = Factories::CreateSliceBufferAllocator(blockSize,
-                                                                 initialBlockCount);
-
-        // TODO: Load shard definition from FileManager stream.
-        // TODO: Optimal shard.
-        m_shardDefinition = Factories::CreateShardDefinition();
-        // m_shardDefinition->AddShard(1000);
-        // m_shardDefinition->AddShard(2000);
-        // m_shardDefinition->AddShard(3000);
-
-        //m_ingestor = Factories::CreateIngestor(*m_fileManager,
-        //                                       *m_schema,
-        //                                       *m_recycler,
-        //                                       *m_termTable,
-        //                                       *m_shardDefinition,
-        //                                       *m_sliceAllocator));
-
+            std::unique_ptr<RecyclerTask>(new RecyclerTask(recycler)));
     }
 
 
     void Environment::StopIndex()
     {
-        m_recycler->Shutdown();
-    }
-
-
-    ITermTable2 const & Environment::GetTermTable() const
-    {
-        return *m_termTable;
+        m_index->StopIndex();
     }
 
 
     IConfiguration const & Environment::GetConfiguration() const
     {
-        return *m_configuration;
+        return m_index->GetConfiguration();
+    }
+
+
+    ITermTable2 const & Environment::GetTermTable() const
+    {
+        return m_index->GetTermTable();
     }
 }
