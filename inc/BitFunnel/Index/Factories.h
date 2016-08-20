@@ -38,6 +38,7 @@ namespace BitFunnel
     class IIngestor;
     class IRecycler;
     class IShardDefinition;
+    class ISimpleIndex;
     class ISliceBufferAllocator;
     class ITermTable;
     class ITermTable2;
@@ -72,6 +73,9 @@ namespace BitFunnel
                                   Term::IdfX10 defaultIdf);
 
         std::unique_ptr<IRecycler> CreateRecycler();
+
+        std::unique_ptr<ISimpleIndex> CreateSimpleIndex(char const * directory,
+                                                        size_t gramSize);
 
         std::unique_ptr<ISliceBufferAllocator>
             CreateSliceBufferAllocator(size_t blockSize, size_t blockCount);

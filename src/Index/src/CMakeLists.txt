@@ -27,6 +27,7 @@ set(CPPFILES
     RowConfiguration.cpp
     RowTableDescriptor.cpp
     Shard.cpp
+    SimpleIndex.cpp
     Slice.cpp
     SliceBufferAllocator.cpp
     Term.cpp
@@ -65,6 +66,7 @@ set(PRIVATE_HFILES
     Recycler.h
     RowTableDescriptor.h
     Shard.h
+    SimpleIndex.h
     Slice.h
     SliceBufferAllocator.h
     TermTable.h
