@@ -93,6 +93,13 @@ namespace CsvTsv
 
 
     template <>
+    void TypedColumn<unsigned long int>::SetHexMode(bool hexMode)
+    {
+        m_hexMode = hexMode;
+    }
+
+
+    template <>
     void TypedColumn<unsigned long long>::SetHexMode(bool hexMode)
     {
         m_hexMode = hexMode;
