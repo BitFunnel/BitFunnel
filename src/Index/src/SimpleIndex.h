@@ -34,7 +34,7 @@
 #include "BitFunnel/Index/ISliceBufferAllocator.h"  // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/ISimpleIndex.h"           // Parameterizes std::unique_ptr.
 #include "BitFunnel/ITermTable2.h"                  // Parameterizes std::unique_ptr.
-#include "BitFunnel/Noncopyable.h"                  // Base class.
+#include "BitFunnel/NonCopyable.h"                  // Base class.
 #include "BitFunnel/Term.h"                         // Term::GramSize embedded.
 
 

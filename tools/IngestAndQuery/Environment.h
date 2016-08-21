@@ -25,7 +25,7 @@
 #include <memory>                                   // std::unique_ptr embedded.
 
 #include "BitFunnel/Index/ISimpleIndex.h"           // Parameterizes std::unique_ptr.
-#include "BitFunnel/Noncopyable.h"                  // Base class.
+#include "BitFunnel/NonCopyable.h"                  // Base class.
 #include "BitFunnel/Term.h"                         // Term::GramSize embedded.
 #include "TaskFactory.h"                            // Parameterizes std::unique_ptr.
 #include "TaskPool.h"                               // Parameterizes std::unique_ptr.

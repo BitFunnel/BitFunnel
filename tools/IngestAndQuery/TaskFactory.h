@@ -29,7 +29,7 @@
 #include <vector>                   // std::vector return value.
 
 #include "BitFunnel/IInterface.h"   // Base class.
-#include "BitFunnel/Noncopyable.h"  // Base class.
+#include "BitFunnel/NonCopyable.h"  // Base class.
 #include "ICommand.h"               // Base class.
 
 
