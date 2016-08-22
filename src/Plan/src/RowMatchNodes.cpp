@@ -1,6 +1,4 @@
-#include "stdafx.h"
-
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
+#include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/AbstractRow.h"
 #include "BitFunnel/IObjectFormatter.h"
 #include "BitFunnel/IObjectParser.h"
@@ -20,7 +18,7 @@ namespace BitFunnel
     RowMatchNode const & RowMatchNode::Parse(IObjectParser& parser)
     {
         RowMatchNode const * node = ParseNullable(parser);
-        LogAssertB(node != nullptr);
+        LogAssertB(node != nullptr, "Null pointer");
         return *node;
     }
 
@@ -117,7 +115,7 @@ namespace BitFunnel
         parser.OpenList();
 
         // And nodes must have exactly two children.
-        LogAssertB(parser.OpenListItem());
+        LogAssertB(parser.OpenListItem(), "");
         And const & node = dynamic_cast<And const &>(ParseList<RowMatchNode, And>(parser));
 
         parser.CloseList();
@@ -138,7 +136,7 @@ namespace BitFunnel
     RowMatchNode::Not::Not(RowMatchNode const & child)
         : m_child(child)
     {
-        LogAssertB(child.GetType() != RowMatchNode::NotMatch);
+        LogAssertB(child.GetType() != RowMatchNode::NotMatch, "");
     }
 
 
@@ -231,7 +229,7 @@ namespace BitFunnel
         parser.OpenList();
 
         // Or nodes must have exactly two children.
-        LogAssertB(parser.OpenListItem());
+        LogAssertB(parser.OpenListItem(), "");
         Or const & node = dynamic_cast<Or const &>(ParseList<RowMatchNode, Or>(parser));
 
         parser.CloseList();
@@ -359,7 +357,7 @@ namespace BitFunnel
     {
         LogAssertB(nodeType == RowMatchNode::AndMatch
                    || nodeType == RowMatchNode::NotMatch
-                   || nodeType == RowMatchNode::OrMatch);
+                   || nodeType == RowMatchNode::OrMatch, "Node type should be either And, Not or Or");
     }
 
 
@@ -387,7 +385,7 @@ namespace BitFunnel
             }
             break;
         case NotMatch:
-            LogAssertB(m_firstChild == nullptr);
+            LogAssertB(m_firstChild == nullptr, "Null pointer");
             if (childNode != nullptr)
             {
                 if (childNode->GetType() == NotMatch)
@@ -427,7 +425,7 @@ namespace BitFunnel
             }
             break;
         default:
-            LogAbortB();
+            LogAbortB("Invalid target type");
         };
     }
 
