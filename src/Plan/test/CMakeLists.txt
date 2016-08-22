@@ -2,6 +2,7 @@
 
 set(CPPFILES
     CompileNodeTest.cpp
+    MatchTreeRewriterTest.cpp
     PlainTextCodeGenerator.cpp
 )
 

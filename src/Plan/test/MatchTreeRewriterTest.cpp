@@ -1,10 +1,9 @@
-#include "stdafx.h"
+#include "gtest/gtest.h"
 
-#include "PrivateHeapAllocator.h"
+#include "Allocator.h"
 #include "BitFunnel/RowMatchNodes.h"
 #include "MatchTreeRewriter.h"
 #include "SameExceptForWhiteSpace.h"
-#include "SuiteCpp/UnitTest.h"
 #include "TextObjectFormatter.h"
 #include "TextObjectParser.h"
 
@@ -39,7 +38,7 @@ namespace BitFunnel
                 "  ]"
                 "}",
                 4,
-                0 
+                0
             },
 
 
@@ -628,7 +627,7 @@ namespace BitFunnel
             },
 
             // Multiply out three ors of three rows.
-            // The target cross product term count is 6, 
+            // The target cross product term count is 6,
             // so 6 of out 27 terms are generated.
             {
                 "And {"
@@ -770,8 +769,8 @@ namespace BitFunnel
 
 
             // Distribute three rows and a not over two ors of two rows.
-            // Since the target cross product term count is 2, 
-            // only R4 and R5 are multiplied out and combined with R0. 
+            // Since the target cross product term count is 2,
+            // only R4 and R5 are multiplied out and combined with R0.
             {
                 "And {"
                 "  Children: ["
@@ -863,7 +862,7 @@ namespace BitFunnel
             },
 
 
-            // A RowMatchTree with a Not node in Or tree. 
+            // A RowMatchTree with a Not node in Or tree.
             // Set targetCrossProductTermCount to zero to check
             // that the entire Or tree should be put under a report
             // node.
@@ -967,24 +966,25 @@ namespace BitFunnel
         {
             std::stringstream input(testCase.m_input);
 
-            PrivateHeapAllocator allocator;
+            // TODO: is this size ok?
+            Allocator allocator(1024);
             TextObjectParser parser(input, allocator, &RowPlanBase::GetType);
             RowMatchNode const & root = RowMatchNode::Parse(parser);
 
-            RowMatchNode const & converted = MatchTreeRewriter::Rewrite(root, 
-                                                                        testCase.m_targetRowCount, 
-                                                                        testCase.m_targetCrossProductTermCount, 
+            RowMatchNode const & converted = MatchTreeRewriter::Rewrite(root,
+                                                                        testCase.m_targetRowCount,
+                                                                        testCase.m_targetCrossProductTermCount,
                                                                         allocator);
 
             std::stringstream output;
             TextObjectFormatter formatter(output);
             converted.Format(formatter);
- 
-            TestAssert(SameExceptForWhiteSpace(output.str().c_str(), testCase.m_output));
+
+            EXPECT_TRUE(SameExceptForWhiteSpace(output.str().c_str(), testCase.m_output));
         }
 
 
-        TestCase(Rewrite)
+        TEST(MatchTreeRewriter, Basic)
         {
             for (unsigned i = 0; i < sizeof(c_rewriteCases) / sizeof(InputOutput); ++i)
             {
