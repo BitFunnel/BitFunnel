@@ -27,8 +27,10 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Term.h"
+#include "BitFunnel/Stream.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/IIndexedIdfTable.h"
+#include "BitFunnel/IObjectParser.h"
 #include "LoggerInterfaces/Logging.h"
 #include "MurmurHash2.h"
 #include "TermToText.h"
@@ -102,6 +104,51 @@ namespace BitFunnel
         m_stream = static_cast<StreamId>(temp);
     }
 
+    static char const * c_termPrimitiveName = "Term";
+    Term::Term(IObjectParser& parser, bool parseParametersOnly)
+    {
+        if (!parseParametersOnly)
+        {
+            parser.OpenPrimitive(c_termPrimitiveName);
+        }
+
+        LogAssertB(parser.OpenPrimitiveItem(), "");
+        m_rawHash = parser.ParseUInt64();
+
+        LogAssertB(parser.OpenPrimitiveItem(), "");
+        std::string classificationName;
+        parser.ParseToken(classificationName);
+        m_stream = StringToClassification(classificationName);
+
+        LogAssertB(parser.OpenPrimitiveItem(), "");
+        unsigned gramSize = parser.ParseUInt();
+        LogAssertB(gramSize <= c_maxGramSize, "");
+        m_gramSize = gramSize;
+
+        LogAssertB(parser.OpenPrimitiveItem(), "");
+        unsigned idfSum = parser.ParseUInt();
+        LogAssertB(idfSum <= c_maxIdfSumX10Value, "");
+        m_idfSum = static_cast<IdfX10>(idfSum);
+
+        // TODO: Decide whether we really want to keep maxWordIdf.
+        // For now, disable serialization to work around unit test breaks.
+        //LogAssertB(parser.OpenPrimitiveItem());
+        //unsigned maxWordIdf = parser.ParseUInt();
+        //LogAssertB(maxWordIdf <= c_maxIdfX10Value);
+        //m_maxWordIdf = static_cast<IdfX10>(maxWordIdf);
+
+        // Commenting out the code related to tier since we don't have a concept
+        // of tier anymore
+        // LogAssertB(parser.OpenPrimitiveItem());
+        // std::string tierName;
+        // parser.ParseToken(tierName);
+        // m_tierHint = StringToTier(tierName);
+
+        if (!parseParametersOnly)
+        {
+            parser.ClosePrimitive();
+        }
+    }
 
     void Term::AddTerm(Term const & term,
                        IConfiguration const & configuration)

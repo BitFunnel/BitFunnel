@@ -23,6 +23,7 @@
 #pragma once
 
 #include <iosfwd>                       // std::ostream parameter.
+#include <climits>
 #include <stdint.h>                     // uint8_t, uint64_t members.
 
 #include "BitFunnel/BitFunnelTypes.h"   // Rank parameter.
@@ -32,6 +33,7 @@ namespace BitFunnel
 {
     class IConfiguration;
     class NGramBuilder;
+    class IObjectParser;
 
     //*************************************************************************
     //
@@ -72,6 +74,7 @@ namespace BitFunnel
         static const GramSize c_log2MaxGramSize = 3;
         static const GramSize c_maxGramSize = (1 << c_log2MaxGramSize) - 1;
         static const IdfX10 c_maxIdfX10Value = 60;
+        static const IdfX10 c_maxIdfSumX10Value = UCHAR_MAX - 1;
 
         // TODO: Should terms store IDF values? Why?
         // TODO: Should terms store ngram sizes? Why?
@@ -94,6 +97,7 @@ namespace BitFunnel
              IdfX10 idf,
              GramSize = 1);
 
+        Term(IObjectParser& parser, bool parseParametersOnly);
 
         // Construct a term from data previously persisted to a stream via the
         // Write() method.

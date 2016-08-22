@@ -22,10 +22,10 @@ namespace BitFunnel
         Partition partition(allocator);
 
         unsigned currentCrossProductTermCount = 0;
-        return BuildCompileTree(partition, 
-                                root, 
-                                targetRowCount, 
-                                targetCrossProductTermCount, 
+        return BuildCompileTree(partition,
+                                root,
+                                targetRowCount,
+                                targetCrossProductTermCount,
                                 currentCrossProductTermCount);
     }
 
@@ -38,22 +38,22 @@ namespace BitFunnel
     {
         Partition partition(parent, node);
 
-        // The rewriting recursion halts and the partition is converted directly to a tree 
+        // The rewriting recursion halts and the partition is converted directly to a tree
         // when any of the following three conditions are true:
         // 1. The partition has no more OR-trees with which to form cross products.
-        // 2. The number of rows in the partition meets or exceeds targetRowCount. The goal 
-        //    is to process at least this many rows with the fast  RankDown matching algorithm. 
+        // 2. The number of rows in the partition meets or exceeds targetRowCount. The goal
+        //    is to process at least this many rows with the fast  RankDown matching algorithm.
         //    After the bitwise-AND of targetRowCount rows, matches are far enough apart to use
         //    the slower Rank0 matching algorithm.
-        // 3. The number of cross product terms generated so far meets or exceeds the target cross 
-        //    product term count. Enforcing a limit on the number of cross product terms generated 
-        //    is essential because the size of a complete cross product is exponential in the 
+        // 3. The number of cross product terms generated so far meets or exceeds the target cross
+        //    product term count. Enforcing a limit on the number of cross product terms generated
+        //    is essential because the size of a complete cross product is exponential in the
         //    number of factors.
         if (!partition.HasOrTree()
             || targetRowCount < partition.GetRowCount()
             || currentCrossProductTermCount >= targetCrossProductTermCount)
         {
-            // The tree created in this block counts as one of the cross product terms. 
+            // The tree created in this block counts as one of the cross product terms.
             // Therefore increment the cross product term count.
             currentCrossProductTermCount++;
             return partition.CreateTree();
@@ -64,17 +64,17 @@ namespace BitFunnel
             RowMatchNode::Or const & orNode(partition.PopFromOrTree());
 
             // Multiply out the left node of the OR tree to the partition.
-            RowMatchNode const & left = BuildCompileTree(partition, 
+            RowMatchNode const & left = BuildCompileTree(partition,
                                                          orNode.GetLeft(),
-                                                         targetRowCount, 
-                                                         targetCrossProductTermCount, 
+                                                         targetRowCount,
+                                                         targetCrossProductTermCount,
                                                          currentCrossProductTermCount);
 
             // Multiply out the right node of the OR tree to the partition.
-            RowMatchNode const & right = BuildCompileTree(partition, 
+            RowMatchNode const & right = BuildCompileTree(partition,
                                                           orNode.GetRight(),
-                                                          targetRowCount, 
-                                                          targetCrossProductTermCount, 
+                                                          targetRowCount,
+                                                          targetCrossProductTermCount,
                                                           currentCrossProductTermCount);
             RowMatchNode const & compiledOrTree = partition.CreateOrNode(left, right);
 
@@ -95,7 +95,7 @@ namespace BitFunnel
     // MatchTreeRewriter::Partition
     //
     //*************************************************************************
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4351)
 #endif
@@ -111,7 +111,7 @@ namespace BitFunnel
           m_otherTree(nullptr)
     {
     }
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #pragma warning(pop)
 
 
@@ -139,7 +139,7 @@ namespace BitFunnel
             AddNode(m_rankNTree, m_rows[rank]);
         }
     }
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
@@ -151,12 +151,12 @@ namespace BitFunnel
 
     RowMatchNode::Or const & MatchTreeRewriter::Partition::PopFromOrTree()
     {
-        LogAssertB(HasOrTree());
+        LogAssertB(HasOrTree(), "Doesn't have OrTree");
         if (m_orTree->GetType() == RowMatchNode::AndMatch)
         {
-            RowMatchNode::And const & and = *dynamic_cast<RowMatchNode::And const *>(m_orTree);
-            m_orTree = &and.GetRight();
-            return dynamic_cast<RowMatchNode::Or const &>(and.GetLeft());
+            RowMatchNode::And const & andNode = *dynamic_cast<RowMatchNode::And const *>(m_orTree);
+            m_orTree = &andNode.GetRight();
+            return dynamic_cast<RowMatchNode::Or const &>(andNode.GetLeft());
         }
         else
         {
@@ -187,9 +187,9 @@ namespace BitFunnel
 
         if (m_orTree != nullptr)
         {
-            // If the m_orTree is not nullptr, it means that the rewrite early terminated either 
-            // because the target row count limit was reached or the cross-product term count limit 
-            // was reached. In this case, since the or tree may have any possible combination of 
+            // If the m_orTree is not nullptr, it means that the rewrite early terminated either
+            // because the target row count limit was reached or the cross-product term count limit
+            // was reached. In this case, since the or tree may have any possible combination of
             // rows in different ranks, we need to adjust all the rows under the Or-tree to be
             // rank zero rows so that it can be compiled using the RankDown compiler.
             bool containsNotNode = false;
@@ -197,7 +197,7 @@ namespace BitFunnel
 
             if (containsNotNode)
             {
-                // If there is at least one Not node inside the or tree, the orTreeAfterRoundup must be compiled 
+                // If there is at least one Not node inside the or tree, the orTreeAfterRoundup must be compiled
                 // using rank zero compiler.
                 // In this case, the report node returns the And of "for m_otherTree and orTreeAfterRoundup.
                 AddNode(tree, m_otherTree);
@@ -206,8 +206,8 @@ namespace BitFunnel
             }
             else
             {
-                // There are no Not nodes inside the or tree, so only need to put the other tree under a 
-                // report node (using rank zero compiler). The orTreeAfterRoundup can still be run with 
+                // There are no Not nodes inside the or tree, so only need to put the other tree under a
+                // report node (using rank zero compiler). The orTreeAfterRoundup can still be run with
                 // the RankDown compiler.
                 CreateReportNode(tree, m_otherTree);
                 AddNode(tree, orTreeAfterRankUp);
@@ -221,12 +221,12 @@ namespace BitFunnel
         AddNode(tree, m_rank0Tree);
         AddNode(tree, m_rankNTree);
 
-        LogAssertB(tree != nullptr);
+        LogAssertB(tree != nullptr, "Null pointer");
         return *tree;
     }
 
 
-    RowMatchNode::Or const & 
+    RowMatchNode::Or const &
         MatchTreeRewriter::Partition::CreateOrNode(RowMatchNode const & left,
                                                    RowMatchNode const & right) const
     {
@@ -235,7 +235,7 @@ namespace BitFunnel
     }
 
 
-    RowMatchNode::And const & 
+    RowMatchNode::And const &
         MatchTreeRewriter::Partition::CreateAndNode(RowMatchNode const & left,
                                                     RowMatchNode const & right) const
     {
@@ -254,7 +254,7 @@ namespace BitFunnel
             break;
         case RowMatchNode::NotMatch:
             {
-                // For NOT node, adjust all the rows under the NOT node to be a rank 
+                // For NOT node, adjust all the rows under the NOT node to be a rank
                 // zero row. Then add the NOT node to the m_otherTree.
                 // In this case, the value of the containsNotNode doesn't need to be
                 // inspected.
@@ -365,7 +365,7 @@ namespace BitFunnel
             }
         default:
             LogAbortB("Unsupported node type.");
-            return *(reinterpret_cast<const RowMatchNode::Row*>(nullptr));
+            return *(static_cast<const RowMatchNode::Row*>(nullptr));
         }
     }
 }
