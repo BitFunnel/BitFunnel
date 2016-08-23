@@ -48,8 +48,9 @@ namespace BitFunnel
         else
         {
             // TODO: Converting it to int for now. Check later if this can cause trouble
-            for (auto i = 0;
-                 i < static_cast<int>(sizeof(c_typenames) / sizeof(const char*)); ++i)
+            for (size_t i = 0;
+                 i < sizeof(c_typenames) / sizeof(const char*);
+                 ++i)
             {
                 if (strcmp(name, c_typenames[i]) == 0)
                 {

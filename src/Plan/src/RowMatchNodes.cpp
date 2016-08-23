@@ -114,8 +114,7 @@ namespace BitFunnel
 
         parser.OpenList();
 
-        // And nodes must have exactly two children.
-        LogAssertB(parser.OpenListItem(), "");
+        LogAssertB(parser.OpenListItem(), "And nodes must have exactly two children");
         And const & node = dynamic_cast<And const &>(ParseList<RowMatchNode, And>(parser));
 
         parser.CloseList();
@@ -136,7 +135,7 @@ namespace BitFunnel
     RowMatchNode::Not::Not(RowMatchNode const & child)
         : m_child(child)
     {
-        LogAssertB(child.GetType() != RowMatchNode::NotMatch, "");
+        LogAssertB(child.GetType() != RowMatchNode::NotMatch, "Can't have not(not).");
     }
 
 
@@ -228,8 +227,7 @@ namespace BitFunnel
 
         parser.OpenList();
 
-        // Or nodes must have exactly two children.
-        LogAssertB(parser.OpenListItem(), "");
+        LogAssertB(parser.OpenListItem(), "Or nodes must have exactly two children");
         Or const & node = dynamic_cast<Or const &>(ParseList<RowMatchNode, Or>(parser));
 
         parser.CloseList();
