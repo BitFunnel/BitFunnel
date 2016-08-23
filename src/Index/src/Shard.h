@@ -41,9 +41,9 @@ namespace BitFunnel
 {
     //class IDocumentDataSchema;
     class ISliceBufferAllocator;
-    class ITermTable;
     class ITermTable2;
-    class IIngestor;
+    class ITokenManager;
+    class IRecycler;
     class Slice;
     class Term;     // TODO: Remove this temporary declaration.
     class TermToText;
@@ -67,7 +67,8 @@ namespace BitFunnel
         // Constructs an empty Shard with no slices. sliceBufferSize must be
         // sufficient to hold the minimum capacity Slice. The minimum capacity
         // is determined by a value returned by Row::DocumentsInRank0Row(1).
-        Shard(IIngestor& ingestor,
+        Shard(IRecycler& recycler,
+              ITokenManager& tokenManager,
               size_t id,
               ITermTable2 const & termTable,
               IDocumentDataSchema const & docDataSchema,
@@ -213,8 +214,11 @@ namespace BitFunnel
         //   swap newSlices and m_sliceBuffers, schedule newSlices for recycling.
         void CreateNewActiveSlice();
 
-        // Parent IngestionIndex that contains this Shard.
-        IIngestor& m_ingestor;
+        // Constructor parameters.
+
+        IRecycler& m_recycler;
+
+        ITokenManager& m_tokenManager;
 
         // Shard's ID.
         size_t m_id;

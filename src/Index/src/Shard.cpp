@@ -22,13 +22,13 @@
 
 
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
 #include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/RowIdSequence.h"
 #include "BitFunnel/Term.h"
+#include "BitFunnel/Token.h"
 #include "IRecyclable.h"
 #include "LoggerInterfaces/Logging.h"
 #include "Recycler.h"
@@ -68,13 +68,15 @@ namespace BitFunnel
     }
 
 
-    Shard::Shard(IIngestor& ingestor,
+    Shard::Shard(IRecycler& recycler,
+                 ITokenManager& tokenManager,
                  size_t id,
                  ITermTable2 const & termTable,
                  IDocumentDataSchema const & docDataSchema,
                  ISliceBufferAllocator& sliceBufferAllocator,
                  size_t sliceBufferSize)
-        : m_ingestor(ingestor),
+        : m_recycler(recycler),
+          m_tokenManager(tokenManager),
           m_id(id),
           m_termTable(termTable),
           m_sliceBufferAllocator(sliceBufferAllocator),
@@ -141,9 +143,9 @@ namespace BitFunnel
         std::unique_ptr<IRecyclable>
             recyclableSliceList(new DeferredSliceListDelete(nullptr,
                                                             oldSlices,
-                                                            m_ingestor.GetTokenManager()));
+                                                            m_tokenManager));
 
-        m_ingestor.GetRecycler().ScheduleRecyling(recyclableSliceList);
+        m_recycler.ScheduleRecyling(recyclableSliceList);
     }
 
 
@@ -331,9 +333,9 @@ namespace BitFunnel
         std::unique_ptr<IRecyclable>
             recyclableSliceList(new DeferredSliceListDelete(&slice,
                                                             oldSlices,
-                                                            m_ingestor.GetTokenManager()));
+                                                            m_tokenManager));
 
-        m_ingestor.GetRecycler().ScheduleRecyling(recyclableSliceList);
+        m_recycler.ScheduleRecyling(recyclableSliceList);
     }
 
 
