@@ -74,7 +74,8 @@ namespace BitFunnel
         {
             m_shards.push_back(
                 std::unique_ptr<Shard>(
-                    new Shard(*this,
+                    new Shard(GetRecycler(),
+                              GetTokenManager(),
                               shardId,
                               termTables.GetTermTable(shardId),
                               docDataSchema,
