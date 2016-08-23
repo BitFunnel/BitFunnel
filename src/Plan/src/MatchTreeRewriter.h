@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BitFunnel/NonCopyable.h"        // Inherits from NonCopyable.
-// #include "BitFunnel/RowMatchNodes.h"      // Use of nested types.
 
 
 namespace BitFunnel
@@ -14,12 +13,12 @@ namespace BitFunnel
     // MatchTreeRewriter rewrites a tree or RowMatchNode in a form that meets
     // all of the requirements of the RankDownCompiler.
     //
-    // After rewrite, the tree will consist of an and-expression of 
+    // After rewrite, the tree will consist of an and-expression of
     //   1. a sequence of rows with non-zero rank in descending rank order
     //   2. followed by either
     //      a. a sequence of one or more or-expressions of rewritten
     //         RowMatchNode trees.
-    //      b. an and expression of zero or more rank-0 rows followed by an 
+    //      b. an and expression of zero or more rank-0 rows followed by an
     //         optional RowMatchNode tree rooted by a Not node.
     //
     // The idea is to pull common, higher rank rows to the left, while
@@ -38,24 +37,24 @@ namespace BitFunnel
         // allocator.
         //
         // targetRowCount:
-        // Specifies how much of the tree to rewrite. Basically, the rewrite 
-        // will continue deeper into the tree until every path from the root 
-        // of the rewritten tree references at least the targetRowCount number 
+        // Specifies how much of the tree to rewrite. Basically, the rewrite
+        // will continue deeper into the tree until every path from the root
+        // of the rewritten tree references at least the targetRowCount number
         // of distinct rows.
         //
         // targetCrossProductTermCount:
-        // The rewriter attempts to form cross-products of OR-expressions 
-        // (e.g. replacing (a + b)(c + d) with ac + ad + bc + bd) in order to 
-        // generate longer sequences of row intersections which can be quickly 
-        // processed by the RankDown matching algorithm. Because the size of a 
-        // cross-product is exponential in the number of factors 
-        // (e.g. (a + b)(c + d)(e + f)(g + h) has 16 terms), it is often not 
-        // practical to generate complete cross-products. The targetCrossProductTermCount 
-        // specifies the maximum number of terms that can be generated before 
+        // The rewriter attempts to form cross-products of OR-expressions
+        // (e.g. replacing (a + b)(c + d) with ac + ad + bc + bd) in order to
+        // generate longer sequences of row intersections which can be quickly
+        // processed by the RankDown matching algorithm. Because the size of a
+        // cross-product is exponential in the number of factors
+        // (e.g. (a + b)(c + d)(e + f)(g + h) has 16 terms), it is often not
+        // practical to generate complete cross-products. The targetCrossProductTermCount
+        // specifies the maximum number of terms that can be generated before
         // halting subsequent cross-product expansions. Note that the system
-        // may generate terms in excess of the target value. For example, 
-        // with a target of 3, the expression (a + b)(c + d)(e + f) would be 
-        // expanded to four terms, (ac + ad + bc + bd)(e + f), an amount 
+        // may generate terms in excess of the target value. For example,
+        // with a target of 3, the expression (a + b)(c + d)(e + f) would be
+        // expanded to four terms, (ac + ad + bc + bd)(e + f), an amount
         // that is one greater than the target.
         static RowMatchNode const & Rewrite(RowMatchNode const & root,
                                             unsigned targetRowCount,
@@ -100,7 +99,7 @@ namespace BitFunnel
             // new RowMatchTree. The new RowMatchTree is exactly the same as the existing
             // RowMatchTree with the exception that all non-rank0 rows in the existing
             // RowMatchTree are converted to a rank0 row by doing a RankUp operation on the
-            // existing row. 
+            // existing row.
             // The root node of the new RowMatchTree is returned. The notNodeEncountered boolean
             // variable indicates whether any NOT node is encountered during the rank up operation.
             // Based on the fact that whether any NOT node is inside the RowMatchTree rooted at node,
@@ -156,7 +155,7 @@ namespace BitFunnel
             RowMatchNode const * m_rankNTree;
             RowMatchNode const * m_orTree;
             RowMatchNode const * m_rank0Tree;
-            RowMatchNode const * m_otherTree;            
+            RowMatchNode const * m_otherTree;
         };
 
         // BuildCompileTree() builds a single tree from the partitioned tree
@@ -164,27 +163,27 @@ namespace BitFunnel
         // Note that BuildCompileTree() recursively builds the compile tree
         // for the left and right children of m_orTree.
         //
-        // The rewriter attempts to form cross-products of OR-expressions 
-        // (e.g. replacing (a + b)(c + d) with ac + ad + bc + bd) in order 
+        // The rewriter attempts to form cross-products of OR-expressions
+        // (e.g. replacing (a + b)(c + d) with ac + ad + bc + bd) in order
         // to generate longer sequences of row intersections which can be quickly
-        // processed by the RankDown matching algorithm. Because the size of a 
-        // cross-product is exponential in the number of factors 
-        // (e.g. (a + b)(c + d)(e + f)(g + h) has 16 terms), it is often not 
-        // practical to generate complete cross-products. The targetCrossProductTermCount 
-        // specifies the maximum number of terms that can be generated before halting 
-        // subsequent cross-product expansions. Note that the system may generate 
-        // terms in excess of the target value. For example, with a target of 3, 
-        // the expression (a + b)(c + d)(e + f) would be expanded to four terms, 
+        // processed by the RankDown matching algorithm. Because the size of a
+        // cross-product is exponential in the number of factors
+        // (e.g. (a + b)(c + d)(e + f)(g + h) has 16 terms), it is often not
+        // practical to generate complete cross-products. The targetCrossProductTermCount
+        // specifies the maximum number of terms that can be generated before halting
+        // subsequent cross-product expansions. Note that the system may generate
+        // terms in excess of the target value. For example, with a target of 3,
+        // the expression (a + b)(c + d)(e + f) would be expanded to four terms,
         // (ac + ad + bc + bd)(e + f), an amount that is one greater than the target.
         //
-        // The currentCrossProductTermCount paramter accumulates the number of subtrees 
+        // The currentCrossProductTermCount paramter accumulates the number of subtrees
         // generated while expanding cross-products of OR-expressions. The expansion
-        // of cross-products terminates when the number of subtrees generated exceeds 
+        // of cross-products terminates when the number of subtrees generated exceeds
         // the target amount.
-        // 
-        // DESIGN NOTE: targetCrossProductTermCount is used as a "soft threshold" for the 
-        // number of terms can be generated while expanding cross-products. The actual 
-        // number of terms generated out can be slightly higher than this number depends 
+        //
+        // DESIGN NOTE: targetCrossProductTermCount is used as a "soft threshold" for the
+        // number of terms can be generated while expanding cross-products. The actual
+        // number of terms generated out can be slightly higher than this number depends
         // on the shape of the input tree.
         static RowMatchNode const & BuildCompileTree(Partition const & parent,
                                                      RowMatchNode const & node,
