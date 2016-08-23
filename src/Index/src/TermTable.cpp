@@ -200,10 +200,6 @@ namespace BitFunnel
         m_explicitRowCounts[rank] = explicitCount;
         m_adhocRowCounts[rank] = adhocCount;
         m_sharedRowCounts[rank] = explicitCount + adhocCount;
-        if (rank == 0)
-        {
-            m_sharedRowCounts[rank] += SystemTerm::Count + m_factRowCount;
-        }
     }
 
 
@@ -264,18 +260,19 @@ namespace BitFunnel
     }
 
 
-    std::vector<size_t> const & TermTable::GetRowCounts() const
+    size_t TermTable::GetTotalRowCount(Rank rank) const
     {
         // System term rows and fact rows are included in Rank 0, but not other
         // ranks.
-        return m_sharedRowCounts;
+        return m_sharedRowCounts[rank] +
+            ((rank == 0) ? (SystemTerm::Count + m_factRowCount) : 0);
     }
 
 
     double TermTable::GetBytesPerDocument(Rank rank) const
     {
         const double c_bitsPerByte = 8.0;
-        return m_sharedRowCounts[rank] / pow(2.0, rank) / c_bitsPerByte;
+        return GetTotalRowCount(rank) / pow(2.0, rank) / c_bitsPerByte;
     }
 
 
@@ -395,7 +392,7 @@ namespace BitFunnel
         index += m_adhocRowCounts[0] + m_explicitRowCounts[0];
 
         // AnyRow is used to get a shard.
-        // TODO: investigate if we should split RowId to shard +
+        // TODO: investigate if we should split RowId to shard + 
         // shard-independent structure and keep m_shard in the TermTable.
         // TFS 15153.
         const RowId anyRow = m_rowIds[0];
@@ -404,7 +401,7 @@ namespace BitFunnel
         // rows. The caller specifies rowOffset = 0 in this case. The rationale
         // for this value is that a soft-deleted rowId must be consistent
         // between query planner and query runner regardless of the number of
-        // user facts defined. This is to guarantee consistency of this row
+        // user facts defined. This is to guarantee consistency of this row 
         // in case of canary deployment of the code that changes the list of
         // facts.
         return RowId(anyRow.GetShard(), 0, index);

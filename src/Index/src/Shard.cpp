@@ -253,13 +253,12 @@ namespace BitFunnel
 
         currentOffset += DocTableDescriptor::GetBufferSize(sliceCapacity, docDataSchema);
 
-        auto rowCounts = termTable.GetRowCounts();
         for (Rank r = 0; r <= c_maxRankValue; ++r)
         {
             // TODO: see if this alignment matters.
             // currentOffset = RoundUp(currentOffset, c_rowTableByteAlignment);
 
-            const RowIndex rowCount = rowCounts[r];
+            const RowIndex rowCount = termTable.GetTotalRowCount(r);
 
             if (shard != nullptr)
             {

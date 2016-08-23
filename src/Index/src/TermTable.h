@@ -91,7 +91,7 @@ namespace BitFunnel
         // Returns the total number of rows (private + shared) associated with
         // the row table for (rank). This includes rows allocated for
         // facts, if applicable.
-        virtual std::vector<size_t> const & GetRowCounts() const override;
+        virtual size_t GetTotalRowCount(Rank rank) const override;
 
         // Returns the number of bytes of Row data required to store each
         // document using this TermTable.

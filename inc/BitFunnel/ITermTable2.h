@@ -23,7 +23,6 @@
 #pragma once
 
 #include <iosfwd>                           // std::ostream parameter.
-#include <vector>                           // std::vector return value.
 
 #include "BitFunnel/IInterface.h"           // Base class.
 #include "BitFunnel/PackedRowIdSequence.h"  // RowId parameter.
@@ -114,7 +113,7 @@ namespace BitFunnel
         // Returns the total number of rows (private + shared) associated with
         // the row table for (rank). This includes rows allocated for
         // facts, if applicable.
-        virtual std::vector<size_t> const & GetRowCounts() const = 0;
+        virtual size_t GetTotalRowCount(Rank rank) const = 0;
 
         // Returns the number of bytes of Row data required to store each
         // document using this TermTable.
