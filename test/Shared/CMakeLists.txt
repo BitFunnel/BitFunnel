@@ -5,6 +5,7 @@ set(CPPFILES
     EmptyTermTable.cpp
     MockFileManager.cpp
     MockTermTable.cpp
+    SameExceptForWhitespace.cpp
 )
 
 set(PRIVATE_HFILES
@@ -15,6 +16,7 @@ set(PUBLIC_HFILES
     EmptyTermTable.h
     MockFileManager.h
     MockTermTable.h
+    SameExceptForWhitespace.h
 )
 
 COMBINE_FILE_LISTS()

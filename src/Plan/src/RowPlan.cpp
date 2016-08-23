@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "BitFunnel/IObjectFormatter.h"
 #include "BitFunnel/IObjectParser.h"
 #include "BitFunnel/RowMatchNodes.h"
@@ -36,7 +34,7 @@ namespace BitFunnel
     const char* RowPlanBase::GetTypeName() const
     {
         NodeType type = GetType();
-        LogAssertB(type < TypeCount);
+        LogAssertB(type < TypeCount, "");
         return c_typenames[type];
     }
 
@@ -49,7 +47,9 @@ namespace BitFunnel
         }
         else
         {
-            for (int i = 0; i < sizeof(c_typenames) / sizeof(const char*); ++i)
+            // TODO: Converting it to int for now. Check later if this can cause trouble
+            for (auto i = 0;
+                 i < static_cast<int>(sizeof(c_typenames) / sizeof(const char*)); ++i)
             {
                 if (strcmp(name, c_typenames[i]) == 0)
                 {
@@ -77,14 +77,14 @@ namespace BitFunnel
     }
 
 
-    // TODO We should investigate whether we are still using PlanRows inside the 
-    // RowPlan. It is possible that we are using them inside the RowPlan, but 
-    // never wrote the deserializing constructor because never transported 
+    // TODO We should investigate whether we are still using PlanRows inside the
+    // RowPlan. It is possible that we are using them inside the RowPlan, but
+    // never wrote the deserializing constructor because never transported
     // RowPlans between machines. TFS 490813.
     RowPlan::RowPlan(IObjectParser& parser)
         : m_matchTree((parser.OpenObject(),
                        ParseNodeField<RowMatchNode>(parser, c_matchTreeField))),
-          m_planRows(*(IPlanRows*)nullptr)
+          m_planRows(*(static_cast<IPlanRows*>(nullptr)))
     {
         parser.CloseObject();
     }
@@ -126,7 +126,7 @@ namespace BitFunnel
 
     RowPlan& RowPlan::Parse(IObjectParser& parser)
     {
-        LogAssertB(parser.ReadTypeTag() == Plan);
+        LogAssertB(parser.ReadTypeTag() == Plan, "");
         return ParseNode<RowPlan>(parser);
     }
 }

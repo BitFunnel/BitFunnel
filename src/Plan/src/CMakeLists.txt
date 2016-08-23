@@ -5,6 +5,7 @@ set(CPPFILES
     CompileNodes.cpp
     MatchTreeRewriter.cpp
     RowMatchNodes.cpp
+    RowPlan.cpp
 )
 
 set(WINDOWS_CPPFILES

@@ -22,7 +22,13 @@
 
 #!/bin/sh
 
-echo "Configuring CMake for make."
+debugType="RELEASE"
+
+if [ "$#" -eq 1 ]; then
+    debugType="DEBUG"
+fi
+
+echo "Configuring CMake for make with $debugType build."
 mkdir build-make
 cd build-make
-cmake -G "Unix Makefiles" ..
+cmake -DCMAKE_BUILD_TYPE=$debugType -G "Unix Makefiles" ..
