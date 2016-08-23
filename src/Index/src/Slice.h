@@ -255,7 +255,6 @@ namespace BitFunnel
         // Returns a reference to the Slice pointer which is placed inside a sliceBuffer.
         static Slice*& GetSlicePointer(void* sliceBuffer, ptrdiff_t slicePtrOffset);
 
-
         // Owner of the slice. In production, this is expected to be a Shard,
         // but it can be anything that has a method that which allows us to call
         // RecycleSlice.

@@ -122,7 +122,6 @@ namespace BitFunnel
     {
         m_recycler->Shutdown();
         m_recyclerThread.join();
-        m_ingestor->Shutdown();
     }
 
 

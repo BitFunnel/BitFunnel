@@ -84,6 +84,12 @@ namespace BitFunnel
     }
 
 
+    Ingestor::~Ingestor()
+    {
+        Shutdown();
+    }
+
+
     void Ingestor::PrintStatistics() const
     {
         std::cout << "Shard count:" << m_shards.size() << std::endl;

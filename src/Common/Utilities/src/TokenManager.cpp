@@ -46,9 +46,7 @@ namespace BitFunnel
 
     TokenManager::~TokenManager()
     {
-        // This happens when the user has not called Shutdown when destroying
-        // this object.
-        LogAssertB(m_isShuttingDown, "Destructed TokenManager without shutdown.");
+        Shutdown();
     }
 
 
@@ -85,7 +83,7 @@ namespace BitFunnel
 
     void TokenManager::Shutdown()
     {
-        LogAssertB(!m_isShuttingDown, "Multiple shutdowns seen.\n");
+        // LogAssertB(!m_isShuttingDown, "Multiple shutdowns seen.\n");
         m_isShuttingDown = true;
 
         // Wait for existing tokens to be returned.

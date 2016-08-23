@@ -97,6 +97,13 @@ namespace BitFunnel
     public:
         Recycler();
 
+        // TODO: this doesn't safely shut down the Recycler. The owner of the
+        // Recycler thread must .join or .wait on the thread to prevent the
+        // thread from continuing to execute on the destructed Recycler. This
+        // code is probably not exception safe and should be refactored such
+        // that things are shut down correctly on an exception.
+        ~Recycler();
+
         void Run() override;
 
         void Shutdown() override;

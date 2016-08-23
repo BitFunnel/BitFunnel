@@ -55,8 +55,6 @@ namespace BitFunnel
     // index. Provides methods to add and remove documents, verify if a document
     // exists in the index, and assert facts on documents in the index.
     //
-    // NOTE: caller must call Shutdown() before destroying the index.
-    //
     // Thread safety: all methods are thread safe.
     //
     //*************************************************************************

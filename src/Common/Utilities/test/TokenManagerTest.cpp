@@ -48,8 +48,6 @@ namespace BitFunnel
                 const Token token2 = tokenManager.RequestToken();
                 ASSERT_EQ(token2.GetSerialNumber(), 1u);
             }
-
-            tokenManager.Shutdown();
         }
 
 
@@ -107,8 +105,6 @@ namespace BitFunnel
             // No impact on previous trackers.
             ASSERT_TRUE(noTokensTracker->IsComplete());
             ASSERT_TRUE(token0Tracker->IsComplete());
-
-            tokenManager.Shutdown();
         }
 
 
@@ -429,8 +425,6 @@ namespace BitFunnel
                      "Last serial num: %u",
                      lastToken.GetSerialNumber());
             }
-
-            tokenManager.Shutdown();
         }
 
         void GetAndHoldToken(ITokenManager& tokenManager,

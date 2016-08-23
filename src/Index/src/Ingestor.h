@@ -58,6 +58,8 @@ namespace BitFunnel
                  IShardDefinition const & shardDefinition,
                  ISliceBufferAllocator& sliceBufferAllocator);
 
+        virtual ~Ingestor();
+
         // TODO: Remove this temporary method.
         virtual void PrintStatistics() const override;
 

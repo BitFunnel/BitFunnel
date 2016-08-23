@@ -50,6 +50,12 @@ namespace BitFunnel
     }
 
 
+    Recycler::~Recycler()
+    {
+        Shutdown();
+    }
+
+
     // Run until shutdown. When m_shutdown is flagged, run until queue is
     // empty and then return.
     void Recycler::Run()
