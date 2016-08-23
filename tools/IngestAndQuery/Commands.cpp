@@ -433,12 +433,13 @@ namespace BitFunnel
 
         std::cout << std::endl;
 
+        auto rowCounts = GetEnvironment().GetTermTable().GetRowCounts();
         for (Rank rank = 0; rank < c_maxRankValue; ++rank)
         {
             std::cout
                 << rank
                 << ": "
-                << GetEnvironment().GetTermTable().GetTotalRowCount(rank)
+                << rowCounts[rank]
                 << " rows."
                 << std::endl;
         }

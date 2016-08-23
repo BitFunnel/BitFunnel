@@ -223,7 +223,7 @@ namespace BitFunnel
             m_termTable.CloseTerm(hash++);
 
             // Seventh row is configured two shared rows, one rank 0 and one
-            // rank 4. Seventh row's frequency of 0.01 is great enough to 
+            // rank 4. Seventh row's frequency of 0.01 is great enough to
             // require a private row at rank 4.
             m_termTreatment.OpenConfiguration();
             m_termTreatment.AddEntry(4, 1, false);
@@ -287,7 +287,7 @@ private:
 
             // Run the TermTableBuilder to configure a TermTable.
             ITermTreatment const & treatment = environment.GetTermTreatment();
-            DocumentFrequencyTable const & terms = 
+            DocumentFrequencyTable const & terms =
                 environment.GetDocFrequencyTable();
             IFactSet const & facts = environment.GetFactSet();
             TermTable termTable;
@@ -332,10 +332,12 @@ private:
             // for TermTable that ensures that row counts are recorded
             // correctly. Without such a test, a bogus TermTable that ignores
             // all SetRowCounts would allow TermTableBuilderTest to pass.
+            auto expectedRowCounts = environment.GetTermTable().GetRowCounts();
+            auto observedRowCounts = termTable.GetRowCounts();
             for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
             {
-                EXPECT_EQ(environment.GetTermTable().GetTotalRowCount(rank),
-                          termTable.GetTotalRowCount(rank));
+                EXPECT_EQ(expectedRowCounts[rank],
+                          observedRowCounts[rank]);
             }
 
             // TODO: Verify adhoc
