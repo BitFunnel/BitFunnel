@@ -69,7 +69,6 @@ namespace BitFunnel
         // is determined by a value returned by Row::DocumentsInRank0Row(1).
         Shard(IRecycler& recycler,
               ITokenManager& tokenManager,
-              size_t id,
               ITermTable2 const & termTable,
               IDocumentDataSchema const & docDataSchema,
               ISliceBufferAllocator& sliceBufferAllocator,
@@ -219,9 +218,6 @@ namespace BitFunnel
         IRecycler& m_recycler;
 
         ITokenManager& m_tokenManager;
-
-        // Shard's ID.
-        size_t m_id;
 
         // TermTable for this shard.
         ITermTable2 const & m_termTable;

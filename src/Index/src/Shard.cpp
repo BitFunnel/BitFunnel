@@ -70,14 +70,12 @@ namespace BitFunnel
 
     Shard::Shard(IRecycler& recycler,
                  ITokenManager& tokenManager,
-                 size_t id,
                  ITermTable2 const & termTable,
                  IDocumentDataSchema const & docDataSchema,
                  ISliceBufferAllocator& sliceBufferAllocator,
                  size_t sliceBufferSize)
         : m_recycler(recycler),
           m_tokenManager(tokenManager),
-          m_id(id),
           m_termTable(termTable),
           m_sliceBufferAllocator(sliceBufferAllocator),
           m_softDeletedRowId(RowIdForDeletedDocument(termTable)),
@@ -320,13 +318,6 @@ namespace BitFunnel
                 m_activeSlice = nullptr;
             }
         }
-
-        // Logging outside of the lock.
-        LogB(Logging::Info,
-             "Shard",
-             "Recycle slice for shard %u. New slice count is %u.",
-             m_id,
-             newSliceCount);
 
         // Scheduling the Slice and the old list of slice buffers can be
         // done outside of the lock.

@@ -76,7 +76,6 @@ namespace BitFunnel
                 std::unique_ptr<Shard>(
                     new Shard(GetRecycler(),
                               GetTokenManager(),
-                              shardId,
                               termTables.GetTermTable(shardId),
                               docDataSchema,
                               m_sliceBufferAllocator,
