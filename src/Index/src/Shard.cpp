@@ -141,9 +141,9 @@ namespace BitFunnel
         std::unique_ptr<IRecyclable>
             recyclableSliceList(new DeferredSliceListDelete(nullptr,
                                                             oldSlices,
-                                                            GetIndex().GetTokenManager()));
+                                                            m_ingestor.GetTokenManager()));
 
-        GetIndex().GetRecycler().ScheduleRecyling(recyclableSliceList);
+        m_ingestor.GetRecycler().ScheduleRecyling(recyclableSliceList);
     }
 
 
@@ -179,12 +179,6 @@ namespace BitFunnel
     DocTableDescriptor const & Shard::GetDocTable() const
     {
         return *m_docTable;
-    }
-
-
-    IIngestor& Shard::GetIndex() const
-    {
-        return m_ingestor;
     }
 
 
@@ -337,9 +331,9 @@ namespace BitFunnel
         std::unique_ptr<IRecyclable>
             recyclableSliceList(new DeferredSliceListDelete(&slice,
                                                             oldSlices,
-                                                            GetIndex().GetTokenManager()));
+                                                            m_ingestor.GetTokenManager()));
 
-        GetIndex().GetRecycler().ScheduleRecyling(recyclableSliceList);
+        m_ingestor.GetRecycler().ScheduleRecyling(recyclableSliceList);
     }
 
 
@@ -350,7 +344,7 @@ namespace BitFunnel
 
 
     void Shard::AddPosting(Term const & term,
-                           DocIndex index, 
+                           DocIndex index,
                            void* sliceBuffer)
     {
         if (m_docFrequencyTableBuilder.get() != nullptr)

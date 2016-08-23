@@ -152,9 +152,6 @@ namespace BitFunnel
         // copy of the vector of slices, is scheduled for recycling.
         void RecycleSlice(Slice& slice);
 
-        // Returns the IngestionIndex that owns the Shard.
-        IIngestor& GetIndex() const;
-
         // Returns term table associated with this shard.
         ITermTable2 const & GetTermTable() const;
 
