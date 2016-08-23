@@ -967,7 +967,7 @@ namespace BitFunnel
             std::stringstream input(testCase.m_input);
 
             // TODO: is this size ok?
-            Allocator allocator(1024);
+            Allocator allocator(1024*4);
             TextObjectParser parser(input, allocator, &RowPlanBase::GetType);
             RowMatchNode const & root = RowMatchNode::Parse(parser);
 
