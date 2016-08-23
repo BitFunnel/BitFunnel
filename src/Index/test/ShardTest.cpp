@@ -24,20 +24,15 @@
 
 #include "gtest/gtest.h"
 
-#include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Index/Helpers.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
-#include "BitFunnel/ITermTable.h"
-#include "BitFunnel/Row.h"
-#include "BitFunnel/TermInfo.h"
+#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/Token.h"
+#include "BitFunnel/Utilities/Factories.h"
 #include "DocumentDataSchema.h"
-#include "EmptyTermTable.h"
 #include "IndexUtils.h"
-#include "Ingestor.h"
-#include "MockFileManager.h"
-#include "Recycler.h"
 #include "Shard.h"
 #include "Slice.h"
 #include "TrackingSliceBufferAllocator.h"
@@ -45,8 +40,31 @@
 
 namespace BitFunnel
 {
-    // namespace ShardTest
-    // {
+    namespace ShardTest
+    {
+        TEST(Shard, TODO)
+        {
+            auto recycler = Factories::CreateRecycler();
+            auto background = std::async(std::launch::async, &IRecycler::Run, recycler.get());
+
+            auto tokenManager = Factories::CreateTokenManager();
+            auto termTable = Factories::CreateTermTable();
+            termTable->Seal();
+
+            DocumentDataSchema docDataSchema;
+
+            const size_t blockSize =
+                GetMinimumBlockSize(docDataSchema, *termTable);
+
+            std::unique_ptr<TrackingSliceBufferAllocator>
+                trackingAllocator(new TrackingSliceBufferAllocator(blockSize));
+
+            Shard shard(*recycler, *tokenManager, *termTable, docDataSchema, *trackingAllocator, blockSize);
+
+            tokenManager->Shutdown();
+            recycler->Shutdown();
+            background.wait();
+        }
     //     const size_t c_blockAllocatorBlockCount = 10;
 
     //     void TestSliceBuffers(Shard const & shard, std::vector<Slice*> const & allocatedSlices)
@@ -279,5 +297,5 @@ namespace BitFunnel
     //         recycler->Shutdown();
     //         background.wait();
     //     }
-    // }
+    }
 }
