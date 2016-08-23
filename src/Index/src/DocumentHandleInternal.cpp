@@ -73,22 +73,19 @@ namespace BitFunnel
 
     void DocumentHandle::AssertFact(FactHandle fact, bool value)
     {
-        m_slice->GetShard().AssertFact(fact,
-                                       value,
-                                       m_index,
-                                       m_slice->GetSliceBuffer());
+        m_slice->AssertFact(fact, value, m_index);
     }
 
 
     void DocumentHandle::AddPosting(Term const & term)
     {
-        m_slice->GetShard().AddPosting(term, m_index, m_slice->GetSliceBuffer());
+        m_slice->AddPosting(term, m_index);
     }
 
 
     void DocumentHandle::Expire()
     {
-        const RowId softDeletedRow = m_slice->GetShard().GetSoftDeletedRowId();
+        const RowId softDeletedRow = m_slice->GetSoftDeletedRowId();
 
         RowTableDescriptor const & rowTable = m_slice->GetRowTable(softDeletedRow.GetRank());
         rowTable.ClearBit(m_slice->GetSliceBuffer(), softDeletedRow.GetIndex(), m_index);
@@ -113,12 +110,11 @@ namespace BitFunnel
 
     bool DocumentHandle::GetBit(RowId row) const
     {
-        auto bit = 
-            m_slice->GetShard().GetRowTable(
-                row.GetRank()).GetBit(
-                    m_slice->GetSliceBuffer(),
-                    row.GetIndex(),
-                    m_index);
+        auto bit =
+            m_slice->GetRowTable(row.GetRank()).
+                GetBit(m_slice->GetSliceBuffer(),
+                       row.GetIndex(),
+                       m_index);
 
         return bit == 1ull;
     }
@@ -166,13 +162,14 @@ namespace BitFunnel
     void DocumentHandleInternal::Activate()
     {
         const RowId softDeletedRowId =
-            m_slice->GetShard().GetSoftDeletedRowId();
+            m_slice->GetSoftDeletedRowId();
         RowTableDescriptor const & rowTable =
             m_slice->GetRowTable(softDeletedRowId.GetRank());
         rowTable.SetBit(m_slice->GetSliceBuffer(),
                         softDeletedRowId.GetIndex(),
                         m_index);
 
-        m_slice->GetShard().TemporaryRecordDocument();
+        // TODO: add back statistics.
+        // m_slice->GetShard().TemporaryRecordDocument();
     }
 }

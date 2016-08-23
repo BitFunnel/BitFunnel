@@ -20,22 +20,70 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/RowId.h"
+#include "BitFunnel/RowIdSequence.h"
+#include "DocTableDescriptor.h"
+#include "ISliceOwner.h"
 #include "LoggerInterfaces/Logging.h"
-#include "Shard.h"
+#include "RowTableDescriptor.h"
 #include "Slice.h"
 
 
 namespace BitFunnel
 {
-    Slice::Slice(Shard& shard)
-        : m_shard(shard),
+    // TODO: where should this function live?
+    // Extracts a RowId used to mark documents as active/soft-deleted.
+    static RowId RowIdForDeletedDocument(ITermTable2 const & termTable)
+    {
+        RowIdSequence rows(termTable.GetSoftDeletedTerm(), termTable);
+
+        auto it = rows.begin();
+        if (it == rows.end())
+        {
+            RecoverableError error("RowIdForDeletedDocument: expected at least one row.");
+            throw error;
+        }
+        const RowId rowId = *it;
+
+        if (rowId.GetRank() != 0)
+        {
+            RecoverableError error("RowIdForDeletedDocument: soft deleted row must be rank 0..");
+            throw error;
+        }
+
+        ++it;
+        if (it != rows.end())
+        {
+            RecoverableError error("RowIdForDeletedDocument: expected no more than one row.");
+            throw error;
+
+        }
+
+        return rowId;
+    }
+
+
+    Slice::Slice(ISliceOwner& owner,
+                 ITermTable2 termTable,
+                 DocTableDescriptor& docTable,
+                 std::vector<RowTableDescriptor>& rowTables,
+                 size_t sliceBufferSize,
+                 DocIndex sliceCapacity,
+                 void* sliceBuffer)
+        : m_owner(owner),
+          m_termTable(termTable),
+          m_softDeletedRowId(RowIdForDeletedDocument(termTable)),
           m_temporaryNextDocIndex(0U),
-          m_capacity(shard.GetSliceCapacity()),
+          m_capacity(sliceCapacity),
           m_refCount(1),
-          m_buffer(shard.AllocateSliceBuffer()),
-          m_unallocatedCount(shard.GetSliceCapacity()),
+          m_buffer(sliceBuffer),
+          m_unallocatedCount(sliceCapacity),
           m_commitPendingCount(0),
-          m_expiredCount(0)
+          m_expiredCount(0),
+          m_docTable(docTable),
+          m_rowTables(rowTables),
+          m_sliceBufferSize(sliceBufferSize)
     {
         Initialize();
 
@@ -44,7 +92,7 @@ namespace BitFunnel
         GetDocTable().Initialize(m_buffer);
         for (Rank r = 0; r <= c_maxRankValue; ++r)
         {
-            GetRowTable(r).Initialize(m_buffer, m_shard.GetTermTable());
+            GetRowTable(r).Initialize(m_buffer, m_termTable);
         }
     }
 
@@ -54,7 +102,7 @@ namespace BitFunnel
         try
         {
             GetDocTable().Cleanup(m_buffer);
-            m_shard.ReleaseSliceBuffer(m_buffer);
+            GetOwner().ReleaseSliceBuffer(m_buffer);
         }
         catch (...)
         {
@@ -63,9 +111,86 @@ namespace BitFunnel
     }
 
 
-    Shard& Slice::GetShard() const
+    ptrdiff_t Slice::GetSlicePtrOffset() const
     {
-        return m_shard;
+        // A pointer to a Slice is placed in the end of the slice buffer.
+        return m_sliceBufferSize - sizeof(void*);
+    }
+
+
+    RowId Slice::GetSoftDeletedRowId() const
+    {
+        return m_softDeletedRowId;
+    }
+
+
+    ISliceOwner& Slice::GetOwner() const
+    {
+        return m_owner;
+    }
+
+
+    void Slice::AddPosting(Term const & term, DocIndex index)
+    {
+        void* sliceBuffer = GetSliceBuffer();
+
+        // TODO: enable statistics collection.
+        // if (m_docFrequencyTableBuilder.get() != nullptr)
+        // {
+        //     std::lock_guard<std::mutex> lock(m_temporaryFrequencyTableMutex);
+        //     m_docFrequencyTableBuilder->OnTerm(term);
+        // }
+
+        RowIdSequence rows(term, m_termTable);
+
+        for (auto const row : rows)
+        {
+            m_rowTables[row.GetRank()].SetBit(sliceBuffer,
+                                              row.GetIndex(),
+                                              index);
+        }
+    }
+
+
+    void Slice::AssertFact(FactHandle fact, bool value, DocIndex index)
+    {
+        void* sliceBuffer = GetSliceBuffer();
+
+        Term term(fact, 0u, 0u, 1u);
+        RowIdSequence rows(term, m_termTable);
+        auto it = rows.begin();
+
+        if (it == rows.end())
+        {
+            RecoverableError error("Shard::AssertFact: expected at least one row.");
+            throw error;
+        }
+
+        const RowId row = *it;
+
+        ++it;
+        if (it != rows.end())
+        {
+            RecoverableError error("Shard::AssertFact: expected no more than one row.");
+            throw error;
+
+        }
+
+        RowTableDescriptor const & rowTable =
+            m_rowTables[row.GetRank()];
+
+        if (value)
+        {
+            rowTable.SetBit(sliceBuffer,
+                            row.GetIndex(),
+                            index);
+        }
+        else
+        {
+            rowTable.ClearBit(sliceBuffer,
+                              row.GetIndex(),
+                              index);
+        }
     }
 
 
@@ -87,7 +212,7 @@ namespace BitFunnel
         const unsigned newRefCount = --(slice->m_refCount);
         if (newRefCount == 0)
         {
-            slice->GetShard().RecycleSlice(*slice);
+            slice->GetOwner().RecycleSlice(*slice);
         }
     }
 
@@ -110,13 +235,13 @@ namespace BitFunnel
 
     DocTableDescriptor const & Slice::GetDocTable() const
     {
-        return m_shard.GetDocTable();
+        return m_docTable;
     }
 
 
     RowTableDescriptor const & Slice::GetRowTable(Rank rank) const
     {
-        return m_shard.GetRowTable(rank);
+        return m_rowTables.at(rank);
     }
 
 
@@ -153,7 +278,7 @@ namespace BitFunnel
     void Slice::Initialize()
     {
         // Place a pointer to a Slice in the last bytes of the SliceBuffer.
-        Slice*& slicePtr = GetSlicePointer(m_buffer, m_shard.GetSlicePtrOffset());
+        Slice*& slicePtr = GetSlicePointer(m_buffer, GetSlicePtrOffset());
         slicePtr = this;
     }
 

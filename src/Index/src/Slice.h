@@ -26,16 +26,20 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <mutex>
+#include <vector>
 
-#include "BitFunnel/NonCopyable.h"      // Inherits from NonCopyable.
-#include "BitFunnel/BitFunnelTypes.h"   // for DocIndex, Rank.
+#include "BitFunnel/BitFunnelTypes.h"  // For DocIndex, Rank.
+#include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
+#include "BitFunnel/NonCopyable.h"     // Inherits from NonCopyable.
+#include "BitFunnel/RowId.h"  // For RowId.
+#include "ISliceOwner.h"
 
 
 namespace BitFunnel
 {
     class DocTableDescriptor;
+    class ITermTable2;
     class RowTableDescriptor;
-    class Shard;
 
     //*************************************************************************
     //
@@ -128,7 +132,13 @@ namespace BitFunnel
         // Creates a slice that belogs to a given Shard.
         // Allocates a slice buffer using the allocator from the Shard.
         // Stores pointer to the buffer in m_sliceBuffer.
-        Slice(Shard& shard);
+        Slice(ISliceOwner& shard,
+              ITermTable2 termTable,
+              DocTableDescriptor& docTable,
+              std::vector<RowTableDescriptor>& rowTables,
+              size_t sliceBufferSize,
+              DocIndex sliceCapacity,
+              void* sliceBuffer);
 
         // Creates a slice from its serialized representation from an input
         // stream. Verifies that the Slice is compatible with the one in the
@@ -139,17 +149,25 @@ namespace BitFunnel
 
         // Releases all heap-allocated data blobs, returns the slice buffer
         // back to its allocator and destroys the Slice.
-        ~Slice();
+        virtual ~Slice();
+
+        void AddPosting(Term const & term, DocIndex index);
+        void AssertFact(FactHandle fact, bool value, DocIndex index);
 
         // Returns the slice buffer associated with this Slice. Slice buffer
         // is allocated by the Slice using ISliceBufferAllocator from its
         // parent Shard.
         void* GetSliceBuffer() const;
 
-        // Returns the shard which owns this slice.
-        // DESIGN NOTE: Shard is required to get access to shared objects at either
-        // a Shard level or Index level (e.g. Recycler, backup system etc.)
-        Shard& GetShard() const;
+        // Returns the offset in the slice buffer where a pointer to the Slice
+        // is stored.
+        virtual ptrdiff_t GetSlicePtrOffset() const;
+
+        // Returns the RowId which corresponds to a row used to mark documents
+        // as soft-deleted.
+        RowId GetSoftDeletedRowId() const;
+
+        ISliceOwner& GetOwner() const;
 
         // Returns the RowTable or DocTable descriptors from the parent Shard.
         DocTableDescriptor const & GetDocTable() const;
@@ -237,13 +255,26 @@ namespace BitFunnel
         // Returns a reference to the Slice pointer which is placed inside a sliceBuffer.
         static Slice*& GetSlicePointer(void* sliceBuffer, ptrdiff_t slicePtrOffset);
 
-        // Shard which owns this slice.
-        Shard& m_shard;
+
+        // Owner of the slice. In production, this is expected to be a Shard,
+        // but it can be anything that has a method that which allows us to call
+        // RecycleSlice.
+        ISliceOwner& m_owner;
+
+        // TermTable for this shard.
+        ITermTable2 const & m_termTable;
+
+        // Row which is used to mark documents as soft deleted.  The value of 0
+        // means the document in this column is soft deleted and excluded from
+        // matching. Typically this is a private rank 0 row. During the
+        // AddDocument workflow, the bit in this row is set to 1 as the last
+        // step and this effectively makes the document "serving".
+        const RowId m_softDeletedRowId;
 
         std::atomic<DocIndex> m_temporaryNextDocIndex;
 
         // Capacity of the slice.
-        const size_t m_capacity;
+        const DocIndex m_capacity;
 
         // Lock protecting operations on DocIndex members below to guarantee
         // atomic state changes that depend on these values.
@@ -281,5 +312,14 @@ namespace BitFunnel
         // The number of DocIndex'es that have been expired from the slice.
         // When this value reaches m_capacity, the slice can be recycled.
         std::atomic<size_t> m_expiredCount;
+
+        // Things held by Shard that we're passing references to in order to
+        // avoid holding a reference to an entire Shard: m_rowTables,
+        // m_docTable. It's not clear that this reduction in coupling is "worth
+        // it".
+        DocTableDescriptor const & m_docTable;
+        std::vector<RowTableDescriptor> const & m_rowTables;
+
+        const size_t m_sliceBufferSize;
     };
 }

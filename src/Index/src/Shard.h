@@ -30,6 +30,7 @@
 
 #include "BitFunnel/NonCopyable.h"          // Base class.
 #include "BitFunnel/Term.h"
+#include "ISliceOwner.h"
 #include "DocTableDescriptor.h"              // Required for embedded std::unique_ptr.
 #include "DocumentFrequencyTableBuilder.h"   // std::unique_ptr to this.
 #include "DocumentHandleInternal.h"          // Return value.
@@ -61,7 +62,7 @@ namespace BitFunnel
     // Thread safety: all public methods are thread safe.
     //
     //*************************************************************************
-    class Shard : private NonCopyable
+    class Shard : private NonCopyable, public ISliceOwner
     {
     public:
         // Constructs an empty Shard with no slices. sliceBufferSize must be
@@ -75,9 +76,6 @@ namespace BitFunnel
               size_t sliceBufferSize);
 
         virtual ~Shard();
-
-        void AddPosting(Term const & term, DocIndex index, void* sliceBuffer);
-        void AssertFact(FactHandle fact, bool value, DocIndex index, void* sliceBuffer);
 
         void TemporaryRecordDocument();
         void TemporaryWriteDocumentFrequencyTable(std::ostream& out,
@@ -104,10 +102,6 @@ namespace BitFunnel
 
         // Returns the offset of the row in the slice buffer in a shard.
         virtual ptrdiff_t GetRowOffset(RowId rowId) const;
-
-        // Returns the offset in the slice buffer where a pointer to the Slice
-        // is stored. This is the same offset for all slices in the Shard.
-        virtual ptrdiff_t GetSlicePtrOffset() const;
 
         //
         // Shard exclusive members.
@@ -158,10 +152,6 @@ namespace BitFunnel
         // Descriptor for RowTables and DocTable.
         DocTableDescriptor const & GetDocTable() const;
         RowTableDescriptor const & GetRowTable(Rank) const;
-
-        // Returns the RowId which corresponds to a row used to mark documents
-        // as soft-deleted.
-        RowId GetSoftDeletedRowId() const;
 
         // Allocates memory for the slice buffer. The buffer has the size of
         // m_sliceBufferSize.
@@ -224,14 +214,6 @@ namespace BitFunnel
 
         // Allocator that provides blocks of memory for Slice buffers.
         ISliceBufferAllocator& m_sliceBufferAllocator;
-
-        // Row which is used to mark documents as soft deleted.  The value of 0
-        // means the document in this column is soft deleted and excluded from
-        // matching. Typically this is a private rank 0 row. During the
-        // AddDocument workflow, the bit in this row is set to 1 as the last
-        // step and this effectively makes the document "serving".
-        const RowId m_softDeletedRowId;
-
 
         // Lock protecting operations on the list of slices. Protects the
         // AllocateDocument method.

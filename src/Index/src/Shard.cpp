@@ -37,37 +37,6 @@
 
 namespace BitFunnel
 {
-    // Extracts a RowId used to mark documents as active/soft-deleted.
-    static RowId RowIdForDeletedDocument(ITermTable2 const & termTable)
-    {
-        RowIdSequence rows(termTable.GetSoftDeletedTerm(), termTable);
-
-        auto it = rows.begin();
-        if (it == rows.end())
-        {
-            RecoverableError error("RowIdForDeletedDocument: expected at least one row.");
-            throw error;
-        }
-        const RowId rowId = *it;
-
-        if (rowId.GetRank() != 0)
-        {
-            RecoverableError error("RowIdForDeletedDocument: soft deleted row must be rank 0..");
-            throw error;
-        }
-
-        ++it;
-        if (it != rows.end())
-        {
-            RecoverableError error("RowIdForDeletedDocument: expected no more than one row.");
-            throw error;
-
-        }
-
-        return rowId;
-    }
-
-
     Shard::Shard(IRecycler& recycler,
                  ITokenManager& tokenManager,
                  ITermTable2 const & termTable,
@@ -78,7 +47,6 @@ namespace BitFunnel
           m_tokenManager(tokenManager),
           m_termTable(termTable),
           m_sliceBufferAllocator(sliceBufferAllocator),
-          m_softDeletedRowId(RowIdForDeletedDocument(termTable)),
           m_activeSlice(nullptr),
           m_sliceBuffers(new std::vector<void*>()),
           m_sliceCapacity(GetCapacityForByteSize(sliceBufferSize,
@@ -128,7 +96,13 @@ namespace BitFunnel
     // Must be called with m_slicesLock held.
     void Shard::CreateNewActiveSlice()
     {
-        Slice* newSlice = new Slice(*this);
+        Slice* newSlice = new Slice(*this,
+                                    m_termTable,
+                                    *m_docTable,
+                                    m_rowTables,
+                                    m_sliceBufferSize,
+                                    GetSliceCapacity(),
+                                    AllocateSliceBuffer());
 
         std::vector<void*>* oldSlices = m_sliceBuffers;
         std::vector<void*>* const newSlices = new std::vector<void*>(*m_sliceBuffers);
@@ -205,19 +179,6 @@ namespace BitFunnel
     DocIndex Shard::GetSliceCapacity() const
     {
         return  m_sliceCapacity;
-    }
-
-
-    ptrdiff_t Shard::GetSlicePtrOffset() const
-    {
-        // A pointer to a Slice is placed in the end of the slice buffer.
-        return m_sliceBufferSize - sizeof(void*);
-    }
-
-
-    RowId Shard::GetSoftDeletedRowId() const
-    {
-        return m_softDeletedRowId;
     }
 
 
@@ -333,68 +294,6 @@ namespace BitFunnel
     void Shard::ReleaseSliceBuffer(void* sliceBuffer)
     {
         m_sliceBufferAllocator.Release(sliceBuffer);
-    }
-
-
-    void Shard::AddPosting(Term const & term,
-                           DocIndex index,
-                           void* sliceBuffer)
-    {
-        if (m_docFrequencyTableBuilder.get() != nullptr)
-        {
-            std::lock_guard<std::mutex> lock(m_temporaryFrequencyTableMutex);
-            m_docFrequencyTableBuilder->OnTerm(term);
-        }
-
-
-        RowIdSequence rows(term, m_termTable);
-
-        for (auto const row : rows)
-        {
-            m_rowTables[row.GetRank()].SetBit(sliceBuffer,
-                                              row.GetIndex(),
-                                              index);
-        }
-    }
-
-
-    void Shard::AssertFact(FactHandle fact, bool value, DocIndex index, void* sliceBuffer)
-    {
-        Term term(fact, 0u, 0u, 1u);
-        RowIdSequence rows(term, m_termTable);
-        auto it = rows.begin();
-
-        if (it == rows.end())
-        {
-            RecoverableError error("Shard::AssertFact: expected at least one row.");
-            throw error;
-        }
-
-        const RowId row = *it;
-
-        ++it;
-        if (it != rows.end())
-        {
-            RecoverableError error("Shard::AssertFact: expected no more than one row.");
-            throw error;
-
-        }
-
-        RowTableDescriptor const & rowTable =
-            m_rowTables[row.GetRank()];
-
-        if (value)
-        {
-            rowTable.SetBit(sliceBuffer,
-                            row.GetIndex(),
-                            index);
-        }
-        else
-        {
-            rowTable.ClearBit(sliceBuffer,
-                              row.GetIndex(),
-                              index);
-        }
     }
 
 

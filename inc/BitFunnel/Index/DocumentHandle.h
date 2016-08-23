@@ -43,12 +43,24 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    // Represents a handle to the document that is being ingested. Implementators
-    // of IDocument will use this class to set postings, assert facts, or get
-    // access to the variable size or fixed size document blobs in DocTable.
+    // Represents a handle to the document that is being
+    // ingested. Implementators of IDocument will use this class to set
+    // postings, assert facts, or get access to the variable size or fixed size
+    // document blobs in DocTable.
     //
-    // DESIGN NOTE: This class is meant to be passed around by copy rather
-    // than a reference.
+    // DESIGN NOTE: This class is meant to be passed around by copy rather than
+    // a reference. That is, it should be a value type. In particular, this
+    // means that although logic for methods like AddPosting could be
+    // implemented here, since we don't want to store references to (for
+    // example) the TermTable, we'd have to reach up to Slice for the TermTable
+    // anyway, so we all of the "logic" should live in Slice and not here.
+    //
+    // The reason for the above is that the matcher produces DocumentHandles, so
+    // we want DocumentHandles to be trivially constructable and copyable.
+    //
+    // The other side of the coin is that DocumentHandle is the public's
+    // interaction with the document, so we want to have the methods that the
+    // public will want to use.
     //
     //*************************************************************************
     class DocumentHandle
@@ -117,6 +129,10 @@ namespace BitFunnel
         DocumentHandle(Slice* slice, DocIndex index);
 
         // Slice where the document resides.
+        //
+        // TODO: this should be a void*. The reason is that we can't easily get
+        // a Slice* from the matcher, but we can easily get a void*, and then we
+        // can easily get from the void* to a Slice*.
         Slice* m_slice;
 
         // Column in the slice where the document resides.
