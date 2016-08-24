@@ -5,7 +5,7 @@
 #include "LoggerInterfaces/Logging.h"
 #include "ObjectFormatter.h"
 #include "PlanNodeUtilities.h"
-#include "BitFunnel/RowMatchNodes.h"
+#include "BitFunnel/RowMatchNode.h"
 
 
 namespace BitFunnel

@@ -2,9 +2,9 @@
 
 set(CPPFILES
     AbstractRow.cpp
-    CompileNodes.cpp
+    CompileNode.cpp
     MatchTreeRewriter.cpp
-    RowMatchNodes.cpp
+    RowMatchNode.cpp
     RowPlan.cpp
 )
 
@@ -15,7 +15,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
-    CompileNodes.h
+    CompileNode.h
     MatchTreeRewriter.h
 )
 

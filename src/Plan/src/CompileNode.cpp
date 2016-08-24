@@ -1,7 +1,7 @@
 #include <cstring>
 
 #include "BitFunnel/AbstractRow.h"
-#include "CompileNodes.h"
+#include "CompileNode.h"
 #include "CompileNodeUtilities.h"
 #include "BitFunnel/ICodeGenerator.h"
 #include "BitFunnel/IObjectFormatter.h"

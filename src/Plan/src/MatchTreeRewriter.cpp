@@ -2,7 +2,7 @@
 #include <stddef.h>     // For nullptr.
 
 #include "BitFunnel/Allocators/IAllocator.h"
-#include "BitFunnel/RowMatchNodes.h"
+#include "BitFunnel/RowMatchNode.h"
 #include "LoggerInterfaces/Logging.h"
 #include "MatchTreeRewriter.h"
 
