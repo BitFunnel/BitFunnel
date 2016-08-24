@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "BitFunnel/IObjectFormatter.h"
 #include "BitFunnel/IObjectParser.h"
 #include "BitFunnel/RowMatchNodes.h"
@@ -47,14 +49,14 @@ namespace BitFunnel
         }
         else
         {
-            // TODO: Converting it to int for now. Check later if this can cause trouble
             for (size_t i = 0;
                  i < sizeof(c_typenames) / sizeof(const char*);
                  ++i)
             {
                 if (strcmp(name, c_typenames[i]) == 0)
                 {
-                    return i;
+                    // TODO: fix sizes so we don't need to cast.
+                    return static_cast<int>(i);
                 }
             }
         }

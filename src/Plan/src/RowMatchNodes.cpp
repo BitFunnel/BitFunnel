@@ -31,19 +31,14 @@ namespace BitFunnel
         {
         case AndMatch:
             return &And::Parse(parser);
-            break;
         case ReportMatch:
             return &ParseNode<Report>(parser);
-            break;
         case RowMatch:
             return &ParseNode<Row>(parser);
-            break;
         case NotMatch:
             return &ParseNode<Not>(parser);
-            break;
         case OrMatch:
             return &Or::Parse(parser);
-            break;
         case Null:
             return nullptr;
         default:

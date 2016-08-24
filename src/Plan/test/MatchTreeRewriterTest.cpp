@@ -3,7 +3,7 @@
 #include "Allocator.h"
 #include "BitFunnel/RowMatchNodes.h"
 #include "MatchTreeRewriter.h"
-#include "SameExceptForWhiteSpace.h"
+#include "SameExceptForWhitespace.h"
 #include "TextObjectFormatter.h"
 #include "TextObjectParser.h"
 
@@ -980,7 +980,7 @@ namespace BitFunnel
             TextObjectFormatter formatter(output);
             converted.Format(formatter);
 
-            EXPECT_TRUE(SameExceptForWhiteSpace(output.str().c_str(), testCase.m_output));
+            EXPECT_TRUE(SameExceptForWhitespace(output.str().c_str(), testCase.m_output));
         }
 
 

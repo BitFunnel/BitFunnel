@@ -1,6 +1,6 @@
 #include <ctype.h>      // For isspace().
 
-#include "SameExceptForWhiteSpace.h"
+#include "SameExceptForWhitespace.h"
 
 
 namespace BitFunnel
@@ -14,7 +14,7 @@ namespace BitFunnel
     }
 
 
-    bool SameExceptForWhiteSpace(const char* a, const char* b)
+    bool SameExceptForWhitespace(const char* a, const char* b)
     {
         while (*a != 0 && *b != 0)
         {
