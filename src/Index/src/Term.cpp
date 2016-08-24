@@ -123,7 +123,7 @@ namespace BitFunnel
         LogAssertB(parser.OpenPrimitiveItem(), "");
         unsigned gramSize = parser.ParseUInt();
         LogAssertB(gramSize <= c_maxGramSize, "");
-        m_gramSize = gramSize;
+        m_gramSize = static_cast<uint8_t>(gramSize);
 
         LogAssertB(parser.OpenPrimitiveItem(), "");
         unsigned idfSum = parser.ParseUInt();
