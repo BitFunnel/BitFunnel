@@ -3,6 +3,9 @@
 set(CPPFILES
     AbstractRow.cpp
     CompileNodes.cpp
+    MatchTreeRewriter.cpp
+    RowMatchNodes.cpp
+    RowPlan.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -13,6 +16,7 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     CompileNodes.h
+    MatchTreeRewriter.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
