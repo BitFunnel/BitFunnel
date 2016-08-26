@@ -87,7 +87,7 @@ namespace CmdLine
 
         for (int i = 0; i < argc; ++i)
         {
-            free(argv[i]);
+            delete [] argv[i];
         }
         delete [] argv;
     }
