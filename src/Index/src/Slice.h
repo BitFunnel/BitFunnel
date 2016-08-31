@@ -133,7 +133,7 @@ namespace BitFunnel
         // Allocates a slice buffer using the allocator from the Shard.
         // Stores pointer to the buffer in m_sliceBuffer.
         Slice(ISliceOwner& shard,
-              ITermTable2 termTable,
+              ITermTable2 const & termTable,
               DocTableDescriptor& docTable,
               std::vector<RowTableDescriptor>& rowTables,
               size_t sliceBufferSize,

@@ -118,7 +118,8 @@ namespace BitFunnel
         LogAssertB(parser.OpenPrimitiveItem(), "");
         std::string classificationName;
         parser.ParseToken(classificationName);
-        m_stream = StringToClassification(classificationName);
+        // TODO: Rework this code to no longer use classification names.
+        m_stream = static_cast<uint8_t>(StringToClassification(classificationName));
 
         LogAssertB(parser.OpenPrimitiveItem(), "");
         unsigned gramSize = parser.ParseUInt();

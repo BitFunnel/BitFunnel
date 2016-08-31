@@ -62,10 +62,10 @@ namespace BitFunnel
 
         return rowId;
     }
-
+     
 
     Slice::Slice(ISliceOwner& owner,
-                 ITermTable2 termTable,
+                 ITermTable2 const & termTable,
                  DocTableDescriptor& docTable,
                  std::vector<RowTableDescriptor>& rowTables,
                  size_t sliceBufferSize,
