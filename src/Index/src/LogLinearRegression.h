@@ -20,23 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 #pragma once
-
-#include <iosfwd>                   // std::ostream parameter.
-
-#include "BitFunnel/IInterface.h"   // Base class.
 
 
 namespace BitFunnel
 {
-    class ITermTableBuilder : public IInterface
+    class IDocumentFrequencyTable;
+
+    class LogLinearRegression
     {
     public:
-        virtual void Print(std::ostream& output) const = 0;
+        LogLinearRegression();
 
-        virtual void ComputeRegression(std::ostream& out,
-                                       IDocumentFrequencyTable const & dft,
-                                       double percentage) const = 0;
+        void AddPoint(double x, double y);
+
+        void FitCurve();
+
+        void FitCurve2(IDocumentFrequencyTable const & dft);
+
+        double Value(double x);
+
+    private:
+        double m_count;
+        double m_sumX;
+        double m_sumY;
+        double m_sumXX;
+        double m_sumXY;
+
+        double m_slope;
+        double m_intercept;
     };
 }

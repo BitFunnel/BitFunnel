@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 
+#include <fstream>
 #include <iostream>
 
 #include "BitFunnel/BitFunnelTypes.h"
@@ -72,6 +73,13 @@ namespace BitFunnel
         std::cout << "Writing TermTable files." << std::endl;
 
         termTable->Write(*fileManager->TermTable(shard).OpenForWrite());
+
+        std::cout << "Computing regression" << std::endl;
+
+        {
+            std::ofstream out("c:\\temp\\WikipediaDFT2\\fit.csv");
+            termTableBuilder->ComputeRegression(out, *terms, 1.0);
+        }
 
         std::cout << "Done." << std::endl;
     }

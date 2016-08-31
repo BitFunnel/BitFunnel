@@ -33,6 +33,7 @@
 #include "BitFunnel/ITermTreatment.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "DocumentFrequencyTable.h"
+#include "LogLinearRegression.h"
 #include "TermTableBuilder.h"
 
 
@@ -196,6 +197,42 @@ namespace BitFunnel
         for (auto&& assigner : m_rowAssigners)
         {
             assigner->Print(output);
+        }
+    }
+
+
+    void TermTableBuilder::ComputeRegression(std::ostream & out,
+                                             IDocumentFrequencyTable const & dft,
+                                             double percentage) const
+    {
+        LogLinearRegression regression;
+
+        double x = 1.0;
+        for (auto entry : dft)
+        {
+            regression.AddPoint(x, entry.GetFrequency());
+            ++x;
+
+            // Only fit curve to the first percentage data points.
+            // This allows verification of fit with remaining points.
+            if (x > dft.size() * percentage)
+            {
+                break;
+            }
+        }
+
+//        regression.FitCurve();
+        regression.FitCurve2(dft);
+
+        x = 1.0;
+        for (auto entry : dft)
+        {
+            out << x
+                << "," << entry.GetFrequency()
+                << "," << regression.Value(x)
+                << std::endl;
+
+            ++x;
         }
     }
 

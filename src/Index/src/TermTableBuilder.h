@@ -55,6 +55,10 @@ namespace BitFunnel
 
         virtual void Print(std::ostream& output) const override;
 
+        virtual void ComputeRegression(std::ostream& out,
+                                       IDocumentFrequencyTable const & dft,
+                                       double percentage) const override;
+
         // TODO: Come up with a more principled solution.
         // When building a TermTable based on a small IDocumentFrequencyTable,
         // the builder may run into a situation where it encounters no adhoc

@@ -25,6 +25,7 @@
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/Helpers.h"
+#include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
 #include "BitFunnel/Row.h"
@@ -33,6 +34,29 @@
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // MockIdfTable
+    //
+    // Created by SimpleIndex when in statistics gathering mode. In this mode,
+    // there is no real IIndexedIdfTable to use during Term construction.
+    //
+    //*************************************************************************
+    class MockIdfTable : public IIndexedIdfTable
+    {
+    public:
+        virtual Term::IdfX10 GetIdf(Term::Hash) const override
+        {
+            return 0;
+        }
+    };
+
+
+    //*************************************************************************
+    //
+    // MockIdfTable
+    //
+    //*************************************************************************
     std::unique_ptr<ISimpleIndex>
         Factories::CreateSimpleIndex(char const * directory,
                                      size_t gramSize,
@@ -91,10 +115,15 @@ namespace BitFunnel
         }
 
         // Load the IndexedIdfTable
+        if (!forStatistics)
         {
             auto input = m_fileManager->IndexedIdfTable(0).OpenForRead();
             Term::IdfX10 defaultIdf = 60;   // TODO: use proper value here.
             m_idfTable = Factories::CreateIndexedIdfTable(*input, defaultIdf);
+        }
+        else
+        {
+            m_idfTable = std::unique_ptr<IIndexedIdfTable>(new MockIdfTable());
         }
 
         m_configuration =
@@ -106,7 +135,7 @@ namespace BitFunnel
             GetMinimumBlockSize(*m_schema, m_termTables->GetTermTable(tempId));
         std::cout << "Blocksize: " << blockSize << std::endl;
 
-        const size_t initialBlockCount = 16;
+        const size_t initialBlockCount = 500; // 16;
         m_sliceAllocator = Factories::CreateSliceBufferAllocator(blockSize,
                                                                  initialBlockCount);
 

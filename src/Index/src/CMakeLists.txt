@@ -19,6 +19,7 @@ set(CPPFILES
     IndexedIdfTable.cpp
     IngestChunks.cpp
     Ingestor.cpp
+    LogLinearRegression.cpp
     PackedRowIdSequence.cpp
     PackedTermInfo.cpp
     Recycler.cpp
@@ -64,6 +65,7 @@ set(PRIVATE_HFILES
     IndexedIdfTable.h
     Ingestor.h
     IRecyclable.h
+    LogLinearRegression.cpp
     Recycler.h
     RowTableDescriptor.h
     Shard.h
