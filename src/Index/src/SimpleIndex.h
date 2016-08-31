@@ -49,6 +49,8 @@ namespace BitFunnel
                     size_t gramSize,
                     bool generateTermtoText);
 
+        virtual ~SimpleIndex();
+
         virtual void StartIndex(bool forStatistics) override;
         virtual void StopIndex() override;
 

@@ -66,7 +66,7 @@ namespace BitFunnel
 
 
         // TODO: Add try/catch around file operations.
-        std::cout 
+        std::cout
             << "Loading chunk list file '" << chunkListFileName << "'" << std::endl
             << "Temp dir: '" << intermediateDirectory << "'"<< std::endl;
 
@@ -104,8 +104,6 @@ namespace BitFunnel
             }
             ingestor.WriteStatistics(index->GetFileManager(), termToText);
         }
-
-        index->StopIndex();
     }
 }
 

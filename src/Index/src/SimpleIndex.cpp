@@ -55,6 +55,12 @@ namespace BitFunnel
     }
 
 
+    SimpleIndex::~SimpleIndex()
+    {
+        StopIndex();
+    }
+
+
     void SimpleIndex::StartIndex(bool forStatistics)
     {
         char const * directory = m_directory.c_str();
