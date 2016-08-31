@@ -98,9 +98,25 @@ namespace BitFunnel
 
         // Load the IndexedIdfTable
         {
-            auto input = m_fileManager->IndexedIdfTable(0).OpenForRead();
-            Term::IdfX10 defaultIdf = 60;   // TODO: use proper value here.
-            m_idfTable = Factories::CreateIndexedIdfTable(*input, defaultIdf);
+            if (forStatistics)
+            {
+                // When we're building statistics we don't yet have an
+                // IndexedIdfTable. Just use an empty one for now. This means
+                // that terms that are created will all be marked with the
+                // default IDF value. This is not a problem since the term
+                // IDF values are not examined by the StatisticsBuild. They
+                // exist primarily for the query pipeline where the TermTable
+                // needs terms anotated with IDF values to handle the case
+                // where the terms have an implicit, or adhoc mapping to
+                // RowIds.
+                m_idfTable = Factories::CreateIndexedIdfTable();
+            }
+            else
+            {
+                auto input = m_fileManager->IndexedIdfTable(0).OpenForRead();
+                Term::IdfX10 defaultIdf = 60;   // TODO: use proper value here.
+                m_idfTable = Factories::CreateIndexedIdfTable(*input, defaultIdf);
+            }
         }
 
         m_configuration =

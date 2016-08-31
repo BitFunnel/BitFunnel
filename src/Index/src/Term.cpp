@@ -104,6 +104,7 @@ namespace BitFunnel
         m_stream = static_cast<StreamId>(temp);
     }
 
+
     static char const * c_termPrimitiveName = "Term";
     Term::Term(IObjectParser& parser, bool parseParametersOnly)
     {
