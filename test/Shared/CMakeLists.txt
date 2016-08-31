@@ -5,7 +5,6 @@ set(CPPFILES
     EmptyTermTable.cpp
     FakeSliceOwner.cpp
     MockFileManager.cpp
-    MockTermTable.cpp
     SameExceptForWhitespace.cpp
 )
 
@@ -17,7 +16,6 @@ set(PUBLIC_HFILES
     EmptyTermTable.h
     FakeSliceOwner.h
     MockFileManager.h
-    MockTermTable.h
     SameExceptForWhitespace.h
 )
 

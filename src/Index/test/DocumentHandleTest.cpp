@@ -38,7 +38,6 @@
 #include "IndexUtils.h"
 #include "Ingestor.h"
 #include "MockFileManager.h"
-#include "MockTermTable.h"
 #include "EmptyTermTable.h"
 #include "Recycler.h"
 #include "Slice.h"

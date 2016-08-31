@@ -41,7 +41,6 @@
 #include "IndexUtils.h"
 #include "Ingestor.h"
 #include "MockFileManager.h"
-#include "MockTermTable.h"
 #include "Recycler.h"
 #include "BitFunnel/TermInfo.h"
 #include "BitFunnel/Term.h"
