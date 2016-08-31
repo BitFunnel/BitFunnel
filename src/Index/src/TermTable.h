@@ -105,7 +105,7 @@ namespace BitFunnel
         virtual PackedRowIdSequence GetRows(const Term& term) const override;
 
         // Getters for system defined terms.
-        virtual Term GetSoftDeletedTerm() const override;
+        virtual Term GetDocumentActiveTerm() const override;
         virtual Term GetMatchAllTerm() const override;
         virtual Term GetMatchNoneTerm() const override;
 

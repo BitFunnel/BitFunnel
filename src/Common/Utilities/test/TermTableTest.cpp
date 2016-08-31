@@ -248,7 +248,7 @@ namespace BitFunnel
                                           + sharedRowCount.At(DDRTier, 0);
 
             {
-                TermInfo termInfo(ITermTable::GetSoftDeletedTerm(), *termTable2);
+                TermInfo termInfo(ITermTable::GetDocumentActiveTerm(), *termTable2);
                 CheckFactRow(termInfo, rowCountDdr0);
             }
 

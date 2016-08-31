@@ -129,7 +129,7 @@ namespace BitFunnel
         virtual std::tuple<PackedTermInfo, TermKind> GetTermInfo(const Term& term) const = 0;
 
         // Creates a term which is used to mark documents as soft-deleted.
-        static Term GetSoftDeletedTerm();
+        static Term GetDocumentActiveTerm();
 
         // Creates a term which is used for padding in the row plan when there
         // are not sufficient or no rows at a particular rank. This term

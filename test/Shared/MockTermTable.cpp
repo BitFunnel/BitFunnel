@@ -50,7 +50,7 @@ namespace BitFunnel
 
     {
         // Automatically add system internal rows.
-        AddPrivateRowTerm(ITermTable::GetSoftDeletedTerm(), 0);
+        AddPrivateRowTerm(ITermTable::GetDocumentActiveTerm(), 0);
         AddPrivateRowTerm(ITermTable::GetMatchAllTerm(), 0);
         AddPrivateRowTerm(ITermTable::GetMatchNoneTerm(), 0);
     }

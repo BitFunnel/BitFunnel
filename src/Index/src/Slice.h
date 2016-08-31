@@ -165,7 +165,7 @@ namespace BitFunnel
 
         // Returns the RowId which corresponds to a row used to mark documents
         // as soft-deleted.
-        RowId GetSoftDeletedRowId() const;
+        RowId GetDocumentActiveRowId() const;
 
         ISliceOwner& GetOwner() const;
 
@@ -268,7 +268,7 @@ namespace BitFunnel
         // matching. Typically this is a private rank 0 row. During the
         // AddDocument workflow, the bit in this row is set to 1 as the last
         // step and this effectively makes the document "serving".
-        const RowId m_softDeletedRowId;
+        const RowId m_documentActiveRowId;
 
         std::atomic<DocIndex> m_temporaryNextDocIndex;
 

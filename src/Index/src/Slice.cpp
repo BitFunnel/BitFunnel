@@ -36,7 +36,7 @@ namespace BitFunnel
     // Extracts a RowId used to mark documents as active/soft-deleted.
     static RowId RowIdForDeletedDocument(ITermTable2 const & termTable)
     {
-        RowIdSequence rows(termTable.GetSoftDeletedTerm(), termTable);
+        RowIdSequence rows(termTable.GetDocumentActiveTerm(), termTable);
 
         auto it = rows.begin();
         if (it == rows.end())
@@ -73,7 +73,7 @@ namespace BitFunnel
                  void* sliceBuffer)
         : m_owner(owner),
           m_termTable(termTable),
-          m_softDeletedRowId(RowIdForDeletedDocument(termTable)),
+          m_documentActiveRowId(RowIdForDeletedDocument(termTable)),
           m_temporaryNextDocIndex(0U),
           m_capacity(sliceCapacity),
           m_refCount(1),
@@ -118,9 +118,9 @@ namespace BitFunnel
     }
 
 
-    RowId Slice::GetSoftDeletedRowId() const
+    RowId Slice::GetDocumentActiveRowId() const
     {
-        return m_softDeletedRowId;
+        return m_documentActiveRowId;
     }
 
 

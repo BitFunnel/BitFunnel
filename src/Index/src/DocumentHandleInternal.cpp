@@ -85,10 +85,10 @@ namespace BitFunnel
 
     void DocumentHandle::Expire()
     {
-        const RowId softDeletedRow = m_slice->GetSoftDeletedRowId();
+        const RowId documentActiveRow = m_slice->GetDocumentActiveRowId();
 
-        RowTableDescriptor const & rowTable = m_slice->GetRowTable(softDeletedRow.GetRank());
-        rowTable.ClearBit(m_slice->GetSliceBuffer(), softDeletedRow.GetIndex(), m_index);
+        RowTableDescriptor const & rowTable = m_slice->GetRowTable(documentActiveRow.GetRank());
+        rowTable.ClearBit(m_slice->GetSliceBuffer(), documentActiveRow.GetIndex(), m_index);
 
         const bool isSliceExpired = m_slice->ExpireDocument();
         if (isSliceExpired)
@@ -161,12 +161,12 @@ namespace BitFunnel
 
     void DocumentHandleInternal::Activate()
     {
-        const RowId softDeletedRowId =
-            m_slice->GetSoftDeletedRowId();
+        const RowId documentActiveRowId =
+            m_slice->GetDocumentActiveRowId();
         RowTableDescriptor const & rowTable =
-            m_slice->GetRowTable(softDeletedRowId.GetRank());
+            m_slice->GetRowTable(documentActiveRowId.GetRank());
         rowTable.SetBit(m_slice->GetSliceBuffer(),
-                        softDeletedRowId.GetIndex(),
+                        documentActiveRowId.GetIndex(),
                         m_index);
 
         // TODO: add back statistics.

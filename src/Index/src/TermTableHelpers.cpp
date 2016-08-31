@@ -58,10 +58,10 @@ namespace BitFunnel
     // TODO: figure out where these should go.
     //
     //*************************************************************************
-    Term ITermTable::GetSoftDeletedTerm()
+    Term ITermTable::GetDocumentActiveTerm()
     {
-        static Term softDeletedTerm(CreateSystemInternalTerm(0));
-        return softDeletedTerm;
+        static Term documentActiveTerm(CreateSystemInternalTerm(0));
+        return documentActiveTerm;
     }
 
 

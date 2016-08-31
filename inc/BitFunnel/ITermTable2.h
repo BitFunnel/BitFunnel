@@ -127,7 +127,7 @@ namespace BitFunnel
         virtual PackedRowIdSequence GetRows(const Term& term) const = 0;
 
         // Getters for system defined terms.
-        virtual Term GetSoftDeletedTerm() const = 0;
+        virtual Term GetDocumentActiveTerm() const = 0;
         virtual Term GetMatchAllTerm() const = 0;
         virtual Term GetMatchNoneTerm() const = 0;
 
@@ -136,7 +136,7 @@ namespace BitFunnel
         // conflict with system handles.
         enum SystemTerm
         {
-            SoftDeleted = 0,
+            DocumentActive = 0,
             MatchAll = 1,
             MatchNone = 2,
             Last = MatchNone,

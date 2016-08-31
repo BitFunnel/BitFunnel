@@ -158,7 +158,7 @@ namespace BitFunnel
     //     // documents.
     //     RowId RowIdForDeletedDocument(ITermTable const & termTable)
     //     {
-    //         TermInfo termInfo(ITermTable::GetSoftDeletedTerm(), termTable);
+    //         TermInfo termInfo(ITermTable::GetDocumentActiveTerm(), termTable);
 
     //         EXPECT_TRUE(termInfo.MoveNext());
     //         const RowId rowId = termInfo.Current();
@@ -242,13 +242,13 @@ namespace BitFunnel
 
 
     //     bool IsDocumentActive(DocumentHandleInternal const & handle,
-    //                           RowId softDeletedDocumentRow)
+    //                           RowId documentActiveDocumentRow)
     //     {
     //         const bool isBitSet = handle.GetSlice()->
-    //             GetRowTable(softDeletedDocumentRow.
+    //             GetRowTable(documentActiveDocumentRow.
     //                         GetRank()).
     //             GetBit(handle.GetSlice()->GetSliceBuffer(),
-    //                    softDeletedDocumentRow.GetIndex(),
+    //                    documentActiveDocumentRow.GetIndex(),
     //                    handle.GetIndex()) > 0;
     //         return isBitSet;
     //     }
@@ -298,7 +298,7 @@ namespace BitFunnel
 
     //         Shard& shard = ingestor->GetShard(0);
 
-    //         const RowId softDeletedDocumentRow = RowIdForDeletedDocument(*termTable);
+    //         const RowId documentActiveDocumentRow = RowIdForDeletedDocument(*termTable);
 
     //         for (DocIndex i = 0; i < c_sliceCapacity; ++i)
     //         {
@@ -306,7 +306,7 @@ namespace BitFunnel
 
     //             // Document is not active untill fully ingested and activated.
     //             // Activation is done by the owning Index.
-    //             EXPECT_FALSE(IsDocumentActive(handle, softDeletedDocumentRow));
+    //             EXPECT_FALSE(IsDocumentActive(handle, documentActiveDocumentRow));
 
     //             AddTermAndVerify(handle, "this");
     //             AddTermAndVerify(handle, "is");
@@ -316,10 +316,10 @@ namespace BitFunnel
     //             TestFact(handle, fact0);
 
     //             // Document is still not active.
-    //             EXPECT_FALSE(IsDocumentActive(handle, softDeletedDocumentRow));
+    //             EXPECT_FALSE(IsDocumentActive(handle, documentActiveDocumentRow));
 
     //             handle.GetSlice()->CommitDocument();
-    //             EXPECT_FALSE(IsDocumentActive(handle, softDeletedDocumentRow));
+    //             EXPECT_FALSE(IsDocumentActive(handle, documentActiveDocumentRow));
 
     //             // In order to verify that DocumentHandle::Expire clears the
     //             // soft-deleted bit, need to set this bit
@@ -327,15 +327,15 @@ namespace BitFunnel
     //             // done by the owning index, after all ingestion related logic
     //             // has completed - hence we need to manually set it here.
     //             handle.GetSlice()->
-    //                 GetRowTable(softDeletedDocumentRow.GetRank()).
+    //                 GetRowTable(documentActiveDocumentRow.GetRank()).
     //                 SetBit(handle.GetSlice()->GetSliceBuffer(),
-    //                        softDeletedDocumentRow.GetIndex(),
+    //                        documentActiveDocumentRow.GetIndex(),
     //                        handle.GetIndex());
-    //             EXPECT_TRUE(IsDocumentActive(handle, softDeletedDocumentRow));
+    //             EXPECT_TRUE(IsDocumentActive(handle, documentActiveDocumentRow));
 
     //             handle.Expire();
     //             EXPECT_FALSE(IsDocumentActive(handle,
-    //                                           softDeletedDocumentRow));
+    //                                           documentActiveDocumentRow));
     //         }
 
     //         // We need to wait at least until recycling is scheduled to avoid

@@ -328,9 +328,9 @@ namespace BitFunnel
 
             // Soft Deleted Term
             {
-                RowIdSequence rows(termTable.GetSoftDeletedTerm(), termTable);
+                RowIdSequence rows(termTable.GetDocumentActiveTerm(), termTable);
                 auto it = rows.begin();
-                EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable2::SystemTerm::SoftDeleted));
+                EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable2::SystemTerm::DocumentActive));
 
                 // Verify that iterator contains a single row. NOTE: Cannot use
                 // EXPECT_EQ with iterators.

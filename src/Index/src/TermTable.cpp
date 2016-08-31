@@ -72,7 +72,7 @@ namespace BitFunnel
 
         OpenTerm();
         AddRowId(RowId(shard, 0, m_explicitRowCounts[0]++));
-        CloseTerm(SystemTerm::SoftDeleted);
+        CloseTerm(SystemTerm::DocumentActive);
 
         OpenTerm();
         AddRowId(RowId(shard, 0, m_explicitRowCounts[0]++));
@@ -302,9 +302,9 @@ namespace BitFunnel
     }
 
 
-    Term TermTable::GetSoftDeletedTerm() const
+    Term TermTable::GetDocumentActiveTerm() const
     {
-        return CreateSystemTerm(SystemTerm::SoftDeleted);
+        return CreateSystemTerm(SystemTerm::DocumentActive);
     }
 
 
