@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <stddef.h>
+
 #include "BitFunnel/IInterface.h"
 
 namespace BitFunnel

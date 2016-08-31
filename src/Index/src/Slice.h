@@ -40,6 +40,7 @@ namespace BitFunnel
     class DocTableDescriptor;
     class ITermTable2;
     class RowTableDescriptor;
+    class Term;
 
     //*************************************************************************
     //

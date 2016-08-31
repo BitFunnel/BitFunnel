@@ -3,6 +3,7 @@
 set(CPPFILES
     IndexUtils.cpp
     EmptyTermTable.cpp
+    FakeSliceOwner.cpp
     MockFileManager.cpp
     MockTermTable.cpp
     SameExceptForWhitespace.cpp
@@ -14,6 +15,7 @@ set(PRIVATE_HFILES
 set(PUBLIC_HFILES
     IndexUtils.h
     EmptyTermTable.h
+    FakeSliceOwner.h
     MockFileManager.h
     MockTermTable.h
     SameExceptForWhitespace.h

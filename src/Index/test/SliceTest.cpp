@@ -51,6 +51,13 @@
 
 namespace BitFunnel
 {
+    namespace SliceTest
+    {
+        TEST(Slice, TODO)
+        {
+
+        }
+    }
     // namespace SliceTest
     // {
     //     TEST(Slice, SliceAllocateCommit)
