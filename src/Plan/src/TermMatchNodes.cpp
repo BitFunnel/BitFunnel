@@ -438,9 +438,9 @@ namespace BitFunnel
     //
     //*************************************************************************
     TermMatchNode::Unigram::Unigram(char const * text,
-                                    Classification classification)
+                                    Term::StreamId streamId)
         : m_text(text),
-          m_classification(classification)
+          m_streamId(streamId)
     {
     }
 
@@ -448,7 +448,7 @@ namespace BitFunnel
     TermMatchNode::Unigram::Unigram(IObjectParser& parser)
         : m_text((parser.OpenPrimitive(""),
                   ParsePrimitiveItem<char const *>(parser))),
-          m_classification(ParsePrimitiveItem<Classification>(parser))
+          m_streamId(static_cast<Term::StreamId>(ParsePrimitiveItem<size_t>(parser)))
     {
         parser.ClosePrimitive();
     }
@@ -467,7 +467,7 @@ namespace BitFunnel
         formatter.FormatStringLiteral(m_text);
 
         formatter.OpenPrimitiveItem();
-        formatter.Format(ClassificationToString(m_classification));
+        formatter.Format(static_cast<size_t>(m_streamId));
 
         formatter.ClosePrimitive();
     }
@@ -485,9 +485,9 @@ namespace BitFunnel
     }
 
 
-    Classification TermMatchNode::Unigram::GetClassification() const
+    Term::StreamId TermMatchNode::Unigram::GetStreamId() const
     {
-        return m_classification;
+        return m_streamId;
     }
 
 
@@ -659,12 +659,12 @@ namespace BitFunnel
 
     TermMatchNode const *
     TermMatchNode::Builder::CreateUnigramNode(char const * text,
-                                              Classification classification,
+                                              Term::StreamId streamId,
                                               IAllocator& allocator)
     {
         return 
             new (allocator.Allocate(sizeof(Unigram)))
-            Unigram(text, classification);
+            Unigram(text, streamId);
     }
 
 

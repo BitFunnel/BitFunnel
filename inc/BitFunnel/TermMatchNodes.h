@@ -26,6 +26,8 @@
 #include "BitFunnel/Classification.h"       // Embeds Classification.
 #include "BitFunnel/IPersistableObject.h"   // Inherits from IPersistableObject.
 #include "BitFunnel/NonCopyable.h"          // Inherits from NonCopyable.
+#include "BitFunnel/Term.h"                 // Embeds Term::StreamId.
+
 
 namespace BitFunnel
 {
@@ -218,7 +220,8 @@ namespace BitFunnel
     {
     public:
         Unigram(char const * text,
-                Classification classification);
+                Term::StreamId streamId);
+
         Unigram(IObjectParser& parser);
 
         //
@@ -232,7 +235,7 @@ namespace BitFunnel
         virtual NodeType GetType() const override;
 
         char const * GetText() const;
-        Classification GetClassification() const;
+        Term::StreamId GetStreamId() const;
 
     private:
         // WARNING: The persistence format depends on the order in which the
@@ -240,7 +243,7 @@ namespace BitFunnel
         // neccesary to update the corresponding code in the constructor and
         // and the Format() method.
         char const * const m_text;
-        Classification const m_classification;
+        Term::StreamId const m_streamId;
     };
 
 
@@ -287,7 +290,7 @@ namespace BitFunnel
 
         static TermMatchNode const *
         CreateUnigramNode(char const * text,
-                          Classification classification,
+                          Term::StreamId streamId,
                           IAllocator& allocator);
 
         static TermMatchNode const *
