@@ -45,7 +45,7 @@ namespace BitFunnel
 
 
             // Term node with stream suffix.
-            "Unigram(\"123\", full, \"stream\")",
+            "Unigram(\"123\", full)",
 
 
             // Fact node.
@@ -265,7 +265,7 @@ namespace BitFunnel
             PrivateHeapAllocator allocator;
             TermMatchNode::Builder builder(TermMatchNode::AndMatch, allocator);
 
-            TermMatchNode::Unigram term("foo", nullptr, Full);
+            TermMatchNode::Unigram term("foo", Full);
             builder.AddChild(&term);
 
             VerifyTermMatchNodeBuilderCase(
@@ -279,10 +279,10 @@ namespace BitFunnel
             PrivateHeapAllocator allocator;
             TermMatchNode::Builder builder(TermMatchNode::AndMatch, allocator);
 
-            TermMatchNode::Unigram term1("foo", nullptr, Full);
+            TermMatchNode::Unigram term1("foo", Full);
             builder.AddChild(&term1);
 
-            TermMatchNode::Unigram term2("bar", nullptr, MetaWord);
+            TermMatchNode::Unigram term2("bar", MetaWord);
             builder.AddChild(&term2);
 
             VerifyTermMatchNodeBuilderCase(
@@ -301,13 +301,13 @@ namespace BitFunnel
             PrivateHeapAllocator allocator;
             TermMatchNode::Builder builder(TermMatchNode::AndMatch, allocator);
 
-            TermMatchNode::Unigram term1("foo", nullptr, Full);
+            TermMatchNode::Unigram term1("foo", Full);
             builder.AddChild(&term1);
 
-            TermMatchNode::Unigram term2("bar", nullptr, MetaWord);
+            TermMatchNode::Unigram term2("bar", MetaWord);
             builder.AddChild(&term2);
 
-            TermMatchNode::Unigram term3("baz", nullptr, ClickBoost);
+            TermMatchNode::Unigram term3("baz", ClickBoost);
             builder.AddChild(&term3);
 
             VerifyTermMatchNodeBuilderCase(
@@ -342,7 +342,7 @@ namespace BitFunnel
             PrivateHeapAllocator allocator;
             TermMatchNode::Builder builder(TermMatchNode::OrMatch, allocator);
 
-            TermMatchNode::Unigram term("foo", nullptr, Full);
+            TermMatchNode::Unigram term("foo", Full);
             builder.AddChild(&term);
 
             VerifyTermMatchNodeBuilderCase(
@@ -356,10 +356,10 @@ namespace BitFunnel
             PrivateHeapAllocator allocator;
             TermMatchNode::Builder builder(TermMatchNode::OrMatch, allocator);
 
-            TermMatchNode::Unigram term1("foo", nullptr, Full);
+            TermMatchNode::Unigram term1("foo", Full);
             builder.AddChild(&term1);
 
-            TermMatchNode::Unigram term2("\"bar\\", nullptr, NonBody);
+            TermMatchNode::Unigram term2("\"bar\\", NonBody);
             builder.AddChild(&term2);
 
             VerifyTermMatchNodeBuilderCase(
@@ -378,13 +378,13 @@ namespace BitFunnel
             PrivateHeapAllocator allocator;
             TermMatchNode::Builder builder(TermMatchNode::OrMatch, allocator);
 
-            TermMatchNode::Unigram term1("foo", nullptr, Full);
+            TermMatchNode::Unigram term1("foo", Full);
             builder.AddChild(&term1);
 
-            TermMatchNode::Unigram term2("bar", nullptr, MetaWord);
+            TermMatchNode::Unigram term2("bar", MetaWord);
             builder.AddChild(&term2);
 
-            TermMatchNode::Unigram term3("baz", nullptr, NonBody);
+            TermMatchNode::Unigram term3("baz", NonBody);
             builder.AddChild(&term3);
 
             VerifyTermMatchNodeBuilderCase(
@@ -419,7 +419,7 @@ namespace BitFunnel
             PrivateHeapAllocator allocator;
             TermMatchNode::Builder builder(TermMatchNode::NotMatch, allocator);
 
-            TermMatchNode::Unigram term1("\"", nullptr, Full);
+            TermMatchNode::Unigram term1("\"", Full);
             builder.AddChild(&term1);
 
             VerifyTermMatchNodeBuilderCase(
@@ -435,7 +435,7 @@ namespace BitFunnel
             PrivateHeapAllocator allocator;
             TermMatchNode::Builder builder(TermMatchNode::NotMatch, allocator);
 
-            TermMatchNode::Unigram term1("foo", nullptr, Full);
+            TermMatchNode::Unigram term1("foo", Full);
             TermMatchNode::Not notNode(term1);
             builder.AddChild(&notNode);
 
@@ -452,7 +452,7 @@ namespace BitFunnel
             PrivateHeapAllocator allocator;
             TermMatchNode::Builder builder(TermMatchNode::AndMatch, allocator);
 
-            TermMatchNode::Unigram term1("foo", nullptr, Full);
+            TermMatchNode::Unigram term1("foo", Full);
             builder.AddChild(&term1);
 
             TermMatchNode::Fact fact(c_factHandle);

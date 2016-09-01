@@ -218,7 +218,8 @@ namespace BitFunnel
     class TermMatchNode::Unigram : public TermMatchNode
     {
     public:
-        Unigram(char const * text, char const * suffix, Classification classification);
+        Unigram(char const * text,
+                Classification classification);
         Unigram(IObjectParser& parser);
 
         //
@@ -232,7 +233,6 @@ namespace BitFunnel
         virtual NodeType GetType() const override;
 
         char const * GetText() const;
-        char const * GetSuffix() const;
         Classification GetClassification() const;
 
     private:
@@ -242,7 +242,6 @@ namespace BitFunnel
         // and the Format() method.
         char const * const m_text;
         Classification const m_classification;
-        char const * const m_suffix;
     };
 
 
@@ -290,7 +289,6 @@ namespace BitFunnel
 
         static TermMatchNode const *
         CreateUnigramNode(char const * text,
-                          char const * suffix,
                           Classification classification,
                           IAllocator& allocator);
 

@@ -457,11 +457,9 @@ namespace BitFunnel
     //
     //*************************************************************************
     TermMatchNode::Unigram::Unigram(char const * text,
-                                    char const * suffix,
                                     Classification classification)
         : m_text(text),
-          m_classification(classification),
-          m_suffix(suffix)
+          m_classification(classification)
     {
     }
 
@@ -469,8 +467,7 @@ namespace BitFunnel
     TermMatchNode::Unigram::Unigram(IObjectParser& parser)
         : m_text((parser.OpenPrimitive(""),
                   ParsePrimitiveItem<char const *>(parser))),
-          m_classification(ParsePrimitiveItem<Classification>(parser)),
-          m_suffix(ParseOptionalStringPrimitiveItem(parser))
+          m_classification(ParsePrimitiveItem<Classification>(parser))
     {
         parser.ClosePrimitive();
     }
@@ -491,12 +488,6 @@ namespace BitFunnel
         formatter.OpenPrimitiveItem();
         formatter.Format(ClassificationToString(m_classification));
 
-        if (m_suffix)
-        {
-            formatter.OpenPrimitiveItem();
-            formatter.FormatStringLiteral(m_suffix);
-        }
-
         formatter.ClosePrimitive();
     }
 
@@ -510,12 +501,6 @@ namespace BitFunnel
     char const * TermMatchNode::Unigram::GetText() const
     {
         return m_text;
-    }
-
-
-    char const * TermMatchNode::Unigram::GetSuffix() const
-    {
-        return m_suffix;
     }
 
 
@@ -692,11 +677,12 @@ namespace BitFunnel
 
     TermMatchNode const *
     TermMatchNode::Builder::CreateUnigramNode(char const * text,
-                                              char const * suffix,
                                               Classification classification,
                                               IAllocator& allocator)
     {
-        return new (allocator.Allocate(sizeof(Unigram))) Unigram(text, suffix, classification);
+        return 
+            new (allocator.Allocate(sizeof(Unigram)))
+            Unigram(text, classification);
     }
 
     TermMatchNode const *
