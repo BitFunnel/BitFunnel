@@ -122,6 +122,7 @@ namespace BitFunnel
     }
 
 
+    // TODO: REVIEW: Can this method return size_t to avoid static_cast?
     int TermMatchNode::GetType(char const * name)
     {
         if (name[0] == 0)
@@ -134,7 +135,7 @@ namespace BitFunnel
             {
                 if (strcmp(name, c_typenames[i]) == 0)
                 {
-                    return i;
+                    return static_cast<int>(i);
                 }
             }
         }
