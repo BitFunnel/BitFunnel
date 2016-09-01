@@ -386,7 +386,7 @@ namespace BitFunnel
     TermMatchNode::Phrase::Phrase(IObjectParser& parser)
         : m_streamId((parser.OpenObject(),
                       static_cast<Term::StreamId>(
-                          ParseObjectField<size_t>(parser, c_streamIdFieldName)))),
+                          ParseObjectField<uint64_t>(parser, c_streamIdFieldName)))),
           m_grams((parser.OpenObjectField(c_gramsFieldName),
                    StringVector::Parse(parser, c_defaultInitialCapacity)))
     {
@@ -449,7 +449,7 @@ namespace BitFunnel
     TermMatchNode::Unigram::Unigram(IObjectParser& parser)
         : m_text((parser.OpenPrimitive(""),
                   ParsePrimitiveItem<char const *>(parser))),
-          m_streamId(static_cast<Term::StreamId>(ParsePrimitiveItem<size_t>(parser)))
+          m_streamId(static_cast<Term::StreamId>(ParsePrimitiveItem<uint64_t>(parser)))
     {
         parser.ClosePrimitive();
     }
