@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <cstring>  // For strcmp.
+
 #include "BitFunnel/Allocators/IAllocator.h"
 //#include "BitFunnel/Factories.h"
 #include "BitFunnel/Exceptions.h"
@@ -95,7 +97,7 @@ namespace BitFunnel
     // TermMatchNode
     //
     //*************************************************************************
-    // These text constants correspond to the values of the enumeration 
+    // These text constants correspond to the values of the enumeration
     // TermMatchNode::NodeType.
     static const char* const c_typenames[] = {
         // Match nodes
@@ -663,7 +665,7 @@ namespace BitFunnel
                                               Term::StreamId streamId,
                                               IAllocator& allocator)
     {
-        return 
+        return
             new (allocator.Allocate(sizeof(Unigram)))
             Unigram(text, streamId);
     }

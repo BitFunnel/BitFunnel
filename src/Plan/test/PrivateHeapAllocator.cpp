@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <memory>
 #include <new>
 
 #include "BitFunnel/Exceptions.h"
@@ -46,7 +47,7 @@ namespace BitFunnel
     {
         m_start = m_next = m_buffer.get();
     }
-    
+
 
     // Allocate a block of memory of specified size from an heap allocator,
     // or from overflow allocator if the size is greater than maxArenaAlloc.

@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #include <algorithm>    // For std::min() or std::max()
+#include <cstring>      // For memcpy.
 #include <new>
 #include <stddef.h>     // For nullptr.
 
