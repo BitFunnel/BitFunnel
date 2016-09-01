@@ -102,7 +102,7 @@ namespace BitFunnel
 
     const char* StringVector::operator[](unsigned index) const
     {
-        LogAssertB(index < m_size);
+        LogAssertB(index < m_size, "index out of range");
         return m_strings[index];
     }
 

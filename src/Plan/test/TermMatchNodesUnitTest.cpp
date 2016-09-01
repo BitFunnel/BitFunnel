@@ -436,8 +436,8 @@ namespace BitFunnel
             TermMatchNode::Builder builder(TermMatchNode::NotMatch, allocator);
 
             TermMatchNode::Unigram term1("foo", nullptr, Full);
-            TermMatchNode::Not not(term1);
-            builder.AddChild(&not);
+            TermMatchNode::Not notNode(term1);
+            builder.AddChild(&notNode);
 
             VerifyTermMatchNodeBuilderCase(
                  builder,

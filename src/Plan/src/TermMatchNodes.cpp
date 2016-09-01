@@ -22,6 +22,7 @@
 
 #include "BitFunnel/Allocators/IAllocator.h"
 //#include "BitFunnel/Factories.h"
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IObjectFormatter.h"
 #include "BitFunnel/IObjectParser.h"
 #include "BitFunnel/TermMatchNodes.h"
@@ -69,11 +70,11 @@ namespace BitFunnel
 
     Classification StringToClassification(const std::string& s)
     {
-        for (int i = 0; i < sizeof(c_classificationNames) / sizeof(const char*); ++i)
+        for (size_t i = 0; i < sizeof(c_classificationNames) / sizeof(const char*); ++i)
         {
             if (s.compare(c_classificationNames[i]) == 0)
             {
-                LogAssertB(i < ClassificationCount);
+                LogAssertB(i < ClassificationCount, "Bad classification.");
                 return static_cast<Classification>(i);
             }
         }
@@ -84,8 +85,8 @@ namespace BitFunnel
 
     const char* ClassificationToString(Classification classification)
     {
-        LogAssertB(classification != Invalid);
-        LogAssertB(classification < ClassificationCount);
+        LogAssertB(classification != Invalid, "Invalid classification.");
+        LogAssertB(classification < ClassificationCount, "Classification out of range.");
         return c_classificationNames[classification];
     }
 
@@ -116,7 +117,7 @@ namespace BitFunnel
     char const * TermMatchNode::GetTypeName() const
     {
         NodeType type = GetType();
-        LogAssertB(type < TypeCount);
+        LogAssertB(type < TypeCount, "Invalid type.");
         return c_typenames[type];
     }
 
@@ -129,7 +130,7 @@ namespace BitFunnel
         }
         else
         {
-            for (int i = 0; i < sizeof(c_typenames) / sizeof(char const *); ++i)
+            for (size_t i = 0; i < sizeof(c_typenames) / sizeof(char const *); ++i)
             {
                 if (strcmp(name, c_typenames[i]) == 0)
                 {
@@ -170,7 +171,9 @@ namespace BitFunnel
             LogAbortB("Invalid node type.");
         }
 
-        return *reinterpret_cast<TermMatchNode const *>(nullptr);
+        // Should never reach this line.
+        BitFunnel::RecoverableError error("TermMatchNode::Parse: bad node type.");
+        throw error;
     }
 
 
@@ -235,7 +238,7 @@ namespace BitFunnel
         parser.OpenList();
 
         // And nodes must have exactly two children.
-        LogAssertB(parser.OpenListItem());
+        LogAssertB(parser.OpenListItem(), "OpenListItem() failed.");
         And const & node = dynamic_cast<And const &>(ParseList<TermMatchNode, And>(parser));
 
         parser.CloseList();
@@ -256,7 +259,8 @@ namespace BitFunnel
     TermMatchNode::Not::Not(TermMatchNode const & child)
         : m_child(child)
     {
-        LogAssertB(child.GetType() != TermMatchNode::NotMatch);
+        LogAssertB(child.GetType() != TermMatchNode::NotMatch,
+                   "Expected TermMatchNode::NotMatch");
     }
 
 
@@ -350,7 +354,7 @@ namespace BitFunnel
         parser.OpenList();
 
         // Or nodes must have exactly two children.
-        LogAssertB(parser.OpenListItem());
+        LogAssertB(parser.OpenListItem(), "OpenListItem() failed.");
         Or const & node = dynamic_cast<Or const &>(ParseList<TermMatchNode, Or>(parser));
 
         parser.CloseList();
@@ -377,7 +381,7 @@ namespace BitFunnel
           m_suffix(suffix),
           m_grams(grams)
     {
-        LogAssertB(m_grams.GetSize() >= 2);
+        LogAssertB(m_grams.GetSize() >= 2, "Phase mush have at least 2 terms.");
     }
 
 
@@ -389,7 +393,7 @@ namespace BitFunnel
                    StringVector::Parse(parser, c_defaultInitialCapacity)))
     {
         // Phrase nodes must have at least two Terms.
-        LogAssertB(m_grams.GetSize() >= 2);
+        LogAssertB(m_grams.GetSize() >= 2, "Phase mush have at least 2 terms.");
         parser.CloseObject();
     }
 
@@ -455,8 +459,8 @@ namespace BitFunnel
                                     char const * suffix,
                                     Classification classification)
         : m_text(text),
-          m_suffix(suffix),
-          m_classification(classification)
+          m_classification(classification),
+          m_suffix(suffix)
     {
     }
 
@@ -561,7 +565,7 @@ namespace BitFunnel
         formatter.OpenPrimitive(GetTypeName());
 
         formatter.OpenPrimitiveItem();
-        formatter.Format(m_fact);
+        formatter.Format(static_cast<size_t>(m_fact));
 
         formatter.ClosePrimitive();
     }
@@ -596,7 +600,8 @@ namespace BitFunnel
     {
         LogAssertB(nodeType == TermMatchNode::AndMatch
                    || nodeType == TermMatchNode::NotMatch
-                   || nodeType == TermMatchNode::OrMatch);
+                   || nodeType == TermMatchNode::OrMatch,
+                   "Invalid node type");
     }
 
 
@@ -624,7 +629,7 @@ namespace BitFunnel
             }
             break;
         case TermMatchNode::NotMatch:
-            LogAssertB(m_firstChild == nullptr);
+            LogAssertB(m_firstChild == nullptr, "Expected a child node.");
             if (childNode != nullptr)
             {
                 if (childNode->GetType() == TermMatchNode::NotMatch)
@@ -658,7 +663,7 @@ namespace BitFunnel
             }
             break;
         default:
-            LogAbortB();
+            LogAbortB("Unknown node type.");
         };
     }
 
