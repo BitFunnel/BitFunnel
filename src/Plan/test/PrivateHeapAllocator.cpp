@@ -80,8 +80,8 @@ namespace BitFunnel
     void PrivateHeapAllocator::Initialize(size_t bufferSize)
     {
         m_buffer.reset(new char[bufferSize]);
-        m_end = m_start + bufferSize;
         Reset();
+        m_end = m_start + bufferSize;
     }
 
     //PrivateHeapAllocatorFactory::~PrivateHeapAllocatorFactory()
