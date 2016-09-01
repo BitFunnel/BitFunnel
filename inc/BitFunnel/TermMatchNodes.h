@@ -41,7 +41,7 @@ namespace BitFunnel
                           protected NonCopyable
     {
     public:
-        virtual ~TermMatchNode() {};
+        virtual ~TermMatchNode() {}
 
         enum NodeType
         {
@@ -50,7 +50,7 @@ namespace BitFunnel
 
             // DESIGN NOTE: legal node types have consecutive values starting
             // at zero so that TypeCount is equal to the number of legal nodes.
-            // Changes in this enum must also be reflected in c_typenames[] in 
+            // Changes in this enum must also be reflected in c_typenames[] in
             // TermMatchNodes.cpp.
 
             // Match

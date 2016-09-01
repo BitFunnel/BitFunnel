@@ -154,22 +154,16 @@ namespace BitFunnel
         {
         case AndMatch:
             return And::Parse(parser);
-            break;
         case NotMatch:
             return ParseNode<Not>(parser);
-            break;
         case OrMatch:
             return Or::Parse(parser);
-            break;
         case PhraseMatch:
             return ParseNode<Phrase>(parser);
-            break;
         case UnigramMatch:
             return ParseNode<Unigram>(parser);
-            break;
         case FactMatch:
             return ParseNode<Fact>(parser);
-            break;
         default:
             LogAbortB("Invalid node type.");
         }
