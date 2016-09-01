@@ -23,7 +23,7 @@
 #pragma once
 
 #include <cstddef>                      // size_t return value.
-#include <vector>                       // std::vector embedded.
+#include <vector>                       // std::vector parameter.
 
 #include "BitFunnel/BitFunnelTypes.h"   // DocIndex paramter.
 #include "BitFunnel/RowId.h"            // RowIndex parameterizes std::vector.

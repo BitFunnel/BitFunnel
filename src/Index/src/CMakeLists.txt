@@ -20,7 +20,7 @@ set(CPPFILES
     IngestChunks.cpp
     Ingestor.cpp
     PackedRowIdSequence.cpp
-    PackedTermInfo.cpp
+#    PackedTermInfo.cpp
     Recycler.cpp
     RowId.cpp
     RowIdSequence.cpp
@@ -31,11 +31,11 @@ set(CPPFILES
     Slice.cpp
     SliceBufferAllocator.cpp
     Term.cpp
-    TermInfo.cpp
+#    TermInfo.cpp
     TermTable.cpp
     TermTableBuilder.cpp
     TermTableCollection.cpp
-    TermTableHelpers.cpp
+#    TermTableHelpers.cpp
     TermToText.cpp
     TermTreatments.cpp
 )

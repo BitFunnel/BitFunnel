@@ -307,7 +307,7 @@ namespace BitFunnel
                                                      TermToText const * termToText) const
     {
         // TODO: 0.0 is the truncation frequency, which shouldn't be fixed at 0.
-        m_docFrequencyTableBuilder->WriteFrequencies(out, 0.0, termToText);
+        m_docFrequencyTableBuilder->WriteFrequencies(out, 0.0, termToText); 
     }
 
 

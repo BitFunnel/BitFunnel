@@ -21,10 +21,7 @@
 // THE SOFTWARE.
 
 #include "IndexUtils.h"
-#include "EmptyTermTable.h"
 #include "Shard.h"
-
-// TODO: Get rid of this file.
 
 
 namespace BitFunnel
