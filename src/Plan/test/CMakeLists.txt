@@ -4,6 +4,8 @@ set(CPPFILES
     CompileNodeTest.cpp
     MatchTreeRewriterTest.cpp
     PlainTextCodeGenerator.cpp
+    PrivateHeapAllocator.cpp
+    TermMatchNodesUnitTest.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -14,6 +16,7 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     PlainTextCodeGenerator.h
+    PrivateHeapAllocator.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
@@ -38,6 +41,6 @@ set_property(TARGET PlanTest PROPERTY PROJECT_LABEL "Test")
 # Utilities and Plan, we will get linker errors.
 # TODO: do we really need Configuration?
 # TODO: do we need CsvTsv?
-target_link_libraries (PlanTest TestShared Utilities Plan Configuration  Utilities  gtest gtest_main)
+target_link_libraries (PlanTest TestShared Plan Configuration Utilities  gtest gtest_main)
 
 add_test(NAME PlanTest COMMAND PlanTest)

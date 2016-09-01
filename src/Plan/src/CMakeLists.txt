@@ -6,6 +6,8 @@ set(CPPFILES
     MatchTreeRewriter.cpp
     RowMatchNode.cpp
     RowPlan.cpp
+    StringVector.cpp
+    TermMatchNodes.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -17,6 +19,7 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     CompileNode.h
     MatchTreeRewriter.h
+    StringVector.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

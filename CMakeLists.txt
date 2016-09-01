@@ -108,12 +108,10 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IObjectParser.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IPersistableObject.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermDisposeDefinition.h
-#  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTable2.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTreatment.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/PackedRowIdSequence.h
-#  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/PackedTermInfo.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Row.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowId.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowIdSequence.h
@@ -121,7 +119,7 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowPlan.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Stream.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Term.h
-#  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/TermInfo.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/TermMatchNodes.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Token.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/IAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/Factories.h
