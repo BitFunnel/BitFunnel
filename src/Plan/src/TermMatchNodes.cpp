@@ -372,14 +372,11 @@ namespace BitFunnel
     //*************************************************************************
     char const * TermMatchNode::Phrase::c_classificationFieldName = "Classification";
     char const * TermMatchNode::Phrase::c_gramsFieldName = "Grams";
-    char const * TermMatchNode::Phrase::c_suffixFieldName = "Suffix";
 
 
     TermMatchNode::Phrase::Phrase(StringVector const & grams,
-                                  char const * suffix,
                                   Classification classification)
         : m_classification(classification),
-          m_suffix(suffix),
           m_grams(grams)
     {
         LogAssertB(m_grams.GetSize() >= 2, "Phase mush have at least 2 terms.");
@@ -389,7 +386,6 @@ namespace BitFunnel
     TermMatchNode::Phrase::Phrase(IObjectParser& parser)
         : m_classification((parser.OpenObject(),
                             ParseObjectField<Classification>(parser, c_classificationFieldName))),
-          m_suffix(ParseNullableObjectStringField(parser, c_suffixFieldName)),
           m_grams((parser.OpenObjectField(c_gramsFieldName),
                    StringVector::Parse(parser, c_defaultInitialCapacity)))
     {
@@ -410,15 +406,6 @@ namespace BitFunnel
 
         formatter.OpenObjectField(c_classificationFieldName);
         formatter.Format(ClassificationToString(m_classification));
-
-        formatter.OpenObjectField(c_suffixFieldName);
-        formatter.OpenPrimitive("nullable");
-        formatter.OpenPrimitiveItem();
-        if (m_suffix)
-        {
-            formatter.FormatStringLiteral(m_suffix);
-        }
-        formatter.ClosePrimitive();
 
         formatter.OpenObjectField(c_gramsFieldName);
         m_grams.Format(formatter);
@@ -442,12 +429,6 @@ namespace BitFunnel
     StringVector const & TermMatchNode::Phrase::GetGrams() const
     {
         return m_grams;
-    }
-
-
-    char const * TermMatchNode::Phrase::GetSuffix() const
-    {
-        return m_suffix;
     }
 
 
@@ -667,11 +648,12 @@ namespace BitFunnel
 
     TermMatchNode const *
     TermMatchNode::Builder::CreatePhraseNode(StringVector const & grams,
-                                             char const * suffix,
                                              Classification classification,
                                              IAllocator& allocator)
     {
-        return new (allocator.Allocate(sizeof(Phrase))) Phrase(grams, suffix, classification);
+        return
+            new (allocator.Allocate(sizeof(Phrase)))
+            Phrase(grams, classification);
     }
 
 
@@ -685,11 +667,11 @@ namespace BitFunnel
             Unigram(text, classification);
     }
 
+
     TermMatchNode const *
     TermMatchNode::Builder::CreateFactNode(FactHandle fact,
                                            IAllocator& allocator)
     {
         return new (allocator.Allocate(sizeof(Fact))) Fact(fact);
     }
-
 }

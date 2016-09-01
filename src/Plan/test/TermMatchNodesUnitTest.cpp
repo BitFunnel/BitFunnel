@@ -87,19 +87,6 @@ namespace BitFunnel
             // Phrase node with three terms with various arguments.
             "Phrase {\n"
             "  Classification: nonbody,\n"
-            "  Suffix: nullable(),\n"
-            "  Grams: [\n"
-            "    \"123\",\n"
-            "    \"456\",\n"
-            "    \"789\"\n"
-            "  ]\n"
-            "}",
-
-
-            // Phrase node with three terms and stream suffix.
-            "Phrase {\n"
-            "  Classification: nonbody,\n"
-            "  Suffix: nullable(\"stream\"),\n"
             "  Grams: [\n"
             "    \"123\",\n"
             "    \"456\",\n"
@@ -115,7 +102,6 @@ namespace BitFunnel
             "      Children: [\n"
             "        Phrase {\n"
             "          Classification: nonbody,\n"
-            "          Suffix: nullable(),\n"
             "          Grams: [\n"
             "            \"123\",\n"
             "            \"456\",\n"
@@ -227,7 +213,6 @@ namespace BitFunnel
                 allocator,
                 "Phrase {\n"
                 "  Classification: full,\n"
-                "  Suffix: nullable(),\n"
                 "  Grams: [\n"
                 "    \"foo\",\n"
                 "    \"bar\"\n"

@@ -182,7 +182,9 @@ namespace BitFunnel
     class TermMatchNode::Phrase : public TermMatchNode
     {
     public:
-        Phrase(StringVector const & grams, char const * suffix, Classification classification);
+        Phrase(StringVector const & grams,
+               Classification classification);
+
         Phrase(IObjectParser& parser);
 
         //
@@ -197,7 +199,6 @@ namespace BitFunnel
 
         Classification GetClassification() const;
         StringVector const & GetGrams() const;
-        char const * GetSuffix() const;
 
     private:
         // WARNING: The persistence format depends on the order in which the
@@ -205,12 +206,10 @@ namespace BitFunnel
         // neccesary to update the corresponding code in the constructor and
         // and the Format() method.
         Classification const m_classification;
-        char const * const m_suffix;
         StringVector const & m_grams;
 
         static char const * c_classificationFieldName;
         static char const * c_gramsFieldName;
-        static char const * c_suffixFieldName;
         static const unsigned c_defaultInitialCapacity = 10;
     };
 
@@ -283,7 +282,6 @@ namespace BitFunnel
 
         static TermMatchNode const *
         CreatePhraseNode(StringVector const & grams,
-                         char const * suffix,
                          Classification classification,
                          IAllocator& allocator);
 
