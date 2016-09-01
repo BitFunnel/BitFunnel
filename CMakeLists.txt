@@ -93,25 +93,34 @@ endmacro()
 
 ###############################################################################
 
-# TODO: add missing .h files from recent change.
-
 set(BITFUNNEL_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/AbstractRow.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/BitFunnelTypes.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Classification.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Exceptions.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IFileManager.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IInterface.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ICodeGenerator.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ICommonPhrases.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerator.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IFileManager.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IInterface.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IObjectFormatter.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IObjectParser.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IPersistableObject.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermDisposeDefinition.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTable2.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTreatment.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/PackedRowIdSequence.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/PackedTermInfo.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Row.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowId.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowIdSequence.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowMatchNode.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowPlan.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Stream.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Term.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/TermInfo.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Token.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/IAllocator.h
