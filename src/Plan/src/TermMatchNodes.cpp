@@ -370,13 +370,13 @@ namespace BitFunnel
     // TermMatchNode::Phrase
     //
     //*************************************************************************
-    char const * TermMatchNode::Phrase::c_classificationFieldName = "Classification";
+    char const * TermMatchNode::Phrase::c_streamIdFieldName = "StreamId";
     char const * TermMatchNode::Phrase::c_gramsFieldName = "Grams";
 
 
     TermMatchNode::Phrase::Phrase(StringVector const & grams,
-                                  Classification classification)
-        : m_classification(classification),
+                                  Term::StreamId streamId)
+        : m_streamId(streamId),
           m_grams(grams)
     {
         LogAssertB(m_grams.GetSize() >= 2, "Phase mush have at least 2 terms.");
@@ -384,8 +384,9 @@ namespace BitFunnel
 
 
     TermMatchNode::Phrase::Phrase(IObjectParser& parser)
-        : m_classification((parser.OpenObject(),
-                            ParseObjectField<Classification>(parser, c_classificationFieldName))),
+        : m_streamId((parser.OpenObject(),
+                      static_cast<Term::StreamId>(
+                          ParseObjectField<size_t>(parser, c_streamIdFieldName)))),
           m_grams((parser.OpenObjectField(c_gramsFieldName),
                    StringVector::Parse(parser, c_defaultInitialCapacity)))
     {
@@ -404,8 +405,8 @@ namespace BitFunnel
 
         formatter.OpenObject(*this);
 
-        formatter.OpenObjectField(c_classificationFieldName);
-        formatter.Format(ClassificationToString(m_classification));
+        formatter.OpenObjectField(c_streamIdFieldName);
+        formatter.Format(static_cast<size_t>(m_streamId));
 
         formatter.OpenObjectField(c_gramsFieldName);
         m_grams.Format(formatter);
@@ -420,9 +421,9 @@ namespace BitFunnel
     }
 
 
-    Classification TermMatchNode::Phrase::GetClassification() const
+    Term::StreamId TermMatchNode::Phrase::GetStreamId() const
     {
-        return m_classification;
+        return m_streamId;
     }
 
 
@@ -648,12 +649,12 @@ namespace BitFunnel
 
     TermMatchNode const *
     TermMatchNode::Builder::CreatePhraseNode(StringVector const & grams,
-                                             Classification classification,
+                                             Term::StreamId streamId,
                                              IAllocator& allocator)
     {
         return
             new (allocator.Allocate(sizeof(Phrase)))
-            Phrase(grams, classification);
+            Phrase(grams, streamId);
     }
 
 

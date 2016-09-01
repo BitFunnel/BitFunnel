@@ -185,7 +185,7 @@ namespace BitFunnel
     {
     public:
         Phrase(StringVector const & grams,
-               Classification classification);
+               Term::StreamId streamId);
 
         Phrase(IObjectParser& parser);
 
@@ -199,7 +199,7 @@ namespace BitFunnel
         //
         virtual NodeType GetType() const override;
 
-        Classification GetClassification() const;
+        Term::StreamId GetStreamId() const;
         StringVector const & GetGrams() const;
 
     private:
@@ -207,10 +207,10 @@ namespace BitFunnel
         // following two members are declared. If the order is changed, it is
         // neccesary to update the corresponding code in the constructor and
         // and the Format() method.
-        Classification const m_classification;
+        Term::StreamId const m_streamId;
         StringVector const & m_grams;
 
-        static char const * c_classificationFieldName;
+        static char const * c_streamIdFieldName;
         static char const * c_gramsFieldName;
         static const unsigned c_defaultInitialCapacity = 10;
     };
@@ -285,7 +285,7 @@ namespace BitFunnel
 
         static TermMatchNode const *
         CreatePhraseNode(StringVector const & grams,
-                         Classification classification,
+                         Term::StreamId streamId,
                          IAllocator& allocator);
 
         static TermMatchNode const *

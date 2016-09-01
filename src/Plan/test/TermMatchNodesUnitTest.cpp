@@ -86,7 +86,7 @@ namespace BitFunnel
 
             // Phrase node with three terms with various arguments.
             "Phrase {\n"
-            "  Classification: nonbody,\n"
+            "  StreamId: 0,\n"
             "  Grams: [\n"
             "    \"123\",\n"
             "    \"456\",\n"
@@ -101,7 +101,7 @@ namespace BitFunnel
             "    Or {\n"
             "      Children: [\n"
             "        Phrase {\n"
-            "          Classification: nonbody,\n"
+            "          StreamId: 1,\n"
             "          Grams: [\n"
             "            \"123\",\n"
             "            \"456\",\n"
@@ -212,7 +212,7 @@ namespace BitFunnel
             VerifyTermMatchLeafNode(
                 allocator,
                 "Phrase {\n"
-                "  Classification: full,\n"
+                "  StreamId: 0,\n"
                 "  Grams: [\n"
                 "    \"foo\",\n"
                 "    \"bar\"\n"
