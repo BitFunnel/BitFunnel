@@ -7,7 +7,7 @@ set(CPPFILES
     RowMatchNode.cpp
     RowPlan.cpp
     StringVector.cpp
-    TermMatchNodes.cpp
+    TermMatchNode.cpp
 )
 
 set(WINDOWS_CPPFILES

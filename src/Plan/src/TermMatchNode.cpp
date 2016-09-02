@@ -27,7 +27,7 @@
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IObjectFormatter.h"
 #include "BitFunnel/IObjectParser.h"
-#include "BitFunnel/TermMatchNodes.h"
+#include "BitFunnel/TermMatchNode.h"
 #include "LoggerInterfaces/Logging.h"
 #include "ObjectFormatter.h"
 #include "PlanNodeUtilities.h"

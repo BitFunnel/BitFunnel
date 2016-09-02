@@ -119,7 +119,7 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowPlan.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Stream.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Term.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/TermMatchNodes.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/TermMatchNode.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Token.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/IAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/Factories.h

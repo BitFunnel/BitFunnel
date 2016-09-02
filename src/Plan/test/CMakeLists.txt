@@ -5,7 +5,7 @@ set(CPPFILES
     MatchTreeRewriterTest.cpp
     PlainTextCodeGenerator.cpp
     PrivateHeapAllocator.cpp
-    TermMatchNodesUnitTest.cpp
+    TermMatchNodeTest.cpp
 )
 
 set(WINDOWS_CPPFILES
