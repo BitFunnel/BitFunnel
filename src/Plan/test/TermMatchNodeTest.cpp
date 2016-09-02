@@ -23,7 +23,7 @@
 #include "gtest/gtest.h"
 
 #include "BitFunnel/TermMatchNode.h"
-#include "PrivateHeapAllocator.h"
+#include "Allocator.h"
 #include "TextObjectFormatter.h"
 #include "TextObjectParser.h"
 
@@ -129,7 +129,7 @@ namespace BitFunnel
         {
             std::stringstream input(text);
 
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TextObjectParser parser(input, allocator, &TermMatchNode::GetType);
 
             T const & node = T::Parse(parser);
@@ -208,7 +208,7 @@ namespace BitFunnel
         //*********************************************************************
         TEST(TermPlanTest, BuildPhraseMatch)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             VerifyTermMatchLeafNode(
                 allocator,
                 "Phrase {\n"
@@ -223,7 +223,7 @@ namespace BitFunnel
 
         TEST(TermPlanTest, BuildUnigramMatch)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             VerifyTermMatchLeafNode(
                 allocator,
                 "Unigram(\"foobar\", 0)");
@@ -237,7 +237,7 @@ namespace BitFunnel
         //*********************************************************************
         TEST(TermPlanTest, BuildAndEmpty)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::AndMatch, allocator);
             VerifyTermMatchNodeBuilderCase(
                  builder,
@@ -247,7 +247,7 @@ namespace BitFunnel
 
         TEST(TermPlanTest, BuildAndOneTerm)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::AndMatch, allocator);
 
             TermMatchNode::Unigram term("foo", 0);
@@ -261,7 +261,7 @@ namespace BitFunnel
 
         TEST(TermPlanTest, BuildAndTwoRows)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::AndMatch, allocator);
 
             TermMatchNode::Unigram term1("foo", 0);
@@ -283,7 +283,7 @@ namespace BitFunnel
 
         TEST(TermPlanTest, BuildAndThreeRows)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::AndMatch, allocator);
 
             TermMatchNode::Unigram term1("foo", 0);
@@ -314,7 +314,7 @@ namespace BitFunnel
         //*********************************************************************
         TEST(TermPlanTest, BuildOrEmpty)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::OrMatch, allocator);
             VerifyTermMatchNodeBuilderCase(
                  builder,
@@ -324,7 +324,7 @@ namespace BitFunnel
 
         TEST(TermPlanTest, BuildOrOneTerm)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::OrMatch, allocator);
 
             TermMatchNode::Unigram term("foo", 0);
@@ -338,7 +338,7 @@ namespace BitFunnel
 
         TEST(TermPlanTest, BuildOrTwoRows)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::OrMatch, allocator);
 
             TermMatchNode::Unigram term1("foo", 0);
@@ -360,7 +360,7 @@ namespace BitFunnel
 
         TEST(TermPlanTest, BuildOrThreeRows)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::OrMatch, allocator);
 
             TermMatchNode::Unigram term1("foo", 0);
@@ -391,7 +391,7 @@ namespace BitFunnel
         //*********************************************************************
         TEST(TermPlanTest, BuildNotEmpty)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::NotMatch, allocator);
             VerifyTermMatchNodeBuilderCase(
                  builder,
@@ -401,7 +401,7 @@ namespace BitFunnel
 
         TEST(TermPlanTest, BuildNotOneRow)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::NotMatch, allocator);
 
             TermMatchNode::Unigram term1("\"", 0);
@@ -417,7 +417,7 @@ namespace BitFunnel
 
         TEST(TermPlanTest, BuildNotNotOneRow)
         {
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::NotMatch, allocator);
 
             TermMatchNode::Unigram term1("foo", 0);
@@ -434,7 +434,7 @@ namespace BitFunnel
         {
             static const FactHandle c_factHandle = 10;
 
-            PrivateHeapAllocator allocator;
+            Allocator allocator(4096);
             TermMatchNode::Builder builder(TermMatchNode::AndMatch, allocator);
 
             TermMatchNode::Unigram term1("foo", 0);

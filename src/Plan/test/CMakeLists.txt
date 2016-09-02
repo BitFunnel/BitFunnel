@@ -4,7 +4,6 @@ set(CPPFILES
     CompileNodeTest.cpp
     MatchTreeRewriterTest.cpp
     PlainTextCodeGenerator.cpp
-    PrivateHeapAllocator.cpp
     TermMatchNodeTest.cpp
 )
 
@@ -16,7 +15,6 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     PlainTextCodeGenerator.h
-    PrivateHeapAllocator.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
