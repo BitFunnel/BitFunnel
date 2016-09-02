@@ -62,9 +62,9 @@ namespace BitFunnel
 
     void Document::Ingest(DocumentHandle handle) const
     {
-        for (auto it = m_postings.begin(); it != m_postings.end(); ++it)
+        for (auto const & posting : m_postings)
         {
-            handle.AddPosting(*it);
+            handle.AddPosting(posting);
         }
     }
 
