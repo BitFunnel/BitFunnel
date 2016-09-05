@@ -48,7 +48,7 @@ namespace BitFunnel
             TokenTracker tracker(c_anyCutoffSerialNumber,
                                  c_anyInFlightTokenCount);
 
-            ASSERT_TRUE(!tracker.IsComplete());
+            ASSERT_FALSE(tracker.IsComplete());
 
             // Returning c_anyInFlightTokenCount - 1 tokens.
             for (unsigned i = 0; i < c_anyInFlightTokenCount - 1; ++i)
@@ -58,12 +58,12 @@ namespace BitFunnel
             }
 
             // One token is still in flight.
-            ASSERT_TRUE(!tracker.IsComplete());
+            ASSERT_FALSE(tracker.IsComplete());
 
             // This is a token outside of our tracking interest, it will not
             // affect tracking.
             tracker.OnTokenComplete(c_anyCutoffSerialNumber + 1);
-            ASSERT_TRUE(!tracker.IsComplete());
+            ASSERT_FALSE(tracker.IsComplete());
 
             // Returning the last token, tracking should be complete.
             tracker.OnTokenComplete(c_anyCutoffSerialNumber - 1);
@@ -181,7 +181,7 @@ namespace BitFunnel
             // the number of tokens in flight is the same as the cutoff serial
             // number.
             TokenTracker tracker(c_anyCutoffSerialNumber,  c_anyCutoffSerialNumber);
-            ASSERT_TRUE(!tracker.IsComplete());
+            ASSERT_FALSE(tracker.IsComplete());
 
             TokenDistributor distributor(tracker, c_anyThreadCount, c_anyTotalTokenCount);
             distributor.WaitForCompletion();

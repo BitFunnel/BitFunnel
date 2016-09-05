@@ -310,7 +310,7 @@ namespace CsvTsv
         reader.ReadPrologue();
 
         // AtEOF() strips away comments while checking for EOF.
-        ASSERT_TRUE(!reader.AtEOF());
+        ASSERT_FALSE(reader.AtEOF());
 
         reader.ReadDataRow();
         ASSERT_TRUE(Expect<int>(1, c1));

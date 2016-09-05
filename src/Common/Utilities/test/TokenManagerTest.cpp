@@ -68,7 +68,7 @@ namespace BitFunnel
                 ASSERT_TRUE(noTokensTracker->IsComplete());
 
                 token0Tracker = tokenManager.StartTracker();
-                ASSERT_TRUE(!(token0Tracker->IsComplete()));
+                ASSERT_FALSE((token0Tracker->IsComplete()));
             }
 
             // token0 goes out of scope, which should make the token0Tracker
@@ -84,19 +84,19 @@ namespace BitFunnel
                 const Token token1 = tokenManager.RequestToken();
 
                 token1Tracker = tokenManager.StartTracker();
-                ASSERT_TRUE(!(token1Tracker->IsComplete()));
+                ASSERT_FALSE((token1Tracker->IsComplete()));
 
                 // Request one more token after a tracker has been started and
                 // release it before releasing a previous token. It should not
                 // impact the tracker because this token is not of its interest.
                 {
                     const Token token2 = tokenManager.RequestToken();
-                    ASSERT_TRUE(!(token1Tracker->IsComplete()));
+                    ASSERT_FALSE((token1Tracker->IsComplete()));
                 }
 
                 // token1Tracker is still not complete since token1 has not
                 // been returned.
-                ASSERT_TRUE(!(token1Tracker->IsComplete()));
+                ASSERT_FALSE((token1Tracker->IsComplete()));
             }
 
             // token1 goes out of scope marking token1Tracker complete.
@@ -466,8 +466,8 @@ namespace BitFunnel
             while (!thread2Requested) {}
             // Can't really check for these reliably. TODO: use condition var
             // if we want to check for this.
-            // ASSERT_TRUE(!thread1Exiting);
-            // ASSERT_TRUE(!thread2Exiting);
+            // ASSERT_FALSE(thread1Exiting);
+            // ASSERT_FALSE(thread2Exiting);
 
             tokenManager.Shutdown();
 

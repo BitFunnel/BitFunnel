@@ -117,7 +117,7 @@ namespace BitFunnel
             SerialNumber lastSerialNumber = 1;
 
             {
-                ASSERT_TRUE(!issuer.IsInFlight(lastSerialNumber));
+                ASSERT_FALSE(issuer.IsInFlight(lastSerialNumber));
 
                 Token token(issuer, lastSerialNumber);
                 issuer.RecordIssuedToken(lastSerialNumber);
@@ -129,7 +129,7 @@ namespace BitFunnel
             }
 
             // A token should be returned by now.
-            ASSERT_TRUE(!issuer.IsInFlight(lastSerialNumber));
+            ASSERT_FALSE(issuer.IsInFlight(lastSerialNumber));
             issuer.VerifyAllTokensReturned();
 
             {
@@ -151,7 +151,7 @@ namespace BitFunnel
 
                 // token2 has been returned.
                 ASSERT_TRUE(issuer.IsInFlight(lastSerialNumber - 1));
-                ASSERT_TRUE(!issuer.IsInFlight(lastSerialNumber));
+                ASSERT_FALSE(issuer.IsInFlight(lastSerialNumber));
 
                 lastSerialNumber++;
             }
@@ -183,7 +183,7 @@ namespace BitFunnel
             SerialNumber lastSerialNumber = 1;
 
             {
-                ASSERT_TRUE(!issuer.IsInFlight(lastSerialNumber));
+                ASSERT_FALSE(issuer.IsInFlight(lastSerialNumber));
 
                 // TODO: see TODO for this function.
                 // Token token = GenerateToken(issuer, lastSerialNumber);
@@ -202,7 +202,7 @@ namespace BitFunnel
             }
 
             // Token goes out of scope and should be marked as returned.
-            ASSERT_TRUE(!issuer.IsInFlight(lastSerialNumber));
+            ASSERT_FALSE(issuer.IsInFlight(lastSerialNumber));
 
             issuer.VerifyAllTokensReturned();
         }
