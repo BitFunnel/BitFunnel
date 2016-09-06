@@ -163,7 +163,9 @@ namespace BitFunnel
         {
             if (!m_input.eof())
             {
-                m_nextChar = m_input.get();
+                // TODO: when we handle UTF-8 correctly, everything will turn
+                // into int.
+                m_nextChar = static_cast<char>(m_input.get());
             }
             else
             {
