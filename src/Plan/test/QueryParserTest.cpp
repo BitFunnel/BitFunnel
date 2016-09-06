@@ -4,10 +4,17 @@
 #include <sstream>
 
 #include "Allocator.h"
+#include "BitFunnel/TermMatchNode.h"
 #include "QueryParser.h"
+#include "TextObjectFormatter.h"
 
 namespace BitFunnel
 {
+    void TodoFnName()
+    {
+
+    }
+
     TEST(QueryParser, TODO)
     {
         Allocator allocator(512);
@@ -17,6 +24,12 @@ namespace BitFunnel
         QueryParser wat(s, allocator);
 
         auto watResult = wat.Parse();
-        std::cout << watResult << std::endl;
+        ASSERT_NE(nullptr, watResult);
+
+        std::stringstream output;
+        TextObjectFormatter formatter(output);
+        watResult->Format(formatter);
+
+        std::cout << output.str() << std::endl;
     }
 }
