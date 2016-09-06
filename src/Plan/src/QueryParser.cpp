@@ -202,10 +202,26 @@ namespace BitFunnel
     }
 
 
-    std::string ParseToken()
+    std::string QueryParser::ParseToken()
     {
-        // TODO.
-        return "";
+        // TODO: unify with legalEscapes.
+        char const * specialChars = "&|\\()\":";
+
+        std::string token;
+        char c = PeekChar();
+        if (isspace(c) || strchr(specialChars, c) != nullptr)
+        {
+            // TODO: should we throw here or just return the empty string?
+            throw ParseError("Found space or special character at beginning of unigram.",
+                             m_currentPosition);
+        }
+        do
+        {
+            token.push_back(GetChar());
+            c = PeekChar();
+        } while (!isspace(c) && strchr(specialChars, c) == nullptr);
+
+        return token;
     }
 
 
