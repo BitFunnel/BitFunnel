@@ -18,7 +18,9 @@ namespace BitFunnel
 
     TermMatchNode const * QueryParser::Parse()
     {
-        return ParseOr();
+        return ParseUnigram();
+        // TODO: parse the correct thing.
+        // return ParseOr();
     }
 
 
@@ -46,7 +48,7 @@ namespace BitFunnel
 
     TermMatchNode const * QueryParser::ParseAnd()
     {
-        TermMatchNode::Builder builder(TermMatchNode::OrMatch, m_allocator);
+        TermMatchNode::Builder builder(TermMatchNode::AndMatch, m_allocator);
         // TODO.
         return builder.Complete();
     }
@@ -54,7 +56,7 @@ namespace BitFunnel
 
     TermMatchNode const * QueryParser::ParseTerm()
     {
-        std::string streamId = "body";
+        Term::StreamId streamId = 0; // TODO: convert streamId to string?
 
         SkipWhite();
         if (PeekChar() == '"')
@@ -69,7 +71,8 @@ namespace BitFunnel
 
             if (PeekChar() == ':')
             {
-                streamId = token;
+                // streamId = token;
+                streamId = 0;
                 GetChar();
             }
             if (PeekChar() == '"')
@@ -100,13 +103,11 @@ namespace BitFunnel
     {
         // TODO: make sure we've consumed whitespace prior to calling this.
         std::string token = ParseToken();
-        TermMatchNode::Builder builder(TermMatchNode::UnigramMatch, m_allocator);
-        // TODO: is position = 0 here ok?
+
         // TODO: won't this c_str go away when we go out of scope?
         // This should get fixed when we allocate with the arena allocator.
-        TermMatchNode::Unigram term(token.c_str(), 0);
-        builder.AddChild(&term);
-        return builder.Complete();
+        Term::StreamId dummy = 0;
+        return TermMatchNode::Builder::CreateUnigramNode(token.c_str(), dummy, m_allocator);
     }
 
 
@@ -214,6 +215,7 @@ namespace BitFunnel
             // TODO: should we throw here or just return the empty string?
             throw ParseError("Found space or special character at beginning of unigram.",
                              m_currentPosition);
+
         }
         do
         {
