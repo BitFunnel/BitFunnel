@@ -38,17 +38,17 @@ namespace BitFunnel
         const DocId docId = 0;
 
         auto idfTable = Factories::CreateIndexedIdfTable();
-        auto config = 
+        auto config =
             Factories::CreateConfiguration(1, false, *idfTable);
         Document d(*config, docId);
 
-        std::array<char const *, 5> text = {
+        std::array<char const *, 5> text {{
             "one",
             "two",
             "three",
             "four",
             "five"
-        };
+         }};
 
         d.OpenStream(streamId);
         for (auto word : text)
