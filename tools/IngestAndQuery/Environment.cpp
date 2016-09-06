@@ -70,33 +70,9 @@ namespace BitFunnel
     }
 
 
-    class RecyclerTask : public ITask
-    {
-    public:
-        RecyclerTask(IRecycler & recycler)
-          : m_recycler(recycler)
-        {
-        }
-
-        virtual void Execute() override
-        {
-            m_recycler.Run();
-        }
-
-    private:
-        IRecycler & m_recycler;
-    };
-
-
     void Environment::StartIndex()
     {
         m_index->StartIndex(false);
-    }
-
-
-    void Environment::StopIndex()
-    {
-        m_index->StopIndex();
     }
 
 

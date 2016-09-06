@@ -122,9 +122,6 @@ namespace BitFunnel
                     << std::endl;
             }
         }
-        // NOTE: Must shutdown the index before the TaskPool because one of the
-        // TaskPool threads is waiting for the Recycler to shutdown.
-        environment.StopIndex();
         taskPool.Shutdown();
     }
 }

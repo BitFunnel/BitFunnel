@@ -48,7 +48,6 @@ namespace BitFunnel
         TaskPool & GetTaskPool() const;
 
         void StartIndex();
-        void StopIndex();
 
         IConfiguration const & GetConfiguration() const;
         IIngestor & GetIngestor() const;
