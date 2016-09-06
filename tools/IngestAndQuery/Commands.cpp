@@ -150,8 +150,10 @@ namespace BitFunnel
     //*************************************************************************
     Ingest::Ingest(Environment & environment,
                    Id id,
-                   char const * parameters)
-        : TaskBase(environment, id, Type::Synchronous)
+                   char const * parameters,
+                   bool cacheDocuments)
+        : TaskBase(environment, id, Type::Synchronous),
+          m_cacheDocuments(cacheDocuments)
     {
         auto command = TaskFactory::GetNextToken(parameters);
         if (command.compare("manifest") == 0)
@@ -187,6 +189,13 @@ namespace BitFunnel
                 << filePaths.back()
                 << "\"" << std::endl;
 
+            if (m_cacheDocuments)
+            {
+                std::cout
+                    << "Caching IDocuments for query verification."
+                    << std::endl;
+            }
+
             Environment & environment = GetEnvironment();
             IConfiguration const & configuration = environment.GetConfiguration();
             IIngestor & ingestor = environment.GetIngestor();
@@ -208,6 +217,58 @@ namespace BitFunnel
             "  Ingests a single chunk file or a list of chunk\n"
             "  files specified by a manifest.\n"
             "  NOT IMPLEMENTED"
+            );
+    }
+
+
+    //*************************************************************************
+    //
+    // Cache
+    //
+    //*************************************************************************
+    Cache::Cache(Environment & environment,
+                 Id id,
+                 char const * parameters)
+        : Ingest(environment, id, parameters, true)
+    {
+    }
+
+
+    ICommand::Documentation Cache::GetDocumentation()
+    {
+        return Documentation(
+            "cache",
+            "Ingests documents into the index and also stores them in a cache\n"
+            "for query verification purposes.",
+            "cache (manifest | chunk) <path>\n"
+            "  Ingests a single chunk file or a list of chunk\n"
+            "  files specified by a manifest.\n"
+            "  Also caches IDocuments for query verification.\n"
+            );
+    }
+
+
+    //*************************************************************************
+    //
+    // Load
+    //
+    //*************************************************************************
+    Load::Load(Environment & environment,
+               Id id,
+               char const * parameters)
+        : Ingest(environment, id, parameters, false)
+    {
+    }
+
+
+    ICommand::Documentation Load::GetDocumentation()
+    {
+        return Documentation(
+            "load",
+            "Ingests documents into the index",
+            "load (manifest | chunk) <path>\n"
+            "  Ingests a single chunk file or a list of chunk\n"
+            "  files specified by a manifest.\n"
             );
     }
 

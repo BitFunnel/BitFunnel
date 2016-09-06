@@ -49,7 +49,8 @@ namespace BitFunnel
         m_taskFactory->RegisterCommand<DelayedPrint>();
         m_taskFactory->RegisterCommand<Exit>();
         m_taskFactory->RegisterCommand<Help>();
-        m_taskFactory->RegisterCommand<Ingest>();
+        m_taskFactory->RegisterCommand<Cache>();
+        m_taskFactory->RegisterCommand<Load>();
         m_taskFactory->RegisterCommand<Query>();
         m_taskFactory->RegisterCommand<Script>();
         m_taskFactory->RegisterCommand<Show>();

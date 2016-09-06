@@ -75,7 +75,8 @@ namespace BitFunnel
     public:
         Ingest(Environment & environment,
                Id id,
-               char const * parameters);
+               char const * parameters,
+               bool cache);
 
         virtual void Execute() override;
         static ICommand::Documentation GetDocumentation();
@@ -83,6 +84,29 @@ namespace BitFunnel
     private:
         bool m_manifest;
         std::string m_path;
+        bool m_cacheDocuments;
+    };
+
+
+    class Cache : public Ingest
+    {
+    public:
+        Cache(Environment & environment,
+              Id id,
+              char const * parameters);
+
+        static ICommand::Documentation GetDocumentation();
+    };
+
+
+    class Load : public Ingest
+    {
+    public:
+        Load(Environment & environment,
+             Id id,
+             char const * parameters);
+
+        static ICommand::Documentation GetDocumentation();
     };
 
 
