@@ -69,6 +69,13 @@ namespace BitFunnel
     }
 
 
+    bool Document::Contains(Term & term) const
+    {
+        auto it = m_postings.find(term);
+        return (it != m_postings.end());
+    }
+
+
     void Document::OpenStream(Term::StreamId id)
     {
         if (m_streamIsOpen)

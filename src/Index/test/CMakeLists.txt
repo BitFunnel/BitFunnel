@@ -7,7 +7,7 @@ set(CPPFILES
     DocumentFrequencyTableTest.cpp
     DocumentHandleTest.cpp
     DocumentLengthHistogramTest.cpp
-    # IndexUtilsTest.cpp # TODO: remove.
+    DocumentTest.cpp
     IngestorTest.cpp
     RowConfigurationTest.cpp
     RowTableDescriptorTest.cpp

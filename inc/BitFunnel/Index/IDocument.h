@@ -45,6 +45,9 @@ namespace BitFunnel
         // the supplied DocumentHandle.
         virtual void Ingest(DocumentHandle handle) const = 0;
 
+        // Returns true iff the document contains a specific term.
+        virtual bool Contains(Term & term) const = 0;
+
 
         // Opens a named stream for term additions. Subsequent calls to
         // AddTerm() will add terms to this stream.
