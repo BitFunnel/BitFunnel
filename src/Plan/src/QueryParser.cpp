@@ -1,11 +1,13 @@
 #include <cctype>
+#include <istream>
 #include <sstream>
 
+#include "BitFunnel/TermMatchNode.h"
 #include "QueryParser.h"
 
-name BitFunnel
+namespace BitFunnel
 {
-    QueryParser(std::istream& input, IAllocator& allocator)
+    QueryParser::QueryParser(std::istream& input, IAllocator& allocator)
         : m_input(input),
           m_allocator(allocator),
           m_currentPosition(0),
@@ -14,15 +16,15 @@ name BitFunnel
     }
 
 
-    TermMatchNode const & QueryParser::TermMatchNode()
+    TermMatchNode const * QueryParser::Parse()
     {
-        ParseOr();
+        return ParseOr();
     }
 
 
-    TermMatchNode const & QueryParser::ParseOr()
+    TermMatchNode const * QueryParser::ParseOr()
     {
-        TermMatchNode::Builder builder(TermMatchNode::NotMatch, m_allocator);
+        TermMatchNode::Builder builder(TermMatchNode::OrMatch, m_allocator);
 
         auto left = ParseAnd();
         builder.AddChild(left);
@@ -42,53 +44,77 @@ name BitFunnel
     }
 
 
-    TermMatchNode const & QueryParser::ParseAnd()
+    TermMatchNode const * QueryParser::ParseAnd()
     {
+        TermMatchNode::Builder builder(TermMatchNode::OrMatch, m_allocator);
+        // TODO.
+        return builder.Complete();
     }
 
 
-    TermMatchNode const & QueryParser::ParseTerm()
+    TermMatchNode const * QueryParser::ParseTerm()
     {
         std::string streamId = "body";
 
         SkipWhite();
         if (PeekChar() == '"')
         {
-            return ParsePhrase(streamId);
+            // TODO: handle streamId.
+            // return ParsePhrase(streamId);
+            return ParsePhrase();
         }
         else
         {
-            std::string token = PorseToken();
+            std::string token = ParseToken();
 
             if (PeekChar() == ':')
             {
-                streamId = left;
+                streamId = token;
                 GetChar();
             }
             if (PeekChar() == '"')
             {
-                return ParsePhrase(streamId);
+                // TODO: add streamId.
+                // return ParsePhrase(streamId);
+                return ParsePhrase();
             }
             else
             {
-                return ParseUnigram(streamId);
+                // TODO: add streamId.
+                // return ParseUnigram(streamId);
+                return ParseUnigram();
             }
         }
     }
 
 
-    TermMatchNode const & QueryParser::ParseSimple()
+    TermMatchNode const * QueryParser::ParseSimple()
     {
+        TermMatchNode::Builder builder(TermMatchNode::OrMatch, m_allocator);
+        // TODO.
+        return builder.Complete();
     }
 
 
-    TermMatchNode const & QueryParser::ParseUnigram()
+    TermMatchNode const * QueryParser::ParseUnigram()
     {
+        // TODO: make sure we've consumed whitespace prior to calling this.
+        std::string token = ParseToken();
+        TermMatchNode::Builder builder(TermMatchNode::UnigramMatch, m_allocator);
+        // TODO: is position = 0 here ok?
+        // TODO: won't this c_str go away when we go out of scope?
+        // This should get fixed when we allocate with the arena allocator.
+        TermMatchNode::Unigram term(token.c_str(), 0);
+        builder.AddChild(&term);
+        return builder.Complete();
     }
 
 
-    TermMatchNode const & QueryParser::ParsePhrase()
+    TermMatchNode const * QueryParser::ParsePhrase()
     {
+        TermMatchNode::Builder builder(TermMatchNode::OrMatch, m_allocator);
+        // TODO.
+        return builder.Complete();
     }
 
 
@@ -152,7 +178,7 @@ name BitFunnel
     char QueryParser::GetWithEscape()
     {
         char c = PeekChar();
-        char const * legalEscapes = "&|\\()\":"
+        char const * legalEscapes = "&|\\()\":";
         if (c == '\\')
         {
             GetChar();
@@ -174,14 +200,21 @@ name BitFunnel
     }
 
 
-    Parser::ParseError::ParseError(char const * message, size_t position)
+    std::string ParseToken()
+    {
+        // TODO.
+        return "";
+    }
+
+
+    QueryParser::ParseError::ParseError(char const * message, size_t position)
         : std::runtime_error(message),
           m_position(position)
     {
     }
 
 
-    std::ostream& operator<< (std::ostream &out, const Parser::ParseError &e)
+    std::ostream& operator<< (std::ostream &out, const QueryParser::ParseError &e)
     {
         out << std::string(e.m_position, ' ') << '^' << std::endl;
         out << "Parser error (position = " << e.m_position << "): ";

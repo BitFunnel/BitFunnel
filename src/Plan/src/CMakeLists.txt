@@ -4,6 +4,7 @@ set(CPPFILES
     AbstractRow.cpp
     CompileNode.cpp
     MatchTreeRewriter.cpp
+    QueryParser.cpp
     RowMatchNode.cpp
     RowPlan.cpp
     StringVector.cpp

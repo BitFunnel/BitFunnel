@@ -2,6 +2,7 @@
 
 #include <iosfwd>   // std::istream parameter.
 #include <stdexcept>
+#include <string>  // std::string.
 
 
 // Primitive things you can talk about are terms and phrases. And then we'll
@@ -26,51 +27,7 @@ namespace BitFunnel
     public:
         QueryParser(std::istream& input, IAllocator& allocator);
 
-        TermMatchNode const & Parse() const;
-
-    private:
-        // OR:
-        //   AND (| AND)*
-        TermMatchNode const & ParseOr();
-
-        // AND:
-        //   SIMPLE ([&] SIMPLE)*
-        TermMatchNode const & ParseAnd();
-
-        // TERM:
-        //   [StreamId:]'"' PHRASE '"'
-        //   [StreamId:]UNIGRAM
-        TermMatchNode const & ParseTerm();
-
-        // SIMPLE:
-        //   '-' SIMPLE
-        //   '(' OR ')'
-        //   TERM
-        TermMatchNode const & ParseSimple();
-
-        // UNIGRAM:
-        //   ![SPACE|SPECIAL]+
-        TermMatchNode const & ParseUnigram();
-
-        // PHRASE:
-        //   '"' UNIGRAM (SPACE* UNIGRAM)* '"'
-        TermMatchNode const & ParsePhrase();
-
-        bool AtEOF();
-        // Note that delimeters must be ASCII.
-        void ExpectDelimeter(char c);
-        void SkipWhite();
-        char PeekChar();
-        char GetChar();
-        char GetWithEscape();
-
-        std::istream& m_input;
-        IAllocator& m_allocator;
-
-        // Used for errors.
-        size_t m_currentPosition;
-        bool m_haveChar;
-        char m_nextChar;
+        TermMatchNode const * Parse();
 
         //
         // ParseError records the character position and cause of an error
@@ -87,5 +44,51 @@ namespace BitFunnel
             // Character position where error occurred.
             size_t m_position;
         };
+
+    private:
+        // OR:
+        //   AND (| AND)*
+        TermMatchNode const * ParseOr();
+
+        // AND:
+        //   SIMPLE ([&] SIMPLE)*
+        TermMatchNode const * ParseAnd();
+
+        // TERM:
+        //   [StreamId:]'"' PHRASE '"'
+        //   [StreamId:]UNIGRAM
+        TermMatchNode const * ParseTerm();
+
+        // SIMPLE:
+        //   '-' SIMPLE
+        //   '(' OR ')'
+        //   TERM
+        TermMatchNode const * ParseSimple();
+
+        // UNIGRAM:
+        //   ![SPACE|SPECIAL]+
+        TermMatchNode const * ParseUnigram();
+
+        // PHRASE:
+        //   '"' UNIGRAM (SPACE* UNIGRAM)* '"'
+        TermMatchNode const * ParsePhrase();
+
+        std::string ParseToken();
+
+        bool AtEOF();
+        // Note that delimeters must be ASCII.
+        void ExpectDelimeter(char c);
+        void SkipWhite();
+        char PeekChar();
+        char GetChar();
+        char GetWithEscape();
+
+        std::istream& m_input;
+        IAllocator& m_allocator;
+
+        // Used for errors.
+        size_t m_currentPosition;
+        bool m_haveChar;
+        char m_nextChar;
     };
 }
