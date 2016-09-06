@@ -73,7 +73,7 @@ namespace BitFunnel
         //   '"' UNIGRAM (SPACE* UNIGRAM)* '"'
         TermMatchNode const * ParsePhrase();
 
-        std::string ParseToken();
+        char const * ParseToken();
 
         bool AtEOF();
         // Note that delimeters must be ASCII.

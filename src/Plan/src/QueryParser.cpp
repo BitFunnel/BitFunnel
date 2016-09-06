@@ -1,7 +1,10 @@
+#include <iostream> // TODO: remove.
+
 #include <cctype>
 #include <istream>
 #include <sstream>
 
+#include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/TermMatchNode.h"
 #include "QueryParser.h"
 
@@ -102,12 +105,12 @@ namespace BitFunnel
     TermMatchNode const * QueryParser::ParseUnigram()
     {
         // TODO: make sure we've consumed whitespace prior to calling this.
-        std::string token = ParseToken();
+        char const * token = ParseToken();
 
         // TODO: won't this c_str go away when we go out of scope?
         // This should get fixed when we allocate with the arena allocator.
         Term::StreamId dummy = 0;
-        return TermMatchNode::Builder::CreateUnigramNode(token.c_str(), dummy, m_allocator);
+        return TermMatchNode::Builder::CreateUnigramNode(token, dummy, m_allocator);
     }
 
 
@@ -203,7 +206,7 @@ namespace BitFunnel
     }
 
 
-    std::string QueryParser::ParseToken()
+    char const * QueryParser::ParseToken()
     {
         // TODO: unify with legalEscapes.
         char const * specialChars = "&|\\()\":";
@@ -223,7 +226,10 @@ namespace BitFunnel
             c = PeekChar();
         } while (!isspace(c) && strchr(specialChars, c) == nullptr);
 
-        return token;
+        char* buffer = static_cast<char*>(m_allocator.Allocate(token.size()+1));
+        memcpy(buffer, token.c_str(), token.size()+1);
+        std::cout << "ParseToken result: " << token << ":" << buffer << std::endl;
+        return buffer;
     }
 
 
