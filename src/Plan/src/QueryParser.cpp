@@ -21,7 +21,7 @@ namespace BitFunnel
 
     TermMatchNode const * QueryParser::Parse()
     {
-        return ParseSimple();
+        return ParseOr();
         // TODO: parse the correct thing.
         // return ParseOr();
     }
@@ -107,8 +107,8 @@ namespace BitFunnel
         if (PeekChar() == '(')
         {
             GetChar();
-            // TODO: does taking parens off like this even work?
             auto orNode = ParseOr();
+            SkipWhite();
             ExpectDelimeter(')');
             return orNode;
         }

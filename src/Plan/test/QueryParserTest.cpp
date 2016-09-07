@@ -36,12 +36,21 @@ namespace BitFunnel
         std::stringstream s;
 
         VerifyQueryParser("Unigram(\"wat\", 0)", "wat notinsideunigram", allocator);
-        VerifyQueryParser("Unigram(\"wat\", 0)", "wat|notinsideunigram", allocator);
 
         VerifyQueryParser("Unigram(\"wat\", 0)", "wat", allocator);
 
         VerifyQueryParser("Unigram(\"wat\", 0)", "StreamsAreCurrentlyIgnored:wat", allocator);
 
         VerifyQueryParser("Unigram(\"wat\", 0)", "(wat)", allocator);
+
+        VerifyQueryParser(
+                          "Or {\n"
+                          "  Children: [\n"
+                          "    Unigram(\"foo\", 0),\n"
+                          "    Unigram(\"wat\", 0)\n"
+                          "  ]\n"
+                          "}",
+                          "wat|foo",
+                          allocator);
     }
 }
