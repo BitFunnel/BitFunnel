@@ -41,10 +41,13 @@ namespace BitFunnel
     class ChunkEnumerator : public NonCopyable
     {
     public:
+        // The act of constructing a ChunkEnumerator will cause the chunk files
+        // specified by filePaths to be ingested.
         ChunkEnumerator(std::vector<std::string> const & filePaths,
                         IConfiguration const & config,
                         IIngestor& ingestor,
-                        size_t threadCount);
+                        size_t threadCount,
+                        bool cacheDocuments);
 
         void WaitForCompletion() const;
 

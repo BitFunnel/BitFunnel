@@ -34,10 +34,12 @@ namespace BitFunnel
     ChunkTaskProcessor::ChunkTaskProcessor(
         std::vector<std::string> const & filePaths,
         IConfiguration const & config,
-        IIngestor& ingestor)
+        IIngestor& ingestor,
+        bool cacheDocuments)
       : m_filePaths(filePaths),
         m_config(config),
-        m_ingestor(ingestor)
+        m_ingestor(ingestor),
+        m_cacheDocuments(cacheDocuments)
     {
     }
 
@@ -73,7 +75,7 @@ namespace BitFunnel
 
         // NOTE: The act of constructing a ChunkIngestor causes the bytes in
         // chunkData to be parsed into documents and ingested.
-        ChunkIngestor(chunkData, m_config, m_ingestor);
+        ChunkIngestor(chunkData, m_config, m_ingestor, m_cacheDocuments);
     }
 
 

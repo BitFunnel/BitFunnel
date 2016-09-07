@@ -32,14 +32,6 @@
 
 namespace BitFunnel
 {
-    class IDocumentFactory
-    {
-    };
-}
-
-
-namespace BitFunnel
-{
     class IConfiguration;
     class IIngestor;
 
@@ -48,12 +40,10 @@ namespace BitFunnel
     class ChunkIngestor : public NonCopyable, public ChunkReader::IEvents
     {
     public:
-        // TODO: We need to implement IDocumentFactory before this make sense.
-        // ChunkIngestor(std::string const & filePath, IIndex& index,
-        //               IDocumentFactory& factory);
         ChunkIngestor(std::vector<char> const& chunkData,
                       IConfiguration const & configuration,
-                      IIngestor& ingestor);
+                      IIngestor& ingestor,
+                      bool cacheDocuments);
 
         //
         // ChunkReader::IEvents methods.
@@ -72,6 +62,7 @@ namespace BitFunnel
         //
         IConfiguration const & m_config;
         IIngestor& m_ingestor;
+        bool m_cacheDocuments;
 
         //
         // Other members

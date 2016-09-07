@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "ChunkIngestor.h"
 #include "Document.h"
@@ -30,9 +31,11 @@ namespace BitFunnel
     ChunkIngestor::ChunkIngestor(
         std::vector<char> const & chunkData,
         IConfiguration const & config,
-        IIngestor& ingestor)
+        IIngestor& ingestor,
+        bool cacheDocuments)
       : m_config(config),
         m_ingestor(ingestor),
+        m_cacheDocuments(cacheDocuments),
         m_chunkData(chunkData)
     {
         ChunkReader(m_chunkData, *this);
@@ -72,7 +75,14 @@ namespace BitFunnel
     {
         m_currentDocument->CloseDocument(bytesRead);
         m_ingestor.Add(m_currentDocument->GetDocId(), *m_currentDocument);
-        m_currentDocument.reset(nullptr);
+        if (m_cacheDocuments)
+        {
+            m_ingestor.GetDocumentCache().Add(std::move(m_currentDocument));
+        }
+        else
+        {
+            m_currentDocument.reset(nullptr);
+        }
     }
 
 

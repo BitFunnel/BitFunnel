@@ -34,5 +34,6 @@ namespace BitFunnel
     void IngestChunks(std::vector<std::string> const & filePaths,
                       IConfiguration const & config,
                       IIngestor& ingestor,
-                      size_t threadCount);
+                      size_t threadCount,
+                      bool cacheDocuments);
 }

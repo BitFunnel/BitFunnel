@@ -40,7 +40,8 @@ namespace BitFunnel
     public:
         ChunkTaskProcessor(std::vector<std::string> const & filePaths,
                            IConfiguration const & config,
-                           IIngestor& ingestor);
+                           IIngestor& ingestor,
+                           bool cacheDocuments);
 
         //
         // ITaskProcessor methods.
@@ -55,5 +56,6 @@ namespace BitFunnel
         std::vector<std::string> const & m_filePaths;
         IConfiguration const & m_config;
         IIngestor& m_ingestor;
+        bool m_cacheDocuments;
     };
 }

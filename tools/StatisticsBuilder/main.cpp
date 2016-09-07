@@ -84,14 +84,16 @@ namespace BitFunnel
 
         // TODO: Use correct thread count.
         const size_t threadCount = 1;
-        IngestChunks(filePaths, configuration, ingestor, threadCount);
+        IngestChunks(filePaths, configuration, ingestor, threadCount, false);
 
         const double elapsedTime = stopwatch.ElapsedTime();
         const size_t totalSourceBytes = ingestor.GetTotalSouceBytesIngested();
 
         std::cout << "Ingestion complete." << std::endl;
         std::cout << "  Ingestion time = " << elapsedTime << std::endl;
-        std::cout << "  Ingestion rate (bytes/s): " << totalSourceBytes / elapsedTime << std::endl;
+        std::cout
+            << "  Ingestion rate (bytes/s): "
+            << totalSourceBytes / elapsedTime << std::endl;
 
         ingestor.PrintStatistics();
 

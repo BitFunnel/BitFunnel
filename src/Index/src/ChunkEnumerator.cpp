@@ -32,13 +32,14 @@ namespace BitFunnel
         std::vector<std::string> const & filePaths,
         IConfiguration const & config,
         IIngestor& ingestor,
-        size_t threadCount)
+        size_t threadCount,
+        bool cacheDocuments)
     {
         std::vector<std::unique_ptr<ITaskProcessor>> processors;
         for (size_t i = 0; i < threadCount; ++i) {
             processors.push_back(
                 std::unique_ptr<ITaskProcessor>(
-                    new ChunkTaskProcessor(filePaths, config, ingestor)));
+                    new ChunkTaskProcessor(filePaths, config, ingestor, cacheDocuments)));
         }
 
         if (threadCount > 1)

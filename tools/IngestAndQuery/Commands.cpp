@@ -197,11 +197,16 @@ namespace BitFunnel
             }
 
             Environment & environment = GetEnvironment();
-            IConfiguration const & configuration = environment.GetConfiguration();
+            IConfiguration const & configuration =
+                environment.GetConfiguration();
             IIngestor & ingestor = environment.GetIngestor();
             size_t threadCount = 1;
 
-            IngestChunks(filePaths, configuration, ingestor, threadCount);
+            IngestChunks(filePaths,
+                         configuration,
+                         ingestor,
+                         threadCount,
+                         m_cacheDocuments);
 
             std::cout << "Ingestion complete." << std::endl;
         }
