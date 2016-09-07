@@ -17,7 +17,8 @@ df <- read.csv(header=FALSE, file="talk.csv")
 # ggplot(data=df, aes(x=factor(V1), y=V2)) + geom_bar(stat="identity") + facet_wrap(~ V3, ncol=1) + labs(x = "Number of cache misses", y = "count")
 
 # plot for talk
-ggplot(data=df, aes(x=factor(V1), y=V2)) + geom_bar(stat="identity") + labs(x = "Memory accesses", y = "Count") +
-  theme(axis.text.x = element_text(size=40))
+ggplot(data=df, aes(x=factor(V1), y=V2)) + geom_bar(stat="identity") + labs(x = "Memory accesses", y = "Percent") +
+  theme(axis.text = element_text(size=40),
+        axis.title = element_text(size=40))
 
 dev.off()
