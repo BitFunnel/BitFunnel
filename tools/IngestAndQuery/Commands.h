@@ -153,8 +153,9 @@ namespace BitFunnel
 
         enum class Mode
         {
-            Term,
-            Rows
+            Cache,
+            Rows,
+            Term
         };
 
     private:

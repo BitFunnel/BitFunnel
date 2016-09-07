@@ -25,6 +25,8 @@
 #include <thread>       // sleep_for, this_thread
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/IDocument.h"
+#include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/ITermTable2.h"
@@ -385,14 +387,19 @@ namespace BitFunnel
         : TaskBase(environment, id, Type::Synchronous)
     {
         auto command = TaskFactory::GetNextToken(parameters);
-        if (command.compare("term") == 0)
+        if (command.compare("cache") == 0)
         {
-            m_mode = Mode::Term;
+            m_mode = Mode::Cache;
             m_term = TaskFactory::GetNextToken(parameters);
         }
         else if (command.compare("rows") == 0)
         {
             m_mode = Mode::Rows;
+            m_term = TaskFactory::GetNextToken(parameters);
+        }
+        else if (command.compare("term") == 0)
+        {
+            m_mode = Mode::Term;
             m_term = TaskFactory::GetNextToken(parameters);
         }
         else
@@ -405,40 +412,64 @@ namespace BitFunnel
 
     void Show::Execute()
     {
-        // TODO: Consider parsing phrase terms here.
-
-        auto & environment = GetEnvironment();
-        Term term(m_term.c_str(), 0, environment.GetConfiguration());
-        RowIdSequence rows(term, environment.GetTermTable());
-
-        std::cout
-            << "Term("
-            << "\"" << m_term << "\""
-            << ")" << std::endl;
-
-        for (auto row : rows)
+        if (m_mode == Mode::Cache)
         {
-            std::cout
-                << "  RowId("
-                << row.GetRank()
-                << ", "
-                << row.GetIndex()
-                << ")";
+            auto & environment = GetEnvironment();
+            Term term(m_term.c_str(), 0, environment.GetConfiguration());
+            auto & cache = environment.GetIngestor().GetDocumentCache();
 
-            if (m_mode == Mode::Rows)
+            std::cout << "DocId, Contains" << std::endl;
+            for (auto & entry : cache)
             {
-                IIngestor & ingestor = GetEnvironment().GetIngestor();
-
-                // TODO: Figure out how to supply the DocId. The DocId is used
-                // to gain access to a Slice.
-                // For now use the DocId of the first document in
-                // Wikipedia chunk AA\wiki_00.
-                const DocId docId = 12;
-                auto handle = ingestor.GetHandle(docId);
-                std::cout << ": " << (handle.GetBit(row) ? "1" : "0");
+                std::cout
+                    << "  DocId(" << entry.second << ") ";
+                if (entry.first.Contains(term))
+                {
+                    std::cout << "contains ";
+                }
+                else
+                {
+                    std::cout << "does not contain ";
+                }
+                std::cout << m_term << std::endl;
             }
+        }
+        else
+        {
+            // TODO: Consider parsing phrase terms here.
+            auto & environment = GetEnvironment();
+            Term term(m_term.c_str(), 0, environment.GetConfiguration());
+            RowIdSequence rows(term, environment.GetTermTable());
 
-            std::cout << std::endl;
+            std::cout
+                << "Term("
+                << "\"" << m_term << "\""
+                << ")" << std::endl;
+
+            for (auto row : rows)
+            {
+                std::cout
+                    << "  RowId("
+                    << row.GetRank()
+                    << ", "
+                    << row.GetIndex()
+                    << ")";
+
+                if (m_mode == Mode::Rows)
+                {
+                    IIngestor & ingestor = GetEnvironment().GetIngestor();
+
+                    // TODO: Figure out how to supply the DocId. The DocId is used
+                    // to gain access to a Slice.
+                    // For now use the DocId of the first document in
+                    // Wikipedia chunk AA\wiki_00.
+                    const DocId docId = 12;
+                    auto handle = ingestor.GetHandle(docId);
+                    std::cout << ": " << (handle.GetBit(row) ? "1" : "0");
+                }
+
+                std::cout << std::endl;
+            }
         }
     }
 
@@ -448,12 +479,13 @@ namespace BitFunnel
         return Documentation(
             "show",
             "Shows information about various data structures. (TODO)",
-            "show (rows <term> [<docstart> <docend>])\n"
-            "   | (term <term>)\n"
-            "   | shards\n"
-            "   | shard <shardid>\n"
+            "show cache <term>\n"
+            "   | rows <term> [<docstart> <docend>]\n"
+            "   | term <term>\n"
+            //"   | shards\n"
+            //"   | shard <shardid>\n"
             "  Shows information about various data structures."
-            "  NOT IMPLEMENTED\n"
+            "  PARTIALLY IMPLEMENTED\n"
             );
     }
 

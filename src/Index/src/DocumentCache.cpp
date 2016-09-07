@@ -47,14 +47,15 @@ namespace BitFunnel
     }
 
 
-    void DocumentCache::Add(std::unique_ptr<IDocument> document)
+    void DocumentCache::Add(std::unique_ptr<IDocument> document,
+                            DocId id)
     {
         // Allocate space for new node before taking lock.
         char * buffer = new char[sizeof(Node)];
 
         // Lock protects m_head from other writers.
         std::lock_guard<std::mutex> lock(m_lock);
-        Node const * head = new (buffer) Node(std::move(document), m_head);
+        Node const * head = new (buffer) Node(std::move(document), id, m_head);
         m_head = head;
     }
 

@@ -61,8 +61,9 @@ namespace BitFunnel
     }
 
 
-    IDocument const & IDocumentCache::const_iterator::operator*() const
+    IDocumentCache::Entry const IDocumentCache::const_iterator::operator*() const
     {
-        return m_current->GetDocument();
+        return std::pair<IDocument const &, DocId>(
+            m_current->GetDocument(), m_current->GetId());
     }
 }

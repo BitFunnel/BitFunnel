@@ -42,7 +42,8 @@ namespace BitFunnel
         DocumentCache();
         ~DocumentCache();
 
-        virtual void Add(std::unique_ptr<IDocument> document) override;
+        virtual void Add(std::unique_ptr<IDocument> document,
+                         DocId id) override;
 
         virtual const_iterator begin() const override;
         virtual const_iterator end() const override;

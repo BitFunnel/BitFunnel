@@ -41,6 +41,8 @@ namespace BitFunnel
         Document(IConfiguration const & config, DocId id);
 
         // TODO: Should GetDocId() be part of IDocument?
+        // Probably not. There is no requirement that the id be internal to the
+        // document. The id could be supplied by another system.
         DocId GetDocId() const;
 
         //

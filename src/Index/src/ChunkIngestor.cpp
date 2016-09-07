@@ -77,7 +77,9 @@ namespace BitFunnel
         m_ingestor.Add(m_currentDocument->GetDocId(), *m_currentDocument);
         if (m_cacheDocuments)
         {
-            m_ingestor.GetDocumentCache().Add(std::move(m_currentDocument));
+            DocId id = m_currentDocument->GetDocId();
+            m_ingestor.GetDocumentCache().Add(std::move(m_currentDocument),
+                                              id);
         }
         else
         {

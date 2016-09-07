@@ -22,9 +22,11 @@
 
 #pragma once
 
-#include <memory>                               // std::unique_ptr parameter.
+#include <memory>                       // std::unique_ptr parameter.
+#include <utility>                      // std::pair in typedef.
 
-#include "BitFunnel/IInterface.h"               // Base class.
+#include "BitFunnel/BitFunnelTypes.h"   // DocId parameter.
+#include "BitFunnel/IInterface.h"       // Base class.
 
 
 namespace BitFunnel
@@ -50,18 +52,22 @@ namespace BitFunnel
         // Adds an IDocument to the cache. NOTE that this method transfers
         // ownership of the IDocument. The cache is responsible for destroying
         // the IDocument.
-        virtual void Add(std::unique_ptr<IDocument> document) = 0;
+        virtual void Add(std::unique_ptr<IDocument> document,
+                         DocId id) = 0;
 
 
         class Node;
 
-        class const_iterator : public std::iterator<std::input_iterator_tag, IDocument>
+        typedef std::pair<IDocument const &, DocId> Entry;
+
+        class const_iterator
+            : public std::iterator<std::input_iterator_tag, Entry>
         {
         public:
             const_iterator(Node const * node);
             bool operator!=(const_iterator const & other) const;
             const_iterator& operator++();
-            IDocument const & operator*() const;
+            Entry const operator*() const;
 
         private:
             Node const * m_current;

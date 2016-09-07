@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 #pragma once
 
+#include "BitFunnel/BitFunnelTypes.h"       // DocId parameter.
 #include "BitFunnel/Index/IDocument.h"      // IDocument template parameter.
 #include "BitFunnel/Index/IDocumentCache.h" // Containing class.
 
@@ -43,8 +44,11 @@ namespace BitFunnel
     class IDocumentCache::Node
     {
     public:
-        Node(std::unique_ptr<IDocument> document, Node const * next)
+        Node(std::unique_ptr<IDocument> document,
+             DocId id,
+             Node const * next)
           : m_document(std::move(document)),
+            m_id(id),
             m_next(next)
         {
         }
@@ -54,6 +58,11 @@ namespace BitFunnel
             return *m_document;
         }
 
+        DocId const & GetId() const
+        {
+            return m_id;
+        }
+
         Node const * GetNext() const
         {
             return m_next;
@@ -61,6 +70,7 @@ namespace BitFunnel
 
     private:
         std::unique_ptr<IDocument const> m_document;
+        DocId m_id;
         Node const * m_next;
     };
 }
