@@ -66,6 +66,7 @@ namespace BitFunnel
           m_documentCount(0),   // TODO: This member is now redundant (with m_documentMap).
           m_totalSourceByteSize(0),
           m_documentMap(new DocumentMap()),
+          m_documentCache(new DocumentCache()),
           m_tokenManager(Factories::CreateTokenManager()),
           m_sliceBufferAllocator(sliceBufferAllocator)
     {
@@ -133,6 +134,12 @@ namespace BitFunnel
                 m_shards[shard]->TemporaryWriteIndexedIdfTable(*out);
             }
         }
+    }
+
+
+    IDocumentCache & Ingestor::GetDocumentCache() const
+    {
+        return *m_documentCache;
     }
 
 

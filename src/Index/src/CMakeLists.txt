@@ -8,6 +8,7 @@ set(CPPFILES
     Configuration.cpp
     DocTableDescriptor.cpp
     Document.cpp
+    DocumentCache.cpp
     DocumentDataSchema.cpp
     DocumentFrequencyTable.cpp
     DocumentFrequencyTableBuilder.cpp
@@ -16,6 +17,7 @@ set(CPPFILES
     DocumentMap.cpp
     FactSetBase.cpp
     Helpers.cpp
+    IDocumentCache.cpp
     IndexedIdfTable.cpp
     IngestChunks.cpp
     Ingestor.cpp
@@ -51,6 +53,7 @@ set(PRIVATE_HFILES
     Configuration.h
     DocTableDescriptor.h
     Document.h
+    DocumentCache.h
     DocumentDataSchema.h
     DocumentFrequencyTable.h
     DocumentFrequencyTableBuilder.h
@@ -58,6 +61,7 @@ set(PRIVATE_HFILES
     DocumentLengthHistogram.h
     DocumentMap.h
     FactSetBase.h
+    IDocumentCacheNode.h
     IndexedIdfTable.h
     Ingestor.h
     IRecyclable.h

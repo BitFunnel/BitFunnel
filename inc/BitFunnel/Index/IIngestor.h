@@ -22,7 +22,9 @@
 
 #pragma once
 
-#include <iosfwd>                               //std::istream& parameter.
+#include <iosfwd>                               // std::istream& parameter.
+#include <memory>                               // std::unique_ptr parameter.
+#include <vector>                               // std::vector return type.
 
 #include "BitFunnel/IInterface.h"               // IIngestor inherits from IInterface.
 #include "BitFunnel/Index/IFactSet.h"           // FactHandle parameter.
@@ -32,6 +34,7 @@
 namespace BitFunnel
 {
     class IDocument;
+    class IDocumentCache;
     class IFileManager;
     class IRecycler;
     class ITokenManager;
@@ -75,6 +78,12 @@ namespace BitFunnel
         //      IndexedIdfTable
         virtual void WriteStatistics(IFileManager & fileManager,
                                      TermToText const * termToText) const = 0;
+
+
+        // Returns a reference to the IDocument cache. This cache holds ingested
+        // IDocuments for use in query verification diagnostics.
+        virtual IDocumentCache & GetDocumentCache() const = 0;
+
 
         // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.

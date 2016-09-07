@@ -30,6 +30,7 @@
 
 #include "BitFunnel/BitFunnelTypes.h"       // DocId parameter.
 #include "BitFunnel/Index/IIngestor.h"      // Inherits from IIngestor.
+#include "DocumentCache.h"                  // DocumentCache embedded.
 #include "BitFunnel/NonCopyable.h"          // Base class.
 #include "BitFunnel/Token.h"                // ITokenManager parameterizes std::unique_ptr.
 #include "DocumentLengthHistogram.h"        // Embeds DocumentLengthHistogram.
@@ -74,6 +75,12 @@ namespace BitFunnel
         //      IndexedIdfTable
         virtual void WriteStatistics(IFileManager & fileManager,
                                      TermToText const * termToText) const override;
+
+
+        // Returns a reference to the IDocument cache. This cache holds ingested
+        // IDocuments for use in query verification diagnostics.
+        virtual IDocumentCache & GetDocumentCache() const override;
+
 
         // Adds a document to the index. Throws if there is no space to add the
         // document which means the system is running at its maximum capacity.
@@ -163,6 +170,8 @@ namespace BitFunnel
         std::atomic<size_t> m_totalSourceByteSize;
 
         std::unique_ptr<DocumentMap> m_documentMap;
+
+        std::unique_ptr<DocumentCache> m_documentCache;
 
         std::vector<std::unique_ptr<Shard>> m_shards;
 
