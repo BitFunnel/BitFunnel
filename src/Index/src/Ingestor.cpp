@@ -143,58 +143,6 @@ namespace BitFunnel
     }
 
 
-    //Term Ingestor::CreateTerm(char const * text, Term::StreamId streamId)
-    //{
-    //    // Case: gathering statistics - m_indexedIdfTable is empty.
-    //    // Case: have m_termToText.
-    //    Term term(text, streamId, m_indexedIdfTable);
-
-    //    // If we're maintaining a term-to-text mapping.
-    //    if (m_termToText.get() != nullptr)
-    //    {
-    //        // If this term isn't already in the table.
-    //        auto termText = m_termToText->Lookup(term.GetRawHash());
-    //        if (termText.size() == 0)
-    //        {
-    //            // Add the term to the table.
-    //            m_termToText->AddTerm(term.GetRawHash(), std::string(text));
-    //        }
-    //    }
-
-    //    return term;
-    //}
-
-
-    //Term Ingestor::ExtendPhrase(Term phrase, char const * text)
-    //{
-    //    Term term(text, phrase.GetStream(), m_indexedIdfTable);
-    //    Term extendedPhrase = phrase;
-    //    extendedPhrase.AddTerm(term);
-
-    //    // If we're maintaining a term-to-text mapping.
-    //    if (m_termToText.get() != nullptr)
-    //    {
-    //        // If this phrase isn't already in the table.
-    //        auto extendedPhraseText = m_termToText->Lookup(extendedPhrase.GetRawHash());
-    //        if (extendedPhraseText.size() == 0)
-    //        {
-    //            // Concatenate old text with new text.
-    //            auto phraseText = m_termToText->Lookup(phrase.GetRawHash());
-    //            std::string extendedText;
-    //            extendedText.reserve(phraseText.size() + 1 + strlen(text));
-    //            extendedText.append(phraseText);
-    //            extendedText.push_back(' ');
-    //            extendedText.append(text);
-
-    //            // Add the extended phrase to the table.
-    //            m_termToText->AddTerm(extendedPhrase.GetRawHash(), extendedText);
-    //        }
-    //    }
-
-    //    return extendedPhrase;
-    //}
-
-
     void Ingestor::Add(DocId id, IDocument const & document)
     {
         ++m_documentCount;

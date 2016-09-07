@@ -28,16 +28,17 @@
 #include <mutex>
 #include <vector>
 
-#include "BitFunnel/BitFunnelTypes.h"  // For DocIndex, Rank.
-#include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
-#include "BitFunnel/NonCopyable.h"     // Inherits from NonCopyable.
-#include "BitFunnel/RowId.h"  // For RowId.
-#include "ISliceOwner.h"
+#include "BitFunnel/BitFunnelTypes.h"   // DocIndex, Rank parameters.
+#include "BitFunnel/Index/IFactSet.h"   // FactHandle parameter.
+#include "BitFunnel/NonCopyable.h"      // Inherits from NonCopyable.
+#include "BitFunnel/RowId.h"            // RowId return value.
 
 
 namespace BitFunnel
 {
+    class DocumentFrequencyTableBuilder;
     class DocTableDescriptor;
+    class ISliceOwner;
     class ITermTable2;
     class RowTableDescriptor;
     class Term;
@@ -133,7 +134,8 @@ namespace BitFunnel
         // Creates a slice that belogs to a given Shard.
         // Allocates a slice buffer using the allocator from the Shard.
         // Stores pointer to the buffer in m_sliceBuffer.
-        Slice(ISliceOwner& shard,
+        Slice(ISliceOwner& owner,
+              DocumentFrequencyTableBuilder* docFrequencyTableBuilder,
               ITermTable2 const & termTable,
               DocTableDescriptor& docTable,
               std::vector<RowTableDescriptor>& rowTables,
@@ -260,6 +262,8 @@ namespace BitFunnel
         // but it can be anything that has a method that which allows us to call
         // RecycleSlice.
         ISliceOwner& m_owner;
+
+        DocumentFrequencyTableBuilder* m_docFrequencyTableBuilder;
 
         // TermTable for this shard.
         ITermTable2 const & m_termTable;

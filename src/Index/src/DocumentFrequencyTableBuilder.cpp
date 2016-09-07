@@ -34,12 +34,14 @@ namespace BitFunnel
 {
     void DocumentFrequencyTableBuilder::OnDocumentEnter()
     {
+        std::lock_guard<std::mutex> lock(m_lock);
         m_cumulativeTermCounts.push_back(m_termCounts.size());
     }
 
 
     void DocumentFrequencyTableBuilder::OnTerm(Term t)
     {
+        std::lock_guard<std::mutex> lock(m_lock);
         ++m_termCounts[t];
     }
 

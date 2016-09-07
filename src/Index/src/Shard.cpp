@@ -97,6 +97,7 @@ namespace BitFunnel
     void Shard::CreateNewActiveSlice()
     {
         Slice* newSlice = new Slice(*this,
+                                    m_docFrequencyTableBuilder.get(),
                                     m_termTable,
                                     *m_docTable,
                                     m_rowTables,

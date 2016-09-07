@@ -132,7 +132,9 @@ namespace BitFunnel
     }
 
 
-    DocumentHandleInternal::DocumentHandleInternal(Slice* slice, DocIndex index, DocId id)
+    DocumentHandleInternal::DocumentHandleInternal(Slice* slice,
+                                                   DocIndex index,
+                                                   DocId id)
         : DocumentHandle(slice, index)
     {
         m_slice->GetDocTable().SetDocId(GetSlice()->GetSliceBuffer(),

@@ -23,6 +23,7 @@
 #include "BitFunnel/ITermTable2.h"
 #include "BitFunnel/RowId.h"
 #include "BitFunnel/RowIdSequence.h"
+#include "DocumentFrequencyTableBuilder.h"
 #include "DocTableDescriptor.h"
 #include "ISliceOwner.h"
 #include "LoggerInterfaces/Logging.h"
@@ -65,6 +66,7 @@ namespace BitFunnel
      
 
     Slice::Slice(ISliceOwner& owner,
+                 DocumentFrequencyTableBuilder* docFrequencyTableBuilder,
                  ITermTable2 const & termTable,
                  DocTableDescriptor& docTable,
                  std::vector<RowTableDescriptor>& rowTables,
@@ -72,6 +74,7 @@ namespace BitFunnel
                  DocIndex sliceCapacity,
                  void* sliceBuffer)
         : m_owner(owner),
+          m_docFrequencyTableBuilder(docFrequencyTableBuilder),
           m_termTable(termTable),
           m_documentActiveRowId(RowIdForDeletedDocument(termTable)),
           m_temporaryNextDocIndex(0U),
@@ -134,12 +137,10 @@ namespace BitFunnel
     {
         void* sliceBuffer = GetSliceBuffer();
 
-        // TODO: enable statistics collection.
-        // if (m_docFrequencyTableBuilder.get() != nullptr)
-        // {
-        //     std::lock_guard<std::mutex> lock(m_temporaryFrequencyTableMutex);
-        //     m_docFrequencyTableBuilder->OnTerm(term);
-        // }
+         if (m_docFrequencyTableBuilder != nullptr)
+         {
+             m_docFrequencyTableBuilder->OnTerm(term);
+         }
 
         RowIdSequence rows(term, m_termTable);
 
@@ -196,6 +197,11 @@ namespace BitFunnel
 
     bool Slice::CommitDocument()
     {
+        if (m_docFrequencyTableBuilder != nullptr)
+        {
+            m_docFrequencyTableBuilder->OnDocumentEnter();
+        }
+
         std::lock_guard<std::mutex> lock(m_docIndexLock);
         LogAssertB(m_commitPendingCount > 0,
                    "CommitDocument with m_commitPendingCount == 0");

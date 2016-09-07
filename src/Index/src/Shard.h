@@ -23,19 +23,18 @@
 #pragma once
 
 
-#include <memory>                               // std::unique_ptr member.
-#include <mutex>                                // std::mutex member.
-#include <ostream>                              // TODO: Remove this temporary include.
+#include <memory>                           // std::unique_ptr member.
+#include <ostream>                          // TODO: Remove this temporary include.
 #include <vector>
 
 #include "BitFunnel/NonCopyable.h"          // Base class.
 #include "BitFunnel/Term.h"
 #include "ISliceOwner.h"
-#include "DocTableDescriptor.h"              // Required for embedded std::unique_ptr.
-#include "DocumentFrequencyTableBuilder.h"   // std::unique_ptr to this.
-#include "DocumentHandleInternal.h"          // Return value.
-#include "RowTableDescriptor.h"              // Required for embedded std::vector.
-#include "Slice.h"                           // std::unique_ptr template parameter.
+#include "DocTableDescriptor.h"             // Required for embedded std::unique_ptr.
+#include "DocumentFrequencyTableBuilder.h"  // std::unique_ptr to this.
+#include "DocumentHandleInternal.h"         // Return value.
+#include "RowTableDescriptor.h"             // Required for embedded std::vector.
+#include "Slice.h"                          // std::unique_ptr template parameter.
 
 
 namespace BitFunnel
@@ -282,7 +281,6 @@ namespace BitFunnel
         std::unique_ptr<DocTableDescriptor> m_docTable;
         std::vector<RowTableDescriptor> m_rowTables;
 
-        std::mutex m_temporaryFrequencyTableMutex;
         std::unique_ptr<DocumentFrequencyTableBuilder> m_docFrequencyTableBuilder;
     };
 }
