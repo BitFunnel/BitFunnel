@@ -7,6 +7,7 @@
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/TermMatchNode.h"
 #include "QueryParser.h"
+#include "StringVector.h"
 
 namespace BitFunnel
 {
@@ -170,9 +171,28 @@ namespace BitFunnel
 
     TermMatchNode const * QueryParser::ParsePhrase()
     {
-        TermMatchNode::Builder builder(TermMatchNode::OrMatch, m_allocator);
-        // TODO.
-        return builder.Complete();
+        ExpectDelimeter('"');
+
+        const unsigned arbitraryInitialCapacity = 6;
+        StringVector& grams =
+            *new(m_allocator.Allocate(sizeof(StringVector)))
+                StringVector(m_allocator, arbitraryInitialCapacity);
+
+        for (;;)
+        {
+            SkipWhite();
+            if (PeekChar() == '"')
+            {
+                break;
+            }
+            // TODO: consider how we handle escapes.
+            char const * token = ParseToken();
+            grams.AddString(token);
+        }
+
+        Term::StreamId dummy = 0;
+        return TermMatchNode::Builder::CreatePhraseNode(grams, dummy, m_allocator);
+        return nullptr;
     }
 
 

@@ -30,17 +30,21 @@ namespace BitFunnel
     }
 
 
-    TEST(QueryParser, TODO)
+    TEST(QueryParser, Trivial)
     {
         Allocator allocator(4096);
         std::stringstream s;
 
+        // UNIGRAM.
         VerifyQueryParser("Unigram(\"wat\", 0)", "wat", allocator);
 
+        // STREAM:UNIGRAM.
         VerifyQueryParser("Unigram(\"wat\", 0)", "StreamsAreCurrentlyIgnored:wat", allocator);
 
+        // (UNIGRAM).
         VerifyQueryParser("Unigram(\"wat\", 0)", "(wat)", allocator);
 
+        // OR of two UNIGRAMs.
         VerifyQueryParser(
                           "Or {\n"
                           "  Children: [\n"
@@ -51,6 +55,7 @@ namespace BitFunnel
                           "wat|foo",
                           allocator);
 
+        // OR of two UNIGRAMs with parens.
         VerifyQueryParser(
                           "Or {\n"
                           "  Children: [\n"
@@ -61,16 +66,19 @@ namespace BitFunnel
                           "(wat|foo)",
                           allocator);
 
+        // NOT.
         VerifyQueryParser("Not {\n"
                           "  Child: Unigram(\"wat\", 0)\n"
                           "}"
                           , "-wat", allocator);
 
+        // NOT with whitespace.
         VerifyQueryParser("Not {\n"
                           "  Child: Unigram(\"wat\", 0)\n"
                           "}"
                           , " \t- wat", allocator);
 
+        // AND of 2.
         VerifyQueryParser("And {\n"
                           "  Children: [\n"
                           "    Unigram(\"foo\", 0),\n"
@@ -79,7 +87,7 @@ namespace BitFunnel
                           "}",
                           "wat foo", allocator);
 
-
+        // AND of 2, explicit '&'.
         VerifyQueryParser("And {\n"
                           "  Children: [\n"
                           "    Unigram(\"foo\", 0),\n"
@@ -88,6 +96,7 @@ namespace BitFunnel
                           "}",
                           "wat&foo", allocator);
 
+        // AND of 2, explicit '&' with whitespace.
         VerifyQueryParser("And {\n"
                           "  Children: [\n"
                           "    Unigram(\"foo\", 0),\n"
@@ -95,5 +104,14 @@ namespace BitFunnel
                           "  ]\n"
                           "}",
                           "wat\t\t&  foo", allocator);
+
+        VerifyQueryParser("Phrase {\n"
+                          "  StreamId: 0,\n"
+                          "  Grams: [\n"
+                          "    \"wat\",\n"
+                          "    \"foo\"\n"
+                          "  ]\n"
+                          "}",
+                          "\" wat\tfoo\"", allocator);
     }
 }
