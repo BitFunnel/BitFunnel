@@ -22,8 +22,6 @@ namespace BitFunnel
     TermMatchNode const * QueryParser::Parse()
     {
         return ParseOr();
-        // TODO: parse the correct thing.
-        // return ParseOr();
     }
 
 
@@ -51,8 +49,33 @@ namespace BitFunnel
 
     TermMatchNode const * QueryParser::ParseAnd()
     {
-        // TODO: parse a sequence of SIMPLEs.
-        return ParseSimple();
+        TermMatchNode::Builder builder(TermMatchNode::AndMatch, m_allocator);
+        // TODO: unify specialChars.
+        char const * specialChars = "&|\\()\":";
+
+
+        auto leftSimple = ParseSimple();
+        builder.AddChild(leftSimple);
+
+        for (;;)
+        {
+            SkipWhite();
+            char c = PeekChar();
+            if (c == '&')
+            {
+                GetChar();
+            }
+            else
+            {
+                if (strchr(specialChars,c) != nullptr)
+                {
+                    break;
+                }
+            }
+            auto childSimple = ParseSimple();
+            builder.AddChild(childSimple);
+        }
+        return builder.Complete();
     }
 
 
@@ -103,8 +126,17 @@ namespace BitFunnel
 
     TermMatchNode const * QueryParser::ParseSimple()
     {
-        // TODO: handle - / NOT.
-        if (PeekChar() == '(')
+        SkipWhite();
+        if (PeekChar() == '-')
+        {
+            GetChar();
+            SkipWhite();
+            auto simpleNode = ParseSimple();
+            TermMatchNode::Builder builder(TermMatchNode::NotMatch, m_allocator);
+            builder.AddChild(simpleNode);
+            return builder.Complete();
+        }
+        else if (PeekChar() == '(')
         {
             GetChar();
             auto orNode = ParseOr();

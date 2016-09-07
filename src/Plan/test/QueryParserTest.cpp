@@ -32,10 +32,8 @@ namespace BitFunnel
 
     TEST(QueryParser, TODO)
     {
-        Allocator allocator(512);
+        Allocator allocator(4096);
         std::stringstream s;
-
-        VerifyQueryParser("Unigram(\"wat\", 0)", "wat notinsideunigram", allocator);
 
         VerifyQueryParser("Unigram(\"wat\", 0)", "wat", allocator);
 
@@ -52,5 +50,50 @@ namespace BitFunnel
                           "}",
                           "wat|foo",
                           allocator);
+
+        VerifyQueryParser(
+                          "Or {\n"
+                          "  Children: [\n"
+                          "    Unigram(\"foo\", 0),\n"
+                          "    Unigram(\"wat\", 0)\n"
+                          "  ]\n"
+                          "}",
+                          "(wat|foo)",
+                          allocator);
+
+        VerifyQueryParser("Not {\n"
+                          "  Child: Unigram(\"wat\", 0)\n"
+                          "}"
+                          , "-wat", allocator);
+
+        VerifyQueryParser("Not {\n"
+                          "  Child: Unigram(\"wat\", 0)\n"
+                          "}"
+                          , " \t- wat", allocator);
+
+        VerifyQueryParser("And {\n"
+                          "  Children: [\n"
+                          "    Unigram(\"foo\", 0),\n"
+                          "    Unigram(\"wat\", 0)\n"
+                          "  ]\n"
+                          "}",
+                          "wat foo", allocator);
+
+
+        VerifyQueryParser("And {\n"
+                          "  Children: [\n"
+                          "    Unigram(\"foo\", 0),\n"
+                          "    Unigram(\"wat\", 0)\n"
+                          "  ]\n"
+                          "}",
+                          "wat&foo", allocator);
+
+        VerifyQueryParser("And {\n"
+                          "  Children: [\n"
+                          "    Unigram(\"foo\", 0),\n"
+                          "    Unigram(\"wat\", 0)\n"
+                          "  ]\n"
+                          "}",
+                          "wat\t\t&  foo", allocator);
     }
 }
