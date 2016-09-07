@@ -15,21 +15,34 @@ namespace BitFunnel
 
     }
 
+
+    void VerifyQueryParser(std::string expected, std::string input, IAllocator& allocator)
+    {
+        std::stringstream s;
+        s << input;
+        QueryParser parser(s, allocator);
+
+        std::cout << "input length: " << s.str().size() << std::endl;
+
+        auto result = parser.Parse();
+        ASSERT_NE(nullptr, result);
+
+        std::stringstream parsedOutput;
+        TextObjectFormatter formatter(parsedOutput);
+        result->Format(formatter);
+
+        std::cout << "???: " << parsedOutput.str() << std::endl;
+        EXPECT_EQ(expected, parsedOutput.str());
+    }
+
+
     TEST(QueryParser, TODO)
     {
         Allocator allocator(512);
         std::stringstream s;
 
-        s << "wat";
-        QueryParser wat(s, allocator);
-
-        auto watResult = wat.Parse();
-        ASSERT_NE(nullptr, watResult);
-
-        std::stringstream output;
-        TextObjectFormatter formatter(output);
-        watResult->Format(formatter);
-
-        std::cout << output.str() << std::endl;
+        VerifyQueryParser("Unigram(\"wat\", 0)", "wat notinsideunigram", allocator);
+        VerifyQueryParser("Unigram(\"wat\", 0)", "wat|notinsideunigram", allocator);
+        VerifyQueryParser("Unigram(\"wat\", 0)", "wat", allocator);
     }
 }

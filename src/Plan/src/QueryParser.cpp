@@ -165,11 +165,13 @@ namespace BitFunnel
     {
         if (!m_haveChar)
         {
-            if (!m_input.eof())
+            int temp = m_input.get();
+            // See https://github.com/BitFunnel/BitFunnel/issues/189.
+            if (temp != -1)
             {
                 // TODO: when we handle UTF-8 correctly, everything will turn
                 // into int.
-                m_nextChar = static_cast<char>(m_input.get());
+                m_nextChar = static_cast<char>(temp);
             }
             else
             {
@@ -222,13 +224,15 @@ namespace BitFunnel
         }
         do
         {
-            token.push_back(GetChar());
+            char temp = GetChar();
+            std::cout << static_cast<unsigned>(temp) << std::endl;
+            token.push_back(temp);
             c = PeekChar();
         } while (!isspace(c) && strchr(specialChars, c) == nullptr);
 
         char* buffer = static_cast<char*>(m_allocator.Allocate(token.size()+1));
         memcpy(buffer, token.c_str(), token.size()+1);
-        std::cout << "ParseToken result: " << token << ":" << buffer << std::endl;
+        std::cout << "ParseToken result: " << token << ":" << buffer << "(" << token.size() << ")" <<std::endl;
         return buffer;
     }
 
