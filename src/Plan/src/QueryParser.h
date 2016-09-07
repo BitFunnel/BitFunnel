@@ -68,10 +68,12 @@ namespace BitFunnel
         // UNIGRAM:
         //   ![SPACE|SPECIAL]+
         TermMatchNode const * ParseUnigram();
+        TermMatchNode const * ParseCachedUnigram(char const * cache);
 
         // PHRASE:
         //   '"' UNIGRAM (SPACE* UNIGRAM)* '"'
         TermMatchNode const * ParsePhrase();
+        TermMatchNode const * ParseCachedPhrase(char const * cache);
 
         char const * ParseToken();
 

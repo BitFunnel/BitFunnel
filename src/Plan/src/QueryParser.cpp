@@ -21,7 +21,7 @@ namespace BitFunnel
 
     TermMatchNode const * QueryParser::Parse()
     {
-        return ParseUnigram();
+        return ParseTerm();
         // TODO: parse the correct thing.
         // return ParseOr();
     }
@@ -70,7 +70,7 @@ namespace BitFunnel
         }
         else
         {
-            std::string token = ParseToken();
+            const char * unigram = ParseToken();
 
             if (PeekChar() == ':')
             {
@@ -78,6 +78,14 @@ namespace BitFunnel
                 streamId = 0;
                 GetChar();
             }
+            else
+            {
+                return ParseCachedUnigram(unigram);
+            }
+
+            // TODO: refactor this into multiple productions to simplify.
+            // If we're here, we saw a ":"
+
             if (PeekChar() == '"')
             {
                 // TODO: add streamId.
@@ -107,11 +115,17 @@ namespace BitFunnel
         // TODO: make sure we've consumed whitespace prior to calling this.
         char const * token = ParseToken();
 
-        // TODO: won't this c_str go away when we go out of scope?
-        // This should get fixed when we allocate with the arena allocator.
         Term::StreamId dummy = 0;
         return TermMatchNode::Builder::CreateUnigramNode(token, dummy, m_allocator);
     }
+
+
+    TermMatchNode const * QueryParser::ParseCachedUnigram(char const * cache)
+    {
+        Term::StreamId dummy = 0;
+        return TermMatchNode::Builder::CreateUnigramNode(cache, dummy, m_allocator);
+    }
+
 
 
     TermMatchNode const * QueryParser::ParsePhrase()
@@ -225,7 +239,6 @@ namespace BitFunnel
         do
         {
             char temp = GetChar();
-            std::cout << static_cast<unsigned>(temp) << std::endl;
             token.push_back(temp);
             c = PeekChar();
         } while (!isspace(c) && strchr(specialChars, c) == nullptr);
