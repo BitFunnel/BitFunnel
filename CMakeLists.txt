@@ -143,6 +143,10 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTableCollection.h
 )
 
+set(PLAN_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/TermMatchTreeEvaluator.h
+)
+
 set(UTILITIES_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Accumulator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/BlockingQueue.h
@@ -170,6 +174,7 @@ set(LOGGER_HFILES
 set(PUBLIC_HFILES
   ${BITFUNNEL_HFILES}
   ${INDEX_HFILES}
+  ${PLAN_HFILES}
   ${UTILITIES_HFILES}
   ${LOGGER_HFILES}
 )

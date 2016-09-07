@@ -9,6 +9,7 @@ set(CPPFILES
     RowPlan.cpp
     StringVector.cpp
     TermMatchNode.cpp
+    TermMatchTreeEvaluator.cpp
 )
 
 set(WINDOWS_CPPFILES
