@@ -10,12 +10,6 @@
 
 namespace BitFunnel
 {
-    void TodoFnName()
-    {
-
-    }
-
-
     void VerifyQueryParser(std::string expected, std::string input, IAllocator& allocator)
     {
         std::stringstream s;
@@ -43,6 +37,11 @@ namespace BitFunnel
 
         VerifyQueryParser("Unigram(\"wat\", 0)", "wat notinsideunigram", allocator);
         VerifyQueryParser("Unigram(\"wat\", 0)", "wat|notinsideunigram", allocator);
+
         VerifyQueryParser("Unigram(\"wat\", 0)", "wat", allocator);
+
+        VerifyQueryParser("Unigram(\"wat\", 0)", "StreamsAreCurrentlyIgnored:wat", allocator);
+
+        VerifyQueryParser("Unigram(\"wat\", 0)", "(wat)", allocator);
     }
 }

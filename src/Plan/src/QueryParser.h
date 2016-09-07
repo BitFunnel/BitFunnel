@@ -60,7 +60,7 @@ namespace BitFunnel
         TermMatchNode const * ParseTerm();
 
         // SIMPLE:
-        //   '-' SIMPLE
+        //   '-'SIMPLE
         //   '(' OR ')'
         //   TERM
         TermMatchNode const * ParseSimple();
@@ -73,7 +73,6 @@ namespace BitFunnel
         // PHRASE:
         //   '"' UNIGRAM (SPACE* UNIGRAM)* '"'
         TermMatchNode const * ParsePhrase();
-        TermMatchNode const * ParseCachedPhrase(char const * cache);
 
         char const * ParseToken();
 

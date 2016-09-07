@@ -21,7 +21,7 @@ namespace BitFunnel
 
     TermMatchNode const * QueryParser::Parse()
     {
-        return ParseTerm();
+        return ParseSimple();
         // TODO: parse the correct thing.
         // return ParseOr();
     }
@@ -51,9 +51,8 @@ namespace BitFunnel
 
     TermMatchNode const * QueryParser::ParseAnd()
     {
-        TermMatchNode::Builder builder(TermMatchNode::AndMatch, m_allocator);
-        // TODO.
-        return builder.Complete();
+        // TODO: parse a sequence of SIMPLEs.
+        return ParseSimple();
     }
 
 
@@ -104,15 +103,24 @@ namespace BitFunnel
 
     TermMatchNode const * QueryParser::ParseSimple()
     {
-        TermMatchNode::Builder builder(TermMatchNode::OrMatch, m_allocator);
-        // TODO.
-        return builder.Complete();
+        // TODO: handle - / NOT.
+        if (PeekChar() == '(')
+        {
+            GetChar();
+            // TODO: does taking parens off like this even work?
+            auto orNode = ParseOr();
+            ExpectDelimeter(')');
+            return orNode;
+        }
+        else
+        {
+            return ParseTerm();
+        }
     }
 
 
     TermMatchNode const * QueryParser::ParseUnigram()
     {
-        // TODO: make sure we've consumed whitespace prior to calling this.
         char const * token = ParseToken();
 
         Term::StreamId dummy = 0;
@@ -151,7 +159,7 @@ namespace BitFunnel
         {
             // TODO: REVIEW: Check lifetime of c_str() passed to exception constructor.
             std::stringstream message;
-            message << "Expected '" << c << "'.";
+            message << "Expected '" << c << "' Got '" << PeekChar() << "'";
             throw ParseError(message.str().c_str(), m_currentPosition);
         }
         else
