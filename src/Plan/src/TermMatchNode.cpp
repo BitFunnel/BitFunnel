@@ -60,40 +60,6 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    // Temporary helpers.
-    //
-    //*************************************************************************
-    static const char* const c_classificationNames[] = {
-        "full",
-        "nonbody",
-        "metaword",
-        "clickboost"
-    };
-
-    Classification StringToClassification(const std::string& s)
-    {
-        for (size_t i = 0; i < sizeof(c_classificationNames) / sizeof(const char*); ++i)
-        {
-            if (s.compare(c_classificationNames[i]) == 0)
-            {
-                LogAssertB(i < ClassificationCount, "Bad classification.");
-                return static_cast<Classification>(i);
-            }
-        }
-
-        return Invalid;
-    }
-
-
-    const char* ClassificationToString(Classification classification)
-    {
-        LogAssertB(classification != Invalid, "Invalid classification.");
-        LogAssertB(classification < ClassificationCount, "Classification out of range.");
-        return c_classificationNames[classification];
-    }
-
-    //*************************************************************************
-    //
     // TermMatchNode
     //
     //*************************************************************************
