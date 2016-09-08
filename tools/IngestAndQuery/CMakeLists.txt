@@ -36,6 +36,6 @@ COMBINE_FILE_LISTS()
 
 
 add_executable(IngestAndQuery ${CPPFILES} ${PRIVATE_HFILES} ${PUBLIC_HFILES})
-target_link_libraries(IngestAndQuery CmdLineParser TestShared Index Configuration CsvTsv Utilities)
+target_link_libraries(IngestAndQuery CmdLineParser TestShared Index Configuration CsvTsv Utilities Plan)
 set_property(TARGET IngestAndQuery PROPERTY FOLDER "tools")
 set_property(TARGET IngestAndQuery PROPERTY PROJECT_LABEL "IngestAndQuery")

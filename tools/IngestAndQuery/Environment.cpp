@@ -55,6 +55,7 @@ namespace BitFunnel
         m_taskFactory->RegisterCommand<Script>();
         m_taskFactory->RegisterCommand<Show>();
         m_taskFactory->RegisterCommand<Status>();
+        m_taskFactory->RegisterCommand<Verify>();
     }
 
 

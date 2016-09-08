@@ -144,6 +144,7 @@ set(INDEX_HFILES
 )
 
 set(PLAN_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryPipeline.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/TermMatchTreeEvaluator.h
 )
 

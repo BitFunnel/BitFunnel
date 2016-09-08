@@ -30,6 +30,8 @@
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/Plan/QueryPipeline.h"
+#include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
 #include "BitFunnel/RowIdSequence.h"
 #include "BitFunnel/Term.h"
 #include "Commands.h"
@@ -551,6 +553,108 @@ namespace BitFunnel
             "status\n"
             "  Prints system status."
             "  NOT IMPLEMENTED\n"
+            );
+    }
+
+
+    //*************************************************************************
+    //
+    // Verify
+    //
+    //*************************************************************************
+    Verify::Verify(Environment & environment,
+                   Id id,
+                   char const * parameters)
+        : TaskBase(environment, id, Type::Synchronous)
+    {
+        auto command = TaskFactory::GetNextToken(parameters);
+        if (command.compare("one") == 0)
+        {
+            m_isSingleQuery = true;
+            m_query = parameters;
+        }
+        else
+        {
+            m_isSingleQuery = false;
+            if (command.compare("log") != 0)
+            {
+                RecoverableError error("Query expects \"one\" or \"log\".");
+                throw error;
+            }
+            m_query = TaskFactory::GetNextToken(parameters);
+        }
+    }
+
+
+    void Verify::Execute()
+    {
+        if (m_isSingleQuery)
+        {
+            std::cout
+                << "Processing query \""
+                << m_query
+                << "\"" << std::endl;
+
+            QueryPipeline pipeline;
+            auto tree = pipeline.ParseQuery(m_query.c_str());
+            if (tree == nullptr)
+            {
+                std::cout << "Empty query." << std::endl;
+            }
+            else
+            {
+                auto & environment = GetEnvironment();
+                auto & cache = environment.GetIngestor().GetDocumentCache();
+                auto & config = environment.GetConfiguration();
+                TermMatchTreeEvaluator evaluator(config);
+
+                size_t matchCount = 0;
+                size_t documentCount = 0;
+
+                for (auto & entry : cache)
+                {
+                    ++documentCount;
+                    bool matches = evaluator.Evaluate(*tree, entry.first);
+
+                    std::cout
+                        << "  DocId(" << entry.second << ") ";
+                    if (matches)
+                    {
+                        ++matchCount;
+                        std::cout << "match";
+                    }
+                    else
+                    {
+                        std::cout << "not match";
+                    }
+                    std::cout << std::endl;
+                }
+
+                std::cout
+                    << matchCount << " match(es) out of "
+                    << documentCount << " documents."
+                    << std::endl;
+            }
+        }
+        else
+        {
+            std::cout
+                << "Processing queries from log at \""
+                << m_query
+                << "\"" << std::endl;
+            std::cout << "NOT IMPLEMENTED" << std::endl;
+        }
+    }
+
+
+    ICommand::Documentation Verify::GetDocumentation()
+    {
+        return Documentation(
+            "verify",
+            "Verifies the results of a single query against the document cache.",
+            "query (one <expression>) | (log <file>)\n"
+            "  Verifies a single query or a list of queries\n"
+            "  against the document cache.\n"
             );
     }
 }

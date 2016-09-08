@@ -5,6 +5,7 @@ set(CPPFILES
     CompileNode.cpp
     MatchTreeRewriter.cpp
     QueryParser.cpp
+    QueryPipeline.cpp
     RowMatchNode.cpp
     RowPlan.cpp
     StringVector.cpp

@@ -174,4 +174,20 @@ namespace BitFunnel
         virtual void Execute() override;
         static ICommand::Documentation GetDocumentation();
     };
+
+
+    class Verify : public TaskBase
+    {
+    public:
+        Verify(Environment & environment,
+               Id id,
+               char const * parameters);
+
+        virtual void Execute() override;
+        static ICommand::Documentation GetDocumentation();
+
+    private:
+        bool m_isSingleQuery;
+        std::string m_query;
+    };
 }
