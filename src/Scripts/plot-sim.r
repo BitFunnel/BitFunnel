@@ -18,6 +18,7 @@ df <- read.csv(header=FALSE, file="talk.csv")
 
 # plot for talk
 ggplot(data=df, aes(x=factor(V1), y=V2)) + geom_bar(stat="identity") + labs(x = "Memory accesses", y = "Percent") +
+  theme_bw() +
   theme(axis.text = element_text(size=40),
         axis.title = element_text(size=40))
 
