@@ -32,7 +32,93 @@
 
 namespace BitFunnel
 {
-    void VerifyQueryParser(std::string expected, std::string input, IAllocator& allocator)
+
+    struct ExpectedAndInputs
+    {
+    public:
+        char const * m_expected;
+        char const * m_input;
+    };
+
+    const ExpectedAndInputs c_testData[] =
+    {
+        // UNIGRAM.
+        {"Unigram(\"wat\", 0)", "wat"},
+
+        // STREAM:UNIGRAM.
+        {"Unigram(\"wat\", 0)", "StreamsAreCurrentlyIgnored:wat"},
+
+        // (UNIGRAM)
+        {"Unigram(\"wat\", 0)", "(wat)"},
+
+        // OR of two UNIGRAMs.
+        {
+            "Or {\n"
+            "  Children: [\n"
+            "    Unigram(\"foo\", 0),\n"
+            "    Unigram(\"wat\", 0)\n"
+            "  ]\n"
+            "}",
+            "wat|foo"
+         },
+
+        // OR of two UNIGRAMs with parens.
+        {
+            "Or {\n"
+            "  Children: [\n"
+            "    Unigram(\"foo\", 0),\n"
+            "    Unigram(\"wat\", 0)\n"
+            "  ]\n"
+            "}",
+            "(wat|foo)"
+        },
+
+        // NOT.
+        {
+            "Not {\n"
+            "  Child: Unigram(\"wat\", 0)\n"
+            "}"
+            , "-wat"
+        },
+
+        // AND of 2.
+        {
+            "And {\n"
+            "  Children: [\n"
+            "    Unigram(\"foo\", 0),\n"
+            "    Unigram(\"wat\", 0)\n"
+            "  ]\n"
+            "}",
+            "wat foo"
+        },
+
+        // AND of 2, explicit '&'.
+        {
+            "And {\n"
+            "  Children: [\n"
+            "    Unigram(\"foo\", 0),\n"
+            "    Unigram(\"wat\", 0)\n"
+            "  ]\n"
+            "}",
+            "wat&foo"
+        },
+
+        // AND of 2, explicit '&' with whitespace.
+        {
+            "And {\n"
+            "  Children: [\n"
+            "    Unigram(\"foo\", 0),\n"
+            "    Unigram(\"wat\", 0)\n"
+            "  ]\n"
+            "}",
+            "wat\t\t&  foo"
+        }
+    };
+
+
+
+
+    void VerifyQueryParser(std::string const & expected, std::string const & input, IAllocator& allocator)
     {
         std::stringstream s;
         s << input;
@@ -49,91 +135,17 @@ namespace BitFunnel
 
         std::cout << "???: " << parsedOutput.str() << std::endl;
         EXPECT_EQ(expected, parsedOutput.str());
+        allocator.Reset();
     }
 
 
     TEST(QueryParser, Trivial)
     {
-        Allocator allocator(4096);
-        std::stringstream s;
+        Allocator allocator(512);
 
-        // UNIGRAM.
-        VerifyQueryParser("Unigram(\"wat\", 0)", "wat", allocator);
-
-        // STREAM:UNIGRAM.
-        VerifyQueryParser("Unigram(\"wat\", 0)", "StreamsAreCurrentlyIgnored:wat", allocator);
-
-        // (UNIGRAM).
-        VerifyQueryParser("Unigram(\"wat\", 0)", "(wat)", allocator);
-
-        // OR of two UNIGRAMs.
-        VerifyQueryParser(
-                          "Or {\n"
-                          "  Children: [\n"
-                          "    Unigram(\"foo\", 0),\n"
-                          "    Unigram(\"wat\", 0)\n"
-                          "  ]\n"
-                          "}",
-                          "wat|foo",
-                          allocator);
-
-        // OR of two UNIGRAMs with parens.
-        VerifyQueryParser(
-                          "Or {\n"
-                          "  Children: [\n"
-                          "    Unigram(\"foo\", 0),\n"
-                          "    Unigram(\"wat\", 0)\n"
-                          "  ]\n"
-                          "}",
-                          "(wat|foo)",
-                          allocator);
-
-        // NOT.
-        VerifyQueryParser("Not {\n"
-                          "  Child: Unigram(\"wat\", 0)\n"
-                          "}"
-                          , "-wat", allocator);
-
-        // NOT with whitespace.
-        VerifyQueryParser("Not {\n"
-                          "  Child: Unigram(\"wat\", 0)\n"
-                          "}"
-                          , " \t- wat", allocator);
-
-        // AND of 2.
-        VerifyQueryParser("And {\n"
-                          "  Children: [\n"
-                          "    Unigram(\"foo\", 0),\n"
-                          "    Unigram(\"wat\", 0)\n"
-                          "  ]\n"
-                          "}",
-                          "wat foo", allocator);
-
-        // AND of 2, explicit '&'.
-        VerifyQueryParser("And {\n"
-                          "  Children: [\n"
-                          "    Unigram(\"foo\", 0),\n"
-                          "    Unigram(\"wat\", 0)\n"
-                          "  ]\n"
-                          "}",
-                          "wat&foo", allocator);
-
-        // AND of 2, explicit '&' with whitespace.
-        VerifyQueryParser("And {\n"
-                          "  Children: [\n"
-                          "    Unigram(\"foo\", 0),\n"
-                          "    Unigram(\"wat\", 0)\n"
-                          "  ]\n"
-                          "}",
-                          "wat\t\t&  foo", allocator);
-
-        VerifyQueryParser("Phrase {\n"
-                          "  StreamId: 0,\n"
-                          "  Grams: [\n"
-                          "    \"wat\",\n"
-                          "    \"foo\"\n"
-                          "  ]\n"
-                          "}",
-                          "\" wat\tfoo\"", allocator);
+        for (size_t i = 0; i < sizeof(c_testData) / sizeof(ExpectedAndInputs); ++i)
+        {
+            VerifyQueryParser(c_testData[i].m_expected, c_testData[i].m_input, allocator);
+        }
     }
 }
