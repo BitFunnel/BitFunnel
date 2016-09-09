@@ -161,6 +161,7 @@ set(UTILITIES_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StandardInputStream.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Stopwatch.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StreamUtilities.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StringBuilder.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Version.h
 )
 
