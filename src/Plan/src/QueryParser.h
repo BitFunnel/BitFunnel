@@ -12,10 +12,9 @@
 //
 // TODO: what should TERM be called?
 //
-// This does not support UTF-8. However, as long as we're careful to use the API
-// and not do things like call strlen, it should be straightforward to add UTF-8
-// support later.
-// Consider using http://utfcpp.sourceforge.net/ when we want UTF-8.
+// This doesn't have any unicode specific support. However, since UTF-8 bytes
+// cannot be ASCII characters unless the UTF-8 character actually is the ASCII
+// character, the operator and escaping code here should work with UTF-8.
 
 namespace BitFunnel
 {
