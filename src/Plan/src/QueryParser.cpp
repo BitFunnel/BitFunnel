@@ -308,11 +308,11 @@ namespace BitFunnel
     char const * QueryParser::ParseToken()
     {
         // TODO: unify with legalEscapes.
-        char const * specialChars = "&|\\()\":-";
+        char const * specialCharsExceptBackslash = "&|()\":-";
 
         std::string token;
         char c = PeekChar();
-        if (isspace(c) || strchr(specialChars, c) != nullptr)
+        if (isspace(c) || strchr(specialCharsExceptBackslash, c) != nullptr)
         {
             // TODO: should we throw here or just return the empty string?
             throw ParseError("Found space or special character at beginning of unigram.",
@@ -321,10 +321,10 @@ namespace BitFunnel
         }
         do
         {
-            char temp = GetChar();
+            char temp = GetWithEscape();
             token.push_back(temp);
             c = PeekChar();
-        } while (!isspace(c) && strchr(specialChars, c) == nullptr);
+        } while (!isspace(c) && strchr(specialCharsExceptBackslash, c) == nullptr);
 
         char* buffer = static_cast<char*>(m_allocator.Allocate(token.size()+1));
         memcpy(buffer, token.c_str(), token.size()+1);

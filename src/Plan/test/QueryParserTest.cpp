@@ -136,7 +136,7 @@ namespace BitFunnel
             "wat\t\t&  foo"
         },
 
-        // PHRASE
+        // PHRASE.
         {
             "Phrase {\n"
             "  StreamId: 0,\n"
@@ -148,7 +148,7 @@ namespace BitFunnel
             "\" wat\tfoo\""
         },
 
-        // PHRASE
+        // PHRASE.
         {
             "Phrase {\n"
             "  StreamId: 0,\n"
@@ -159,7 +159,6 @@ namespace BitFunnel
             "}",
             "\"wat\tfoo\""
         },
-
 
         // OR of AND.
         {
@@ -387,6 +386,36 @@ namespace BitFunnel
             "  ]\n"
             "}",
             "\"one two\"|\"three four\""
+        },
+
+        // ESCAPE.
+        {
+            "Unigram(\"one|two\", 0)",
+            "one\\|two"
+        },
+
+        // PHRASE with ESCAPE.
+        {
+            "Phrase {\n"
+            "  StreamId: 0,\n"
+            "  Grams: [\n"
+            "    \"one|two\",\n"
+            "    \"three\"\n"
+            "  ]\n"
+            "}",
+            "\"one\\|two three\""
+        },
+
+        // PHRASE with quote ESCAPE.
+        {
+            "Phrase {\n"
+            "  StreamId: 0,\n"
+            "  Grams: [\n"
+            "    \"one\\\"two\",\n"
+            "    \"three\"\n"
+            "  ]\n"
+            "}",
+            "\"one\\\"two three\""
         }
     };
 
