@@ -75,7 +75,7 @@ namespace BitFunnel
     {
         TermMatchNode::Builder builder(TermMatchNode::AndMatch, m_allocator);
         // TODO: unify specialChars.
-        char const * specialChars = "&|\\()\":";
+        char const * specialCharsExceptSimple = "&|\\):\"";
 
 
         auto leftSimple = ParseSimple();
@@ -91,7 +91,7 @@ namespace BitFunnel
             }
             else
             {
-                if (strchr(specialChars,c) != nullptr)
+                if (strchr(specialCharsExceptSimple,c) != nullptr)
                 {
                     break;
                 }
@@ -282,7 +282,7 @@ namespace BitFunnel
     char QueryParser::GetWithEscape()
     {
         char c = PeekChar();
-        char const * legalEscapes = "&|\\()\":";
+        char const * legalEscapes = "&|\\()\":-";
         if (c == '\\')
         {
             GetChar();
@@ -307,7 +307,7 @@ namespace BitFunnel
     char const * QueryParser::ParseToken()
     {
         // TODO: unify with legalEscapes.
-        char const * specialChars = "&|\\()\":";
+        char const * specialChars = "&|\\()\":-";
 
         std::string token;
         char c = PeekChar();

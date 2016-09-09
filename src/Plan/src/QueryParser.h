@@ -74,6 +74,11 @@ namespace BitFunnel
         //   '"' UNIGRAM (SPACE* UNIGRAM)* '"'
         TermMatchNode const * ParsePhrase();
 
+        // DESIGN NOTE:
+        // one-two is parsed as one NOT two instead of the unigram one-two.
+        // This should probably be changed as this is counter-intuitive for
+        // most users.
+
         char const * ParseToken();
 
         bool AtEOF();

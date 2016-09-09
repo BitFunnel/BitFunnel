@@ -73,6 +73,28 @@ namespace BitFunnel
             "(wat|foo)"
         },
 
+        // OR of two UNIGRAMs with parens.
+        {
+            "Or {\n"
+            "  Children: [\n"
+            "    Unigram(\"foo\", 0),\n"
+            "    Unigram(\"wat\", 0)\n"
+            "  ]\n"
+            "}",
+            " (wat|foo)\t"
+        },
+
+        // OR of two UNIGRAMs with parens.
+        {
+            "Or {\n"
+            "  Children: [\n"
+            "    Unigram(\"foo\", 0),\n"
+            "    Unigram(\"wat\", 0)\n"
+            "  ]\n"
+            "}",
+            "\t( wat |\tfoo )"
+        },
+
         // NOT.
         {
             "Not {\n"
@@ -112,7 +134,198 @@ namespace BitFunnel
             "  ]\n"
             "}",
             "wat\t\t&  foo"
-        }
+        },
+
+        // PHRASE
+        {
+            "Phrase {\n"
+            "  StreamId: 0,\n"
+            "  Grams: [\n"
+            "    \"wat\",\n"
+            "    \"foo\"\n"
+            "  ]\n"
+            "}",
+            "\" wat\tfoo\""
+        },
+
+        // PHRASE
+        {
+            "Phrase {\n"
+            "  StreamId: 0,\n"
+            "  Grams: [\n"
+            "    \"wat\",\n"
+            "    \"foo\"\n"
+            "  ]\n"
+            "}",
+            "\"wat\tfoo\""
+        },
+
+
+        // OR of AND.
+        {
+            "Or {\n"
+            "  Children: [\n"
+            "    Unigram(\"three\", 0),\n"
+            "    And {\n"
+            "      Children: [\n"
+            "        Unigram(\"two\", 0),\n"
+            "        Unigram(\"one\", 0)\n"
+            "      ]\n"
+            "    }\n"
+            "  ]\n"
+            "}",
+            "one two | three"
+        },
+
+        // OR of AND.
+        {
+            "Or {\n"
+            "  Children: [\n"
+            "    And {\n"
+            "      Children: [\n"
+            "        Unigram(\"four\", 0),\n"
+            "        Unigram(\"three\", 0)\n"
+            "      ]\n"
+            "    },\n"
+            "    And {\n"
+            "      Children: [\n"
+            "        Unigram(\"two\", 0),\n"
+            "        Unigram(\"one\", 0)\n"
+            "      ]\n"
+            "    }\n"
+            "  ]\n"
+            "}",
+            "one\ttwo|three    \tfour"
+        },
+
+        // AND with NOT.
+        {
+            "And {\n"
+            "  Children: [\n"
+            "    Not {\n"
+            "      Child: Unigram(\"two\", 0)\n"
+            "    },\n"
+            "    Unigram(\"one\", 0)\n"
+            "  ]\n"
+            "}",
+            "one&-two"
+        },
+
+        // AND with NOT.
+        {
+            "And {\n"
+            "  Children: [\n"
+            "    Not {\n"
+            "      Child: Unigram(\"two\", 0)\n"
+            "    },\n"
+            "    Unigram(\"one\", 0)\n"
+            "  ]\n"
+            "}",
+            "one -two"
+        },
+
+        // AND with NOT.
+        // TODO: this is probably counter-intuitive to users.
+        {
+            "And {\n"
+            "  Children: [\n"
+            "    Not {\n"
+            "      Child: Unigram(\"two\", 0)\n"
+            "    },\n"
+            "    Unigram(\"one\", 0)\n"
+            "  ]\n"
+            "}",
+            "one-two"
+        },
+
+        // AND with NOT.
+        {
+            "And {\n"
+            "  Children: [\n"
+            "    Not {\n"
+            "      Child: Unigram(\"two\", 0)\n"
+            "    },\n"
+            "    Unigram(\"one\", 0)\n"
+            "  ]\n"
+            "}",
+            "one- two"
+        },
+
+        // AND with parens.
+        {
+            "And {\n"
+            "  Children: [\n"
+            "    Unigram(\"two\", 0),\n"
+            "    Unigram(\"one\", 0)\n"
+            "  ]\n"
+            "}",
+            "one (two)"
+        },
+
+        // OR with NOT.
+        {
+            "Or {\n"
+            "  Children: [\n"
+            "    Not {\n"
+            "      Child: Unigram(\"two\", 0)\n"
+            "    },\n"
+            "    Unigram(\"one\", 0)\n"
+            "  ]\n"
+            "}",
+            "one|-two"
+        },
+
+        // OR with NOT.
+        {
+            "Or {\n"
+            "  Children: [\n"
+            "    Not {\n"
+            "      Child: Unigram(\"two\", 0)\n"
+            "    },\n"
+            "    Unigram(\"one\", 0)\n"
+            "  ]\n"
+            "}",
+            " one    | -    two "
+        },
+
+        // AND then OR.
+        {
+            "Or {\n"
+            "  Children: [\n"
+            "    Unigram(\"three\", 0),\n"
+            "    And {\n"
+            "      Children: [\n"
+            "        Unigram(\"two\", 0),\n"
+            "        Unigram(\"one\", 0)\n"
+            "      ]\n"
+            "    }\n"
+            "  ]\n"
+            "}",
+            "one & two | three"
+        },
+
+        // AND then OR, parens change precedence.
+        {
+            "And {\n"
+            "  Children: [\n"
+            "    Or {\n"
+            "      Children: [\n"
+            "        Unigram(\"three\", 0),\n"
+            "        Unigram(\"two\", 0)\n"
+            "      ]\n"
+            "    },\n"
+            "    Unigram(\"one\", 0)\n"
+            "  ]\n"
+            "}",
+            "one & (two | three)"
+        }/*,
+
+        // AND of PHRASE
+        {
+            "",
+            "\"one two\" \"three four\""
+        }*/
+
     };
 
 
