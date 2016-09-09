@@ -421,7 +421,7 @@ namespace BitFunnel
             auto & cache = environment.GetIngestor().GetDocumentCache();
 
             std::cout << "DocId, Contains" << std::endl;
-            for (auto & entry : cache)
+            for (auto entry : cache)
             {
                 std::cout
                     << "  DocId(" << entry.second << ") ";
@@ -611,7 +611,7 @@ namespace BitFunnel
                 size_t matchCount = 0;
                 size_t documentCount = 0;
 
-                for (auto & entry : cache)
+                for (auto entry : cache)
                 {
                     ++documentCount;
                     bool matches = evaluator.Evaluate(*tree, entry.first);
