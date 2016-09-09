@@ -341,6 +341,52 @@ namespace BitFunnel
             "  ]\n"
             "}",
             "\"one two\" \"three four\""
+        },
+
+        // AND of PHRASE
+        {
+            "And {\n"
+            "  Children: [\n"
+            "    Phrase {\n"
+            "      StreamId: 0,\n"
+            "      Grams: [\n"
+            "        \"three\",\n"
+            "        \"four\"\n"
+            "      ]\n"
+            "    },\n"
+            "    Phrase {\n"
+            "      StreamId: 0,\n"
+            "      Grams: [\n"
+            "        \"one\",\n"
+            "        \"two\"\n"
+            "      ]\n"
+            "    }\n"
+            "  ]\n"
+            "}",
+            "\"one two\"&\"three four\""
+        },
+
+        // OR of PHRASE
+        {
+            "Or {\n"
+            "  Children: [\n"
+            "    Phrase {\n"
+            "      StreamId: 0,\n"
+            "      Grams: [\n"
+            "        \"three\",\n"
+            "        \"four\"\n"
+            "      ]\n"
+            "    },\n"
+            "    Phrase {\n"
+            "      StreamId: 0,\n"
+            "      Grams: [\n"
+            "        \"one\",\n"
+            "        \"two\"\n"
+            "      ]\n"
+            "    }\n"
+            "  ]\n"
+            "}",
+            "\"one two\"|\"three four\""
         }
     };
 
