@@ -29,12 +29,11 @@
 
 #include "BitFunnel/NonCopyable.h"          // Base class.
 #include "BitFunnel/Term.h"
-#include "ISliceOwner.h"
-#include "DocTableDescriptor.h"             // Required for embedded std::unique_ptr.
-#include "DocumentFrequencyTableBuilder.h"  // std::unique_ptr to this.
-#include "DocumentHandleInternal.h"         // Return value.
-#include "RowTableDescriptor.h"             // Required for embedded std::vector.
-#include "Slice.h"                          // std::unique_ptr template parameter.
+#include "DocTableDescriptor.h"              // Required for embedded std::unique_ptr.
+#include "DocumentFrequencyTableBuilder.h"   // std::unique_ptr to this.
+#include "DocumentHandleInternal.h"          // Return value.
+#include "RowTableDescriptor.h"              // Required for embedded std::vector.
+#include "Slice.h"                           // std::unique_ptr template parameter.
 
 
 namespace BitFunnel
@@ -61,7 +60,7 @@ namespace BitFunnel
     // Thread safety: all public methods are thread safe.
     //
     //*************************************************************************
-    class Shard : private NonCopyable, public ISliceOwner
+    class Shard : private NonCopyable
     {
     public:
         // Constructs an empty Shard with no slices. sliceBufferSize must be
@@ -75,6 +74,9 @@ namespace BitFunnel
               size_t sliceBufferSize);
 
         virtual ~Shard();
+
+        void AddPosting(Term const & term, DocIndex index, void* sliceBuffer);
+        void AssertFact(FactHandle fact, bool value, DocIndex index, void* sliceBuffer);
 
         void TemporaryRecordDocument();
         void TemporaryWriteDocumentFrequencyTable(std::ostream& out,
@@ -101,6 +103,10 @@ namespace BitFunnel
 
         // Returns the offset of the row in the slice buffer in a shard.
         virtual ptrdiff_t GetRowOffset(RowId rowId) const;
+
+        // Returns the offset in the slice buffer where a pointer to the Slice
+        // is stored. This is the same offset for all slices in the Shard.
+        virtual ptrdiff_t GetSlicePtrOffset() const;
 
         //
         // Shard exclusive members.
@@ -151,6 +157,10 @@ namespace BitFunnel
         // Descriptor for RowTables and DocTable.
         DocTableDescriptor const & GetDocTable() const;
         RowTableDescriptor const & GetRowTable(Rank) const;
+
+        // Returns the RowId which corresponds to a row used to mark documents
+        // as soft-deleted.
+        RowId GetDocumentActiveRowId() const;
 
         // Allocates memory for the slice buffer. The buffer has the size of
         // m_sliceBufferSize.
@@ -214,6 +224,14 @@ namespace BitFunnel
         // Allocator that provides blocks of memory for Slice buffers.
         ISliceBufferAllocator& m_sliceBufferAllocator;
 
+        // Row which is used to mark documents as soft deleted.  The value of 0
+        // means the document in this column is soft deleted and excluded from
+        // matching. Typically this is a private rank 0 row. During the
+        // AddDocument workflow, the bit in this row is set to 1 as the last
+        // step and this effectively makes the document "serving".
+        const RowId m_documentActiveRowId;
+
+
         // Lock protecting operations on the list of slices. Protects the
         // AllocateDocument method.
         // This lock is used in const member functions, as a result, it is
@@ -263,7 +281,7 @@ namespace BitFunnel
         // of vectors is implemented.
         std::atomic<std::vector<void*>*> m_sliceBuffers;
 
-        // Capacity of a Slice. All Slices in the shard have the same capacity.
+       // Capacity of a Slice. All Slices in the shard have the same capacity.
         const DocIndex m_sliceCapacity;
 
         // Size of the buffer for storing data for a single Slice. This member
@@ -282,5 +300,6 @@ namespace BitFunnel
         std::vector<RowTableDescriptor> m_rowTables;
 
         std::unique_ptr<DocumentFrequencyTableBuilder> m_docFrequencyTableBuilder;
+        std::mutex m_temporaryFrequencyTableMutex;
     };
 }

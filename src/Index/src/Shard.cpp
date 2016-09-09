@@ -37,6 +37,37 @@
 
 namespace BitFunnel
 {
+    // Extracts a RowId used to mark documents as active/soft-deleted.
+    static RowId RowIdForActiveDocument(ITermTable2 const & termTable)
+    {
+        RowIdSequence rows(termTable.GetDocumentActiveTerm(), termTable);
+
+        auto it = rows.begin();
+        if (it == rows.end())
+        {
+            RecoverableError error("RowIdForDeletedDocument: expected at least one row.");
+            throw error;
+        }
+        const RowId rowId = *it;
+
+        if (rowId.GetRank() != 0)
+        {
+            RecoverableError error("RowIdForDeletedDocument: soft deleted row must be rank 0..");
+            throw error;
+        }
+
+        ++it;
+        if (it != rows.end())
+        {
+            RecoverableError error("RowIdForDeletedDocument: expected no more than one row.");
+            throw error;
+
+        }
+
+        return rowId;
+    }
+
+
     Shard::Shard(IRecycler& recycler,
                  ITokenManager& tokenManager,
                  ITermTable2 const & termTable,
@@ -47,6 +78,7 @@ namespace BitFunnel
           m_tokenManager(tokenManager),
           m_termTable(termTable),
           m_sliceBufferAllocator(sliceBufferAllocator),
+          m_documentActiveRowId(RowIdForActiveDocument(termTable)),
           m_activeSlice(nullptr),
           m_sliceBuffers(new std::vector<void*>()),
           m_sliceCapacity(GetCapacityForByteSize(sliceBufferSize,
@@ -96,14 +128,7 @@ namespace BitFunnel
     // Must be called with m_slicesLock held.
     void Shard::CreateNewActiveSlice()
     {
-        Slice* newSlice = new Slice(*this,
-                                    m_docFrequencyTableBuilder.get(),
-                                    m_termTable,
-                                    *m_docTable,
-                                    m_rowTables,
-                                    m_sliceBufferSize,
-                                    GetSliceCapacity(),
-                                    AllocateSliceBuffer());
+        Slice* newSlice = new Slice(*this);
 
         std::vector<void*>* oldSlices = m_sliceBuffers;
         std::vector<void*>* const newSlices = new std::vector<void*>(*m_sliceBuffers);
@@ -180,6 +205,19 @@ namespace BitFunnel
     DocIndex Shard::GetSliceCapacity() const
     {
         return  m_sliceCapacity;
+    }
+
+
+    ptrdiff_t Shard::GetSlicePtrOffset() const
+    {
+        // A pointer to a Slice is placed in the end of the slice buffer.
+        return m_sliceBufferSize - sizeof(void*);
+    }
+
+
+    RowId Shard::GetDocumentActiveRowId() const
+    {
+        return m_documentActiveRowId;
     }
 
 
@@ -298,6 +336,68 @@ namespace BitFunnel
     }
 
 
+    void Shard::AddPosting(Term const & term,
+                           DocIndex index,
+                           void* sliceBuffer)
+    {
+        if (m_docFrequencyTableBuilder.get() != nullptr)
+        {
+            std::lock_guard<std::mutex> lock(m_temporaryFrequencyTableMutex);
+            m_docFrequencyTableBuilder->OnTerm(term);
+        }
+
+
+        RowIdSequence rows(term, m_termTable);
+
+        for (auto const row : rows)
+        {
+            m_rowTables[row.GetRank()].SetBit(sliceBuffer,
+                                              row.GetIndex(),
+                                              index);
+        }
+    }
+
+
+    void Shard::AssertFact(FactHandle fact, bool value, DocIndex index, void* sliceBuffer)
+    {
+        Term term(fact, 0u, 0u, 1u);
+        RowIdSequence rows(term, m_termTable);
+        auto it = rows.begin();
+
+        if (it == rows.end())
+        {
+            RecoverableError error("Shard::AssertFact: expected at least one row.");
+            throw error;
+        }
+
+        const RowId row = *it;
+
+        ++it;
+        if (it != rows.end())
+        {
+            RecoverableError error("Shard::AssertFact: expected no more than one row.");
+            throw error;
+
+        }
+
+        RowTableDescriptor const & rowTable =
+            m_rowTables[row.GetRank()];
+
+        if (value)
+        {
+            rowTable.SetBit(sliceBuffer,
+                            row.GetIndex(),
+                            index);
+        }
+        else
+        {
+            rowTable.ClearBit(sliceBuffer,
+                              row.GetIndex(),
+                              index);
+        }
+    }
+
+
     void Shard::TemporaryRecordDocument()
     {
         m_docFrequencyTableBuilder->OnDocumentEnter();
@@ -308,7 +408,7 @@ namespace BitFunnel
                                                      TermToText const * termToText) const
     {
         // TODO: 0.0 is the truncation frequency, which shouldn't be fixed at 0.
-        m_docFrequencyTableBuilder->WriteFrequencies(out, 0.0, termToText); 
+        m_docFrequencyTableBuilder->WriteFrequencies(out, 0.0, termToText);
     }
 
 

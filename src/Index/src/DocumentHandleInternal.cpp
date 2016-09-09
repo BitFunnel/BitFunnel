@@ -73,19 +73,22 @@ namespace BitFunnel
 
     void DocumentHandle::AssertFact(FactHandle fact, bool value)
     {
-        m_slice->AssertFact(fact, value, m_index);
+        m_slice->GetShard().AssertFact(fact,
+                                       value,
+                                       m_index,
+                                       m_slice->GetSliceBuffer());
     }
 
 
     void DocumentHandle::AddPosting(Term const & term)
     {
-        m_slice->AddPosting(term, m_index);
+        m_slice->GetShard().AddPosting(term, m_index, m_slice->GetSliceBuffer());
     }
 
 
     void DocumentHandle::Expire()
     {
-        const RowId documentActiveRow = m_slice->GetDocumentActiveRowId();
+        const RowId documentActiveRow = m_slice->GetShard().GetDocumentActiveRowId();
 
         RowTableDescriptor const & rowTable = m_slice->GetRowTable(documentActiveRow.GetRank());
         rowTable.ClearBit(m_slice->GetSliceBuffer(), documentActiveRow.GetIndex(), m_index);
@@ -111,10 +114,11 @@ namespace BitFunnel
     bool DocumentHandle::GetBit(RowId row) const
     {
         auto bit =
-            m_slice->GetRowTable(row.GetRank()).
-                GetBit(m_slice->GetSliceBuffer(),
-                       row.GetIndex(),
-                       m_index);
+            m_slice->GetShard().GetRowTable(
+                row.GetRank()).GetBit(
+                    m_slice->GetSliceBuffer(),
+                    row.GetIndex(),
+                    m_index);
 
         return bit == 1ull;
     }
@@ -163,15 +167,14 @@ namespace BitFunnel
 
     void DocumentHandleInternal::Activate()
     {
-        const RowId documentActiveRowId =
-            m_slice->GetDocumentActiveRowId();
+        const RowId documentActiveRow =
+            m_slice->GetShard().GetDocumentActiveRowId();
         RowTableDescriptor const & rowTable =
-            m_slice->GetRowTable(documentActiveRowId.GetRank());
+            m_slice->GetRowTable(documentActiveRow.GetRank());
         rowTable.SetBit(m_slice->GetSliceBuffer(),
-                        documentActiveRowId.GetIndex(),
+                        documentActiveRow.GetIndex(),
                         m_index);
 
-        // TODO: add back statistics.
-        // m_slice->GetShard().TemporaryRecordDocument();
+        m_slice->GetShard().TemporaryRecordDocument();
     }
 }
