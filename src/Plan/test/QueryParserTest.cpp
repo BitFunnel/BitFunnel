@@ -416,6 +416,19 @@ namespace BitFunnel
             "  ]\n"
             "}",
             "\"one\\\"two three\""
+        },
+
+        // NOT of OR.
+        {
+            "Not {\n"
+            "  Child: Or {\n"
+            "    Children: [\n"
+            "      Unigram(\"two\", 0),\n"
+            "      Unigram(\"one\", 0)\n"
+            "    ]\n"
+            "  }\n"
+            "}",
+            "-(one|two)"
         }
     };
 
