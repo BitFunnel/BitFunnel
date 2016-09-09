@@ -27,7 +27,6 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Term.h"
-#include "BitFunnel/Stream.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "BitFunnel/IObjectParser.h"
@@ -117,10 +116,8 @@ namespace BitFunnel
         m_rawHash = parser.ParseUInt64();
 
         LogAssertB(parser.OpenPrimitiveItem(), "");
-        std::string classificationName;
-        parser.ParseToken(classificationName);
-        // TODO: Rework this code to no longer use classification names.
-        m_stream = static_cast<uint8_t>(StringToClassification(classificationName));
+        // TODO: check for cast overflow?
+        m_stream = static_cast<StreamId>(parser.ParseUInt64());
 
         LogAssertB(parser.OpenPrimitiveItem(), "");
         unsigned gramSize = parser.ParseUInt();

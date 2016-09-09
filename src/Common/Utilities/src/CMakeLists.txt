@@ -20,7 +20,6 @@ set(CPPFILES
     SimpleHashSetBase.cpp
     StandardInputStream.cpp
     Stopwatch.cpp
-    Stream.cpp
     StreamUtilities.cpp
     TaskDistributor.cpp
     TaskDistributorThread.cpp

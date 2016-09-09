@@ -117,7 +117,6 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowIdSequence.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowMatchNode.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowPlan.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Stream.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Term.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/TermMatchNode.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Token.h
