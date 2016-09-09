@@ -75,7 +75,7 @@ namespace BitFunnel
     {
         TermMatchNode::Builder builder(TermMatchNode::AndMatch, m_allocator);
         // TODO: unify specialChars.
-        char const * specialCharsExceptSimple = "&|\\):\"";
+        char const * specialCharsExceptSimple = "&|\\):";
 
 
         auto leftSimple = ParseSimple();
@@ -206,6 +206,7 @@ namespace BitFunnel
             SkipWhite();
             if (PeekChar() == '"')
             {
+                ExpectDelimeter('"');
                 break;
             }
             // TODO: consider how we handle escapes.
