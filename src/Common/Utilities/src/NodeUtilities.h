@@ -3,7 +3,6 @@
 #include <stddef.h>                           // For nullptr.
 
 #include "BitFunnel/Allocators/IAllocator.h"  // Used by template definitions.
-#include "BitFunnel/Classification.h"         // Used by template definitions.
 #include "BitFunnel/IObjectFormatter.h"       // Used by template definitions.
 #include "BitFunnel/IObjectParser.h"          // Used by template definitions.
 #include "BitFunnel/Term.h"                   // Used by template definitions.

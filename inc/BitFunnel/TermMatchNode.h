@@ -23,7 +23,6 @@
 #pragma once
 
 #include "BitFunnel/Index/IFactSet.h"       // Embeds FactHandle.
-#include "BitFunnel/Classification.h"       // Embeds Classification.
 #include "BitFunnel/IPersistableObject.h"   // Inherits from IPersistableObject.
 #include "BitFunnel/NonCopyable.h"          // Inherits from NonCopyable.
 #include "BitFunnel/Term.h"                 // Embeds Term::StreamId.

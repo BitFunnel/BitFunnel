@@ -30,15 +30,6 @@
 namespace BitFunnel
 {
     template <>
-    inline Classification ParseField<Classification>(IObjectParser& parser)
-    {
-        std::string classificationName;
-        parser.ParseToken(classificationName);
-        return StringToClassification(classificationName);
-    }
-
-
-    template <>
     inline Term ParseField<Term>(IObjectParser& parser)
     {
         return Term(parser, false);
