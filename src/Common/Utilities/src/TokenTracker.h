@@ -23,10 +23,10 @@
 
 #pragma once
 
-#include <atomic>
-#include <condition_variable>
+#include <atomic>                   // std::atomic embedded.
+#include <condition_variable>       // std::condition_variable embedded.
 
-#include "BitFunnel/Token.h"                // Inherits from ITokenTracker.
+#include "BitFunnel/Index/Token.h"  // Inherits from ITokenTracker.
 
 namespace BitFunnel
 {

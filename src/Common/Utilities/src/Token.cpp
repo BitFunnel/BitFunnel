@@ -21,8 +21,9 @@
 // THE SOFTWARE.
 
 
-#include "BitFunnel/Token.h"
+#include "BitFunnel/Index/Token.h"
 #include "LoggerInterfaces/Logging.h"
+
 
 namespace BitFunnel
 {

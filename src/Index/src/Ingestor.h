@@ -30,9 +30,9 @@
 
 #include "BitFunnel/BitFunnelTypes.h"       // DocId parameter.
 #include "BitFunnel/Index/IIngestor.h"      // Inherits from IIngestor.
-#include "DocumentCache.h"                  // DocumentCache embedded.
+#include "BitFunnel/Index/Token.h"          // ITokenManager parameterizes std::unique_ptr.
 #include "BitFunnel/NonCopyable.h"          // Base class.
-#include "BitFunnel/Token.h"                // ITokenManager parameterizes std::unique_ptr.
+#include "DocumentCache.h"                  // DocumentCache embedded.
 #include "DocumentLengthHistogram.h"        // Embeds DocumentLengthHistogram.
 #include "DocumentMap.h"                    // DocumentMap template parameter.
 #include "Shard.h"                          // std::unique_ptr template parameter.

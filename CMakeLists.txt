@@ -105,12 +105,11 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IPersistableObject.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Term.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Token.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/IAllocator.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/Factories.h
 )
 
 set(CONFIGURATION_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/Factories.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/IStreamConfiguration.h
 )
 
@@ -136,6 +135,7 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Row.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/RowId.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/RowIdSequence.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Token.h
 )
 
 set(PLAN_HFILES

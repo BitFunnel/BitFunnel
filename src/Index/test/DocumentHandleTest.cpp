@@ -30,7 +30,7 @@
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
 #include "BitFunnel/Index/ITermTable.h"
-#include "BitFunnel/Token.h"
+#include "BitFunnel/Index/Token.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "DocumentDataSchema.h"
 #include "IndexUtils.h"

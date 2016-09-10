@@ -22,7 +22,7 @@
 
 
 #include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/Token.h"
+#include "BitFunnel/Index/Token.h"
 #include "LoggerInterfaces/Logging.h"
 #include "Recycler.h"
 #include "Slice.h"

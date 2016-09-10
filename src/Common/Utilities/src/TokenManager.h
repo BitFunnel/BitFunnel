@@ -23,13 +23,13 @@
 
 #pragma once
 
-#include <atomic>             // Uses std::atomic.
-#include <condition_variable> // Uses std::contiion_variable.
-#include <deque>              // Uses std::deque.
-#include <memory>             // Uses std::shared_ptr.
-#include <mutex>              // Uses std::mutex.
+#include <atomic>                   // std::atomic embedded.
+#include <condition_variable>       // std::contiion_variable embedded.
+#include <deque>                    // std::deque embedded.
+#include <memory>                   // std::shared_ptr template parameter.
+#include <mutex>                    // std::mutex embedded.
 
-#include "BitFunnel/Token.h"  // Inherits from ITokenManager and ITokenListener
+#include "BitFunnel/Index/Token.h"  // Inherits from ITokenManager and ITokenListener
 
 namespace BitFunnel
 {
