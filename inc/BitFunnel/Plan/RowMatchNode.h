@@ -1,7 +1,7 @@
 #pragma once
 
-#include "BitFunnel/AbstractRow.h"    // Embeds AbstractRow.
-#include "BitFunnel/RowPlan.h"        // Inherits from RowPlanBase.
+#include "BitFunnel/Plan/AbstractRow.h" // Embeds AbstractRow.
+#include "BitFunnel/Plan/RowPlan.h"     // Inherits from RowPlanBase.
 
 
 namespace BitFunnel

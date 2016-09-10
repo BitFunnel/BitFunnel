@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "BitFunnel/AbstractRow.h"
+#include "BitFunnel/Plan/AbstractRow.h"
 #include "LoggerInterfaces/Logging.h"
 #include "NodeUtilities.h"
 

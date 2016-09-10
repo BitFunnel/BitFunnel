@@ -26,7 +26,7 @@
 #include <sstream>
 
 #include "Allocator.h"
-#include "BitFunnel/TermMatchNode.h"
+#include "BitFunnel/Plan/TermMatchNode.h"
 #include "QueryParser.h"
 #include "TextObjectFormatter.h"
 

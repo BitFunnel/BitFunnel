@@ -1,9 +1,9 @@
 #pragma once
 
-#include <ostream>                        // std::ostream used as parameter.
+#include <ostream>                          // std::ostream parameter.
 
-#include "BitFunnel/ICodeGenerator.h"     // Inherits from ICodeGenerator.
-#include "BitFunnel/NonCopyable.h"        // Inherits from NonCopyable.
+#include "BitFunnel/NonCopyable.h"          // Inherits from NonCopyable.
+#include "BitFunnel/Plan/ICodeGenerator.h"  // Inherits from ICodeGenerator.
 
 
 namespace BitFunnel

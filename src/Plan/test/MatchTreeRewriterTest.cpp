@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "Allocator.h"
-#include "BitFunnel/RowMatchNode.h"
+#include "BitFunnel/Plan/RowMatchNode.h"
 #include "MatchTreeRewriter.h"
 #include "SameExceptForWhitespace.h"
 #include "TextObjectFormatter.h"

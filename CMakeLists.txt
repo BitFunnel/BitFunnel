@@ -94,10 +94,8 @@ endmacro()
 ###############################################################################
 
 set(BITFUNNEL_HFILES
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/AbstractRow.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/BitFunnelTypes.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Exceptions.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ICodeGenerator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IFileManager.h
@@ -106,10 +104,7 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IObjectParser.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IPersistableObject.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowMatchNode.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/RowPlan.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Term.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/TermMatchNode.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Token.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/IAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/Factories.h
@@ -144,6 +139,11 @@ set(INDEX_HFILES
 )
 
 set(PLAN_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/AbstractRow.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/ICodeGenerator.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/RowMatchNode.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/RowPlan.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/TermMatchNode.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryPipeline.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/TermMatchTreeEvaluator.h
 )

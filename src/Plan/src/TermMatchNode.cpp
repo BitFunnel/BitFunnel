@@ -23,11 +23,10 @@
 #include <cstring>  // For strcmp.
 
 #include "BitFunnel/Allocators/IAllocator.h"
-//#include "BitFunnel/Factories.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IObjectFormatter.h"
 #include "BitFunnel/IObjectParser.h"
-#include "BitFunnel/TermMatchNode.h"
+#include "BitFunnel/Plan/TermMatchNode.h"
 #include "LoggerInterfaces/Logging.h"
 #include "ObjectFormatter.h"
 #include "PlanNodeUtilities.h"

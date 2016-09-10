@@ -27,7 +27,7 @@
 #include <sstream>
 
 #include "BitFunnel/Allocators/IAllocator.h"
-#include "BitFunnel/TermMatchNode.h"
+#include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Utilities/StringBuilder.h"
 #include "QueryParser.h"
 #include "StringVector.h"

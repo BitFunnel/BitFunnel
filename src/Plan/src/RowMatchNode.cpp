@@ -21,13 +21,13 @@
 // THE SOFTWARE.
 
 #include "BitFunnel/Allocators/IAllocator.h"
-#include "BitFunnel/AbstractRow.h"
 #include "BitFunnel/IObjectFormatter.h"
 #include "BitFunnel/IObjectParser.h"
+#include "BitFunnel/Plan/AbstractRow.h"
+#include "BitFunnel/Plan/RowMatchNode.h"
 #include "LoggerInterfaces/Logging.h"
 #include "ObjectFormatter.h"
 #include "PlanNodeUtilities.h"
-#include "BitFunnel/RowMatchNode.h"
 
 
 namespace BitFunnel

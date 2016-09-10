@@ -22,12 +22,12 @@
 
 #include <cstring>
 
-#include "BitFunnel/AbstractRow.h"
 #include "CompileNode.h"
 #include "CompileNodeUtilities.h"
-#include "BitFunnel/ICodeGenerator.h"
 #include "BitFunnel/IObjectFormatter.h"
 #include "BitFunnel/IObjectParser.h"
+#include "BitFunnel/Plan/AbstractRow.h"
+#include "BitFunnel/Plan/ICodeGenerator.h"
 #include "LoggerInterfaces/Logging.h"
 
 

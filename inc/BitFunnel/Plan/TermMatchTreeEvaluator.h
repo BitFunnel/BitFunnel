@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "BitFunnel/TermMatchNode.h"    // Nested classes appear as parameters.
+#include "BitFunnel/Plan/TermMatchNode.h"   // Nested classes appear as parameters.
 
 
 namespace BitFunnel
