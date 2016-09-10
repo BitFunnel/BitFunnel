@@ -107,7 +107,7 @@ namespace BitFunnel
                 (handles[i].GetFixedSizeBlob(fixedSizeBlobId));
             fixedSizeBlobValue.m_field1 = 2+i;
             fixedSizeBlobValue.m_field2 = doubleVal++;
-            fixedSizeBlobValue.m_field3 = 4+i;
+            fixedSizeBlobValue.m_field3 = static_cast<uint32_t>(4+i);
             fixedSizeBlobValue.m_field4 = floatVal++;
         }
 
