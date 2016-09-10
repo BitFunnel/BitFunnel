@@ -124,6 +124,10 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/Factories.h
 )
 
+set(CONFIGURATION_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/IStreamConfiguration.h
+)
+
 set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/DocumentHandle.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Factories.h
@@ -174,6 +178,7 @@ set(LOGGER_HFILES
 
 set(PUBLIC_HFILES
   ${BITFUNNEL_HFILES}
+  ${CONFIGURATION_HFILES}
   ${INDEX_HFILES}
   ${PLAN_HFILES}
   ${UTILITIES_HFILES}
@@ -186,7 +191,9 @@ COMBINE_FILE_LISTS()
 add_custom_target(inc SOURCES ${PUBLIC_HFILES})
 set_property(TARGET inc PROPERTY FOLDER "")
 source_group("BitFunnel" FILES ${BITFUNNEL_HFILES})
+source_group("BitFunnel\\Configuration" FILES ${CONFIGURATION_HFILES})
 source_group("BitFunnel\\Index" FILES ${INDEX_HFILES})
+source_group("BitFunnel\\Plan" FILES ${PLAN_HFILES})
 source_group("BitFunnel\\Utilities" FILES ${UTILITIES_HFILES})
 source_group("Logger" FILES ${LOGGER_HFILES})
 
