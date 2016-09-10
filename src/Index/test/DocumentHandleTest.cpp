@@ -140,8 +140,12 @@ namespace BitFunnel
             for (DocIndex i = 0; i < sliceCapacity; ++i)
             {
                 slice->CommitDocument();
-                slice->ExpireDocument();
             }
+        }
+
+        for (auto & handle : handles)
+        {
+            handle.Expire();
         }
 
         while(trackingAllocator->GetInUseBuffersCount() != 0u) {}
