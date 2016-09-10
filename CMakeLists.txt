@@ -163,6 +163,7 @@ set(UTILITIES_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Stopwatch.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StreamUtilities.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StringBuilder.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/TextObjectFormatter.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Version.h
 )
 
@@ -208,6 +209,7 @@ enable_testing()
 #
 # Libraries and executables.
 #
+add_subdirectory(examples/QueryParser)
 add_subdirectory(src)
 add_subdirectory(test/Shared)
 add_subdirectory(tools/IngestAndQuery)

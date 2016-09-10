@@ -27,8 +27,9 @@
 
 #include "Allocator.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
+#include "BitFunnel/Utilities/TextObjectFormatter.h"
 #include "QueryParser.h"
-#include "TextObjectFormatter.h"
+
 
 namespace BitFunnel
 {

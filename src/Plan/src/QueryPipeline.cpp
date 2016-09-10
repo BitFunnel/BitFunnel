@@ -37,6 +37,7 @@ namespace BitFunnel
 
     TermMatchNode const * QueryPipeline::ParseQuery(char const * query)
     {
+        m_allocator->Reset();
         std::stringstream s(query);
         QueryParser parser(s, *m_allocator);
         return parser.Parse();

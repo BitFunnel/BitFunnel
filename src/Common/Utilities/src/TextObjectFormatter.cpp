@@ -2,7 +2,7 @@
 
 #include "BitFunnel/Term.h"
 #include "BitFunnel/Utilities/IPersistableObject.h"
-#include "TextObjectFormatter.h"
+#include "BitFunnel/Utilities/TextObjectFormatter.h"
 
 
 namespace BitFunnel
