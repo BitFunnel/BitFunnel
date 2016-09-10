@@ -1,8 +1,9 @@
 #pragma once
 
-#include <iosfwd>   // std::istream parameter.
-#include <stdexcept>
-#include <string>  // std::string.
+#include <iosfwd>                   // std::istream parameter.
+
+#include "BitFunnel/Exceptions.h"   // Base class.
+#include "BitFunnel/Term.h"         // Term::StreamId parameter.
 
 
 // Primitive things you can talk about are terms and phrases. And then we'll
@@ -32,7 +33,7 @@ namespace BitFunnel
         // ParseError records the character position and cause of an error
         // during parsing.
         //
-        class ParseError : public std::runtime_error
+        class ParseError : public RecoverableError
         {
         public:
             ParseError(char const * message, size_t position);
@@ -50,13 +51,8 @@ namespace BitFunnel
         TermMatchNode const * ParseOr();
 
         // AND:
-        //   SIMPLE ([&] SIMPLE)*
+        //   SIMPLE (['&'] SIMPLE)*
         TermMatchNode const * ParseAnd();
-
-        // TERM:
-        //   [StreamId:]'"' PHRASE '"'
-        //   [StreamId:]UNIGRAM
-        TermMatchNode const * ParseTerm();
 
         // SIMPLE:
         //   '-' SIMPLE
@@ -64,29 +60,34 @@ namespace BitFunnel
         //   TERM
         TermMatchNode const * ParseSimple();
 
-        // UNIGRAM:
-        //   ![SPACE|SPECIAL]+
-        TermMatchNode const * ParseUnigram();
-        TermMatchNode const * ParseCachedUnigram(char const * cache);
+        // TERM:
+        //   [StreamId:]'"' PHRASE '"'
+        //   [StreamId:]UNIGRAM
+        TermMatchNode const * ParseTerm();
 
         // PHRASE:
         //   '"' UNIGRAM (SPACE* UNIGRAM)* '"'
-        TermMatchNode const * ParsePhrase();
+        TermMatchNode const * ParsePhrase(Term::StreamId streamId);
+
+        // UNIGRAM:
+        //   ![SPACE|SPECIAL]+
+        char const * ParseToken();
 
         // DESIGN NOTE:
         // one-two is parsed as one NOT two instead of the unigram one-two.
         // This should probably be changed as this is counter-intuitive for
         // most users.
 
-        char const * ParseToken();
 
-        bool AtEOF();
         // Note that delimeters must be ASCII.
         void ExpectDelimeter(char c);
         void SkipWhite();
-        char PeekChar();
-        char GetChar();
+
         char GetWithEscape();
+        char GetChar();
+        char PeekChar();
+
+        Term::StreamId StreamIdFromText(char const * /*streamName*/) const;
 
         std::istream& m_input;
         IAllocator& m_allocator;

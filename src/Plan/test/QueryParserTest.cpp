@@ -46,7 +46,7 @@ namespace BitFunnel
         {"Unigram(\"wat\", 0)", "wat"},
 
         // STREAM:UNIGRAM.
-        {"Unigram(\"wat\", 0)", "StreamsAreCurrentlyIgnored:wat"},
+        {"Unigram(\"wat\", 123)", "StreamsAreCurrentlyIgnored:wat"},
 
         // (UNIGRAM)
         {"Unigram(\"wat\", 0)", "(wat)"},
@@ -434,11 +434,16 @@ namespace BitFunnel
 
     void VerifyQueryParser(std::string const & expected, std::string const & input, IAllocator& allocator)
     {
+        allocator.Reset();
+
         std::stringstream s;
         s << input;
         QueryParser parser(s, allocator);
 
-        std::cout << "input length: " << s.str().size() << std::endl;
+        //std::cout << "input length: " << s.str().size() << std::endl;
+        std::cout
+            << "============================" << std::endl
+            << "input = \"" << input << "\"" << std::endl;
 
         auto result = parser.Parse();
         ASSERT_NE(nullptr, result);
@@ -447,15 +452,14 @@ namespace BitFunnel
         TextObjectFormatter formatter(parsedOutput);
         result->Format(formatter);
 
-        std::cout << "???: " << parsedOutput.str() << std::endl;
+        std::cout << "output: \"" << parsedOutput.str() << "\"" << std::endl;
         EXPECT_EQ(expected, parsedOutput.str());
-        allocator.Reset();
     }
 
 
     TEST(QueryParser, Trivial)
     {
-        Allocator allocator(512);
+        Allocator allocator(4096);
 
         for (size_t i = 0; i < sizeof(c_testData) / sizeof(ExpectedAndInputs); ++i)
         {

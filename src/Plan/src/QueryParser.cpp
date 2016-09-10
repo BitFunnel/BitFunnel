@@ -28,6 +28,7 @@
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/TermMatchNode.h"
+#include "BitFunnel/Utilities/StringBuilder.h"
 #include "QueryParser.h"
 #include "StringVector.h"
 
@@ -74,9 +75,7 @@ namespace BitFunnel
     TermMatchNode const * QueryParser::ParseAnd()
     {
         TermMatchNode::Builder builder(TermMatchNode::AndMatch, m_allocator);
-        // TODO: unify specialChars.
-        char const * specialCharsExceptSimple = "&|\\):";
-
+        char const * c_endOfAndProduction = ")|";
 
         auto leftSimple = ParseSimple();
         builder.AddChild(leftSimple);
@@ -87,64 +86,26 @@ namespace BitFunnel
             char c = PeekChar();
             if (c == '&')
             {
+                // The '&' operator indicates there must be another Simple operand.
                 GetChar();
+                auto child = ParseSimple();
+                builder.AddChild(child);
+            }
+            else if (strchr(c_endOfAndProduction, c) == nullptr)
+            {
+                // The absense of a ')' or '|' indicates an implicit '&' operator
+                // which forces us to stay in the And-production and process another
+                // Simple operand.
+                auto child = ParseSimple();
+                builder.AddChild(child);
             }
             else
             {
-                if (strchr(specialCharsExceptSimple,c) != nullptr)
-                {
-                    break;
-                }
+                // Otherwise, we are done with the And-production.
+                break;
             }
-            auto childSimple = ParseSimple();
-            builder.AddChild(childSimple);
         }
         return builder.Complete();
-    }
-
-
-    TermMatchNode const * QueryParser::ParseTerm()
-    {
-        Term::StreamId streamId = 0; // TODO: convert streamId to string?
-
-        SkipWhite();
-        if (PeekChar() == '"')
-        {
-            // TODO: handle streamId.
-            // return ParsePhrase(streamId);
-            return ParsePhrase();
-        }
-        else
-        {
-            const char * unigram = ParseToken();
-
-            if (PeekChar() == ':')
-            {
-                // streamId = token;
-                streamId = 0;
-                GetChar();
-            }
-            else
-            {
-                return ParseCachedUnigram(unigram);
-            }
-
-            // TODO: refactor this into multiple productions to simplify.
-            // If we're here, we saw a ":"
-
-            if (PeekChar() == '"')
-            {
-                // TODO: add streamId.
-                // return ParsePhrase(streamId);
-                return ParsePhrase();
-            }
-            else
-            {
-                // TODO: add streamId.
-                // return ParseUnigram(streamId);
-                return ParseUnigram();
-            }
-        }
     }
 
 
@@ -175,24 +136,46 @@ namespace BitFunnel
     }
 
 
-    TermMatchNode const * QueryParser::ParseUnigram()
+    TermMatchNode const * QueryParser::ParseTerm()
     {
-        char const * token = ParseToken();
+        // Default streamId is always 0.
+        Term::StreamId streamId = 0;
 
-        Term::StreamId dummy = 0;
-        return TermMatchNode::Builder::CreateUnigramNode(token, dummy, m_allocator);
+        SkipWhite();
+        if (PeekChar() == '"')
+        {
+            return ParsePhrase(streamId);
+        }
+        else
+        {
+            char const * left = ParseToken();
+
+            if (PeekChar() == ':')
+            {
+                // 'left' turns out to be a StreamId.
+                GetChar();
+                streamId = StreamIdFromText(left);
+
+                // Look for a phrase or term following the streamId.
+                if (PeekChar() == '"')
+                {
+                    return ParsePhrase(streamId);
+                }
+                else
+                {
+                    char const * right = ParseToken();
+                    return TermMatchNode::Builder::CreateUnigramNode(right, streamId, m_allocator);
+                }
+            }
+            else
+            {
+                return TermMatchNode::Builder::CreateUnigramNode(left, streamId, m_allocator);
+            }
+        }
     }
 
 
-    TermMatchNode const * QueryParser::ParseCachedUnigram(char const * cache)
-    {
-        Term::StreamId dummy = 0;
-        return TermMatchNode::Builder::CreateUnigramNode(cache, dummy, m_allocator);
-    }
-
-
-
-    TermMatchNode const * QueryParser::ParsePhrase()
+    TermMatchNode const * QueryParser::ParsePhrase(Term::StreamId streamId)
     {
         ExpectDelimeter('"');
 
@@ -214,17 +197,27 @@ namespace BitFunnel
             grams.AddString(token);
         }
 
-        Term::StreamId dummy = 0;
-        return TermMatchNode::Builder::CreatePhraseNode(grams, dummy, m_allocator);
+        return TermMatchNode::Builder::CreatePhraseNode(grams, streamId, m_allocator);
     }
 
 
-    void QueryParser::SkipWhite()
+    char const * QueryParser::ParseToken()
     {
-        while (isspace(PeekChar()))
+        char const * c_endOfToken = "&|():-\"";
+        StringBuilder builder(m_allocator);
+
+        while (!isspace(PeekChar()) && strchr(c_endOfToken, PeekChar()) == nullptr)
         {
-            GetChar();
+            char temp = GetWithEscape();
+            builder.push_back(temp);
+        };
+        char const* token = static_cast<char*>(builder);
+        if (*token == '\0')
+        {
+            throw ParseError("Expected token.", m_currentPosition);
         }
+
+        return token;
     }
 
 
@@ -244,39 +237,12 @@ namespace BitFunnel
     }
 
 
-    char QueryParser::GetChar()
+    void QueryParser::SkipWhite()
     {
-        char result = PeekChar();
-        if (result == '\0')
+        while (isspace(PeekChar()))
         {
-            throw ParseError("Attempting to read past NULL byte",
-                             m_currentPosition);
+            GetChar();
         }
-        ++m_currentPosition;
-        m_haveChar = false;
-        return result;
-    }
-
-
-    char QueryParser::PeekChar()
-    {
-        if (!m_haveChar)
-        {
-            int temp = m_input.get();
-            // See https://github.com/BitFunnel/BitFunnel/issues/189.
-            if (temp != -1)
-            {
-                // TODO: when we handle UTF-8 correctly, everything will turn
-                // into int.
-                m_nextChar = static_cast<char>(temp);
-            }
-            else
-            {
-                m_nextChar = '\0';
-            }
-            m_haveChar = true;
-        }
-        return m_nextChar;
     }
 
 
@@ -305,36 +271,54 @@ namespace BitFunnel
     }
 
 
-    char const * QueryParser::ParseToken()
+    char QueryParser::GetChar()
     {
-        // TODO: unify with legalEscapes.
-        char const * specialCharsExceptBackslash = "&|()\":-";
-
-        std::string token;
-        char c = PeekChar();
-        if (isspace(c) || strchr(specialCharsExceptBackslash, c) != nullptr)
+        char result = PeekChar();
+        if (result == '\0')
         {
-            // TODO: should we throw here or just return the empty string?
-            throw ParseError("Found space or special character at beginning of unigram.",
+            throw ParseError("Attempting to read past NULL byte",
                              m_currentPosition);
-
         }
-        do
-        {
-            char temp = GetWithEscape();
-            token.push_back(temp);
-            c = PeekChar();
-        } while (!isspace(c) && strchr(specialCharsExceptBackslash, c) == nullptr);
-
-        char* buffer = static_cast<char*>(m_allocator.Allocate(token.size()+1));
-        memcpy(buffer, token.c_str(), token.size()+1);
-        std::cout << "ParseToken result: " << token << ":" << buffer << "(" << token.size() << ")" <<std::endl;
-        return buffer;
+        ++m_currentPosition;
+        m_haveChar = false;
+        return result;
     }
 
 
+    char QueryParser::PeekChar()
+    {
+        if (!m_haveChar)
+        {
+            int temp = m_input.get();
+            // See https://github.com/BitFunnel/BitFunnel/issues/189.
+            if (temp != -1)
+            {
+                m_nextChar = static_cast<char>(temp);
+            }
+            else
+            {
+                m_nextChar = '\0';
+            }
+            m_haveChar = true;
+        }
+        return m_nextChar;
+    }
+
+
+    Term::StreamId QueryParser::StreamIdFromText(char const * /*streamName*/) const
+    {
+        // TODO: Return correct stream id here.
+        return 123;
+    }
+
+
+    //*************************************************************************
+    //
+    // QueryParser::ParseError
+    //
+    //*************************************************************************
     QueryParser::ParseError::ParseError(char const * message, size_t position)
-        : std::runtime_error(message),
+        : RecoverableError(message),
           m_position(position)
     {
     }
