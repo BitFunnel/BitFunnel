@@ -132,6 +132,20 @@ namespace BitFunnel
             EXPECT_EQ(fixedSizeBlobValue.m_field4, floatVal++);
         }
 
+        // Expire documents. Not necessary for test, just to avoid leaking
+        // Slices, which causes valgrind to complain.
+        for (auto const & slice : slices)
+        {
+            ASSERT_NE(slice, nullptr);
+            for (DocIndex i = 0; i < sliceCapacity; ++i)
+            {
+                slice->CommitDocument();
+                slice->ExpireDocument();
+            }
+        }
+
+        while(trackingAllocator->GetInUseBuffersCount() != 0u) {}
+
         tokenManager->Shutdown();
         recycler->Shutdown();
         background.wait();
