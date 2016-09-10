@@ -21,10 +21,10 @@
 // THE SOFTWARE.
 
 #include "BitFunnel/Allocators/IAllocator.h"
-#include "BitFunnel/IObjectFormatter.h"
-#include "BitFunnel/IObjectParser.h"
 #include "BitFunnel/Plan/AbstractRow.h"
 #include "BitFunnel/Plan/RowMatchNode.h"
+#include "BitFunnel/Utilities/IObjectFormatter.h"
+#include "BitFunnel/Utilities/IObjectParser.h"
 #include "LoggerInterfaces/Logging.h"
 #include "ObjectFormatter.h"
 #include "PlanNodeUtilities.h"

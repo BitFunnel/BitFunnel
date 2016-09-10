@@ -4,7 +4,7 @@
 #include <stack>
 
 #include "BitFunnel/NonCopyable.h"
-#include "BitFunnel/IObjectFormatter.h"
+#include "BitFunnel/Utilities/IObjectFormatter.h"
 
 
 namespace BitFunnel

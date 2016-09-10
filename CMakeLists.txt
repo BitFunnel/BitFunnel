@@ -100,9 +100,6 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IFileManager.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IInterface.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IObjectFormatter.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IObjectParser.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IPersistableObject.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Term.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Allocators/IAllocator.h
@@ -155,6 +152,9 @@ set(UTILITIES_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/FileHeader.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IBlockAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IInputStream.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IObjectFormatter.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IObjectParser.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IPersistableObject.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskDistributor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskProcessor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IThreadManager.h

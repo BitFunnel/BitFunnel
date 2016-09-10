@@ -3,9 +3,8 @@
 #include <istream>
 #include <stack>
 
-#include "BitFunnel/IObjectParser.h"
 #include "BitFunnel/NonCopyable.h"
-
+#include "BitFunnel/Utilities/IObjectParser.h"
 
 
 namespace BitFunnel

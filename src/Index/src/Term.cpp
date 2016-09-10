@@ -29,7 +29,7 @@
 #include "BitFunnel/Term.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/IIndexedIdfTable.h"
-#include "BitFunnel/IObjectParser.h"
+#include "BitFunnel/Utilities/IObjectParser.h"
 #include "LoggerInterfaces/Logging.h"
 #include "MurmurHash2.h"
 #include "TermToText.h"

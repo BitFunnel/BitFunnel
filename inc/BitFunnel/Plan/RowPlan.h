@@ -1,7 +1,7 @@
 #pragma once
 
-#include "BitFunnel/IPersistableObject.h"     // Inherits from IPersistableObject.
-#include "BitFunnel/NonCopyable.h"            // Inherits from NonCopyable.
+#include "BitFunnel/NonCopyable.h"                  // Inherits from NonCopyable.
+#include "BitFunnel/Utilities/IPersistableObject.h" // Inherits from IPersistableObject.
 
 
 namespace BitFunnel

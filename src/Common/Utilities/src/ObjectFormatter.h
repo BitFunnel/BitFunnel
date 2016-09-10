@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BitFunnel/IObjectFormatter.h"
+#include "BitFunnel/Utilities/IObjectFormatter.h"
 
 
 namespace BitFunnel

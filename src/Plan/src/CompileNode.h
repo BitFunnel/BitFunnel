@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include "BitFunnel/IPersistableObject.h"     // Inherits from IPersistableObject.
-#include "BitFunnel/NonCopyable.h"            // Inherits from NonCopyable.
-#include "BitFunnel/Plan/AbstractRow.h"       // Embeds AbstractRow.
+#include "BitFunnel/NonCopyable.h"                  // Inherits from NonCopyable.
+#include "BitFunnel/Plan/AbstractRow.h"             // Embeds AbstractRow.
+#include "BitFunnel/Utilities/IPersistableObject.h" // Inherits from IPersistableObject.
 
 
 namespace BitFunnel

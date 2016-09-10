@@ -22,10 +22,10 @@
 
 #pragma once
 
-#include "BitFunnel/Index/IFactSet.h"       // Embeds FactHandle.
-#include "BitFunnel/IPersistableObject.h"   // Inherits from IPersistableObject.
-#include "BitFunnel/NonCopyable.h"          // Inherits from NonCopyable.
-#include "BitFunnel/Term.h"                 // Embeds Term::StreamId.
+#include "BitFunnel/Index/IFactSet.h"               // Embeds FactHandle.
+#include "BitFunnel/NonCopyable.h"                  // Inherits from NonCopyable.
+#include "BitFunnel/Term.h"                         // Embeds Term::StreamId.
+#include "BitFunnel/Utilities/IPersistableObject.h" // Inherits from IPersistableObject.
 
 
 namespace BitFunnel
