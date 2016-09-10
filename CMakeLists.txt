@@ -105,7 +105,6 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IObjectFormatter.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IObjectParser.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IPersistableObject.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermDisposeDefinition.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTable2.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTreatment.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
