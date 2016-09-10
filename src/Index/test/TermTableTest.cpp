@@ -24,7 +24,7 @@
 
 #include "gtest/gtest.h"
 
-#include "BitFunnel/RowIdSequence.h"
+#include "BitFunnel/Index/RowIdSequence.h"
 #include "TermTable.h"
 
 

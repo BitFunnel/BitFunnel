@@ -26,7 +26,7 @@
 #include <vector>                       // std::vector parameter.
 
 #include "BitFunnel/BitFunnelTypes.h"   // DocIndex paramter.
-#include "BitFunnel/RowId.h"            // RowIndex parameterizes std::vector.
+#include "BitFunnel/Index/RowId.h"      // RowIndex parameterizes std::vector.
 
 
 namespace BitFunnel

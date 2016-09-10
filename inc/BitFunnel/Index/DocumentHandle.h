@@ -24,10 +24,10 @@
 
 #include <limits>
 
-#include "BitFunnel/BitFunnelTypes.h"   // For DocIndex, DocId.
-#include "BitFunnel/Index/IDocumentDataSchema.h"  // VariableSizeBlobId and FixedSizeBlobId are parameters.
-#include "BitFunnel/Index/IFactSet.h"  // FactHandle is a parameter.
-#include "BitFunnel/RowId.h"            // RowId parameter.
+#include "BitFunnel/BitFunnelTypes.h"               // DocIndex member, DocId return value.
+#include "BitFunnel/Index/IDocumentDataSchema.h"    // VariableSizeBlobId and FixedSizeBlobId parameters.
+#include "BitFunnel/Index/IFactSet.h"               // FactHandle parameter.
+#include "BitFunnel/Index/RowId.h"                  // RowId parameter.
 
 
 namespace BitFunnel

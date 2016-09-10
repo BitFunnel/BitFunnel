@@ -26,7 +26,7 @@
 #include <cstddef>                      // size_t embedded.
 
 #include "BitFunnel/BitFunnelTypes.h"   // DocIndex parameter.
-#include "BitFunnel/RowId.h"            // RowIndex parameter.
+#include "BitFunnel/Index/RowId.h"      // RowIndex parameter.
 
 
 namespace BitFunnel

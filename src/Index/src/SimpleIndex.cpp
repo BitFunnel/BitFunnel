@@ -27,7 +27,7 @@
 #include "BitFunnel/Index/Helpers.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
-#include "BitFunnel/Row.h"
+#include "BitFunnel/Index/Row.h"
 #include "SimpleIndex.h"
 
 

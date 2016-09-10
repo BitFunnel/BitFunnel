@@ -24,8 +24,8 @@
 #include <cstring>
 
 #include "BitFunnel/Index/ITermTable.h"
-#include "BitFunnel/Row.h"
-#include "BitFunnel/RowIdSequence.h"
+#include "BitFunnel/Index/Row.h"
+#include "BitFunnel/Index/RowIdSequence.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RowTableDescriptor.h"
 

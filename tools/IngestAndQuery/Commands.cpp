@@ -32,7 +32,7 @@
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Plan/QueryPipeline.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
-#include "BitFunnel/RowIdSequence.h"
+#include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Term.h"
 #include "Commands.h"
 #include "Environment.h"

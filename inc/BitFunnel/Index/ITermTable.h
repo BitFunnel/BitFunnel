@@ -22,12 +22,12 @@
 
 #pragma once
 
-#include <iosfwd>                           // std::ostream parameter.
+#include <iosfwd>                                   // std::ostream parameter.
 
-#include "BitFunnel/IInterface.h"           // Base class.
-#include "BitFunnel/PackedRowIdSequence.h"  // RowId parameter.
-#include "BitFunnel/RowId.h"                // RowId parameter.
-#include "BitFunnel/Term.h"                 // Term::Hash parameter.
+#include "BitFunnel/IInterface.h"                   // Base class.
+#include "BitFunnel/Index/PackedRowIdSequence.h"    // PackedRowIdSequence return value.
+#include "BitFunnel/Index/RowId.h"                  // RowId parameter.
+#include "BitFunnel/Term.h"                         // Term::Hash parameter.
 
 
 namespace BitFunnel

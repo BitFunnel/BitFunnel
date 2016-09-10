@@ -21,12 +21,12 @@
 // THE SOFTWARE.
 
 
-#include "BitFunnel/Row.h"
-
 #include <inttypes.h>
 #include <stddef.h>
 
 #include "BitFunnel/Index/DocumentHandle.h"  // For DocIndex.
+#include "BitFunnel/Index/Row.h"
+
 
 namespace BitFunnel
 {

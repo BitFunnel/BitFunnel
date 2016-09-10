@@ -22,7 +22,7 @@
 
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/PackedRowIdSequence.h"
+#include "BitFunnel/Index/PackedRowIdSequence.h"
 
 
 namespace BitFunnel

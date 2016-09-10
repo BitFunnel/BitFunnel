@@ -33,7 +33,7 @@
 
 #include "gtest/gtest.h"
 
-#include "BitFunnel/RowIdSequence.h"
+#include "BitFunnel/Index/RowIdSequence.h"
 #include "DocumentFrequencyTable.h"
 #include "FactSetBase.h"
 #include "TermTable.h"

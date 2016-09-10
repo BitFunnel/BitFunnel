@@ -31,7 +31,7 @@
 
 #include "BitFunnel/BitFunnelTypes.h"           // Rank parameter.
 #include "BitFunnel/Index/ITermTableBuilder.h"  // Base class.
-#include "BitFunnel/RowId.h"                    // RowIndex, RowId parameter.
+#include "BitFunnel/Index/RowId.h"              // RowIndex, RowId parameter.
 #include "BitFunnel/Term.h"                     // Term::Hash template parameter.
 #include "BitFunnel/Utilities/Accumulator.h"    // Accumulator member.
 

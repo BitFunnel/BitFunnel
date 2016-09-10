@@ -27,7 +27,7 @@
 
 #include "BitFunnel/BitFunnelTypes.h"   // Rank parameter.
 #include "BitFunnel/IInterface.h"       // Inherits from IInterface.
-#include "BitFunnel/RowId.h"            // RowIndex parameter.
+#include "BitFunnel/Index/RowId.h"      // RowIndex parameter.
 #include "BitFunnel/Term.h"             // Term parameter.
 
 

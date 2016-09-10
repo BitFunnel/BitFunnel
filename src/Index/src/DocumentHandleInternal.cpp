@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 
-#include "BitFunnel/RowIdSequence.h"
+#include "BitFunnel/Index/RowIdSequence.h"
 #include "DocumentHandleInternal.h"
 #include "DocTableDescriptor.h"
 #include "LoggerInterfaces/Logging.h"

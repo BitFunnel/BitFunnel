@@ -23,12 +23,11 @@
 
 #pragma once
 
-#include "BitFunnel/Exceptions.h"           // Inline code.
-//#include "BitFunnel/Index/IFactSet.h"     // FactHandle is used as a parameter.
-#include "BitFunnel/NonCopyable.h"          // TermInfo inherits from NonCopyable.
-#include "BitFunnel/PackedRowIdSequence.h"  // PackedRowIdSequence::Type member.
-#include "BitFunnel/RowId.h"                // RowId return value.
-#include "BitFunnel/Term.h"                 // Embeds Term::Hash.
+#include "BitFunnel/Exceptions.h"                   // Inline code.
+#include "BitFunnel/NonCopyable.h"                  // TermInfo inherits from NonCopyable.
+#include "BitFunnel/Index/PackedRowIdSequence.h"    // PackedRowIdSequence::Type member.
+#include "BitFunnel/Index/RowId.h"                  // RowId return value.
+#include "BitFunnel/Term.h"                         // Embeds Term::Hash.
 
 
 namespace BitFunnel
