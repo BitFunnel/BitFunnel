@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include <vector>                       // std::vector member.
+#include <vector>                           // std::vector member.
 
-#include "BitFunnel/ITermTreatment.h"   // Base class.
+#include "BitFunnel/Index/ITermTreatment.h" // Base class.
 
 
 namespace BitFunnel

@@ -22,13 +22,13 @@
 
 #pragma once
 
-#include <unordered_map>            // std::unordered_map member.
-#include <array>                    // std::array member.
-#include <vector>                   // std::vector member.
+#include <unordered_map>                // std::unordered_map member.
+#include <array>                        // std::array member.
+#include <vector>                       // std::vector member.
 
-#include "BitFunnel/ITermTable.h"   // Base class.
-#include "BitFunnel/RowId.h"        // RowId template parameter.
-#include "BitFunnel/Term.h"         // Term::Hash parameter.
+#include "BitFunnel/Index/ITermTable.h" // Base class.
+#include "BitFunnel/RowId.h"            // RowId template parameter.
+#include "BitFunnel/Term.h"             // Term::Hash parameter.
 
 
 namespace BitFunnel

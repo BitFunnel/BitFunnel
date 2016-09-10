@@ -24,7 +24,7 @@
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
-#include "BitFunnel/ITermTable.h"
+#include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/RowIdSequence.h"
 #include "BitFunnel/Term.h"

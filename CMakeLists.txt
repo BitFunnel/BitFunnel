@@ -105,8 +105,6 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IObjectFormatter.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IObjectParser.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IPersistableObject.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTable.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/ITermTreatment.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/PackedRowIdSequence.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Row.h
@@ -139,8 +137,10 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IRecycler.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ISimpleIndex.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ISliceBufferAllocator.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermToText.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTableCollection.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTreatment.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermToText.h
 )
 
 set(PLAN_HFILES

@@ -22,7 +22,7 @@
 
 
 //#include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
-#include "BitFunnel/ITermTable.h"
+#include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/PackedRowIdSequence.h"
 #include "BitFunnel/RowId.h"
 #include "BitFunnel/RowIdSequence.h"

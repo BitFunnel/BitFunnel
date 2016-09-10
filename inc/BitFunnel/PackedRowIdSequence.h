@@ -21,11 +21,11 @@
 // THE SOFTWARE.
 #pragma once
 
-#include <inttypes.h>                   // For uint*_t.
-#include <type_traits>                  // std::is_trivially_copyable in static_assert.
+#include <inttypes.h>                       // For uint*_t.
+#include <type_traits>                      // std::is_trivially_copyable in static_assert.
 
-#include "BitFunnel/BitFunnelTypes.h"   // RowIndex parameter.
-#include "BitFunnel/ITermTreatment.h"   // RowConfiguration::Entry::c_maxRowCount.
+#include "BitFunnel/BitFunnelTypes.h"       // RowIndex parameter.
+#include "BitFunnel/Index/ITermTreatment.h" // RowConfiguration::Entry::c_maxRowCount.
 
 
 namespace BitFunnel

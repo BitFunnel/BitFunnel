@@ -23,7 +23,7 @@
 
 #include <cstring>
 
-#include "BitFunnel/ITermTable.h"
+#include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/RowIdSequence.h"
 #include "LoggerInterfaces/Logging.h"

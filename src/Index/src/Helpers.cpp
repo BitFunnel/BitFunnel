@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 #include "BitFunnel/Index/Helpers.h"
-#include "BitFunnel/ITermTable.h"
+#include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Row.h"
 #include "Shard.h"
 

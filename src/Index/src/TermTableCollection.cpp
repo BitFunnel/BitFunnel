@@ -24,7 +24,7 @@
 
 #include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/ITermTable.h"
+#include "BitFunnel/Index/ITermTable.h"
 #include "TermTable.h"
 #include "TermTableCollection.h"
 

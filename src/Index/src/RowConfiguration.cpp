@@ -24,7 +24,7 @@
 
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/ITermTreatment.h"
+#include "BitFunnel/Index/ITermTreatment.h"
 
 
 namespace BitFunnel

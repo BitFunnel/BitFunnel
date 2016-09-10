@@ -32,10 +32,10 @@
 #include "BitFunnel/Index/IIndexedIdfTable.h"       // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IIngestor.h"              // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IRecycler.h"              // Parameterizes std::unique_ptr.
-#include "BitFunnel/Index/ITermTableCollection.h"   // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/ISliceBufferAllocator.h"  // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/ISimpleIndex.h"           // Parameterizes std::unique_ptr.
-#include "BitFunnel/ITermTable.h"                  // Parameterizes std::unique_ptr.
+#include "BitFunnel/Index/ITermTable.h"             // Parameterizes std::unique_ptr.
+#include "BitFunnel/Index/ITermTableCollection.h"   // Parameterizes std::unique_ptr.
 #include "BitFunnel/NonCopyable.h"                  // Base class.
 #include "BitFunnel/Term.h"                         // Term::GramSize embedded.
 

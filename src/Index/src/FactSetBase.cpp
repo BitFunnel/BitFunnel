@@ -2,8 +2,8 @@
 #include <memory>
 
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Index/ITermTable.h"
 #include "FactSetBase.h"
 
 
