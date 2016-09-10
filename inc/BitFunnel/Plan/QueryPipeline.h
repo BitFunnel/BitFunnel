@@ -29,7 +29,6 @@
 
 namespace BitFunnel
 {
-    class IAllocator;
     class TermMatchNode;
 
     class QueryPipeline
