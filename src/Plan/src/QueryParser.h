@@ -70,7 +70,7 @@ namespace BitFunnel
         TermMatchNode const * ParsePhrase(Term::StreamId streamId);
 
         // UNIGRAM:
-        //   ![SPACE|SPECIAL]+
+        //   [![SPACE|SPECIAL] | ESCAPE]+
         char const * ParseToken();
 
         // DESIGN NOTE:

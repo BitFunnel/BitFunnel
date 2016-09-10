@@ -249,7 +249,7 @@ namespace BitFunnel
     char QueryParser::GetWithEscape()
     {
         char c = PeekChar();
-        char const * legalEscapes = "&|\\()\":-";
+        char const * legalEscapes = " \t\f\v&|\\()\":-";
         if (c == '\\')
         {
             GetChar();
