@@ -51,7 +51,7 @@ namespace BitFunnel
 
         IConfiguration const & GetConfiguration() const;
         IIngestor & GetIngestor() const;
-        ITermTable2 const & GetTermTable() const;
+        ITermTable const & GetTermTable() const;
 
     private:
         void RegisterCommands();

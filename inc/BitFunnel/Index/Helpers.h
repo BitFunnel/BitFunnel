@@ -28,10 +28,10 @@
 namespace BitFunnel
 {
     class IDocumentDataSchema;
-    class ITermTable2;
+    class ITermTable;
 
     // Returns the smallest block size required to allocate a slice that is
     // configured by a specific schema and term table.
     size_t GetMinimumBlockSize(IDocumentDataSchema const & schema,
-                               ITermTable2 const & termTable);
+                               ITermTable const & termTable);
 }

@@ -40,7 +40,7 @@ namespace BitFunnel
 {
     //class IDocumentDataSchema;
     class ISliceBufferAllocator;
-    class ITermTable2;
+    class ITermTable;
     class ITokenManager;
     class IRecycler;
     class Slice;
@@ -68,7 +68,7 @@ namespace BitFunnel
         // is determined by a value returned by Row::DocumentsInRank0Row(1).
         Shard(IRecycler& recycler,
               ITokenManager& tokenManager,
-              ITermTable2 const & termTable,
+              ITermTable const & termTable,
               IDocumentDataSchema const & docDataSchema,
               ISliceBufferAllocator& sliceBufferAllocator,
               size_t sliceBufferSize);
@@ -152,7 +152,7 @@ namespace BitFunnel
         void RecycleSlice(Slice& slice);
 
         // Returns term table associated with this shard.
-        ITermTable2 const & GetTermTable() const;
+        ITermTable const & GetTermTable() const;
 
         // Descriptor for RowTables and DocTable.
         DocTableDescriptor const & GetDocTable() const;
@@ -194,14 +194,14 @@ namespace BitFunnel
         static size_t InitializeDescriptors(Shard* shard,
                                             DocIndex sliceCapacity,
                                             IDocumentDataSchema const & docDataSchema,
-                                            ITermTable2 const & termTable);
+                                            ITermTable const & termTable);
 
         // Calculates the number of documents which can be hosted in a slice
         // buffer of the given byte size.
         static DocIndex
             GetCapacityForByteSize(size_t bufferByteSize,
                                    IDocumentDataSchema const & schema,
-                                   ITermTable2 const & termTable);
+                                   ITermTable const & termTable);
 
     private:
         // Tries to add a new slice. Throws if no memory in the allocator.
@@ -219,7 +219,7 @@ namespace BitFunnel
         ITokenManager& m_tokenManager;
 
         // TermTable for this shard.
-        ITermTable2 const & m_termTable;
+        ITermTable const & m_termTable;
 
         // Allocator that provides blocks of memory for Slice buffers.
         ISliceBufferAllocator& m_sliceBufferAllocator;

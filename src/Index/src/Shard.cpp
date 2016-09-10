@@ -24,7 +24,7 @@
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
-#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/RowIdSequence.h"
 #include "BitFunnel/Term.h"
@@ -38,7 +38,7 @@
 namespace BitFunnel
 {
     // Extracts a RowId used to mark documents as active/soft-deleted.
-    static RowId RowIdForActiveDocument(ITermTable2 const & termTable)
+    static RowId RowIdForActiveDocument(ITermTable const & termTable)
     {
         RowIdSequence rows(termTable.GetDocumentActiveTerm(), termTable);
 
@@ -70,7 +70,7 @@ namespace BitFunnel
 
     Shard::Shard(IRecycler& recycler,
                  ITokenManager& tokenManager,
-                 ITermTable2 const & termTable,
+                 ITermTable const & termTable,
                  IDocumentDataSchema const & docDataSchema,
                  ISliceBufferAllocator& sliceBufferAllocator,
                  size_t sliceBufferSize)
@@ -150,7 +150,7 @@ namespace BitFunnel
     /* static */
     DocIndex Shard::GetCapacityForByteSize(size_t bufferSizeInBytes,
                                            IDocumentDataSchema const & schema,
-                                           ITermTable2 const & termTable)
+                                           ITermTable const & termTable)
     {
         DocIndex capacity = 0;
         for (;;)
@@ -221,7 +221,7 @@ namespace BitFunnel
     }
 
 
-    ITermTable2 const & Shard::GetTermTable() const
+    ITermTable const & Shard::GetTermTable() const
     {
         return m_termTable;
     }
@@ -239,7 +239,7 @@ namespace BitFunnel
     size_t Shard::InitializeDescriptors(Shard* shard,
                                         DocIndex sliceCapacity,
                                         IDocumentDataSchema const & docDataSchema,
-                                        ITermTable2 const & termTable)
+                                        ITermTable const & termTable)
     {
         ptrdiff_t currentOffset = 0;
 

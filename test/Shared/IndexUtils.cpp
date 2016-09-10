@@ -30,7 +30,7 @@ namespace BitFunnel
     // in order for rowCount to be correct.
     size_t GetBufferSize(DocIndex capacity,
                          IDocumentDataSchema const & schema,
-                         ITermTable2 const & termTable)
+                         ITermTable const & termTable)
     {
         return Shard::InitializeDescriptors(nullptr,
                                             capacity,

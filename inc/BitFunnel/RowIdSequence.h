@@ -33,7 +33,7 @@
 
 namespace BitFunnel
 {
-    class ITermTable2;
+    class ITermTable;
     class PackedRowIdSequence;
 
 
@@ -52,7 +52,7 @@ namespace BitFunnel
     public:
         // Constructs a TermInfo for a specified hash, based on information in
         // the supplied ITermTable.
-        RowIdSequence(Term const & term, ITermTable2 const & termTable);
+        RowIdSequence(Term const & term, ITermTable const & termTable);
 
         // TODO: Implement this constructor.
         // Constructs a TermInfo for a fact based on information in the
@@ -127,7 +127,7 @@ namespace BitFunnel
 
         // Storing ITermTable as a pointer, rather than a reference to
         // allow for assignment operator.
-        const ITermTable2& m_termTable;
+        const ITermTable& m_termTable;
 
         // Slot index for first RowId.
         size_t m_rowIdStart;

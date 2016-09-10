@@ -32,7 +32,7 @@
 
 namespace BitFunnel
 {
-    class ITermTable2 : public IInterface
+    class ITermTable : public IInterface
     {
     public:
         //
@@ -143,7 +143,7 @@ namespace BitFunnel
             Count = 3
         };
 
-        // Writes the contents of the ITermTable2 to a stream.
+        // Writes the contents of the ITermTable to a stream.
         virtual void Write(std::ostream& output) const = 0;
 
         //

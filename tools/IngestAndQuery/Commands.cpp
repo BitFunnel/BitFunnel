@@ -29,7 +29,7 @@
 #include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
-#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Plan/QueryPipeline.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
 #include "BitFunnel/RowIdSequence.h"

@@ -22,7 +22,7 @@
 
 
 //#include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
-#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/PackedRowIdSequence.h"
 #include "BitFunnel/RowId.h"
 #include "BitFunnel/RowIdSequence.h"
@@ -38,7 +38,7 @@ namespace BitFunnel
     //
     //*************************************************************************
     // TODO: should GetRawHash be GetClassifiedHash or GetGeneralHash?
-    RowIdSequence::RowIdSequence(Term const & term, ITermTable2 const & termTable)
+    RowIdSequence::RowIdSequence(Term const & term, ITermTable const & termTable)
       : m_hash(term.GetRawHash()),
         m_termTable(termTable)
     {
@@ -52,7 +52,7 @@ namespace BitFunnel
 
 
     // TODO: Implement this constructor.
-    //RowIdSequence::RowIdSequence(FactHandle fact, ITermTable2 const & termTable)
+    //RowIdSequence::RowIdSequence(FactHandle fact, ITermTable const & termTable)
     //  : m_hash(0),
     //    m_termTable(termTable)
     //{

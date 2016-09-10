@@ -29,7 +29,7 @@
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IFactSet.h"
-#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/ITermTreatment.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "DocumentFrequencyTable.h"
@@ -49,7 +49,7 @@ namespace BitFunnel
                                           ITermTreatment const & treatment,
                                           IDocumentFrequencyTable const & terms,
                                           IFactSet const & facts,
-                                          ITermTable2 & termTable)
+                                          ITermTable & termTable)
     {
         return
             std::unique_ptr<ITermTableBuilder>(new TermTableBuilder(density,
@@ -71,7 +71,7 @@ namespace BitFunnel
                                        ITermTreatment const & treatment,
                                        IDocumentFrequencyTable const & terms,
                                        IFactSet const & facts,
-                                       ITermTable2 & termTable)
+                                       ITermTable & termTable)
         : m_termTable(termTable),
           m_buildTime(0.0)
     {
@@ -235,7 +235,7 @@ namespace BitFunnel
         Rank rank,
         double density,
         double adhocFrequency,
-        ITermTable2 & termTable)
+        ITermTable & termTable)
         : m_rank(rank),
           m_density(density),
           m_adhocFrequency(adhocFrequency),
@@ -253,7 +253,7 @@ namespace BitFunnel
         // deleted, match all, and match none.
         if (rank == 0)
         {
-            m_currentRow = ITermTable2::SystemTerm::Count;
+            m_currentRow = ITermTable::SystemTerm::Count;
         }
     }
 

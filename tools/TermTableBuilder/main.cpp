@@ -29,7 +29,7 @@
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocumentFrequencyTable.h"
 #include "BitFunnel/Index/IFactSet.h"
-#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Index/ITermTableBuilder.h"
 #include "BitFunnel/ITermTreatment.h"
 #include "BitFunnel/Utilities/Stopwatch.h"

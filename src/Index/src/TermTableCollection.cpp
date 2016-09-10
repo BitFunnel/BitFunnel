@@ -24,7 +24,7 @@
 
 #include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/ITermTable.h"
 #include "TermTable.h"
 #include "TermTableCollection.h"
 
@@ -51,7 +51,7 @@ namespace BitFunnel
     {
         for (ShardId shard = 0; shard < shardCount; ++shard)
         {
-            std::unique_ptr<ITermTable2> termTable(new TermTable());
+            std::unique_ptr<ITermTable> termTable(new TermTable());
 
             // TermTable must be sealed before it can be used.
             termTable->Seal();
@@ -68,12 +68,12 @@ namespace BitFunnel
         {
             auto input = fileManager.TermTable(0).OpenForRead();
             m_termTables.emplace_back(
-                std::unique_ptr<ITermTable2>(new TermTable(*input)));
+                std::unique_ptr<ITermTable>(new TermTable(*input)));
         }
     }
 
 
-    ITermTable2 & TermTableCollection::GetTermTable(ShardId shard) const
+    ITermTable & TermTableCollection::GetTermTable(ShardId shard) const
     {
         return *m_termTables.at(shard);
     }

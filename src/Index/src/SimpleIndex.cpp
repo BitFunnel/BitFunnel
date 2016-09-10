@@ -171,7 +171,7 @@ namespace BitFunnel
     }
 
 
-    ITermTable2 const & SimpleIndex::GetTermTable() const
+    ITermTable const & SimpleIndex::GetTermTable() const
     {
         // TODO: There is a different TermTable in each shard. Which should
         // be returned? Currently returning the TermTable for shard 0.

@@ -144,7 +144,7 @@ namespace BitFunnel
             {
                 if (r == 0)
                 {
-                    rows.push_back(ITermTable2::SystemTerm::Count);
+                    rows.push_back(ITermTable::SystemTerm::Count);
                 }
                 else
                 {
@@ -237,7 +237,7 @@ namespace BitFunnel
 
             const size_t adhocRowCount =
                 TermTableBuilder::GetMinAdhocRowCount();
-            m_termTable.SetRowCounts(0, 4 + ITermTable2::SystemTerm::Count, adhocRowCount);
+            m_termTable.SetRowCounts(0, 4 + ITermTable::SystemTerm::Count, adhocRowCount);
             m_termTable.SetRowCounts(4, 1, adhocRowCount);
 
             m_termTable.SetFactCount(0);

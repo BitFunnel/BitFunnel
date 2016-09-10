@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 #include "BitFunnel/Index/Helpers.h"
-#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Row.h"
 #include "Shard.h"
 
@@ -29,7 +29,7 @@
 namespace BitFunnel
 {
     size_t GetMinimumBlockSize(IDocumentDataSchema const & schema,
-                               ITermTable2 const & termTable)
+                               ITermTable const & termTable)
     {
         static const DocIndex capacity = 
             Row::DocumentsInRank0Row(1, termTable.GetMaxRankUsed());

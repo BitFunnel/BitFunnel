@@ -31,7 +31,7 @@ namespace BitFunnel
     class IFileManager;
     class IIngestor;
     class IRecycler;
-    class ITermTable2;
+    class ITermTable;
 
 
     //*************************************************************************
@@ -71,6 +71,6 @@ namespace BitFunnel
         virtual IFileManager & GetFileManager() const = 0;
         virtual IIngestor & GetIngestor() const = 0;
         virtual IRecycler & GetRecycler() const = 0;
-        virtual ITermTable2 const & GetTermTable() const = 0;
+        virtual ITermTable const & GetTermTable() const = 0;
     };
 }

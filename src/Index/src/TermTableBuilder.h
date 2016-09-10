@@ -41,7 +41,7 @@ namespace BitFunnel
     class DocumentFrequencyTable;   // TODO: IDocumentFrequencyTable
     class IFactSet;
     class ITermTreatment;
-    class ITermTable2;
+    class ITermTable;
 
     class TermTableBuilder : public ITermTableBuilder
     {
@@ -51,7 +51,7 @@ namespace BitFunnel
                          ITermTreatment const & treatment,
                          IDocumentFrequencyTable const & terms,
                          IFactSet const & facts,
-                         ITermTable2 & termTable);
+                         ITermTable & termTable);
 
         virtual void Print(std::ostream& output) const override;
 
@@ -78,7 +78,7 @@ namespace BitFunnel
         static size_t GetMinAdhocRowCount();
 
     private:
-        ITermTable2 & m_termTable;
+        ITermTable & m_termTable;
 
         class RowAssigner;
         std::vector <std::unique_ptr<RowAssigner>> m_rowAssigners;
@@ -117,7 +117,7 @@ namespace BitFunnel
             RowAssigner(Rank rank,
                         double density,
                         double adhocFrequency,
-                        ITermTable2 & termTable);
+                        ITermTable & termTable);
 
             void Assign(double frequency, RowIndex count, bool isPrivate);
 
@@ -131,7 +131,7 @@ namespace BitFunnel
             Rank m_rank;
             double m_density;
             double m_adhocFrequency;
-            ITermTable2 & m_termTable;
+            ITermTable & m_termTable;
 
             // Sum of frequencies of all adhoc terms. Used to compute the
             // number of adhoc rows.

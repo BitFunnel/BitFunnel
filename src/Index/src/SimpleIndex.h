@@ -35,7 +35,7 @@
 #include "BitFunnel/Index/ITermTableCollection.h"   // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/ISliceBufferAllocator.h"  // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/ISimpleIndex.h"           // Parameterizes std::unique_ptr.
-#include "BitFunnel/ITermTable2.h"                  // Parameterizes std::unique_ptr.
+#include "BitFunnel/ITermTable.h"                  // Parameterizes std::unique_ptr.
 #include "BitFunnel/NonCopyable.h"                  // Base class.
 #include "BitFunnel/Term.h"                         // Term::GramSize embedded.
 
@@ -58,7 +58,7 @@ namespace BitFunnel
         virtual IFileManager & GetFileManager() const override;
         virtual IIngestor & GetIngestor() const override;
         virtual IRecycler & GetRecycler() const override;
-        virtual ITermTable2 const & GetTermTable() const override;
+        virtual ITermTable const & GetTermTable() const override;
 
 
     private:

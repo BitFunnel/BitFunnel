@@ -32,7 +32,7 @@
 namespace BitFunnel
 {
     class IFileManager;
-    class ITermTable2;
+    class ITermTable;
 
     class TermTableCollection : public ITermTableCollection
     {
@@ -40,10 +40,10 @@ namespace BitFunnel
         TermTableCollection(ShardId shardCount);
         TermTableCollection(IFileManager & fileManager, ShardId shardCount);
 
-        virtual ITermTable2 & GetTermTable(ShardId shard) const override;
+        virtual ITermTable & GetTermTable(ShardId shard) const override;
         virtual size_t size() const override;
 
     private:
-        std::vector<std::unique_ptr<ITermTable2>> m_termTables;
+        std::vector<std::unique_ptr<ITermTable>> m_termTables;
     };
 }

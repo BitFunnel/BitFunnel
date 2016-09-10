@@ -330,7 +330,7 @@ namespace BitFunnel
             {
                 RowIdSequence rows(termTable.GetDocumentActiveTerm(), termTable);
                 auto it = rows.begin();
-                EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable2::SystemTerm::DocumentActive));
+                EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable::SystemTerm::DocumentActive));
 
                 // Verify that iterator contains a single row. NOTE: Cannot use
                 // EXPECT_EQ with iterators.
@@ -342,7 +342,7 @@ namespace BitFunnel
                 // Match All Term
                 RowIdSequence rows(termTable.GetMatchAllTerm(), termTable);
                 auto it = rows.begin();
-                EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable2::SystemTerm::MatchAll));
+                EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable::SystemTerm::MatchAll));
 
                 // Verify that iterator contains a single row. NOTE: Cannot use
                 // EXPECT_EQ with iterators.
@@ -354,7 +354,7 @@ namespace BitFunnel
                 // Soft Deleted Term
                 RowIdSequence rows(termTable.GetMatchNoneTerm(), termTable);
                 auto it = rows.begin();
-                EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable2::SystemTerm::MatchNone));
+                EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable::SystemTerm::MatchNone));
 
                 // Verify that iterator contains a single row. NOTE: Cannot use
                 // EXPECT_EQ with iterators.

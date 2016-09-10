@@ -23,7 +23,7 @@
 
 #include <cstring>
 
-#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Row.h"
 #include "BitFunnel/RowIdSequence.h"
 #include "LoggerInterfaces/Logging.h"
@@ -62,7 +62,7 @@ namespace BitFunnel
     }
 
 
-    void RowTableDescriptor::Initialize(void* sliceBuffer, ITermTable2 const & termTable) const
+    void RowTableDescriptor::Initialize(void* sliceBuffer, ITermTable const & termTable) const
     {
         char* const rowTableBuffer = reinterpret_cast<char*>(sliceBuffer) + m_bufferOffset;
         memset(rowTableBuffer, 0, GetBufferSize(m_capacity, m_rowCount, m_rank));

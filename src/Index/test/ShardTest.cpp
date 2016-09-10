@@ -28,7 +28,7 @@
 #include "BitFunnel/Index/Helpers.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
-#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Token.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "DocumentDataSchema.h"

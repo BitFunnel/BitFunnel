@@ -31,7 +31,7 @@
 
 namespace BitFunnel
 {
-    class ITermTable2;
+    class ITermTable;
 
     //*************************************************************************
     //
@@ -70,7 +70,7 @@ namespace BitFunnel
         // located.
         // Not thread safe with respect to calling *Bit methods at the same
         // time.
-        void Initialize(void* sliceBuffer, ITermTable2 const & termTable) const;
+        void Initialize(void* sliceBuffer, ITermTable const & termTable) const;
 
         // No cleanup method required.
 

@@ -26,14 +26,14 @@
 #include <array>                    // std::array member.
 #include <vector>                   // std::vector member.
 
-#include "BitFunnel/ITermTable2.h"   // Base class.
+#include "BitFunnel/ITermTable.h"   // Base class.
 #include "BitFunnel/RowId.h"        // RowId template parameter.
 #include "BitFunnel/Term.h"         // Term::Hash parameter.
 
 
 namespace BitFunnel
 {
-    class TermTable : public ITermTable2
+    class TermTable : public ITermTable
     {
     public:
         TermTable();
@@ -42,7 +42,7 @@ namespace BitFunnel
         // Write() method.
         TermTable(std::istream& input);
 
-        // Writes the contents of the ITermTable2 to a stream.
+        // Writes the contents of the ITermTable to a stream.
         virtual void Write(std::ostream& output) const override;
 
         // Instructs the TermTable to start recording RowIds added by AddRowId.

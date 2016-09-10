@@ -89,7 +89,7 @@ namespace BitFunnel
     }
 
 
-    ITermTable2 const & Environment::GetTermTable() const
+    ITermTable const & Environment::GetTermTable() const
     {
         return m_index->GetTermTable();
     }

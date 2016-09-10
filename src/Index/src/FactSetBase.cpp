@@ -2,7 +2,7 @@
 #include <memory>
 
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/ITermTable2.h"
+#include "BitFunnel/ITermTable.h"
 #include "BitFunnel/Index/Factories.h"
 #include "FactSetBase.h"
 
@@ -77,12 +77,12 @@ namespace BitFunnel
             }
         }
 
-        // System terms occupy FactHandles 0..ITermTable2::SystemTerm::Last.
+        // System terms occupy FactHandles 0..ITermTable::SystemTerm::Last.
         // Therefore, allocate new FactHandles starting at 
-        // ITermTable2::SystemTerm::Count.
+        // ITermTable::SystemTerm::Count.
         FactHandle handle =
             static_cast<FactHandle>(m_facts.size()
-                                    + ITermTable2::SystemTerm::Count);
+                                    + ITermTable::SystemTerm::Count);
         m_facts.emplace_back(friendlyName, isMutable, handle);
 
         return handle;

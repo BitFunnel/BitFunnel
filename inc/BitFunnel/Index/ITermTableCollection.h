@@ -30,14 +30,14 @@
 
 namespace BitFunnel
 {
-    class ITermTable2;
+    class ITermTable;
 
     // IInterface is a base class for all interfaces in BitFunnel.Library.
     // Its sole purpose is to define an empty virtual destructor.
     class ITermTableCollection
     {
     public:
-        virtual ITermTable2 & GetTermTable(ShardId shard) const = 0;
+        virtual ITermTable & GetTermTable(ShardId shard) const = 0;
         virtual size_t size() const = 0;
     };
 }

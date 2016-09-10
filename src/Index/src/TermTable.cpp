@@ -38,16 +38,16 @@ namespace BitFunnel
     // Factory methods.
     //
     //*************************************************************************
-    std::unique_ptr<ITermTable2> Factories::CreateTermTable()
+    std::unique_ptr<ITermTable> Factories::CreateTermTable()
     {
-        return std::unique_ptr<ITermTable2>(new TermTable());
+        return std::unique_ptr<ITermTable>(new TermTable());
     }
 
 
-    std::unique_ptr<ITermTable2>
+    std::unique_ptr<ITermTable>
         Factories::CreateTermTable(std::istream & input)
     {
-        return std::unique_ptr<ITermTable2>(new TermTable(input));
+        return std::unique_ptr<ITermTable>(new TermTable(input));
     }
 
 

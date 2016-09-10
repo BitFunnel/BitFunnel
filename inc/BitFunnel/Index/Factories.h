@@ -40,7 +40,7 @@ namespace BitFunnel
     class IShardDefinition;
     class ISimpleIndex;
     class ISliceBufferAllocator;
-    class ITermTable2;
+    class ITermTable;
     class ITermTableCollection;
     class ITermTableBuilder;
     class ITermTableCollection;
@@ -81,8 +81,8 @@ namespace BitFunnel
         std::unique_ptr<ISliceBufferAllocator>
             CreateSliceBufferAllocator(size_t blockSize, size_t blockCount);
 
-        std::unique_ptr<ITermTable2> CreateTermTable();
-        std::unique_ptr<ITermTable2> CreateTermTable(std::istream & input);
+        std::unique_ptr<ITermTable> CreateTermTable();
+        std::unique_ptr<ITermTable> CreateTermTable(std::istream & input);
 
         std::unique_ptr<ITermTableBuilder>
             CreateTermTableBuilder(double density,
@@ -90,7 +90,7 @@ namespace BitFunnel
                                    ITermTreatment const & treatment,
                                    IDocumentFrequencyTable const & terms,
                                    IFactSet const & facts,
-                                   ITermTable2 & termTable);
+                                   ITermTable & termTable);
 
         std::unique_ptr<ITermTableCollection>
             CreateTermTableCollection(ShardId shardCount);
