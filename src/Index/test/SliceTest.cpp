@@ -25,6 +25,8 @@
 
 namespace BitFunnel
 {
+    // Most (all?) Slice functionality is tested via either ShardTest or
+    // DocumentHandleTest.
     TEST(Slice, Placeholder)
     {
     }
