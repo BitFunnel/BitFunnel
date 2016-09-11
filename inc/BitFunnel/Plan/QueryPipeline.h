@@ -29,16 +29,18 @@
 
 namespace BitFunnel
 {
+    class IStreamConfiguration;
     class TermMatchNode;
 
     class QueryPipeline
     {
     public:
-        QueryPipeline();
+        QueryPipeline(IStreamConfiguration const & streamConfiguration);
 
         TermMatchNode const * ParseQuery(char const * query);
 
     private:
+        IStreamConfiguration const & m_streamConfiguration;
         std::unique_ptr<IAllocator> m_allocator;
     };
 }

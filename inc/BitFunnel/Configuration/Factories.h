@@ -34,6 +34,7 @@ namespace BitFunnel
 
     class IFileManager;
     class IShardDefinition;
+    class IStreamConfiguration;
 
     namespace Factories
     {
@@ -45,5 +46,8 @@ namespace BitFunnel
 
         std::unique_ptr<IShardDefinition> CreateShardDefinition();
         std::unique_ptr<IShardDefinition> CreateShardDefinition(std::istream& input);
+
+        std::unique_ptr<IStreamConfiguration> CreateStreamConfiguration();
+        std::unique_ptr<IStreamConfiguration> CreateStreamConfiguration(std::istream& input);
     }
 }

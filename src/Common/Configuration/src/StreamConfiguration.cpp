@@ -20,12 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Exceptions.h"
 #include "StreamConfiguration.h"
 
 
 namespace BitFunnel
 {
+    std::unique_ptr<IStreamConfiguration> Factories::CreateStreamConfiguration()
+    {
+        return std::unique_ptr<IStreamConfiguration>(new StreamConfiguration());
+    }
+
+    std::unique_ptr<IStreamConfiguration> CreateStreamConfiguration(std::istream& /*input*/)
+    {
+        throw NotImplemented();
+    }
+
+
     StreamConfiguration::StreamConfiguration()
     {
     }

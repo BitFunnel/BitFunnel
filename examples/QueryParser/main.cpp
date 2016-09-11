@@ -22,6 +22,8 @@
 
 #include <iostream>
 
+#include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Plan/QueryPipeline.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
@@ -61,7 +63,13 @@ namespace BitFunnel
 
         std::cout << welcome;
 
-        QueryPipeline pipeline;
+        // Configure parser for three named streams.
+        auto streamConfiguration = Factories::CreateStreamConfiguration();
+        streamConfiguration->AddMapping("body", { 0 });
+        streamConfiguration->AddMapping("title", { 123 });
+        streamConfiguration->AddMapping("anchors", { 10 });
+
+        QueryPipeline pipeline(*streamConfiguration);
 
         for (;;)
         {

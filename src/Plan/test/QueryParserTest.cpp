@@ -26,6 +26,8 @@
 #include <sstream>
 
 #include "Allocator.h"
+#include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
 #include "QueryParser.h"
@@ -47,7 +49,7 @@ namespace BitFunnel
         {"Unigram(\"wat\", 0)", "wat"},
 
         // STREAM:UNIGRAM.
-        {"Unigram(\"wat\", 123)", "StreamsAreCurrentlyIgnored:wat"},
+        {"Unigram(\"wat\", 1)", "stream:wat"},
 
         // (UNIGRAM)
         {"Unigram(\"wat\", 0)", "(wat)"},
@@ -439,7 +441,11 @@ namespace BitFunnel
 
         std::stringstream s;
         s << input;
-        QueryParser parser(s, allocator);
+
+        auto streamConfiguration = Factories::CreateStreamConfiguration();
+        streamConfiguration->AddMapping("body", { 123 });
+        streamConfiguration->AddMapping("stream", { 123 });
+        QueryParser parser(s, *streamConfiguration, allocator);
 
         //std::cout << "input length: " << s.str().size() << std::endl;
         std::cout

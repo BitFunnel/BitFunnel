@@ -27,6 +27,7 @@
 #include <sstream>
 
 #include "BitFunnel/Allocators/IAllocator.h"
+#include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Utilities/StringBuilder.h"
 #include "QueryParser.h"
@@ -35,8 +36,11 @@
 
 namespace BitFunnel
 {
-    QueryParser::QueryParser(std::istream& input, IAllocator& allocator)
+    QueryParser::QueryParser(std::istream& input,
+                             IStreamConfiguration const & streamConfiguration,
+                             IAllocator& allocator)
         : m_input(input),
+          m_streamConfiguration(streamConfiguration),
           m_allocator(allocator),
           m_currentPosition(0),
           m_haveChar(false)
@@ -305,10 +309,9 @@ namespace BitFunnel
     }
 
 
-    Term::StreamId QueryParser::StreamIdFromText(char const * /*streamName*/) const
+    Term::StreamId QueryParser::StreamIdFromText(char const * streamName) const
     {
-        // TODO: Return correct stream id here.
-        return 123;
+        return m_streamConfiguration.GetStreamId(streamName);
     }
 
 

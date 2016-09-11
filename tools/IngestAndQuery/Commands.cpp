@@ -24,6 +24,8 @@
 #include <iostream>
 #include <thread>       // sleep_for, this_thread
 
+#include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IDocument.h"
 #include "BitFunnel/Index/IDocumentCache.h"
@@ -595,7 +597,8 @@ namespace BitFunnel
                 << m_query
                 << "\"" << std::endl;
 
-            QueryPipeline pipeline;
+            auto streamConfiguration = Factories::CreateStreamConfiguration();
+            QueryPipeline pipeline(*streamConfiguration);
             auto tree = pipeline.ParseQuery(m_query.c_str());
             if (tree == nullptr)
             {

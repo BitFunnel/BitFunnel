@@ -20,12 +20,15 @@
 namespace BitFunnel
 {
     class IAllocator;
+    class IStreamConfiguration;
     class TermMatchNode;
 
     class QueryParser
     {
     public:
-        QueryParser(std::istream& input, IAllocator& allocator);
+        QueryParser(std::istream& input,
+                    IStreamConfiguration const & streamConfiguration,
+                    IAllocator& allocator);
 
         TermMatchNode const * Parse();
 
@@ -90,6 +93,7 @@ namespace BitFunnel
         Term::StreamId StreamIdFromText(char const * /*streamName*/) const;
 
         std::istream& m_input;
+        IStreamConfiguration const & m_streamConfiguration;
         IAllocator& m_allocator;
 
         // Used for errors.

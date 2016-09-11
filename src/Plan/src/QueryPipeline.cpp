@@ -29,8 +29,9 @@
 
 namespace BitFunnel
 {
-    QueryPipeline::QueryPipeline()
-        : m_allocator(new Allocator(4096))
+    QueryPipeline::QueryPipeline(IStreamConfiguration const & streamConfiguration)
+        : m_streamConfiguration(streamConfiguration),
+          m_allocator(new Allocator(4096))
     {
     }
 
@@ -39,7 +40,7 @@ namespace BitFunnel
     {
         m_allocator->Reset();
         std::stringstream s(query);
-        QueryParser parser(s, *m_allocator);
+        QueryParser parser(s, m_streamConfiguration, *m_allocator);
         return parser.Parse();
     }
 }
