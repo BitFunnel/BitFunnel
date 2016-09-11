@@ -46,29 +46,29 @@ namespace BitFunnel
 
         // Document StreamId 1 maps to index stream "one".
         auto const & indexStreams1 = config.GetIndexStreamIds(1);
-        EXPECT_EQ(1, indexStreams1.size());
+        EXPECT_EQ(1u, indexStreams1.size());
         EXPECT_EQ(0, indexStreams1[0]);
 
         // Document StreamId 2 maps to index streams "one" and "two".
         auto const & indexStreams2 = config.GetIndexStreamIds(2);
-        EXPECT_EQ(2, indexStreams2.size());
+        EXPECT_EQ(2u, indexStreams2.size());
         EXPECT_EQ(0, indexStreams2[0]);
         EXPECT_EQ(1, indexStreams2[1]);
 
         // Document StreamId 3 maps to index stream "two".
         auto const & indexStreams3 = config.GetIndexStreamIds(3);
-        EXPECT_EQ(1, indexStreams3.size());
+        EXPECT_EQ(1u, indexStreams3.size());
         EXPECT_EQ(1, indexStreams3[0]);
 
         // Index StreamId 0 maps to document StreamIds 1 and 2.
         auto const & documentStreams0 = config.GetDocumentStreamIds(0);
-        EXPECT_EQ(2, documentStreams0.size());
+        EXPECT_EQ(2u, documentStreams0.size());
         EXPECT_EQ(1, documentStreams0[0]);
         EXPECT_EQ(2, documentStreams0[1]);
 
         // Index StreamId 1 maps to document StreamIds 2 and 3.
         auto const & documentStreams1 = config.GetDocumentStreamIds(1);
-        EXPECT_EQ(2, documentStreams1.size());
+        EXPECT_EQ(2u, documentStreams1.size());
         EXPECT_EQ(2, documentStreams1[0]);
         EXPECT_EQ(3, documentStreams1[1]);
     }
