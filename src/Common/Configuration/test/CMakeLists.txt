@@ -2,6 +2,7 @@
 
 set(CPPFILES
     ShardDefinitionTest.cpp
+    StreamConfigurationTest.cpp
 )
 
 set(WINDOWS_CPPFILES

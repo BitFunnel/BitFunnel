@@ -22,25 +22,49 @@
 
 #pragma once
 
-#include <vector>                       // std::vector return value.
+#include <iosfwd>                   // std::ostream& parameter.
+#include <vector>                   // std::vector return value.
 
-#include "BitFunnel/IInterface.h"       // Base class.
-#include "BitFunnel/Term.h"             // Term::StreamId return value.
+#include "BitFunnel/IInterface.h"   // Base class.
+#include "BitFunnel/Term.h"         // Term::StreamId return value.
 
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // IStreamConfiguration
+    //
+    // Abstract base class or interface for classes implementing a many-to-many
+    // mapping between document StreamIds and index StreamIds.
+    //
+    //*************************************************************************
     class IStreamConfiguration : public IInterface
     {
     public:
+        // Returns the index StreamId associated with a specific name.
+        // Throws if there is no associated StreamId.
         virtual Term::StreamId GetStreamId(char const * name) const = 0;
 
+        // Returns a vector of index StreamIds associated with a particular
+        // document StreamId.
         virtual std::vector<Term::StreamId> const &
             GetIndexStreamIds(Term::StreamId documentStreamId) const = 0;
 
-        virtual void AddMapping(char const * name,
-                                std::vector<Term::StreamId> streamdIds) = 0;
+        // Returns a vector of document StreamIds associated with a particular
+        // index StreamId.
+        virtual std::vector<Term::StreamId> const &
+            GetDocumentStreamIds(Term::StreamId indexStreamId) const = 0;
 
-        virtual void Write() const = 0;
+        // Defines a new index StreamId for indexStreamName and maps it to the
+        // vector of document StreamIds.
+        virtual void AddMapping(char const * indexStreamName,
+                                std::vector<Term::StreamId> const & documentStreamdIds) = 0;
+
+        // Writes the mapping to a stream. The file format is one mapping
+        // per line, where each mapping consists of a stream name, followed
+        // by a comma-separated list of document StreamId values, e.g.
+        // "title,0,1\nbody,2,3\n".
+        virtual void Write(std::ostream& output) const = 0;
     };
 }

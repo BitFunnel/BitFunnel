@@ -4,6 +4,7 @@ set(CPPFILES
     FileManager.cpp
     ParameterizedFile.cpp
     ShardDefinition.cpp
+    StreamConfiguration.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -15,7 +16,8 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     FileManager.h
     ParameterizedFile.h
-    ShardDefinition.cpp
+    ShardDefinition.h
+    StreamConfiguration.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
