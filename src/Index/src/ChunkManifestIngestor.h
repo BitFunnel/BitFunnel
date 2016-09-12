@@ -22,12 +22,10 @@
 
 #pragma once
 
-#include <memory>                       // std::unqiue_ptr member.
-#include <vector>                       // std::vector member.
+#include <vector>   // std::vector parameter.
+#include <string>   // Template parameter.
 
-#include "BitFunnel/NonCopyable.h"      // Inherits from NonCopyable.
-#include "ChunkReader.h"                // Inherits from ChunkReader::IEvents.
-#include "Document.h"                   // std::unique_ptr<IDocument>.
+#include "BitFunnel/Index/IChunkManifestIngestor.h"   // Base class.
 
 
 namespace BitFunnel
@@ -35,39 +33,30 @@ namespace BitFunnel
     class IConfiguration;
     class IIngestor;
 
-    // DESIGN NOTE: Consider adding a document factory parameter to the
-    // constructor.
-    class ChunkIngestor : public NonCopyable, public ChunkReader::IEvents
+    class ChunkManifestIngestor : public IChunkManifestIngestor
     {
     public:
-        ChunkIngestor(char const * start,
-                      char const * end,
-                      IConfiguration const & configuration,
-                      IIngestor& ingestor,
-                      bool cacheDocuments);
+        ChunkManifestIngestor(std::vector<std::string> const & filePaths,
+                              IConfiguration const & config,
+                              IIngestor& ingestor,
+                              bool cacheDocuments);
 
         //
-        // ChunkReader::IEvents methods.
+        // IChunkManifestIngestor
         //
-        virtual void OnFileEnter() override;
-        virtual void OnDocumentEnter(DocId id) override;
-        virtual void OnStreamEnter(Term::StreamId id) override;
-        virtual void OnTerm(char const * term) override;
-        virtual void OnStreamExit() override;
-        virtual void OnDocumentExit(size_t bytesRead) override;
-        virtual void OnFileExit() override;
+
+        virtual size_t GetChunkCount() const override;
+
+        virtual void IngestChunk(size_t index) const override;
 
     private:
+
         //
         // Constructor parameters
         //
+        std::vector<std::string> const & m_filePaths;
         IConfiguration const & m_config;
         IIngestor& m_ingestor;
         bool m_cacheDocuments;
-
-        //
-        // Other members
-        //
-        std::unique_ptr<Document> m_currentDocument;
     };
 }

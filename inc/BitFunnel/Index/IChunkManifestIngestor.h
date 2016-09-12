@@ -20,17 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "BitFunnel/Index/IngestChunks.h"
-#include "ChunkEnumerator.h"
+#pragma once
+
+#include "BitFunnel/IInterface.h"   // Base class.
 
 
 namespace BitFunnel
 {
-    void IngestChunks(IChunkManifestIngestor const & manifest,
-                      size_t threadCount)
+    //*************************************************************************
+    //
+    // IChunkManifestIngestor
+    //
+    // Abstract base class or interface for classes representing a set of
+    // chunk data. Each chunk represents a set of documents.
+    //
+    //*************************************************************************
+    class IChunkManifestIngestor : public IInterface
     {
-        ChunkEnumerator chunkEnumerator(manifest, threadCount);
+    public:
+        // Returns the number of chunks in this manifest.
+        virtual size_t GetChunkCount() const = 0;
 
-        chunkEnumerator.WaitForCompletion();
-    }
+        // Ingests the specified chunk.
+        // NOTE that parameters controlling ingestion are supplied to the
+        // constructor of the object that implements IChunkManifestIngestor.
+        virtual void IngestChunk(size_t index) const = 0;
+    };
 }

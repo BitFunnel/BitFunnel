@@ -115,6 +115,7 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Factories.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Helpers.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IConfiguration.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IChunkManifestIngestor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocument.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocumentCache.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocumentDataSchema.h

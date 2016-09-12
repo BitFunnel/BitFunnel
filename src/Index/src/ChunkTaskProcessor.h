@@ -26,22 +26,18 @@
 #include <string>       // std::string template parameter.
 #include <vector>       // std::vector member.
 
-#include "BitFunnel/Utilities/ITaskProcessor.h"
+#include "BitFunnel/Utilities/ITaskProcessor.h"     // Base class.
 
 
 namespace BitFunnel
 {
-    class IConfiguration;
-    class IIngestor;
+    class IChunkManifestIngestor;
 
 
     class ChunkTaskProcessor : public ITaskProcessor
     {
     public:
-        ChunkTaskProcessor(std::vector<std::string> const & filePaths,
-                           IConfiguration const & config,
-                           IIngestor& ingestor,
-                           bool cacheDocuments);
+        ChunkTaskProcessor(IChunkManifestIngestor const & manifest); 
 
         //
         // ITaskProcessor methods.
@@ -53,9 +49,6 @@ namespace BitFunnel
         //
         // Constructor parameters.
         //
-        std::vector<std::string> const & m_filePaths;
-        IConfiguration const & m_config;
-        IIngestor& m_ingestor;
-        bool m_cacheDocuments;
+        IChunkManifestIngestor const & m_manifest;
     };
 }

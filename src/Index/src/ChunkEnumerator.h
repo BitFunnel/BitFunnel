@@ -32,8 +32,7 @@
 
 namespace BitFunnel
 {
-    class IConfiguration;
-    class IIngestor;
+    class IChunkManifestIngestor;
 
     // Fill an std::vector with filenames
     // Construct a ChunkTaskProcessor for each thread
@@ -43,11 +42,8 @@ namespace BitFunnel
     public:
         // The act of constructing a ChunkEnumerator will cause the chunk files
         // specified by filePaths to be ingested.
-        ChunkEnumerator(std::vector<std::string> const & filePaths,
-                        IConfiguration const & config,
-                        IIngestor& ingestor,
-                        size_t threadCount,
-                        bool cacheDocuments);
+        ChunkEnumerator(IChunkManifestIngestor const & manifest,
+                        size_t threadCount);
 
         void WaitForCompletion() const;
 

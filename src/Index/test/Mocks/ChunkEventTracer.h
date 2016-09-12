@@ -39,7 +39,9 @@ namespace BitFunnel
         public:
             ChunkEventTracer(std::vector<char> const & chunkData)
             {
-                ChunkReader(chunkData, *this);
+                ChunkReader(&chunkData[0],
+                            &chunkData[0] + chunkData.size(),
+                            *this);
             }
 
 

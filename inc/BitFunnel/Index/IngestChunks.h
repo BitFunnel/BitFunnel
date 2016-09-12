@@ -28,12 +28,10 @@
 
 namespace BitFunnel
 {
+    class IChunkManifestIngestor;
     class IConfiguration;
     class IIngestor;
 
-    void IngestChunks(std::vector<std::string> const & filePaths,
-                      IConfiguration const & config,
-                      IIngestor& ingestor,
-                      size_t threadCount,
-                      bool cacheDocuments);
+    void IngestChunks(IChunkManifestIngestor const & manifest,
+                      size_t threadCount);
 }

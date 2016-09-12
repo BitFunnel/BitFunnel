@@ -53,7 +53,7 @@ namespace BitFunnel
             virtual void OnFileExit() = 0;
         };
 
-        ChunkReader(std::vector<char> const & input, IEvents& processor);
+        ChunkReader(char const * start, char const * end, IEvents& processor);
 
     private:
         void ProcessDocument();

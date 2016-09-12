@@ -73,7 +73,6 @@ namespace BitFunnel
     bool Slice::CommitDocument()
     {
         std::lock_guard<std::mutex> lock(m_docIndexLock);
-        GetShard().TemporaryRecordDocument();
 
         LogAssertB(m_commitPendingCount > 0,
                    "CommitDocument with m_commitPendingCount == 0");

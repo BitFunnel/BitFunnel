@@ -25,6 +25,7 @@
 #include <sstream>
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/IChunkManifestIngestor.h"
 #include "ChunkIngestor.h"
 #include "ChunkTaskProcessor.h"
 
@@ -32,50 +33,15 @@
 namespace BitFunnel
 {
     ChunkTaskProcessor::ChunkTaskProcessor(
-        std::vector<std::string> const & filePaths,
-        IConfiguration const & config,
-        IIngestor& ingestor,
-        bool cacheDocuments)
-      : m_filePaths(filePaths),
-        m_config(config),
-        m_ingestor(ingestor),
-        m_cacheDocuments(cacheDocuments)
+        IChunkManifestIngestor const & manifest)
+      : m_manifest(manifest)
     {
     }
 
 
     void ChunkTaskProcessor::ProcessTask(size_t taskId)
     {
-        if (taskId >= m_filePaths.size())
-        {
-            std::stringstream message;
-            message << "No task corresponds to task id '" << taskId << "'";
-            throw FatalError(message.str());
-        }
-
-        // // TODO: Replace stream to cout with calls to the logger.
-        // std::cout << "ChunkTaskProcessor::ProcessTask: taskId:" << taskId
-        //           << std::endl;
-        std::cout << "ChunkTaskProcessor::ProcessTask: filePath:"
-                  << m_filePaths[taskId] << std::endl;
-
-        std::ifstream inputStream(m_filePaths[taskId], std::ios::binary);
-        if (!inputStream.is_open())
-        {
-            std::stringstream message;
-            message << "Failed to open chunk file '"
-                    << m_filePaths[taskId]
-                    << "'";
-            throw FatalError(message.str());
-        }
-
-        std::vector<char> chunkData(
-            (std::istreambuf_iterator<char>(inputStream)),
-            std::istreambuf_iterator<char>());
-
-        // NOTE: The act of constructing a ChunkIngestor causes the bytes in
-        // chunkData to be parsed into documents and ingested.
-        ChunkIngestor(chunkData, m_config, m_ingestor, m_cacheDocuments);
+        m_manifest.IngestChunk(taskId);
     }
 
 

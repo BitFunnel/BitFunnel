@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "BitFunnel/Index/IChunkManifestIngestor.h"
 #include "BitFunnel/Utilities/ITaskDistributor.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "ChunkEnumerator.h"
@@ -29,27 +30,24 @@
 namespace BitFunnel
 {
     ChunkEnumerator::ChunkEnumerator(
-        std::vector<std::string> const & filePaths,
-        IConfiguration const & config,
-        IIngestor& ingestor,
-        size_t threadCount,
-        bool cacheDocuments)
+        IChunkManifestIngestor const & manifest,
+        size_t threadCount)
     {
         std::vector<std::unique_ptr<ITaskProcessor>> processors;
         for (size_t i = 0; i < threadCount; ++i) {
             processors.push_back(
                 std::unique_ptr<ITaskProcessor>(
-                    new ChunkTaskProcessor(filePaths, config, ingestor, cacheDocuments)));
+                    new ChunkTaskProcessor(manifest)));
         }
 
         if (threadCount > 1)
         {
-            m_distributor = Factories::CreateTaskDistributor(processors, filePaths.size());
+            m_distributor = Factories::CreateTaskDistributor(processors, manifest.GetChunkCount());
         }
         else
         {
             // The threadCount == 1 case is implemented to simplify debugging.
-            for (size_t i = 0; i < filePaths.size(); ++i) {
+            for (size_t i = 0; i < manifest.GetChunkCount(); ++i) {
                 processors[0]->ProcessTask(i);
             }
         }

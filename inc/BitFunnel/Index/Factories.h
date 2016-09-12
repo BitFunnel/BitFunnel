@@ -24,11 +24,13 @@
 
 #include <iosfwd>               // std::istream parameter.
 #include <memory>               // std::unique_ptr return type.
+#include <vector>               // std::vector parameter.
 
 #include "BitFunnel/Term.h"     // Term::IdfX10 parameter.
 
 namespace BitFunnel
 {
+    class IChunkManifestIngestor;
     class IConfiguration;
     class IDocumentDataSchema;
     class IDocumentFrequencyTable;
@@ -48,6 +50,13 @@ namespace BitFunnel
 
     namespace Factories
     {
+        std::unique_ptr<IChunkManifestIngestor>
+            CreateChunkManifestIngestor(
+                std::vector<std::string> const & filePaths,
+                IConfiguration const & config,
+                IIngestor& ingestor,
+                bool cacheDocuments);
+
         std::unique_ptr<IConfiguration>
             CreateConfiguration(size_t maxGramSize,
                                 bool keepTermText,

@@ -29,16 +29,16 @@
 namespace BitFunnel
 {
     ChunkIngestor::ChunkIngestor(
-        std::vector<char> const & chunkData,
+        char const * start,
+        char const * end,
         IConfiguration const & config,
         IIngestor& ingestor,
         bool cacheDocuments)
       : m_config(config),
         m_ingestor(ingestor),
-        m_cacheDocuments(cacheDocuments),
-        m_chunkData(chunkData)
+        m_cacheDocuments(cacheDocuments)
     {
-        ChunkReader(m_chunkData, *this);
+        ChunkReader(start, end, *this);
     }
 
 

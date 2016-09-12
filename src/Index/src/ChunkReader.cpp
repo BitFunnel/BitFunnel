@@ -32,10 +32,12 @@ namespace BitFunnel
     static const uint64_t c_streamIdDigitCount = 2;
 
 
-    ChunkReader::ChunkReader(std::vector<char> const & input, IEvents& processor)
+    ChunkReader::ChunkReader(char const * start,
+                             char const * end,
+                             IEvents& processor)
         : m_processor(processor),
-          m_next(&input[0]),
-          m_end(&input[0] + input.size())
+          m_next(start),
+          m_end(end)
     {
         if (m_next == m_end) {
             throw FatalError("Attempt to read empty chunk.");

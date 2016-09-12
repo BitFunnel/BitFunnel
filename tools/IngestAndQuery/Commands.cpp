@@ -27,6 +27,8 @@
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Index/IChunkManifestIngestor.h"
 #include "BitFunnel/Index/IDocument.h"
 #include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
@@ -208,11 +210,13 @@ namespace BitFunnel
             IIngestor & ingestor = environment.GetIngestor();
             size_t threadCount = 1;
 
-            IngestChunks(filePaths,
-                         configuration,
-                         ingestor,
-                         threadCount,
-                         m_cacheDocuments);
+            auto manifest = Factories::CreateChunkManifestIngestor(
+                filePaths,
+                configuration,
+                ingestor,
+                m_cacheDocuments);
+
+            IngestChunks(*manifest, threadCount);
 
             std::cout << "Ingestion complete." << std::endl;
         }
@@ -655,7 +659,7 @@ namespace BitFunnel
         return Documentation(
             "verify",
             "Verifies the results of a single query against the document cache.",
-            "query (one <expression>) | (log <file>)\n"
+            "verify (one <expression>) | (log <file>)\n"
             "  Verifies a single query or a list of queries\n"
             "  against the document cache.\n"
             );

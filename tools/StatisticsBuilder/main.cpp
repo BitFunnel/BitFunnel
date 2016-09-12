@@ -26,8 +26,9 @@
 #include <string>
 #include <vector>
 
-#include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Index/IChunkManifestIngestor.h"
+#include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
@@ -74,9 +75,14 @@ namespace BitFunnel
 
         std::cout << "Reading " << filePaths.size() << " files\n";
 
-
         IConfiguration const & configuration = index->GetConfiguration();
         IIngestor & ingestor = index->GetIngestor();
+
+        auto manifest = Factories::CreateChunkManifestIngestor(
+            filePaths,
+            configuration,
+            ingestor,
+            false);
 
         std::cout << "Ingesting . . ." << std::endl;
 
@@ -84,7 +90,7 @@ namespace BitFunnel
 
         // TODO: Use correct thread count.
         const size_t threadCount = 1;
-        IngestChunks(filePaths, configuration, ingestor, threadCount, false);
+        IngestChunks(*manifest, threadCount);
 
         const double elapsedTime = stopwatch.ElapsedTime();
         const size_t totalSourceBytes = ingestor.GetTotalSouceBytesIngested();

@@ -3,6 +3,7 @@
 set(CPPFILES
     ChunkEnumerator.cpp
     ChunkIngestor.cpp
+    ChunkManifestIngestor.cpp
     ChunkReader.cpp
     ChunkTaskProcessor.cpp
     Configuration.cpp
@@ -48,6 +49,7 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     ChunkEnumerator.h
     ChunkIngestor.h
+    ChunkManifestIngestor.h
     ChunkReader.h
     ChunkTaskProcessor.h
     Configuration.h
