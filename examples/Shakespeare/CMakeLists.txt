@@ -12,6 +12,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    Sonnets.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

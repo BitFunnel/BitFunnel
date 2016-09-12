@@ -1,17 +1,17 @@
-// The MIT License (MIT)
-
+// The MIT License(MIT)
+//
 // Copyright (c) 2016, Microsoft
-
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,26 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>
 
-#include "Sonnets.h"
-
+#include <array>        // std::array in typedef.
+#include <utility>      // std::pair in typedef.
 
 namespace BitFunnel
 {
-    void TestXXX()
+    namespace Sonnets
     {
-        for (auto chunk : Sonnets::chunks)
-        {
-            std::cout << chunk.first << ": " << chunk.second << std::endl;
-        }
+        //**********************************************************
+        //
+        // All 154 Shakespeare sonnets encoded as BitFunnel chunks.
+        // Each chunk contains 14 sonnets.
+        //
+        //**********************************************************
+
+        typedef std::array<std::pair<size_t, char const *>, 11> ChunkArray;
+
+        extern ChunkArray chunks;
     }
-}
-
-
-int main(int /*argc*/, char** /*argv*/)
-{
-    BitFunnel::TestXXX();
-    std::cout << "Coming soon ..." << std::endl;
-    return 0;
 }
