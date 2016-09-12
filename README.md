@@ -2,6 +2,8 @@
 
 This is an experiment in text search/retrieval. It doesn't work (yet). We're making this available in the spirit of doing development out in the open, but nothing here has been cleaned up for public consumption. The documentation is non-existent and the code is in an incomplete state.
 
+If you really want to try things out, we have some instructions on [how to index Wikipedia](http://bitfunnel.org/index-build-tools/), and [how to play with our query parser](http://bitfunnel.org/a-small-query-language/). However, the system doesn't do anything useful to an end user -- these instructions are intended to allow contributors to build and run part of a system for the purpose of understand or debugging the system. If you're looking to play with an incomplete and likely buggy system, go ahead! If you want a working search index that you can use in production, check back later.
+
 [![Build status](https://ci.appveyor.com/api/projects/status/b65lb8wn2r7ux7d2/branch/master?svg=true)](https://ci.appveyor.com/project/danluu/bitfunnel/branch/master)
 
 Dependencies
