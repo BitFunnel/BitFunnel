@@ -209,6 +209,7 @@ enable_testing()
 #
 # Libraries and executables.
 #
+add_subdirectory(examples/Shakespeare)
 add_subdirectory(examples/QueryParser)
 add_subdirectory(src)
 add_subdirectory(test/Shared)
