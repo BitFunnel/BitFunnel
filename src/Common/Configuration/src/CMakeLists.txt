@@ -2,6 +2,7 @@
 
 set(CPPFILES
     FileManager.cpp
+    FileSystem.cpp
     ParameterizedFile.cpp
     RAMFileSystem.cpp
     ShardDefinition.cpp
@@ -16,6 +17,7 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     FileManager.h
+    FileSystem.h
     ParameterizedFile.h
     RAMFileSystem.h
     ShardDefinition.h

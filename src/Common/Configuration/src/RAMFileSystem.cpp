@@ -22,11 +22,19 @@
 
 #pragma once
 
+#include "BitFunnel/Configuration/Factories.h"
 #include "RAMFileSystem.h"
 
 
 namespace BitFunnel
 {
+    std::unique_ptr<IFileSystem>
+        Factories::CreateRAMFileSystem()
+    {
+        return std::unique_ptr<IFileSystem>(new RAMFileSystem());
+    }
+
+
     std::unique_ptr<std::ostream>
         RAMFileSystem::OpenForWrite(char const * filename)
     {

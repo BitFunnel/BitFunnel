@@ -33,6 +33,7 @@ namespace BitFunnel
 {
 
     class IFileManager;
+    class IFileSystem;
     class IShardDefinition;
     class IStreamConfiguration;
 
@@ -43,6 +44,11 @@ namespace BitFunnel
                               char const * indexDirectory,
                               char const * backupDirectory);
 
+        std::unique_ptr<IFileSystem>
+            CreateFileSystem();
+
+        std::unique_ptr<IFileSystem>
+            CreateRAMFileSystem();
 
         std::unique_ptr<IShardDefinition> CreateShardDefinition();
         std::unique_ptr<IShardDefinition> CreateShardDefinition(std::istream& input);
