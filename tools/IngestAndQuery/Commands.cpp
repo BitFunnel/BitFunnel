@@ -26,6 +26,7 @@
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
+#include "BitFunnel/Data/Sonnets.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IChunkManifestIngestor.h"
@@ -186,7 +187,28 @@ namespace BitFunnel
     {
         if (m_manifest)
         {
-            std::cout << "Ingest manifest not implemented." << std::endl;
+            if (m_path.compare("sonnets") == 0)
+            {
+                Environment & environment = GetEnvironment();
+                IConfiguration const & configuration =
+                    environment.GetConfiguration();
+                IIngestor & ingestor = environment.GetIngestor();
+                size_t threadCount = 1;
+
+                auto manifest = Factories::CreateBuiltinChunkManifest(
+                    Sonnets::chunks,
+                    configuration,
+                    ingestor,
+                    m_cacheDocuments);
+
+                IngestChunks(*manifest, threadCount);
+
+                std::cout << "Ingestion complete." << std::endl;
+            }
+            else
+            {
+                std::cout << "Ingest manifest only implemented for sonnets." << std::endl;
+            }
         }
         else
         {

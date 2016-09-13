@@ -28,6 +28,7 @@
 
 #include "BitFunnel/Term.h"     // Term::IdfX10 parameter.
 
+
 namespace BitFunnel
 {
     class IChunkManifestIngestor;
@@ -50,6 +51,13 @@ namespace BitFunnel
 
     namespace Factories
     {
+        std::unique_ptr<IChunkManifestIngestor>
+            CreateBuiltinChunkManifest(
+                std::vector<std::pair<size_t, char const *>> const & chunks,
+                IConfiguration const & config,
+                IIngestor& ingestor,
+                bool cacheDocuments);
+
         std::unique_ptr<IChunkManifestIngestor>
             CreateChunkManifestIngestor(
                 std::vector<std::string> const & filePaths,

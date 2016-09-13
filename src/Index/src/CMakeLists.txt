@@ -1,6 +1,7 @@
 # BitFunnel/src/Index/src
 
 set(CPPFILES
+    BuiltinChunkManifest.cpp
     ChunkEnumerator.cpp
     ChunkIngestor.cpp
     ChunkManifestIngestor.cpp
@@ -47,6 +48,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    BuiltinChunkManifest.h
     ChunkEnumerator.h
     ChunkIngestor.h
     ChunkManifestIngestor.h
