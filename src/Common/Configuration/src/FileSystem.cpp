@@ -25,12 +25,20 @@
 #include <fstream>
 #include <sstream>
 
+#include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Exceptions.h"
 #include "FileSystem.h"
 
 
 namespace BitFunnel
 {
+    std::unique_ptr<IFileSystem>
+        Factories::CreateFileSystem()
+    {
+        return std::unique_ptr<IFileSystem>(new FileSystem());
+    }
+
+
     std::unique_ptr<std::ostream>
         FileSystem::OpenForWrite(char const * filename)
     {
