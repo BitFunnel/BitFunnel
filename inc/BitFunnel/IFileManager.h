@@ -23,11 +23,13 @@
 
 #pragma once
 
-#include <istream>
-#include <memory>       // std::unique_ptr return value.
-#include <ostream>
-#include <stddef.h>     // size_t parameter.
-#include <string>       // std::string return value.
+#include <istream>                  // std::istream parameter.
+#include <memory>                   // std::unique_ptr return value.
+#include <ostream>                  // std::ostream parameter.
+#include <stddef.h>                 // size_t parameter.
+#include <string>                   // std::string return value.
+
+#include "BitFunnel/IInterface.h"   // Base class.
 
 
 namespace BitFunnel

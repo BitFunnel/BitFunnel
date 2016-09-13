@@ -107,6 +107,7 @@ set(BITFUNNEL_HFILES
 
 set(CONFIGURATION_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/Factories.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/IFileSystem.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/IStreamConfiguration.h
 )
 

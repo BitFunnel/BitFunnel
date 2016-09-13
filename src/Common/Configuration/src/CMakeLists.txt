@@ -3,6 +3,7 @@
 set(CPPFILES
     FileManager.cpp
     ParameterizedFile.cpp
+    RAMFileSystem.cpp
     ShardDefinition.cpp
     StreamConfiguration.cpp
 )
@@ -16,6 +17,7 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     FileManager.h
     ParameterizedFile.h
+    RAMFileSystem.h
     ShardDefinition.h
     StreamConfiguration.h
 )

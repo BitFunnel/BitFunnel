@@ -1,6 +1,7 @@
 # BitFunnel/src/Common/Configuration/test
 
 set(CPPFILES
+    RAMFileSystemTest.cpp
     ShardDefinitionTest.cpp
     StreamConfigurationTest.cpp
 )
