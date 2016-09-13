@@ -30,6 +30,8 @@
 
 namespace BitFunnel
 {
+    class IFileSystem;
+
     class ParameterizedFile
     {
     public:
@@ -39,17 +41,21 @@ namespace BitFunnel
         // The path may contain backslashes and may end in a backslash,
         // but this is not required. The baseName cannot contain backslashes or
         // periods. The extension cannot contain periods or backslashes.
-        ParameterizedFile(const char* path,
+        ParameterizedFile(IFileSystem & fileSystem,
+                          const char* path,
                           const char* baseName,
                           const char* extension);
 
         std::unique_ptr<std::istream> OpenForRead(const std::string& filename);
+
     protected:
         std::string GetTempName(const std::string& filename);
         std::unique_ptr<std::ostream> OpenForWrite(const std::string& filename);
         // void Commit(const std::string& filename);
         // bool Exists(const std::string& filename);
         // void Delete(const std::string& filename);
+
+        IFileSystem & m_fileSystem;
 
         std::string m_leftSide;
         std::string m_extension;
@@ -69,7 +75,8 @@ namespace BitFunnel
     class ParameterizedFile0 : public IParameterizedFile0, public ParameterizedFile
     {
     public:
-        ParameterizedFile0(const char* path,
+        ParameterizedFile0(IFileSystem & fileSystem, 
+                           const char* path,
                            const char* baseName,
                            const char* extension);
 
@@ -87,10 +94,11 @@ namespace BitFunnel
     class ParameterizedFile1 : public IParameterizedFile1, public ParameterizedFile
     {
     public:
-        ParameterizedFile1(const char* path,
+        ParameterizedFile1(IFileSystem & fileSystem,
+                           const char* path,
                            const char* baseName,
                            const char* extension)
-            : ParameterizedFile(path, baseName, extension)
+            : ParameterizedFile(fileSystem, path, baseName, extension)
         {
         }
 
@@ -144,10 +152,11 @@ namespace BitFunnel
     class ParameterizedFile2 : public IParameterizedFile2, public ParameterizedFile
     {
     public:
-        ParameterizedFile2(const char* path,
+        ParameterizedFile2(IFileSystem & fileSystem,
+                           const char* path,
                            const char* baseName,
                            const char* extension)
-            : ParameterizedFile(path, baseName, extension)
+            : ParameterizedFile(fileSystem, path, baseName, extension)
         {
         }
 
@@ -155,7 +164,10 @@ namespace BitFunnel
         std::string GetName(size_t p1, size_t p2)
         {
             std::stringstream ss;
-            ss << m_leftSide << "-" << p1 << "-" << Converter<size_t>::Convert(p2) << m_extension;
+            ss << m_leftSide
+               << "-" << p1
+               << "-" << Converter<size_t>::Convert(p2)
+               << m_extension;
             return ss.str();
         }
 

@@ -23,8 +23,9 @@
 #pragma once
 
 #include <memory>                                   // std::unique_ptr embedded.
-#include <thread>                                    // std::thread embedded.
+#include <thread>                                   // std::thread embedded.
 
+#include "BitFunnel/Configuration/IFileSystem.h"    // Parameterizes std::unique_ptr.
 #include "BitFunnel/Configuration/IShardDefinition.h"  // Parameterizes std::unique_ptr.
 #include "BitFunnel/IFileManager.h"                 // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IConfiguration.h"         // Parameterizes std::unique_ptr.
@@ -77,6 +78,7 @@ namespace BitFunnel
         // Members initialized by StartIndex().
         //
 
+        std::unique_ptr<IFileSystem> m_fileSystem;
         std::unique_ptr<IFileManager> m_fileManager;
         std::unique_ptr<IDocumentDataSchema> m_schema;
         std::unique_ptr<IRecycler> m_recycler;

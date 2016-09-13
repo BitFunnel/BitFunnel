@@ -32,30 +32,45 @@
 namespace BitFunnel
 {
     std::unique_ptr<IFileManager>
-        Factories::CreateFileManager(char const * intermediateDirectory,
+        Factories::CreateFileManager(char const * configDirectory,
+                                     char const * statisticsDirectory,
                                      char const * indexDirectory,
-                                     char const * backupDirectory)
+                                     IFileSystem & fileSystem)
     {
-        return std::unique_ptr<IFileManager>(new FileManager(intermediateDirectory,
-                                                             backupDirectory,
-                                                             indexDirectory));
+        return std::unique_ptr<IFileManager>(new FileManager(configDirectory,
+                                                             statisticsDirectory,
+                                                             indexDirectory,
+                                                             fileSystem));
     }
 
 
-    FileManager::FileManager(char const * intermediateDirectory,
+    FileManager::FileManager(char const * /*configDirectory*/,
+                             char const * statisticsDirectory,
                              char const * indexDirectory,
-                             char const * /*backupDirectory*/)
-        : m_cumulativeTermCounts(new ParameterizedFile1(intermediateDirectory,
-                                                           "CumulativeTermCounts",
-                                                           ".csv")),
-          m_docFreqTable(new ParameterizedFile1(indexDirectory, "DocFreqTable", ".csv")),
-          m_documentLengthHistogram(new ParameterizedFile0(intermediateDirectory,
-                                                           "DocumentLengthHistogram",".csv" )),
-          m_indexedIdfTable(new ParameterizedFile1(indexDirectory, "IndexedIdfTable", ".bin")),
-          m_termTable(new ParameterizedFile1(indexDirectory, "TermTable", ".bin")),
-          m_termToText(new ParameterizedFile0(indexDirectory, "TermToText", ".bin"))
-        //m_docTable(new ParameterizedFile1(indexDirectory, "DocTable", ".bin")),
-        //m_indexSlice(new ParameterizedFile2(backupDirectory, "IndexSlice", ".bin"))
+                             IFileSystem & fileSystem)
+        : m_cumulativeTermCounts(new ParameterizedFile1(fileSystem,
+                                                        statisticsDirectory,
+                                                        "CumulativeTermCounts",
+                                                        ".csv")),
+          m_docFreqTable(new ParameterizedFile1(fileSystem,
+                                                statisticsDirectory,
+                                                "DocFreqTable", ".csv")),
+          m_documentLengthHistogram(new ParameterizedFile0(fileSystem,
+                                                           statisticsDirectory,
+                                                           "DocumentLengthHistogram",
+                                                           ".csv" )),
+          m_indexedIdfTable(new ParameterizedFile1(fileSystem,
+                                                   indexDirectory,
+                                                   "IndexedIdfTable",
+                                                   ".bin")),
+          m_termTable(new ParameterizedFile1(fileSystem,
+                                             indexDirectory,
+                                             "TermTable",
+                                             ".bin")),
+          m_termToText(new ParameterizedFile0(fileSystem,
+                                              statisticsDirectory,
+                                              "TermToText",
+                                              ".bin"))
     {
     }
 

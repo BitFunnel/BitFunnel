@@ -30,12 +30,15 @@
 
 namespace BitFunnel
 {
+    class IFileSystem;
+
     class FileManager : public IFileManager
     {
     public:
-        FileManager(char const * intermediateDirectory,
+        FileManager(char const * configDirectory,
+                    char const * statisticsDirectory,
                     char const * indexDirectory,
-                    char const * backupDirectory);
+                    IFileSystem & fileSystem);
 
         //
         // IFileManager methods.

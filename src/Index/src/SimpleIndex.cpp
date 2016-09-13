@@ -63,10 +63,13 @@ namespace BitFunnel
 
     void SimpleIndex::StartIndex(bool forStatistics)
     {
+        m_fileSystem = Factories::CreateFileSystem();
+
         char const * directory = m_directory.c_str();
         m_fileManager = Factories::CreateFileManager(directory,
                                                      directory,
-                                                     directory);
+                                                     directory,
+                                                     *m_fileSystem);
 
         m_schema = Factories::CreateDocumentDataSchema();
 

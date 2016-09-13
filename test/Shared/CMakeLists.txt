@@ -2,7 +2,6 @@
 
 set(CPPFILES
     IndexUtils.cpp
-    MockFileManager.cpp
     SameExceptForWhitespace.cpp
 )
 
@@ -11,7 +10,6 @@ set(PRIVATE_HFILES
 
 set(PUBLIC_HFILES
     IndexUtils.h
-    MockFileManager.h
     SameExceptForWhitespace.h
 )
 

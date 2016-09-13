@@ -40,9 +40,10 @@ namespace BitFunnel
     namespace Factories
     {
         std::unique_ptr<IFileManager>
-            CreateFileManager(char const * intermediateDirectory,
+            CreateFileManager(char const * configDirectory,
+                              char const * statisticsDirectory,
                               char const * indexDirectory,
-                              char const * backupDirectory);
+                              IFileSystem & fileSystem);
 
         std::unique_ptr<IFileSystem>
             CreateFileSystem();

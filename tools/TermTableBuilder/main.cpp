@@ -25,6 +25,7 @@
 
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocumentFrequencyTable.h"
@@ -46,9 +47,12 @@ namespace BitFunnel
     {
         std::cout << "Loading files for TermTable build." << std::endl;
 
+        auto fileSystem = Factories::CreateFileSystem();
+
         auto fileManager = Factories::CreateFileManager(intermediateDirectory,
                                                         intermediateDirectory,
-                                                        intermediateDirectory);
+                                                        intermediateDirectory,
+                                                        *fileSystem);
 
         auto terms(Factories::CreateDocumentFrequencyTable(*fileManager->DocFreqTable(shard).OpenForRead()));
 
