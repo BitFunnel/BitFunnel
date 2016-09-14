@@ -1,15 +1,12 @@
-#include "stdafx.h"
+#include "gtest/gtest.h"
 
-#include <iostream>     // TODO: Remove.
-
-#include "CompileNodes.h"
+#include "Allocator.h"
+#include "BitFunnel/Plan/RowMatchNode.h"
+#include "BitFunnel/Utilities/TextObjectFormatter.h"
+#include "CompileNode.h"
 #include "PlainTextCodeGenerator.h"
-#include "PrivateHeapAllocator.h"
 #include "RankDownCompiler.h"
-#include "BitFunnel/RowMatchNodes.h"
-#include "SameExceptForWhiteSpace.h"
-#include "SuiteCpp/UnitTest.h"
-#include "TextObjectFormatter.h"
+#include "SameExceptForWhitespace.h"
 #include "TextObjectParser.h"
 
 
@@ -505,26 +502,26 @@ namespace BitFunnel
         };
 
 
-        void PrettyPrint(const char * plan)
-        {
-            std::stringstream input(plan);
-            PrivateHeapAllocator allocator;
-            TextObjectParser parser(input, allocator, &CompileNode::GetType);
-            CompileNode const & node = CompileNode::Parse(parser);
+        // void PrettyPrint(const char * plan)
+        // {
+        //     std::stringstream input(plan);
+        //     PrivateHeapAllocator allocator;
+        //     TextObjectParser parser(input, allocator, &CompileNode::GetType);
+        //     CompileNode const & node = CompileNode::Parse(parser);
 
-            std::stringstream output;
-            TextObjectFormatter formatter(output);
-            node.Format(formatter);
+        //     std::stringstream output;
+        //     TextObjectFormatter formatter(output);
+        //     node.Format(formatter);
 
-            std::cout << output.str() << std::endl;
-        }
+        //     std::cout << output.str() << std::endl;
+        // }
 
 
         void VerifyCase(InputOutput const & testCase)
         {
             std::stringstream input(testCase.m_input);
 
-            PrivateHeapAllocator allocator;
+            Allocator allocator(512);
             TextObjectParser parser(input, allocator, &RowPlanBase::GetType);
             RowMatchNode const & root = RowMatchNode::Parse(parser);
 
@@ -540,7 +537,7 @@ namespace BitFunnel
             TextObjectFormatter formatter2(output);
             compiled.Format(formatter2);
 
-            //if (!SameExceptForWhiteSpace(output.str().c_str(), testCase.m_output))
+            //if (!SameExceptForWhitespace(output.str().c_str(), testCase.m_output))
             //{
             //    std::cout << "===================" << std::endl;
             //    PrettyPrint(testCase.m_output);
@@ -549,11 +546,11 @@ namespace BitFunnel
             //}
 
 
-            TestAssert(SameExceptForWhiteSpace(output.str().c_str(), testCase.m_output));
+            EXPECT_TRUE(SameExceptForWhitespace(output.str().c_str(), testCase.m_output));
         }
 
 
-        TestCase(Compile)
+        TEST(RankDownCompiler,Compile)
         {
             for (unsigned i = 0; i < sizeof(c_cases) / sizeof(InputOutput); ++i)
             {
