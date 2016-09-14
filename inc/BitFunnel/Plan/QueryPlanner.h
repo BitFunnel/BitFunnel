@@ -45,33 +45,33 @@ namespace BitFunnel
 
     private:
 
-        // Wrapper class for X64FunctionGenerator to manage the 
-        // allocate and release of the X64FunctionGenerator object in
-        // ThreadResources.
-        // The goal of this class is to be an RAII wrapper to protect 
-        // against throws in the constructor of QueryPlanner.
-        class X64FunctionGeneratorWrapper : public NonCopyable
-        {
-        public:
-            // The constructor takes a X64FunctionGenerator from thread resources.
-            X64FunctionGeneratorWrapper(IThreadResources& threadResources);
+        // // Wrapper class for X64FunctionGenerator to manage the
+        // // allocate and release of the X64FunctionGenerator object in
+        // // ThreadResources.
+        // // The goal of this class is to be an RAII wrapper to protect
+        // // against throws in the constructor of QueryPlanner.
+        // class X64FunctionGeneratorWrapper : public NonCopyable
+        // {
+        // public:
+        //     // The constructor takes a X64FunctionGenerator from thread resources.
+        //     X64FunctionGeneratorWrapper(IThreadResources& threadResources);
 
-            // The destructor return the X64FunctionGenerator back to the thread resources.
-            ~X64FunctionGeneratorWrapper();
+        //     // The destructor return the X64FunctionGenerator back to the thread resources.
+        //     ~X64FunctionGeneratorWrapper();
 
-            operator X64::X64FunctionGenerator&() const;
+        //     operator X64::X64FunctionGenerator&() const;
 
-        private:
-            // The X64FunctionGenerator maintains the executable buffers of X64
-            X64::X64FunctionGenerator& m_code;
+        // private:
+        //     // The X64FunctionGenerator maintains the executable buffers of X64
+        //     X64::X64FunctionGenerator& m_code;
 
-            // Stored so that the X64FunctionGenerator can be released during destruction
-            IThreadResources& m_threadResources;
-        };
+        //     // Stored so that the X64FunctionGenerator can be released during destruction
+        //     IThreadResources& m_threadResources;
+        // };
 
         // The X64FunctionGeneratorWrapper which wraps a x64FunctionGenerator allocated from
         // thread resources. It also is responsible for release the wrapped x64FunctionGenerator.
-        X64FunctionGeneratorWrapper m_x64FunctionGeneratorWrapper;
+        // X64FunctionGeneratorWrapper m_x64FunctionGeneratorWrapper;
 
         IPlanRows const * m_planRows;
 
@@ -80,9 +80,11 @@ namespace BitFunnel
         const unsigned m_maxIterationsScannedBetweenTerminationChecks;
 
         // First available row pointer register is R8.
+        // TODO: is this valid on all platforms or only on Windows?
         static const unsigned c_registerBase = 8;
 
         // Row pointers stored in the eight registers R8..R15.
+        // TODO: is this valid on all platforms or only on Windows?
         static const unsigned c_registerCount = 8;
     };
 }

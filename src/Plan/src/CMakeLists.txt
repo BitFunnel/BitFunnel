@@ -6,6 +6,7 @@ set(CPPFILES
     MatchTreeRewriter.cpp
     QueryParser.cpp
     QueryPipeline.cpp
+    # QueryPlanner.cpp
     RankDownCompiler.cpp
     RankZeroCompiler.cpp
     RegisterAllocator.cpp

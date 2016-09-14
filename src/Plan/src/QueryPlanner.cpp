@@ -1,49 +1,45 @@
-#include "stdafx.h"
-
-
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
+#include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/BitFunnelErrors.h"
 #include "BitFunnel/CompiledFunction.h"
 #include "BitFunnel/Factories.h"
 #include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/IObjectFormatter.h"
 #include "BitFunnel/IPlanRows.h"
-#include "BitFunnel/IThreadResources.h"
+// #include "BitFunnel/IThreadResources.h"
 #include "BitFunnel/QueryPlanner.h"
 #include "BitFunnel/RowPlan.h"
 #include "BitFunnel/TermMatchNodes.h"
 #include "BitFunnel/TermPlan.h"
 #include "BitFunnel/TermPlanConverter.h"
 #include "BitFunnel/Tier.h"
-#include "CompileNodes.h"
+#include "CompileNode.h"
 #include "LoggerInterfaces/Logging.h"
-#include "MachineCodeGenerator.h"
-#include "MatchTreeCodeGenerator.h"
+// #include "MatchTreeCodeGenerator.h"
 #include "MatchTreeRewriter.h"
-#include "RankDownCompiler.h" 
+#include "RankDownCompiler.h"
 #include "RegisterAllocator.h"
 #include "RowPlanCompiler.h"
 
 
 namespace BitFunnel
 {
-    QueryPlanner::X64FunctionGeneratorWrapper::X64FunctionGeneratorWrapper(IThreadResources& threadResources)
-        : m_code(threadResources.AllocateFunctionGenerator()),
-          m_threadResources(threadResources) 
-    {
-    }
+    // QueryPlanner::X64FunctionGeneratorWrapper::X64FunctionGeneratorWrapper(IThreadResources& threadResources)
+    //     : m_code(threadResources.AllocateFunctionGenerator()),
+    //       m_threadResources(threadResources)
+    // {
+    // }
 
 
-    QueryPlanner::X64FunctionGeneratorWrapper::~X64FunctionGeneratorWrapper()
-    {
-        m_threadResources.ReleaseFunctionGenerator(m_code);
-    }
+    // QueryPlanner::X64FunctionGeneratorWrapper::~X64FunctionGeneratorWrapper()
+    // {
+    //     m_threadResources.ReleaseFunctionGenerator(m_code);
+    // }
 
 
-    QueryPlanner::X64FunctionGeneratorWrapper::operator X64::X64FunctionGenerator&() const
-    {
-        return m_code;
-    }
+    // QueryPlanner::X64FunctionGeneratorWrapper::operator X64::X64FunctionGenerator&() const
+    // {
+    //     return m_code;
+    // }
 
 
     unsigned const c_targetCrossProductTermCount = 180;
@@ -51,7 +47,7 @@ namespace BitFunnel
     QueryPlanner::QueryPlanner(TermPlan const & termPlan,
                                unsigned targetRowCount,
                                IIndexConfiguration const & index,
-                               IThreadResources& threadResources,
+                               // IThreadResources& threadResources,
                                Allocators::IAllocator& allocator,
                                IDiagnosticStream* diagnosticStream,
                                bool generateNonBodyPlan,
@@ -73,10 +69,10 @@ namespace BitFunnel
             out << std::endl;
         }
 
-        RowPlan const & rowPlan = 
-            TermPlanConverter::BuildRowPlan(termPlan.GetMatchTree(), 
-                                            index, 
-                                            generateNonBodyPlan, 
+        RowPlan const & rowPlan =
+            TermPlanConverter::BuildRowPlan(termPlan.GetMatchTree(),
+                                            index,
+                                            generateNonBodyPlan,
                                             allocator);
 
         if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/row"))
@@ -124,7 +120,7 @@ namespace BitFunnel
         }
 
         // Rewrite match tree to optimal form for the RankDownCompiler.
-        RowMatchNode const & rewritten = 
+        RowMatchNode const & rewritten =
             MatchTreeRewriter::Rewrite(rowPlan.GetMatchTree(),
                                        targetRowCount,
                                        c_targetCrossProductTermCount,
@@ -168,18 +164,18 @@ namespace BitFunnel
                                           allocator);
 
         // Finally, translate compile tree to X64 machine code.
-        MatchTreeCodeGenerator generator(registers,
-                                         m_x64FunctionGeneratorWrapper,
-                                         m_maxIterationsScannedBetweenTerminationChecks);
-        generator.GenerateX64Code(compileTree);
+        // MatchTreeCodeGenerator generator(registers,
+        //                                  m_x64FunctionGeneratorWrapper,
+        //                                  m_maxIterationsScannedBetweenTerminationChecks);
+        // generator.GenerateX64Code(compileTree);
     }
 
 
-    const CompiledFunction QueryPlanner::GetMatchingFunction() const
-    {
-        // TODO: Don't like how call to GetMatchingFunction() finalizes jumps. This should be explicit.
-        return CompiledFunction((X64::X64FunctionGenerator&)m_x64FunctionGeneratorWrapper);
-    }
+//     const CompiledFunction QueryPlanner::GetMatchingFunction() const
+// OA    {
+//         // TODO: Don't like how call to GetMatchingFunction() finalizes jumps. This should be explicit.
+//         return CompiledFunction((X64::X64FunctionGenerator&)m_x64FunctionGeneratorWrapper);
+//     }
 
 
     IPlanRows const & QueryPlanner::GetPlanRows() const
