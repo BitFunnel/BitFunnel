@@ -18,7 +18,7 @@ namespace BitFunnel
     class RankDownCompiler : NonCopyable
     {
     public:
-        RankDownCompiler(Allocators::IAllocator& allocator);
+        RankDownCompiler(IAllocator& allocator);
 
         // DESIGN NOTE: Normally we would prefer a modeless class where all of
         // the work happened in the constructor and the CompileNode const & was
@@ -39,7 +39,7 @@ namespace BitFunnel
 
         CompileNode const & RankUp(CompileNode const & node);
 
-        Allocators::IAllocator& m_allocator;
+        IAllocator& m_allocator;
         Rank m_currentRank;
         CompileNode const * m_accumulator;
     };

@@ -1,21 +1,19 @@
-#include "stdafx.h"
-
 #include <algorithm>    // For std::max.
 #include <new>
 #include <stddef.h>
 
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
-#include "CompileNodes.h"
-#include "BitFunnel/ICodeGenerator.h"
+#include "BitFunnel/Allocators/IAllocator.h"
+#include "BitFunnel/Plan/ICodeGenerator.h"
+#include "BitFunnel/Plan/RowMatchNode.h"
+#include "CompileNode.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RankDownCompiler.h"
 #include "RankZeroCompiler.h"
-#include "BitFunnel/RowMatchNodes.h"
 
 
 namespace BitFunnel
 {
-    RankDownCompiler::RankDownCompiler(Allocators::IAllocator& allocator)
+    RankDownCompiler::RankDownCompiler(IAllocator& allocator)
         : m_allocator(allocator),
           m_currentRank(0),
           m_accumulator(nullptr)
@@ -48,7 +46,8 @@ namespace BitFunnel
                                                       *m_accumulator);
             m_currentRank = initialRank;
         }
-        LogAssertB(m_accumulator != nullptr);
+        LogAssertB(m_accumulator != nullptr,
+                   "nullptr m_accumulator.");
 
         return *m_accumulator;
     }
@@ -60,19 +59,19 @@ namespace BitFunnel
         {
         case RowMatchNode::AndMatch:
             {
-                RowMatchNode::And const & and = dynamic_cast<RowMatchNode::And const &>(node);
-                CompileTraversal(and.GetRight(), false);
-                CompileTraversal(and.GetLeft(), leftmostChild);
+                RowMatchNode::And const & andNode = dynamic_cast<RowMatchNode::And const &>(node);
+                CompileTraversal(andNode.GetRight(), false);
+                CompileTraversal(andNode.GetLeft(), leftmostChild);
             }
             break;
         case RowMatchNode::OrMatch:
             {
-                RowMatchNode::Or const & or = dynamic_cast<RowMatchNode::Or const &>(node);
+                RowMatchNode::Or const & orNode = dynamic_cast<RowMatchNode::Or const &>(node);
 
                 RankDownCompiler left(m_allocator);
-                left.CompileInternal(or.GetLeft(), leftmostChild);
+                left.CompileInternal(orNode.GetLeft(), leftmostChild);
                 RankDownCompiler right(m_allocator);
-                right.CompileInternal(or.GetRight(), leftmostChild);
+                right.CompileInternal(orNode.GetRight(), leftmostChild);
 
                 Rank rank = (std::max)(left.m_currentRank,
                                        right.m_currentRank);
