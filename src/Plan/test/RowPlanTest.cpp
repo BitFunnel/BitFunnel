@@ -9,7 +9,7 @@
 
 namespace BitFunnel
 {
-    namespace RowPlanUnitTest
+    namespace RowPlanTest
     {
         // TODO: Tests of illegal trees, e.g. and/or/phrases with 0, 1 child
 
