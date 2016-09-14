@@ -25,7 +25,7 @@
 
 #include "gtest/gtest.h"
 
-#include "RamFileSystem.h"
+#include "RAMFileSystem.h"
 
 
 namespace BitFunnel
