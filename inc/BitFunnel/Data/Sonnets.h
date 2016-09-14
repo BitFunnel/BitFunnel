@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 
+#include <stddef.h> // size_t.
 #include <vector>   // std::vector in typedef.
 #include <utility>  // std::pair in typedef.
 
