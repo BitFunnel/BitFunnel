@@ -2985,17 +2985,17 @@ namespace BitFunnel
 
         ChunkArray chunks =
         {
-            std::make_pair(sizeof(chunk0), chunk0),
-            std::make_pair(sizeof(chunk1), chunk1),
-            std::make_pair(sizeof(chunk2), chunk2),
-            std::make_pair(sizeof(chunk3), chunk3),
-            std::make_pair(sizeof(chunk4), chunk4),
-            std::make_pair(sizeof(chunk5), chunk5),
-            std::make_pair(sizeof(chunk6), chunk6),
-            std::make_pair(sizeof(chunk7), chunk7),
-            std::make_pair(sizeof(chunk8), chunk8),
-            std::make_pair(sizeof(chunk9), chunk9),
-            std::make_pair(sizeof(chunk10), chunk10),
+            {std::make_pair(sizeof(chunk0), chunk0),
+             std::make_pair(sizeof(chunk1), chunk1),
+             std::make_pair(sizeof(chunk2), chunk2),
+             std::make_pair(sizeof(chunk3), chunk3),
+             std::make_pair(sizeof(chunk4), chunk4),
+             std::make_pair(sizeof(chunk5), chunk5),
+             std::make_pair(sizeof(chunk6), chunk6),
+             std::make_pair(sizeof(chunk7), chunk7),
+             std::make_pair(sizeof(chunk8), chunk8),
+             std::make_pair(sizeof(chunk9), chunk9),
+             std::make_pair(sizeof(chunk10), chunk10)},
         };
     }
 }

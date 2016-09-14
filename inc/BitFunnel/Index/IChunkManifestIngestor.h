@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <stddef.h>                 // size_t return value.
 #include "BitFunnel/IInterface.h"   // Base class.
 
 

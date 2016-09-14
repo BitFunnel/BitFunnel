@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
-
 #include "BitFunnel/Configuration/Factories.h"
 #include "RAMFileSystem.h"
 
@@ -40,7 +38,7 @@ namespace BitFunnel
     {
         auto buffer = EnsureStream(filename, true);
         std::unique_ptr<std::stringstream> stream(new std::stringstream());
-        (reinterpret_cast<std::ostream*>(stream.get()))->rdbuf(buffer);
+        (static_cast<std::ostream*>(stream.get()))->rdbuf(buffer);
         return std::unique_ptr<std::ostream>(stream.release());
     }
 
