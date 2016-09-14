@@ -96,6 +96,7 @@ endmacro()
 set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/BitFunnelTypes.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Exceptions.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IDiagnosticStream.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IFileManager.h
