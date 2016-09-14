@@ -351,7 +351,7 @@ namespace BitFunnel
         {
             std::stringstream input(text);
 
-            Allocator allocator(1024);
+            Allocator allocator(256);
             TextObjectParser parser(input, allocator, &CompileNode::GetType);
 
             CompileNode const & node = CompileNode::Parse(parser);
@@ -386,7 +386,7 @@ namespace BitFunnel
         {
             std::stringstream input(testCase.m_input);
 
-            Allocator allocator(1024);
+            Allocator allocator(256);
             TextObjectParser parser(input, allocator, &CompileNode::GetType);
 
             CompileNode const & node = CompileNode::Parse(parser);
