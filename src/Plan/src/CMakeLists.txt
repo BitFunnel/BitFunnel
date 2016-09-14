@@ -6,6 +6,7 @@ set(CPPFILES
     MatchTreeRewriter.cpp
     QueryParser.cpp
     QueryPipeline.cpp
+    RankZeroCompiler.cpp
     RowMatchNode.cpp
     RowPlan.cpp
     StringVector.cpp
@@ -22,6 +23,7 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     CompileNode.h
     MatchTreeRewriter.h
+    RankZeroCompiler.h
     StringVector.h
 )
 

@@ -6,23 +6,19 @@
 
 namespace BitFunnel
 {
-    namespace Allocators
-    {
-        class IAllocator;
-    }
-
     class CompileNode;
+    class IAllocator;
     class RowMatchNode;
 
 
     class RankZeroCompiler : NonCopyable
     {
     public:
-        RankZeroCompiler(Allocators::IAllocator& allocator);
+        RankZeroCompiler(IAllocator& allocator);
 
         CompileNode const & Compile(RowMatchNode const & node);
 
     private:
-        Allocators::IAllocator& m_allocator;
+        IAllocator& m_allocator;
     };
 }

@@ -1,18 +1,17 @@
-#include "stdafx.h"
-
 #include <new>
 #include <stddef.h>
 
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
-#include "CompileNodes.h"
+#include "BitFunnel/Allocators/IAllocator.h"
+#include "BitFunnel/Plan/RowMatchNode.h"
+#include "CompileNode.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RankZeroCompiler.h"
-#include "BitFunnel/RowMatchNodes.h"
 
+// TODO: get rid of dynamic cast?
 
 namespace BitFunnel
 {
-    RankZeroCompiler::RankZeroCompiler(Allocators::IAllocator& allocator)
+    RankZeroCompiler::RankZeroCompiler(IAllocator& allocator)
         : m_allocator(allocator)
     {
     }
