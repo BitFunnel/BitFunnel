@@ -8,6 +8,7 @@ set(CPPFILES
     QueryPipeline.cpp
     RankDownCompiler.cpp
     RankZeroCompiler.cpp
+    RegisterAllocator.cpp
     RowMatchNode.cpp
     RowPlan.cpp
     StringVector.cpp
@@ -26,6 +27,7 @@ set(PRIVATE_HFILES
     MatchTreeRewriter.h
     RankDownCompiler.h
     RankZeroCompiler.h
+    RegisterAllocator.h
     StringVector.h
 )
 

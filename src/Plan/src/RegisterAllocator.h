@@ -4,13 +4,8 @@
 namespace BitFunnel
 {
     class AbstractRow;
-
-    namespace Allocators
-    {
-        class IAllocator;
-    }
-
     class CompileNode;
+    class IAllocator;
 
     //*************************************************************************
     //
@@ -39,7 +34,7 @@ namespace BitFunnel
                           unsigned rowCount,
                           unsigned registerBase,
                           unsigned registerCount,
-                          Allocators::IAllocator& allocator);
+                          IAllocator& allocator);
 
         // Returns true if the abstract row with the specified id has been
         // assigned a register.
@@ -104,7 +99,7 @@ namespace BitFunnel
         unsigned m_registerCount;
 
         // First available register number. Algorithm will allocate to a
-        // contiguous block of m_registerCount registers, starting at 
+        // contiguous block of m_registerCount registers, starting at
         // m_registerBase.
         unsigned m_registerBase;
 

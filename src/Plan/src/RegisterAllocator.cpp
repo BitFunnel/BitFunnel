@@ -1,13 +1,12 @@
-#include "stdafx.h"
-
 #include <algorithm>            // For std::max().
 #include <new>
 
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
-#include "CompileNodes.h"
+#include "BitFunnel/Allocators/IAllocator.h"
+#include "CompileNode.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RegisterAllocator.h"
 
+// TODO: get rid of dynamic_cast?
 
 namespace BitFunnel
 {
@@ -21,9 +20,9 @@ namespace BitFunnel
           m_registerCount(0),
           m_registerBase(0),
           m_mapping(nullptr),
-          m_rowIdsByRegister(nullptr),
           m_abstractRows(nullptr),
-          m_registersAllocated(0)
+          m_registersAllocated(0),
+          m_rowIdsByRegister(nullptr)
     {
     }
 
@@ -32,7 +31,7 @@ namespace BitFunnel
                                          unsigned rowCount,
                                          unsigned registerBase,
                                          unsigned registerCount,
-                                         Allocators::IAllocator& allocator)
+                                         IAllocator& allocator)
         : m_rowCount(rowCount),
           m_registerCount(registerCount),
           m_registerBase(registerBase)
@@ -44,7 +43,7 @@ namespace BitFunnel
             new (m_rows + i) Entry(i);
         }
 
-        m_abstractRows = 
+        m_abstractRows =
             reinterpret_cast<AbstractRow*>(allocator.Allocate(sizeof(AbstractRow)
                                                               * m_rowCount));
 
@@ -89,8 +88,10 @@ namespace BitFunnel
 
     unsigned RegisterAllocator::GetRegister(unsigned id) const
     {
-        LogAssertB(id < m_rowCount);
-        LogAssertB(m_mapping != nullptr);
+        LogAssertB(id < m_rowCount,
+                   "id must be < m_rowCount.");
+        LogAssertB(m_mapping != nullptr,
+                   "m_mapping nullptr.");
         return m_mapping[id] + m_registerBase;
     }
 
@@ -105,16 +106,20 @@ namespace BitFunnel
     // TODO: Add unit test for this method.
     unsigned RegisterAllocator::GetRowIdFromRegister(unsigned reg) const
     {
-        LogAssertB(reg < m_registersAllocated);
-        LogAssertB(m_rowIdsByRegister != nullptr);
+        LogAssertB(reg < m_registersAllocated,
+                   "reg number overflow.");
+        LogAssertB(m_rowIdsByRegister != nullptr,
+                   "m_rowIdsByRegister nullptr.");
         return m_rowIdsByRegister[reg];
     }
 
 
     AbstractRow const & RegisterAllocator::GetRow(unsigned id) const
     {
-        LogAssertB(id < m_rowCount);
-        LogAssertB(m_abstractRows != nullptr);
+        LogAssertB(id < m_rowCount,
+                   "id overflow.");
+        LogAssertB(m_abstractRows != nullptr,
+                   "m_abstractRows nullptr.");
         return m_abstractRows[id];
     }
 
@@ -130,7 +135,8 @@ namespace BitFunnel
                 CompileNode::AndRowJz const & node =
                     dynamic_cast<CompileNode::AndRowJz const &>(root);
                 unsigned id = node.GetRow().GetId();
-                LogAssertB(id < m_rowCount);
+                LogAssertB(id < m_rowCount,
+                           "id overflow.");
                 m_rows[id].UpdateDepth(depth, uses);
                 new (m_abstractRows + id) AbstractRow(node.GetRow());
                 CollectRows(node.GetChild(), depth + 1, uses);
@@ -141,7 +147,8 @@ namespace BitFunnel
                 CompileNode::LoadRowJz const & node =
                     dynamic_cast<CompileNode::LoadRowJz const &>(root);
                 unsigned id = node.GetRow().GetId();
-                LogAssertB(id < m_rowCount);
+                LogAssertB(id < m_rowCount,
+                           "id overflow.");
                 m_rows[id].UpdateDepth(depth, uses);
                 new (m_abstractRows + id) AbstractRow(node.GetRow());
                 CollectRows(node.GetChild(), depth + 1, uses);
@@ -186,7 +193,8 @@ namespace BitFunnel
                 CompileNode::LoadRow const & node =
                     dynamic_cast<CompileNode::LoadRow const &>(root);
                 unsigned id = node.GetRow().GetId();
-                LogAssertB(id < m_rowCount);
+                LogAssertB(id < m_rowCount,
+                           "id overflow.");
                 m_rows[id].UpdateDepth(depth, uses);
                 new (m_abstractRows + id) AbstractRow(node.GetRow());
             }
