@@ -5,6 +5,7 @@ set(CPPFILES
     MatchTreeRewriterTest.cpp
     PlainTextCodeGenerator.cpp
     RankDownCompilerTest.cpp
+    RegisterAllocatorTest.cpp
     RowPlanTest.cpp
     QueryParserTest.cpp
     TermMatchNodeTest.cpp

@@ -1,19 +1,18 @@
-#include "stdafx.h"
+#include "gtest/gtest.h"
 
-#include "CompileNodes.h"
+#include "Allocator.h"
+#include "BitFunnel/Plan/RowMatchNode.h"
+#include "BitFunnel/Utilities/TextObjectFormatter.h"
+#include "CompileNode.h"
 #include "MatchTreeRewriter.h"
-#include "PrivateHeapAllocator.h"
 #include "RankDownCompiler.h"
-#include "BitFunnel/RowMatchNodes.h"
 #include "RegisterAllocator.h"
-#include "SuiteCpp/UnitTest.h"
-#include "TextObjectFormatter.h"
 #include "TextObjectParser.h"
 
 
 namespace BitFunnel
 {
-    namespace RegisterAllocatorUnitTest
+    namespace RegisterAllocatorTest
     {
         struct InputOutput
         {
@@ -24,7 +23,7 @@ namespace BitFunnel
         };
 
 
-        InputOutput const c_cases[] = 
+        InputOutput const c_cases[] =
         {
             // Test Not, AndTree, OrTree, and LoadRow.
             {
@@ -224,20 +223,19 @@ namespace BitFunnel
         {
             if (expectedRegister < 0)
             {
-                TestAssert(!registers.IsRegister(row));
+                EXPECT_FALSE(registers.IsRegister(row));
             }
             else
             {
-                TestAssert(registers.IsRegister(row));
-                TestEqual(static_cast<unsigned>(expectedRegister),
+                EXPECT_TRUE(registers.IsRegister(row));
+                EXPECT_EQ(static_cast<unsigned>(expectedRegister),
                           registers.GetRegister(row));
             }
         }
 
 
-        void VerifyCase(InputOutput const & testCase)
+        void VerifyCase(InputOutput const & testCase, IAllocator & allocator)
         {
-            PrivateHeapAllocator allocator;
             std::stringstream input(testCase.m_input);
             TextObjectParser parser(input, allocator, &RowMatchNode::GetType);
             RowMatchNode const & node = RowMatchNode::Parse(parser);
@@ -263,11 +261,13 @@ namespace BitFunnel
         }
 
 
-        TestCase(RegisterAllocation)
+        TEST(RegisterAllocator,Basic)
         {
+            Allocator allocator(2048);
             for (unsigned i = 0; i < sizeof(c_cases) / sizeof(InputOutput); ++i)
             {
-                VerifyCase(c_cases[i]);
+                VerifyCase(c_cases[i], allocator);
+                allocator.Reset();
             }
         }
     }
