@@ -40,17 +40,20 @@ namespace BitFunnel
     }
 
 
-    int BitFunnelTool::Main(int argc, char** argv)
+    int BitFunnelTool::Main(std::istream& input,
+                            std::ostream& output,
+                            int argc,
+                            char** argv)
     {
         int returnCode = 1;
 
         if (argc < 2)
         {
-            Usage();
+            Usage(output);
         }
         else if (strcmp(argv[1], "-help") == 0)
         {
-            Usage();
+            Usage(output);
         }
         else
         {
@@ -60,13 +63,15 @@ namespace BitFunnel
                 std::string name = "BitFunnel ";
                 name.append(argv[1]);
                 auto args = FilterArgs(argc, argv, name.c_str());
-                executable->Main(static_cast<int>(args.size()),
+                executable->Main(input,
+                                 output,
+                                 static_cast<int>(args.size()),
                                  const_cast<char**>(args.data()));
                 returnCode = 0;
             }
             else
             {
-                std::cout
+                output
                     << "Unknown command '"
                     << argv[1]
                     << "'. Use 'BitFunnel -help' for more information."
@@ -122,9 +127,9 @@ namespace BitFunnel
     }
 
 
-    void BitFunnelTool::Usage()
+    void BitFunnelTool::Usage(std::ostream& output)
     {
-        std::cout
+        output
             << "usage: BitFunnel <command> [<args>]" << std::endl
             << std::endl
             << "The most commonly used commands are" << std::endl

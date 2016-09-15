@@ -46,7 +46,10 @@ namespace BitFunnel
     }
 
 
-    int StatisticsBuilder::Main(int argc, char** argv)
+    int StatisticsBuilder::Main(std::istream& /*input*/,
+                                std::ostream& output,
+                                int argc,
+                                char** argv)
     {
         CmdLine::CmdLineParser parser(
             "StatisticsBuilder",
@@ -86,11 +89,12 @@ namespace BitFunnel
 
         int returnCode = 1;
 
-        if (parser.TryParse(std::cout, argc, argv))
+        if (parser.TryParse(output, argc, argv))
         {
             try
             {
-                LoadAndIngestChunkList(tempPath,
+                LoadAndIngestChunkList(output, 
+                                       tempPath,
                                        chunkListFileName,
                                        gramSize,
                                        statistics.IsActivated(),
@@ -99,11 +103,11 @@ namespace BitFunnel
             }
             catch (RecoverableError e)
             {
-                std::cout << "Error: " << e.what() << std::endl;
+                output << "Error: " << e.what() << std::endl;
             }
             catch (...)
             {
-                std::cout << "Unexpected error.";
+                output << "Unexpected error.";
             }
         }
 
@@ -127,6 +131,7 @@ namespace BitFunnel
 
 
     void StatisticsBuilder::LoadAndIngestChunkList(
+        std::ostream& output,
         char const * intermediateDirectory,
         char const * chunkListFileName,
         // TODO: gramSize should be unsigned once CmdLineParser supports unsigned.
@@ -141,13 +146,13 @@ namespace BitFunnel
 
 
         // TODO: Add try/catch around file operations.
-        std::cout
+        output
             << "Loading chunk list file '" << chunkListFileName << "'" << std::endl
             << "Temp dir: '" << intermediateDirectory << "'"<< std::endl;
 
         std::vector<std::string> filePaths = ReadLines(chunkListFileName);
 
-        std::cout << "Reading " << filePaths.size() << " files\n";
+        output << "Reading " << filePaths.size() << " files\n";
 
         IConfiguration const & configuration = index->GetConfiguration();
         IIngestor & ingestor = index->GetIngestor();
@@ -158,7 +163,7 @@ namespace BitFunnel
             ingestor,
             false);
 
-        std::cout << "Ingesting . . ." << std::endl;
+        output << "Ingesting . . ." << std::endl;
 
         Stopwatch stopwatch;
 
@@ -169,9 +174,9 @@ namespace BitFunnel
         const double elapsedTime = stopwatch.ElapsedTime();
         const size_t totalSourceBytes = ingestor.GetTotalSouceBytesIngested();
 
-        std::cout << "Ingestion complete." << std::endl;
-        std::cout << "  Ingestion time = " << elapsedTime << std::endl;
-        std::cout
+        output
+            << "Ingestion complete." << std::endl
+            << "  Ingestion time = " << elapsedTime << std::endl
             << "  Ingestion rate (bytes/s): "
             << totalSourceBytes / elapsedTime << std::endl;
 

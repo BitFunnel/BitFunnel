@@ -38,12 +38,16 @@ namespace BitFunnel
         //
         // IExecutable methods
         //
-        virtual int Main(int argc, char *argv[]) override;
+        virtual int Main(std::istream& input,
+                         std::ostream& output,
+                         int argc,
+                         char *argv[]) override;
 
     private:
         std::vector<std::string> ReadLines(char const * fileName) const;
 
         void StatisticsBuilder::LoadAndIngestChunkList(
+            std::ostream& output,
             char const * intermediateDirectory,
             char const * chunkListFileName,
             int gramSize,

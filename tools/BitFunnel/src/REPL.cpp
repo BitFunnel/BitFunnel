@@ -38,7 +38,10 @@ namespace BitFunnel
     }
 
 
-    int REPL::Main(int argc, char** argv)
+    int REPL::Main(std::istream& input,
+                   std::ostream& output,
+                   int argc,
+                   char** argv)
     {
         CmdLine::CmdLineParser parser(
             "StatisticsBuilder",
@@ -69,23 +72,23 @@ namespace BitFunnel
 
         int returnCode = 1;
 
-        if (parser.TryParse(std::cout, argc, argv))
+        if (parser.TryParse(output, argc, argv))
         {
             try
             {
-                Go(path, gramSize, threadCount);
+                Go(input, output, path, gramSize, threadCount);
                 returnCode = 0;
             }
             catch (RecoverableError e)
             {
-                std::cout << "Error: " << e.what() << std::endl;
+                output << "Error: " << e.what() << std::endl;
             }
             catch (...)
             {
                 // TODO: Do we really want to catch all exceptions here?
                 // Seems we want to at least print out the error message for BitFunnel exceptions.
 
-                std::cout << "Unexpected error.";
+                output << "Unexpected error.";
             }
         }
 
@@ -93,9 +96,9 @@ namespace BitFunnel
     }
 
 
-    void REPL::Advice() const
+    void REPL::Advice(std::ostream& output) const
     {
-        std::cout
+        output
             << "Index failed to load." << std::endl
             << std::endl
             << "Verify that directory path is valid and that the folder contains index files." << std::endl
@@ -107,11 +110,13 @@ namespace BitFunnel
     }
 
 
-    void REPL::Go(char const * directory,
-              size_t gramSize,
-              size_t threadCount) const
+    void REPL::Go(std::istream& input,
+                  std::ostream& output,
+                  char const * directory,
+                  size_t gramSize,
+                  size_t threadCount) const
     {
-        std::cout
+        output
             << "Welcome to BitFunnel!" << std::endl
             << "Starting " << threadCount
             << " thread" << ((threadCount == 1) ? "" : "s") << std::endl
@@ -125,7 +130,7 @@ namespace BitFunnel
                                 gramSize,
                                 threadCount);
 
-        std::cout
+        output
             << "Starting index ..."
             << std::endl;
 
@@ -135,15 +140,15 @@ namespace BitFunnel
         }
         catch (...)
         {
-            Advice();
+            Advice(output);
             throw;
         }
 
-        std::cout
+        output
             << "Index started successfully."
             << std::endl;
 
-        std::cout
+        output
             << std::endl
             << "Type \"help\" to get started." << std::endl
             << std::endl;
@@ -155,11 +160,11 @@ namespace BitFunnel
         {
             try
             {
-                std::cout << factory.GetNextTaskId() << ": ";
-                std::cout.flush();
+                output << factory.GetNextTaskId() << ": ";
+                output.flush();
 
                 std::string line;
-                std::getline(std::cin, line);
+                std::getline(input, line);
 
                 std::unique_ptr<ICommand> task(factory.CreateTask(line.c_str()));
 
@@ -179,11 +184,11 @@ namespace BitFunnel
             }
             catch (RecoverableError e)
             {
-                std::cout << "Error: " << e.what() << std::endl;
+                output << "Error: " << e.what() << std::endl;
             }
             catch (...)
             {
-                std::cout << "Unknown error." << std::endl;
+                output << "Unknown error." << std::endl;
                 throw;
             }
         }

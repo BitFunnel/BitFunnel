@@ -22,7 +22,9 @@
 
 #pragma once
 
-#include "BitFunnel/IInterface.h"
+#include <iosfwd>                   // std::istream and std::ostream parameters.
+
+#include "BitFunnel/IInterface.h"   // Base class
 
 
 namespace BitFunnel
@@ -30,6 +32,9 @@ namespace BitFunnel
     class IExecutable : public IInterface
     {
     public:
-        virtual int Main(int argc, char *argv[]) = 0;
+        virtual int Main(std::istream& input,
+                         std::ostream& output,
+                         int argc,
+                         char *argv[]) = 0;
     };
 }

@@ -39,7 +39,10 @@ namespace BitFunnel
         //
         // IExecutable methods
         //
-        virtual int Main(int argc, char *argv[]) override;
+        virtual int Main(std::istream& input,
+                         std::ostream& output,
+                         int argc,
+                         char *argv[]) override;
 
     private:
         // Constructs the IExecutable associated with the specified subcommand.
@@ -58,7 +61,7 @@ namespace BitFunnel
             char const * name) const;
 
         // Prints the top-level usage message for the BitFunnel command.
-        static void Usage();
+        static void Usage(std::ostream& output);
 
         IFileSystem& m_fileSystem;
     };

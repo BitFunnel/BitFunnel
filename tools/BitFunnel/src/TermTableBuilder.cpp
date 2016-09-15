@@ -47,7 +47,10 @@ namespace BitFunnel
     }
 
 
-    int TermTableBuilder::Main(int argc, char** argv)
+    int TermTableBuilder::Main(std::istream& /*input*/,
+                               std::ostream& output,
+                               int argc,
+                               char** argv)
     {
         CmdLine::CmdLineParser parser(
             "TermTableBuilder",
@@ -63,7 +66,7 @@ namespace BitFunnel
 
         int returnCode = 1;
 
-        if (parser.TryParse(std::cout, argc, argv))
+        if (parser.TryParse(output, argc, argv))
         {
             try
             {
@@ -72,7 +75,8 @@ namespace BitFunnel
                 double snr = 10.0;
                 double adhocFrequency = 0.001;
 
-                BuildTermTable(tempPath,
+                BuildTermTable(output,
+                               tempPath,
                                shard,
                                density,
                                snr,
@@ -82,11 +86,11 @@ namespace BitFunnel
             }
             catch (RecoverableError e)
             {
-                std::cout << "Error: " << e.what() << std::endl;
+                output << "Error: " << e.what() << std::endl;
             }
             catch (...)
             {
-                std::cout << "Unexpected error.";
+                output << "Unexpected error.";
             }
         }
 
@@ -95,13 +99,14 @@ namespace BitFunnel
 
 
     void TermTableBuilder::BuildTermTable(
+        std::ostream& output,
         char const * intermediateDirectory,
         ShardId shard,
         double density,
         double snr,
         double adhocFrequency) const
     {
-        std::cout << "Loading files for TermTable build." << std::endl;
+        output << "Loading files for TermTable build." << std::endl;
 
         auto fileSystem = Factories::CreateFileSystem();
 
@@ -118,7 +123,7 @@ namespace BitFunnel
 
         auto termTable(Factories::CreateTermTable());
 
-        std::cout << "Starting TermTable build." << std::endl;
+        output << "Starting TermTable build." << std::endl;
 
         auto termTableBuilder(Factories::CreateTermTableBuilder(density,
                                                                 adhocFrequency,
@@ -127,12 +132,12 @@ namespace BitFunnel
                                                                 *facts,
                                                                 *termTable));
 
-        termTableBuilder->Print(std::cout);
+        termTableBuilder->Print(output);
 
-        std::cout << "Writing TermTable files." << std::endl;
+        output << "Writing TermTable files." << std::endl;
 
         termTable->Write(*fileManager->TermTable(shard).OpenForWrite());
 
-        std::cout << "Done." << std::endl;
+        output << "Done." << std::endl;
     }
 }

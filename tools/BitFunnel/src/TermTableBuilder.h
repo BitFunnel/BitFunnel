@@ -36,10 +36,14 @@ namespace BitFunnel
         //
         // IExecutable methods
         //
-        virtual int Main(int argc, char *argv[]) override;
+        virtual int Main(std::istream& input,
+                         std::ostream& output,
+                         int argc,
+                         char *argv[]) override;
 
     private:
         void TermTableBuilder::BuildTermTable(
+            std::ostream& output,
             char const * intermediateDirectory,
             ShardId shard,
             double density,

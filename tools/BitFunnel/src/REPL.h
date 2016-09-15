@@ -37,15 +37,20 @@ namespace BitFunnel
         //
         // IExecutable methods
         //
-        virtual int Main(int argc, char *argv[]) override;
+        virtual int Main(std::istream& input,
+                         std::ostream& output,
+                         int argc,
+                         char *argv[]) override;
 
     private:
-        void Advice() const;
+        void Advice(std::ostream& output) const;
 
         // Read-Eval-Print-Loop for BitFunnel Index.
         // Provides interactive console with commands for ingesting documents
         // and running queries.
-        void Go(char const * directory,
+        void Go(std::istream& input,
+                std::ostream& output,
+                char const * directory,
                 size_t gramSize,
                 size_t threadCount) const;
 
