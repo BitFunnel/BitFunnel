@@ -67,7 +67,7 @@ namespace BitFunnel
         parser.AddParameter(gramSize);
         parser.AddParameter(threadCount);
 
-        int returnCode = 0;
+        int returnCode = 1;
 
         if (parser.TryParse(std::cout, argc, argv))
         {
@@ -76,19 +76,17 @@ namespace BitFunnel
                 Go(path, gramSize, threadCount);
                 returnCode = 0;
             }
+            catch (RecoverableError e)
+            {
+                std::cout << "Error: " << e.what() << std::endl;
+            }
             catch (...)
             {
                 // TODO: Do we really want to catch all exceptions here?
                 // Seems we want to at least print out the error message for BitFunnel exceptions.
 
                 std::cout << "Unexpected error.";
-                returnCode = 1;
             }
-        }
-        else
-        {
-            parser.Usage(std::cout, argv[0]);
-            returnCode = 1;
         }
 
         return returnCode;
@@ -102,10 +100,10 @@ namespace BitFunnel
             << std::endl
             << "Verify that directory path is valid and that the folder contains index files." << std::endl
             << "You can generate new index files with" << std::endl
-            << "  StatisticsBuilder <manifest> <directory> -statistics" << std::endl
-            << "  TermTableBuilder <directory>" << std::endl
-            << "For more information run \"StatisticsBuilder -help\" and" << std::endl
-            << "\"TermTableBuilder -help\"." << std::endl;
+            << "  BitFunnel statistics <manifest> <directory> -statistics" << std::endl
+            << "  BitFunnel termtabe <directory>" << std::endl
+            << "For more information run \"BitFunnel statistics -help\" and" << std::endl
+            << "\"BitFunnel termtable -help\"." << std::endl;
     }
 
 
@@ -181,10 +179,12 @@ namespace BitFunnel
             }
             catch (RecoverableError e)
             {
-                std::cout
-                    << "Error: "
-                    << e.what()
-                    << std::endl;
+                std::cout << "Error: " << e.what() << std::endl;
+            }
+            catch (...)
+            {
+                std::cout << "Unknown error." << std::endl;
+                throw;
             }
         }
         taskPool.Shutdown();

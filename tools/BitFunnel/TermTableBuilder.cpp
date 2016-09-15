@@ -26,6 +26,7 @@
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocumentFrequencyTable.h"
@@ -60,7 +61,7 @@ namespace BitFunnel
 
         parser.AddParameter(tempPath);
 
-        int returnCode = 0;
+        int returnCode = 1;
 
         if (parser.TryParse(std::cout, argc, argv))
         {
@@ -79,16 +80,14 @@ namespace BitFunnel
 
                 returnCode = 0;
             }
+            catch (RecoverableError e)
+            {
+                std::cout << "Error: " << e.what() << std::endl;
+            }
             catch (...)
             {
                 std::cout << "Unexpected error.";
-                returnCode = 1;
             }
-        }
-        else
-        {
-            parser.Usage(std::cout, argv[0]);
-            returnCode = 1;
         }
 
         return returnCode;
@@ -137,4 +136,3 @@ namespace BitFunnel
         std::cout << "Done." << std::endl;
     }
 }
-
