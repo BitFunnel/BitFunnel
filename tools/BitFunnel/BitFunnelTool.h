@@ -22,14 +22,44 @@
 
 #pragma once
 
-#include "BitFunnel/IInterface.h"
+#include <vector>           // std::vector return value.
+
+#include "IExecutable.h"    // Base class.
 
 
 namespace BitFunnel
 {
-    class IExecutable : public IInterface
+    class IFileSystem;
+
+    class BitFunnelTool : public IExecutable
     {
     public:
-        virtual int Main(int argc, char *argv[]) = 0;
+        BitFunnelTool(IFileSystem& fileSystem);
+
+        //
+        // IExecutable methods
+        //
+        virtual int Main(int argc, char *argv[]) override;
+
+    private:
+        // Constructs the IExecutable associated with the specified subcommand.
+        // Returns a nullptr if there is no matching IExecutable.
+        std::unique_ptr<IExecutable>
+            CreateExecutable(char const * subcommand) const;
+
+        // Returns a vector of C strings, starting with the string in the name
+        // parameter, followed by strings from argv[2], arg3[3], etc. The
+        // purpose of this method is to convert the BitFunnel argument list
+        // into the sub-command argument list, by stripping out the subcommand
+        // name.
+        std::vector<char const *> FilterArgs(
+            int argc,
+            char *argv[],
+            char const * name) const;
+
+        // Prints the top-level usage message for the BitFunnel command.
+        static void Usage();
+
+        IFileSystem& m_fileSystem;
     };
 }

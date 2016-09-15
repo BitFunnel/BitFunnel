@@ -180,8 +180,8 @@ namespace CmdLine
                 // Not expecting for any more arguments.
                 if (currentArg < argc)
                 {
-                    error << "Unexpected argument " << argv[currentArg];
-                    error << " in position " << currentArg << "." << std::endl;
+                    error << "Unexpected argument '" << argv[currentArg];
+                    error << "' in position " << currentArg << "." << std::endl;
                     success = false;
                 }
                 break;

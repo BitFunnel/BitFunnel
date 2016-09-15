@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IChunkManifestIngestor.h"
 #include "BitFunnel/Index/IConfiguration.h"
@@ -83,7 +84,7 @@ namespace BitFunnel
         parser.AddParameter(termToText);
         parser.AddParameter(gramSize);
 
-        int returnCode = 0;
+        int returnCode = 1;
 
         if (parser.TryParse(std::cout, argc, argv))
         {
@@ -96,19 +97,14 @@ namespace BitFunnel
                                        termToText.IsActivated());
                 returnCode = 0;
             }
+            catch (RecoverableError e)
+            {
+                std::cout << "Error: " << e.what() << std::endl;
+            }
             catch (...)
             {
-                // TODO: Do we really want to catch all exceptions here?
-                // Seems we want to at least print out the error message for BitFunnel exceptions.
-
                 std::cout << "Unexpected error.";
-                returnCode = 1;
             }
-        }
-        else
-        {
-            parser.Usage(std::cout, argv[0]);
-            returnCode = 1;
         }
 
         return returnCode;

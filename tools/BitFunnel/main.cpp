@@ -21,64 +21,16 @@
 // THE SOFTWARE.
 
 #include <iostream>
+#include <memory>
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
-//#include "CmdLineParser/CmdLineParser.h"
-#include "REPL.h"
-
-
-void Usage()
-{
-    std::cout
-        << "usage: BitFunnel <command> [<args>]" << std::endl
-        << std::endl
-        << "The most commonly used commands are" << std::endl
-        << "   statistics     Generate corpus statistics used to configure the index." << std::endl
-        << "   termtable      Construct a term table based on generated corpus statistics." << std::endl
-        << "   repl           Run interative read-eval-print console." << std::endl
-        << std::endl
-        << "'bitfunnel help' lists available subcommands. See 'bitfunnel help <command> to read" << std::endl
-        << "about a specific command." << std::endl
-        ;
-}
+#include "BitFunnelTool.h"
 
 
 int main(int argc, char** argv)
 {
-    //CmdLine::CmdLineParser parser(
-    //    "BitFunnel",
-    //    "Tools for configuring and running BitFunnel.");
-
-    //CmdLine::RequiredParameter<char const *> command(
-    //    "command",
-    //    "Command to run: "
-    //    "statistics termtable repl");
-
-
-    //parser.AddParameter(command);
-
-    int returnCode = 1;
-
-    //if (parser.TryParse(std::cout, argc, argv))
-    if (argc < 2)
-    {
-        Usage();
-    }
-    else
-    {
-        auto fileSystem = BitFunnel::Factories::CreateFileSystem();
-        if (strcmp("repl", argv[1]))
-        {
-            BitFunnel::REPL repl(*fileSystem);
-            repl.Main(argc, argv);
-            returnCode = 0;
-        }
-        else
-        {
-            Usage();
-        }
-    }
-
-    return returnCode;
+    auto fileSystem = BitFunnel::Factories::CreateFileSystem();
+    BitFunnel::BitFunnelTool tool(*fileSystem);
+    return tool.Main(argc, argv);
 }

@@ -1,10 +1,9 @@
 # BitFunnel/tools/BitFunnel
 
 set(CPPFILES
-#    main.cpp
+    BitFunnelTool.cpp
     Commands.cpp
     Environment.cpp
-#    main.cpp
     REPL.cpp
     StatisticsBuilder.cpp
     TaskFactory.cpp
@@ -19,14 +18,17 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    BitFunnelTool.h
     Commands.h
     Environment.h
     ICommand.h
     ITask.h
     REPL.h
+    StatisticsBuilder.h
     TaskBase.h
     TaskFactory.h
     TaskPool.h
+    TermTableBuilder.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
