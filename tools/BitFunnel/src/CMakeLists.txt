@@ -8,7 +8,7 @@ set(CPPFILES
     StatisticsBuilder.cpp
     TaskFactory.cpp
     TaskPool.cpp
-    TermTableBuilder.cpp
+    TermTableBuilderTool.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -28,7 +28,7 @@ set(PRIVATE_HFILES
     TaskBase.h
     TaskFactory.h
     TaskPool.h
-    TermTableBuilder.h
+    TermTableBuilderTool.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
