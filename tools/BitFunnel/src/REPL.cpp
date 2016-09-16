@@ -32,8 +32,8 @@
 
 namespace BitFunnel
 {
-    REPL::REPL(IFileSystem& fileSystem)
-      : m_fileSystem(fileSystem)
+    REPL::REPL(IFileSystem& /*fileSystem*/)
+//      : m_fileSystem(fileSystem)
     {
     }
 
