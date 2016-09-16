@@ -33,7 +33,11 @@ namespace BitFunnel
     class IFileSystem : public IInterface
     {
     public:
-        virtual std::unique_ptr<std::ostream> OpenForWrite(char const * filename) = 0;
-        virtual std::unique_ptr<std::istream> OpenForRead(char const * filename) = 0;
+        virtual std::unique_ptr<std::ostream>
+            OpenForWrite(char const * filename,
+                         std::ios_base::openmode mode = std::ios::out) = 0;
+        virtual std::unique_ptr<std::istream>
+            OpenForRead(char const * filename,
+                        std::ios_base::openmode mode = std::ios::in) = 0;
     };
 }

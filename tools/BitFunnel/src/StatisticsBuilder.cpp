@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 
+#include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IChunkManifestIngestor.h"
@@ -118,11 +119,11 @@ namespace BitFunnel
     // Returns a vector with one entry for each line in the file.
     std::vector<std::string> StatisticsBuilder::ReadLines(char const * fileName) const
     {
-        std::ifstream file(fileName);
+        auto input = m_fileSystem.OpenForRead(fileName, std::ios::in);
 
         std::vector<std::string> lines;
         std::string line;
-        while (std::getline(file, line)) {
+        while (std::getline(*input, line)) {
             lines.push_back(std::move(line));
         }
 

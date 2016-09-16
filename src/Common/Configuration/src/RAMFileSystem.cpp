@@ -34,20 +34,22 @@ namespace BitFunnel
 
 
     std::unique_ptr<std::ostream>
-        RAMFileSystem::OpenForWrite(char const * filename)
+        RAMFileSystem::OpenForWrite(char const * filename,
+                                    std::ios_base::openmode mode)
     {
         auto buffer = EnsureStream(filename, true);
-        std::unique_ptr<std::stringstream> stream(new std::stringstream());
+        std::unique_ptr<std::stringstream> stream(new std::stringstream(mode));
         (static_cast<std::ostream*>(stream.get()))->rdbuf(buffer);
         return std::unique_ptr<std::ostream>(stream.release());
     }
 
 
     std::unique_ptr<std::istream>
-        RAMFileSystem::OpenForRead(char const * filename)
+        RAMFileSystem::OpenForRead(char const * filename,
+                                   std::ios_base::openmode mode)
     {
         auto buffer = EnsureStream(filename, false);
-        std::unique_ptr<std::istream> stream(new std::stringstream());
+        std::unique_ptr<std::istream> stream(new std::stringstream(mode));
         stream->rdbuf(buffer);
         stream->seekg(0);
         return stream;

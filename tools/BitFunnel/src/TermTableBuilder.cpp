@@ -131,6 +131,30 @@ namespace BitFunnel
                                                                 *terms,
                                                                 *facts,
                                                                 *termTable));
+        //std::unique_ptr<ITermTableBuilder> termTableBuilder = Factories::CreateTermTableBuilder(density,
+        //                                                        adhocFrequency,
+        //                                                        *treatment,
+        //                                                        *terms,
+        //                                                        *facts,
+        //                                                        *termTable);
+
+        // Strange bug here. The call to termTableBuilder->Print seems to use the vtable from
+        // the tools/BitFunnel/src/TermTableBuilder (vtable for IExecutabe) instead of the
+        // vtable for src/Index/src/TermTableBuilder (vtable of ITermTableBuilder).
+
+        // Suspect it has to do with the fact that there are two classes called TermTableBuilder,
+        // one which inherits from ITermTableBuilder and one which inherits from IExecutable.
+
+        // Still, it is hard to see how the std::unique_ptr can point to an object with a
+        // TermTableBuilder::IExecutable vtable and a TermTableBuilder::ITermTableBuilder
+        // body. Single stepping shows that the correct constructor is called (that is,
+        // TermTableBuilder : ITermTableBuilder) and it seems to run correctly to completion.
+        // From the debugger, in this function (BuildTermTable()), inspection of the unique_ptr
+        // seems to show that it points to the correct class (TermTableBuilder::ITermTable).
+        // Single-stepping into the Print() command goes to TermTableBuilder::IExecutable::Main()
+        // which is in the same vtable slot as the desired TermTableBuilder::ITermTableBuilder::Print().
+
+        // Repro steps: run tools/BitFunnel/Executable with parameters "termtable  c:\temp\wiki\out1"
 
         termTableBuilder->Print(output);
 

@@ -38,10 +38,11 @@ namespace BitFunnel
 
 
     std::unique_ptr<std::ostream>
-        FileSystem::OpenForWrite(char const * filename)
+        FileSystem::OpenForWrite(char const * filename,
+                                 std::ios_base::openmode mode)
     {
         std::unique_ptr<std::ofstream> stream(
-            new std::ofstream(filename, std::ofstream::binary));
+            new std::ofstream(filename, mode));
 
         stream->exceptions(std::ofstream::badbit |
                            std::ofstream::badbit);
@@ -62,10 +63,11 @@ namespace BitFunnel
 
 
     std::unique_ptr<std::istream>
-        FileSystem::OpenForRead(char const * filename)
+        FileSystem::OpenForRead(char const * filename,
+                                std::ios_base::openmode mode)
     {
         std::unique_ptr<std::ifstream> stream(
-            new std::ifstream(filename, std::ifstream::binary));
+            new std::ifstream(filename, mode));
 
         stream->exceptions(std::ifstream::badbit);
 
