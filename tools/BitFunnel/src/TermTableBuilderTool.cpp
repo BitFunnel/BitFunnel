@@ -41,8 +41,8 @@
 
 namespace BitFunnel
 {
-    TermTableBuilderTool::TermTableBuilderTool(IFileSystem& fileSystem)
-      : m_fileSystem(fileSystem)
+    TermTableBuilderTool::TermTableBuilderTool(IFileSystem& /*fileSystem*/)
+//      : m_fileSystem(fileSystem)
     {
     }
 
@@ -125,7 +125,7 @@ namespace BitFunnel
 
         output << "Starting TermTable build." << std::endl;
 
-        auto TermTableBuilderTool(Factories::CreateTermTableBuilderTool(density,
+        auto termTableBuilderTool(Factories::CreateTermTableBuilder(density,
                                                                 adhocFrequency,
                                                                 *treatment,
                                                                 *terms,
@@ -156,7 +156,7 @@ namespace BitFunnel
 
         // Repro steps: run tools/BitFunnel/Executable with parameters "termtable  c:\temp\wiki\out1"
 
-        termTableBuilder->Print(output);
+        termTableBuilderTool->Print(output);
 
         output << "Writing TermTable files." << std::endl;
 

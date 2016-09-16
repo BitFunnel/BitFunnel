@@ -46,7 +46,7 @@ namespace BitFunnel
     private:
         std::vector<std::string> ReadLines(char const * fileName) const;
 
-        void StatisticsBuilder::LoadAndIngestChunkList(
+        void LoadAndIngestChunkList(
             std::ostream& output,
             char const * intermediateDirectory,
             char const * chunkListFileName,
