@@ -77,8 +77,8 @@ namespace BitFunnel
             << "ChunkManifestIngestor::IngestChunk: filePath = "
             << m_filePaths[index] << std::endl;
 
-        std::ifstream inputStream(m_filePaths[index], std::ios::binary);
-        if (!inputStream.is_open())
+        std::ifstream input(m_filePaths[index], std::ios::binary);
+        if (!input.is_open())
         {
             std::stringstream message;
             message << "Failed to open chunk file '"
@@ -87,9 +87,15 @@ namespace BitFunnel
             throw FatalError(message.str());
         }
 
-        std::vector<char> chunkData(
-            (std::istreambuf_iterator<char>(inputStream)),
-            std::istreambuf_iterator<char>());
+        input.seekg(0, input.end);
+        auto length = input.tellg();
+        input.seekg(0, input.beg);
+
+        std::vector<char> chunkData;
+        chunkData.reserve(static_cast<size_t>(length) + 1ull);
+        chunkData.insert(chunkData.begin(),
+                         (std::istreambuf_iterator<char>(input)),
+                         std::istreambuf_iterator<char>());
 
         // NOTE: The act of constructing a ChunkIngestor causes the bytes in
         // chunkData to be parsed into documents and ingested.

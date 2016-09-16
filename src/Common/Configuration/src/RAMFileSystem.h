@@ -38,10 +38,12 @@ namespace BitFunnel
         //
 
         virtual std::unique_ptr<std::ostream>
-            OpenForWrite(char const * filename) override;
+            OpenForWrite(char const * filename,
+                         std::ios_base::openmode mode = std::ios::out) override;
 
         virtual std::unique_ptr<std::istream>
-            OpenForRead(char const * filename) override;
+            OpenForRead(char const * filename,
+                        std::ios_base::openmode mode = std::ios::in) override;
 
     private:
         static std::stringstream& GetStringStream();
