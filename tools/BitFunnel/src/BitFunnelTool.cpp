@@ -29,7 +29,7 @@
 #include "BitFunnelTool.h"
 #include "REPL.h"
 #include "StatisticsBuilder.h"
-#include "TermTableBuilder.h"
+#include "TermTableBuilderTool.h"
 
 
 namespace BitFunnel
@@ -98,7 +98,7 @@ namespace BitFunnel
         }
         else if (strcmp(name, "termtable") == 0)
         {
-            executable.reset(new TermTableBuilder(m_fileSystem));
+            executable.reset(new TermTableBuilderTool(m_fileSystem));
         }
 
         return executable;

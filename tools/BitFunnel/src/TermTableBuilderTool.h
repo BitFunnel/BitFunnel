@@ -28,10 +28,10 @@ namespace BitFunnel
 {
     class IFileSystem;
 
-    class TermTableBuilder : public IExecutable
+    class TermTableBuilderTool : public IExecutable
     {
     public:
-        TermTableBuilder(IFileSystem& fileSystem);
+        TermTableBuilderTool(IFileSystem& fileSystem);
 
         //
         // IExecutable methods
@@ -42,7 +42,7 @@ namespace BitFunnel
                          char *argv[]) override;
 
     private:
-        void TermTableBuilder::BuildTermTable(
+        void BuildTermTable(
             std::ostream& output,
             char const * intermediateDirectory,
             ShardId shard,

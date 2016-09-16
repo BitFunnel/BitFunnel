@@ -36,24 +36,24 @@
 #include "BitFunnel/Index/ITermTreatment.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "CmdLineParser/CmdLineParser.h"
-#include "TermTableBuilder.h"
+#include "TermTableBuilderTool.h"
 
 
 namespace BitFunnel
 {
-    TermTableBuilder::TermTableBuilder(IFileSystem& fileSystem)
+    TermTableBuilderTool::TermTableBuilderTool(IFileSystem& fileSystem)
       : m_fileSystem(fileSystem)
     {
     }
 
 
-    int TermTableBuilder::Main(std::istream& /*input*/,
+    int TermTableBuilderTool::Main(std::istream& /*input*/,
                                std::ostream& output,
                                int argc,
                                char** argv)
     {
         CmdLine::CmdLineParser parser(
-            "TermTableBuilder",
+            "TermTableBuilderTool",
             "Generate a TermTable from a DocumentFrequencyTable.");
 
         CmdLine::RequiredParameter<char const *> tempPath(
@@ -98,7 +98,7 @@ namespace BitFunnel
     }
 
 
-    void TermTableBuilder::BuildTermTable(
+    void TermTableBuilderTool::BuildTermTable(
         std::ostream& output,
         char const * intermediateDirectory,
         ShardId shard,
@@ -125,13 +125,13 @@ namespace BitFunnel
 
         output << "Starting TermTable build." << std::endl;
 
-        auto termTableBuilder(Factories::CreateTermTableBuilder(density,
+        auto TermTableBuilderTool(Factories::CreateTermTableBuilderTool(density,
                                                                 adhocFrequency,
                                                                 *treatment,
                                                                 *terms,
                                                                 *facts,
                                                                 *termTable));
-        //std::unique_ptr<ITermTableBuilder> termTableBuilder = Factories::CreateTermTableBuilder(density,
+        //std::unique_ptr<ITermTableBuilder> termTableBuilder = Factories::CreateTermTableBuilderTool(density,
         //                                                        adhocFrequency,
         //                                                        *treatment,
         //                                                        *terms,
