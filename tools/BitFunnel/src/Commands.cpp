@@ -645,18 +645,13 @@ namespace BitFunnel
                     ++documentCount;
                     bool matches = evaluator.Evaluate(*tree, entry.first);
 
-                    std::cout
-                        << "  DocId(" << entry.second << ") ";
                     if (matches)
                     {
                         ++matchCount;
-                        std::cout << "match";
+                        std::cout
+                            << "  DocId(" << entry.second << ") "
+                            << std::endl;
                     }
-                    else
-                    {
-                        std::cout << "not match";
-                    }
-                    std::cout << std::endl;
                 }
 
                 std::cout

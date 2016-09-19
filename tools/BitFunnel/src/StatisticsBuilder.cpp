@@ -56,20 +56,14 @@ namespace BitFunnel
             "StatisticsBuilder",
             "Ingest documents and compute statistics about them.");
 
-        CmdLine::RequiredParameter<char const *> chunkListFileName(
-            "chunkListFileName",
+        CmdLine::RequiredParameter<char const *> manifestFileName(
+            "manifestFile",
             "Path to a file containing the paths to the chunk files to be ingested. "
             "One chunk file per line. Paths are relative to working directory.");
 
-        CmdLine::RequiredParameter<char const *> tempPath(
-            "tempPath",
-            "Path to a tmp directory. "
-            "Something like /tmp/ or c:\\temp\\, depending on platform..");
-
-        CmdLine::OptionalParameterList statistics(
-            "statistics",
-            "Generate index statistics such as document frequency table, "
-            "document length histogram, and cumulative term counts.");
+        CmdLine::RequiredParameter<char const *> outputPath(
+            "outDir",
+            "Path to the output directory where files will be written. ");
 
         CmdLine::OptionalParameterList termToText(
             "text",
@@ -82,9 +76,8 @@ namespace BitFunnel
             "Set the maximum ngram size for phrases.",
             1u);
 
-        parser.AddParameter(chunkListFileName);
-        parser.AddParameter(tempPath);
-        parser.AddParameter(statistics);
+        parser.AddParameter(manifestFileName);
+        parser.AddParameter(outputPath);
         parser.AddParameter(termToText);
         parser.AddParameter(gramSize);
 
@@ -95,10 +88,10 @@ namespace BitFunnel
             try
             {
                 LoadAndIngestChunkList(output, 
-                                       tempPath,
-                                       chunkListFileName,
+                                       outputPath,
+                                       manifestFileName,
                                        gramSize,
-                                       statistics.IsActivated(),
+                                       true,
                                        termToText.IsActivated());
                 returnCode = 0;
             }
