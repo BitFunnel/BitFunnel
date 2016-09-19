@@ -142,7 +142,7 @@ namespace CmdLine
     {
         if (count > 0)
         {
-            m_out << std::setw(count) << ' ';
+            m_out << std::setw(static_cast<int>(count)) << ' ';
         }
     }
 

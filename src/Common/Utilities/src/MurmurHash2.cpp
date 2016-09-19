@@ -99,9 +99,9 @@ namespace BitFunnel
 
         switch(len)
         {
-        case 3: t ^= data[2] << 16;
+        case 3: t ^= data[2] << 16u;
             BITFUNNEL_FALLTHROUGH;
-        case 2: t ^= data[1] << 8;
+        case 2: t ^= data[1] << 8u;
             BITFUNNEL_FALLTHROUGH;
         case 1: t ^= data[0];
         };

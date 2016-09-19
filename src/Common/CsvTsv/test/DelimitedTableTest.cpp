@@ -182,7 +182,7 @@ namespace CsvTsv
 
         for (unsigned i = 0 ; i < c_rowCount; ++i)
         {
-            v1.push_back(0 - i);
+            v1.push_back(static_cast<int>(0 - i));
             v2.push_back(i);
             v3.push_back(i);
             v4.push_back(i);
@@ -232,7 +232,7 @@ namespace CsvTsv
 
         for (unsigned i = 0 ; i < c_rowCount; ++i)
         {
-            success &= Expect<int>(0 - i, v1[i]);
+            success &= Expect<int>(static_cast<int>(0 - i), v1[i]);
             success &= Expect<unsigned>(i, v2[i]);
             success &= Expect<long long>(i, v3[i]);
             success &= Expect<unsigned long long>(i, v4[i]);

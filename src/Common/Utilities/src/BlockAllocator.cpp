@@ -106,9 +106,11 @@ namespace BitFunnel
         LogAssertB(blockReturned < bufferStart + m_totalPoolSize,
                    "ReleaseBlock out of range (past end)).");
 
-        // Block offset relative to the beginning of the pool should be a
-        // multiple of m_blockSize;
-        LogAssertB(((blockReturned - bufferStart) % m_blockSize) == 0,
+        // The case of m_blockSize is to prevent clang from complaining with a
+        // sign change warning. On our platform, this should only be a problem
+        // if the block size uses up all bits of a size_t, which should never
+        // happen.
+        LogAssertB(((blockReturned - bufferStart) % static_cast<long>(m_blockSize)) == 0,
                    "Block offset (relative to begining of pool not a multiple of blockSize");
 
         // Add the block to the head of the free list
