@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #include <chrono>
+#include <iomanip>
 #include <iostream>
 #include <thread>       // sleep_for, this_thread
 
@@ -476,26 +477,68 @@ namespace BitFunnel
                 << "\"" << m_term << "\""
                 << ")" << std::endl;
 
+            IIngestor & ingestor = GetEnvironment().GetIngestor();
+            std::vector<DocId> ids;
+            for (DocId id = 0; id <= 1000; ++id)
+            {
+                if (ingestor.Contains(id))
+                {
+                    ids.push_back(id);
+                    if (ids.size() == 64)
+                    {
+                        break;
+                    }
+                }
+            }
+            
+            std::cout << "                 d ";
+            for (auto id : ids)
+            {
+                std::cout << id/100;
+            }
+            std::cout << std::endl;
+
+            std::cout << "                 o ";
+            for (auto id : ids)
+            {
+                std::cout << (id/10 % 10);
+            }
+            std::cout << std::endl;
+
+            std::cout << "                 c ";
+            for (auto id : ids)
+            {
+                std::cout << (id %10);
+            }
+            std::cout << std::endl;
+            
             for (auto row : rows)
             {
                 std::cout
                     << "  RowId("
                     << row.GetRank()
                     << ", "
+                    << std::setw(5)
                     << row.GetIndex()
                     << ")";
 
                 if (m_mode == Mode::Rows)
                 {
-                    IIngestor & ingestor = GetEnvironment().GetIngestor();
+//                    IIngestor & ingestor = GetEnvironment().GetIngestor();
 
-                    // TODO: Figure out how to supply the DocId. The DocId is used
-                    // to gain access to a Slice.
-                    // For now use the DocId of the first document in
-                    // Wikipedia chunk AA\wiki_00.
-                    const DocId docId = 12;
-                    auto handle = ingestor.GetHandle(docId);
-                    std::cout << ": " << (handle.GetBit(row) ? "1" : "0");
+                    // TODO: Come up with a better heuristic for deciding which
+                    // bits to display. Current algorithm is to display bits for
+                    // the first 64 documents with ids less than 1000.
+                    
+                    std::cout << ": ";
+                    for (DocId id = 0; id <= 1000; ++id)
+                    {
+                        if (ingestor.Contains(id))
+                        {
+                            auto handle = ingestor.GetHandle(id);
+                            std::cout << (handle.GetBit(row) ? "1" : "0");
+                        }
+                    }
                 }
 
                 std::cout << std::endl;
