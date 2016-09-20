@@ -64,7 +64,7 @@ namespace BitFunnel
                               DocIndex index,
                               VariableSizeBlobId blob,
                               size_t blobSize,
-                              char fill)
+                              uint8_t fill)
         {
             void* blobData = docTable.GetVariableSizeBlob(buffer, index, blob);
 
@@ -86,7 +86,7 @@ namespace BitFunnel
         {
             static const DocIndex c_capacity = 1000;
             static const ptrdiff_t c_anyDocTableBufferOffset
-                = RoundUp(1234, c_docTableByteAlignment);
+                = RoundUp<ptrdiff_t>(1234, c_docTableByteAlignment);
 
             DocumentDataSchema schema;
             const VariableSizeBlobId variableBlob0 = schema.RegisterVariableSizeBlob();
@@ -97,7 +97,7 @@ namespace BitFunnel
 
             const size_t actualBufferSize = DocTableDescriptor::GetBufferSize(c_capacity, schema);
 
-            const size_t sliceBufferSize = c_anyDocTableBufferOffset + actualBufferSize;
+            const size_t sliceBufferSize = static_cast<size_t>(c_anyDocTableBufferOffset) + actualBufferSize;
 
             AlignedBuffer buffer(sliceBufferSize, c_docTableByteAlignment);
             void* alignedBuffer = buffer.GetBuffer();
@@ -121,7 +121,7 @@ namespace BitFunnel
 
             for (unsigned i = 0; i < sliceBufferSize; ++i)
             {
-                if (i >= c_anyDocTableBufferOffset && i < c_anyDocTableBufferOffset + sliceBufferSize)
+                if (i >= c_anyDocTableBufferOffset && i < static_cast<size_t>(c_anyDocTableBufferOffset) + sliceBufferSize)
                 {
                     EXPECT_EQ(*(reinterpret_cast<char*>(alignedBuffer) + i), 0);
                 }
@@ -241,7 +241,7 @@ namespace BitFunnel
                             unsigned expectedBufferSize)
         {
             const size_t actualBufferSize = DocTableDescriptor::GetBufferSize(capacity, schema);
-            const size_t expectedBufferSizeRounded = RoundUp(expectedBufferSize, c_docTableByteAlignment);
+            const size_t expectedBufferSizeRounded = RoundUp<size_t>(expectedBufferSize, c_docTableByteAlignment);
             EXPECT_EQ(actualBufferSize, expectedBufferSizeRounded);
         }
 

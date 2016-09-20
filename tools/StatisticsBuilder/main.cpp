@@ -60,8 +60,10 @@ namespace BitFunnel
                                        bool generateStatistics,
                                        bool generateTermToText)
     {
+
+        // TODO: fix gramSize type and remove cast.
         auto index = Factories::CreateSimpleIndex(intermediateDirectory,
-                                                  gramSize,
+                                                  static_cast<size_t>(gramSize),
                                                   generateTermToText);
         index->StartIndex(true);
 

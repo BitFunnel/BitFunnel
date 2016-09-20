@@ -38,5 +38,12 @@ namespace BitFunnel
 
     // Rounds up the requested size to the next multiple of
     // roundUpAlignment.
-    size_t RoundUp(size_t requestedSize, size_t roundUpAlignment);
+    template <typename T>
+    T RoundUp(T requestedSize, T roundUpAlignment);
+
+    template <typename T>
+    T RoundUp(T value, T quanta)
+    {
+        return ((value + quanta - 1) / quanta) * quanta;
+    }
 }

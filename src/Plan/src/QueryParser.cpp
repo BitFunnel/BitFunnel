@@ -265,7 +265,7 @@ namespace BitFunnel
             else
             {
                 throw ParseError("Bad escape char",
-                                 c);
+                                 m_currentPosition);
             }
         }
         else

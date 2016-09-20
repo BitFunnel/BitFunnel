@@ -26,18 +26,11 @@
 
 #include "BitFunnel/Index/DocumentHandle.h"  // For DocIndex.
 #include "BitFunnel/Index/Row.h"
+#include "Rounding.h"
 
 
 namespace BitFunnel
 {
-    // Helper method.
-    template <typename T>
-    static T RoundUp(T value, T quanta)
-    {
-        return ((value + quanta - 1) / quanta) * quanta;
-    }
-
-
     //*************************************************************************
     //
     // Row

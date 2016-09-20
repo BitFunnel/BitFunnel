@@ -75,7 +75,7 @@ namespace BitFunnel
         std::atomic<int64_t> m_nextSerialNumber;
 
         // Number of tokens currently in-flight.
-        std::atomic<uint64_t> m_tokensInFlight;
+        std::atomic<int64_t> m_tokensInFlight;
 
         // Flag indicating that TokenManager is shutting down.
         std::atomic<bool> m_isShuttingDown;

@@ -150,7 +150,8 @@ namespace BitFunnel
 
     ptrdiff_t RowTableDescriptor::GetRowOffset(RowIndex rowIndex) const
     {
-        return m_bufferOffset + rowIndex * m_bytesPerRow;
+        // TODO: consider checking for overflow.
+        return m_bufferOffset + static_cast<ptrdiff_t>(rowIndex * m_bytesPerRow);
     }
 
 

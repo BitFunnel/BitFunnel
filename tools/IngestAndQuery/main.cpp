@@ -61,7 +61,11 @@ int main(int argc, char** argv)
     {
         try
         {
-            BitFunnel::REPL(path, gramSize, threadCount);
+            // TODO: casts should be removed when gramSize and threadCount
+            // change to unsigned.
+            BitFunnel::REPL(path,
+                            static_cast<size_t>(gramSize),
+                            static_cast<size_t>(threadCount));
             returnCode = 0;
         }
         catch (...)

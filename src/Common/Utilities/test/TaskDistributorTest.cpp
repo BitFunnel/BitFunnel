@@ -43,7 +43,7 @@ namespace BitFunnel
         // in the quickest possible change.
         #define NUM_TASKS 100
 
-        void RunTest1(unsigned taskCount, unsigned maxSleepInMS);
+        void RunTest1(unsigned taskCount, int maxSleepInMS);
 
         class TaskProcessor : public ITaskProcessor, NonCopyable
         {
@@ -59,7 +59,7 @@ namespace BitFunnel
 
         private:
             std::atomic<uint64_t>& m_activeThreadCount;
-            int m_callCount;
+            unsigned m_callCount;
             std::vector<std::chrono::milliseconds> m_randomWaits;
             std::array<std::atomic<uint64_t>, NUM_TASKS>& m_tasks;
         };
@@ -77,7 +77,7 @@ namespace BitFunnel
         }
 
 
-        void RunTest1(unsigned taskCount, unsigned maxSleepInMS)
+        void RunTest1(unsigned taskCount, int maxSleepInMS)
         {
             const int threadCount = 10;
 

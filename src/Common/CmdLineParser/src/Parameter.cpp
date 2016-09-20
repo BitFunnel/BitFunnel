@@ -278,7 +278,7 @@ namespace CmdLine
     }
 
 
-    bool OptionalParameterList::TryParse(std::ostream& error, unsigned& currentArg, unsigned argc, char const* const* argv)
+    bool OptionalParameterList::TryParse(std::ostream& error, int& currentArg, int argc, char const* const* argv)
     {
         bool success = true;
 

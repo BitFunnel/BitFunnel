@@ -23,6 +23,7 @@
 
 #include <inttypes.h>
 #include <fstream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -70,7 +71,15 @@ namespace BitFunnel
         {
             size_t len = (byteCount <= c_readWriteChunkSize) ?
                 byteCount : c_readWriteChunkSize;
-            stream.write(static_cast<const char*>(buffer + offset), len);
+            // This check and cast of len is because stream.write takes a
+            // std::streamsize, and std::streamsize is signed. There should be
+            // no reasonable way to overflow this, but we check anyway since
+            // this is not believed to be a performance critical path. It's
+            // possible that we should just use streamsize everywhere.
+            LogAssertB(len < std::numeric_limits<std::streamsize>::max(),
+                       "streamsize overflow.");
+            stream.write(static_cast<const char*>(buffer + offset),
+                         static_cast<streamsize>(len));
             LogAssertB(!stream.bad(), "Stream Write Error");
             byteCount -= len;
             offset += len;

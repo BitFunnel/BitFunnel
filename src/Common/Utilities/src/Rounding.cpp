@@ -60,13 +60,4 @@ namespace BitFunnel
                ? previousPowerOf2
                : nextPowerOf2;
     }
-
-
-    size_t RoundUp(size_t requestedSize, size_t roundUpAlignment)
-    {
-        const size_t roundedValue = (requestedSize + roundUpAlignment - 1)
-                                    / roundUpAlignment * roundUpAlignment;
-
-        return roundedValue;
-    }
 }

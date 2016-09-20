@@ -153,7 +153,7 @@ namespace BitFunnel
     }
 
 
-    unsigned TextObjectParser::ParseInt()
+    int TextObjectParser::ParseInt()
     {
         int value = 0;
         m_input >> value;

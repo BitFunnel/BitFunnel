@@ -44,7 +44,7 @@ namespace BitFunnel
 
 
     BlockAllocator::BlockAllocator(size_t blockSize, size_t totalBlockCount)
-        : m_blockSize(RoundUp(blockSize, c_byteAlignment)),
+        : m_blockSize(RoundUp<size_t>(blockSize, c_byteAlignment)),
           m_totalPoolSize(m_blockSize * totalBlockCount),
           m_pool(m_totalPoolSize, c_log2ByteAlignment)
     {

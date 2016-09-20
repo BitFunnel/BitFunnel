@@ -38,7 +38,7 @@ namespace BitFunnel
         virtual void ClosePrimitive() = 0;
 
         virtual bool ParseBool() = 0;
-        virtual unsigned ParseInt() = 0;
+        virtual int ParseInt() = 0;
         virtual unsigned ParseUInt() = 0;
         virtual uint64_t ParseUInt64() = 0;
         virtual double ParseDouble() = 0;

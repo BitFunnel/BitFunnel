@@ -87,7 +87,7 @@ namespace BitFunnel
         {
             try
             {
-                LoadAndIngestChunkList(output, 
+                LoadAndIngestChunkList(output,
                                        outputPath,
                                        manifestFileName,
                                        gramSize,
@@ -133,8 +133,9 @@ namespace BitFunnel
         bool generateStatistics,
         bool generateTermToText) const
     {
+        // TODO: cast of gramSize can be removed when it's fixed to be unsigned.
         auto index = Factories::CreateSimpleIndex(intermediateDirectory,
-                                                  gramSize,
+                                                  static_cast<size_t>(gramSize),
                                                   generateTermToText);
         index->StartIndex(true);
 

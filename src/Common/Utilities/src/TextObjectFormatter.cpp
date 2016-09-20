@@ -1,9 +1,10 @@
 #include <iomanip>
+#include <limits>
 
 #include "BitFunnel/Term.h"
 #include "BitFunnel/Utilities/IPersistableObject.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
-
+#include "LoggerInterfaces/Logging.h"
 
 namespace BitFunnel
 {
@@ -181,6 +182,11 @@ namespace BitFunnel
 
     void TextObjectFormatter::Indent()
     {
-        m_output << std::setfill(' ') << std::setw(m_indentation * 2) << "";
+        // TODO: m_indentation * 2 could theoretically overflow an unsigned.
+        LogAssertB(m_indentation * 2 < std::numeric_limits<int>::max(),
+                   "m_indentation overflow.");
+        int actualIndentation = static_cast<int>(m_indentation) * 2;
+        m_output << std::setfill(' ') <<
+            std::setw(actualIndentation) << "";
     }
 }

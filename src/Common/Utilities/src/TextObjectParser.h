@@ -38,7 +38,7 @@ namespace BitFunnel
         void ClosePrimitive();
 
         bool ParseBool();
-        unsigned ParseInt();
+        int ParseInt();
         unsigned ParseUInt();
         uint64_t ParseUInt64();
         double ParseDouble();

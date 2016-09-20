@@ -138,11 +138,11 @@ namespace BitFunnel
 
         template <class ThreadingPolicy>
         void VerifyHashTable(
-            std::map<int64_t, unsigned> const & referenceMap,
+            std::map<uint64_t, unsigned> const & referenceMap,
             SimpleHashTable<Item, ThreadingPolicy> const & hashTableToCheck)
         {
             // Verify that all of the keys added are in the set.
-            for (std::map<int64_t, unsigned>::const_iterator it =
+            for (std::map<uint64_t, unsigned>::const_iterator it =
                      referenceMap.begin(); it != referenceMap.end(); ++it)
             {
                 bool found;
@@ -172,7 +172,7 @@ namespace BitFunnel
             unsigned iterations,
             bool useAllocator)
         {
-            typedef std::map<int64_t, unsigned> MapType;
+            typedef std::map<uint64_t, unsigned> MapType;
             MapType map;
 
             Allocator allocator;

@@ -22,8 +22,11 @@
 
 
 #include <istream>
+#include <limits>
+#include <stddef.h>
 
 #include "BitFunnel/Utilities/StandardInputStream.h"
+#include "LoggerInterfaces/Logging.h"
 
 
 namespace BitFunnel
@@ -36,8 +39,17 @@ namespace BitFunnel
 
     size_t StandardInputStream::Read(char* destination, size_t byteCount)
     {
-        m_stream.read(destination, byteCount);
+        // This check and cast of byteCount is because stream.write takes a
+        // std::streamsize, and std::streamsize is signed. There should be no
+        // reasonable way to overflow this, but we check anyway since this is
+        // not believed to be a performance critical path. It's possible that we
+        // should just use streamsize everywhere.
+        LogAssertB(byteCount < std::numeric_limits<std::streamsize>::max(),
+                   "streamsize overflow.");
+        m_stream.read(destination, static_cast<std::streamsize>(byteCount));
 
-        return m_stream.gcount();
+        LogAssertB(m_stream.gcount() >= 0,
+                   "gcount underflow.");
+        return static_cast<size_t>(m_stream.gcount());
     }
 }

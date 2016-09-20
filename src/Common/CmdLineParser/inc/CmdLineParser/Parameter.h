@@ -66,13 +66,16 @@ namespace CmdLine
         // line.
         virtual bool IsActivated() const = 0;
 
+        // DESIGN NOTE: argc is an int because C/C++ argc is an int. As a
+        // result, currentArg is also an int, to avoid casting.
+
         // Attempt to parse this parameter, starting at argv[currentArg].
         // If successful, currentArg will point to the position after this parameter
         // in the command line and the return value will be true. Otherwise the
         // return value will be false.
         virtual bool TryParse(std::ostream& error,
-                              unsigned& currentArg,
-                              unsigned argc, char const* const* argv) = 0;
+                              int& currentArg,
+                              int argc, char const* const* argv) = 0;
 
         // Prints the usage message for this parameter to out. The name of this
         // parameter and its sub-parameters will appear in a first column with
@@ -181,7 +184,7 @@ namespace CmdLine
         operator T() const;     // Same as GetValue();
 
         // IParameter methods
-        bool TryParse(std::ostream& error, unsigned& currentArg, unsigned argc, char const* const* argv);
+        bool TryParse(std::ostream& error, int & currentArg, int argc, char const* const* argv);
         void Syntax(std::ostream& out) const;
         void Description(std::ostream& out) const;
 
@@ -231,7 +234,7 @@ namespace CmdLine
         virtual std::unique_ptr<IConstraint> Requires(const IOptionalParameter& p) const;
 
         // IParameter methods
-        bool TryParse(std::ostream& error, unsigned& currentArg, unsigned argc, char const* const* argv);
+        bool TryParse(std::ostream& error, int& currentArg, int argc, char const* const* argv);
         void Syntax(std::ostream& out) const;
         void Description(std::ostream& out) const;
 
@@ -275,7 +278,7 @@ namespace CmdLine
 
         // IParameter methods
         unsigned GetWidth() const;
-        bool TryParse(std::ostream& error, unsigned& currentArg, unsigned argc, char const* const* argv);
+        bool TryParse(std::ostream& error, int& currentArg, int argc, char const* const* argv);
 
         void Usage(std::ostream& out, unsigned left, unsigned targetWidth) const;
         void Syntax(std::ostream& out) const;
@@ -323,8 +326,8 @@ namespace CmdLine
     }
 
     template <class T>
-    bool RequiredParameter<T>::TryParse(std::ostream& error, unsigned& currentArg,
-                                        unsigned argc, char const* const* argv)
+    bool RequiredParameter<T>::TryParse(std::ostream& error, int& currentArg,
+                                        int argc, char const* const* argv)
     {
         bool success = false;
         if (currentArg < argc && ParameterBase::TryParse(argv[currentArg], m_value))
@@ -475,7 +478,7 @@ namespace CmdLine
     }
 
     template <class T>
-    bool OptionalParameter<T>::TryParse(std::ostream& error, unsigned& currentArg, unsigned argc, char const* const* argv)
+    bool OptionalParameter<T>::TryParse(std::ostream& error, int& currentArg, int argc, char const* const* argv)
     {
         bool success = false;
 

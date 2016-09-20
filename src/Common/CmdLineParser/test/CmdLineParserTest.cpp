@@ -20,7 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <cassert> // TODO: consider replacing with something else.
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <vector>
 
@@ -107,6 +109,7 @@ namespace CmdLine
         parser.AddParameter(param3);
         parser.AddParameter(param4);
 
+        assert(argc >= 0);
         if (!parser.TryParse(out, argc, argv))
         {
             out << "Parse failure." << std::endl;
@@ -144,6 +147,7 @@ namespace CmdLine
         multi.AddParameter(m3);
         parser.AddParameter(multi);
 
+        assert(argc >= 0);
         if (!parser.TryParse(out, argc, argv))
         {
             out << "Parse failure." << std::endl;
@@ -200,6 +204,7 @@ namespace CmdLine
         parser.AddConstraint(MutuallyExclusive(a, c));
         parser.AddConstraint(MutuallyRequired(d, e));
 
+        assert(argc >= 0);
         if (!parser.TryParse(out, argc, argv))
         {
             out << "Parse failure." << std::endl;
@@ -236,19 +241,23 @@ namespace CmdLine
                 }
 
                 // Copy the argument and store in argv array.
-                char *arg = new char[tail - head + 1];
-                strncpy(arg, head, tail - head);
+                assert(tail - head >= 0);
+                char *arg = new char[static_cast<size_t>(tail - head + 1)];
+                strncpy(arg, head, static_cast<size_t>(tail - head));
                 arg[tail - head] = 0;
                 args.push_back(arg);
             }
         }
 
-        argc = static_cast<int>(args.size());
-        argv = new char*[argc];
-        for (int i = 0; i < argc; ++i)
+        size_t numArgs = args.size();
+        argv = new char*[numArgs];
+        for (size_t i = 0; i < numArgs; ++i)
         {
             argv[i] = args[i];
         }
+
+        assert(numArgs <= std::numeric_limits<int>::max());
+        argc = static_cast<int>(numArgs);
     }
 
 

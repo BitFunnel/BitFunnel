@@ -80,7 +80,8 @@ namespace BitFunnel
             {
                 if (strcmp(name, c_typenames[i]) == 0)
                 {
-                    return i;
+                    // TODO: consider checking for overflow.
+                    return static_cast<int>(i);
                 }
             }
         }

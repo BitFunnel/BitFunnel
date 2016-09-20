@@ -211,7 +211,7 @@ namespace BitFunnel
     ptrdiff_t Shard::GetSlicePtrOffset() const
     {
         // A pointer to a Slice is placed in the end of the slice buffer.
-        return m_sliceBufferSize - sizeof(void*);
+        return static_cast<ptrdiff_t>(m_sliceBufferSize - sizeof(void*));
     }
 
 

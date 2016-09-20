@@ -94,8 +94,8 @@ namespace CmdLine
     // Attempts to parse an optional parameter starting at argv[currentArg].
     // Returns false if argv[currentArg] matches an optional parameter, but
     // but there are errors parsing the parameter. Otherwise returns true.
-    bool CmdLineParser::ParseOptionalParameter(std::ostream& error, unsigned& currentArg,
-                                                unsigned argc, char const* const* argv)
+    bool CmdLineParser::ParseOptionalParameter(std::ostream& error, int& currentArg,
+                                                int argc, char const* const* argv)
     {
         bool success = true;
         for (unsigned i = 0; i < m_optional.size(); ++i)
@@ -110,18 +110,18 @@ namespace CmdLine
     }
 
 
-    bool CmdLineParser::TryParse(std::ostream& error, unsigned argc, char const* const* argv)
+    bool CmdLineParser::TryParse(std::ostream& error, int argc, char const* const* argv)
     {
         bool success = true;
-        unsigned currentArg = 1;
-        unsigned requiredArg = 0;
+        int currentArg = 1;
+        int requiredArg = 0;
 
         while (success)
         {
             // Parse any optional arguments.
             while (currentArg < argc)
             {
-                unsigned oldCurrentArg = currentArg;
+                int oldCurrentArg = currentArg;
                 if (argv[currentArg][0] == '-' || argv[currentArg][0] == '/')
                 {
                     success = ParseOptionalParameter(error, currentArg, argc, argv);
@@ -149,7 +149,7 @@ namespace CmdLine
                 break;
             }
 
-            if (requiredArg < m_required.size())
+            if (static_cast<size_t>(requiredArg) < m_required.size())
             {
                 // Drop out of the loop if we've already consumed all the arguments.
                 if (currentArg >= argc)
@@ -158,7 +158,7 @@ namespace CmdLine
                     if (!m_help.IsActivated())
                     {
                         error << "Expected ";
-                        m_required[requiredArg]->Syntax(error);
+                        m_required[static_cast<size_t>(requiredArg)]->Syntax(error);
                         error << "." << std::endl;
                     }
                     success = false;
@@ -167,7 +167,7 @@ namespace CmdLine
                 else
                 {
                     // Attempt to parse the next required argument.
-                    if (!m_required[requiredArg]->TryParse(error, currentArg, argc, argv))
+                    if (!m_required[static_cast<size_t>(requiredArg)]->TryParse(error, currentArg, argc, argv))
                     {
                         success = false;
                         break;

@@ -161,7 +161,7 @@ namespace BitFunnel
                                     T* buffer,
                                     size_t itemCount)
     {
-        std::ptrdiff_t byteCount = itemCount * sizeof(T);
+        std::size_t byteCount = itemCount * sizeof(T);
         ReadBytes(stream, reinterpret_cast<char*>(buffer), byteCount);
     }
 

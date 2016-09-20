@@ -76,7 +76,13 @@ namespace BitFunnel
         {
             try
             {
-                Go(input, output, path, gramSize, threadCount);
+                // TODO: these casts can be removed when gramSize and
+                // threadCount are fixed to be unsigned.
+                Go(input,
+                   output,
+                   path,
+                   static_cast<size_t>(gramSize),
+                   static_cast<size_t>(threadCount));
                 returnCode = 0;
             }
             catch (RecoverableError e)

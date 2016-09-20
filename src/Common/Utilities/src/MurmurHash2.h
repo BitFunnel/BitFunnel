@@ -12,7 +12,4 @@ namespace BitFunnel
 {
     // 64-bit hash for 64-bit platforms
     uint64_t MurmurHash64A(const void *key, size_t len, unsigned seed);
-
-    // 32-bit hash for 64-bit platforms
-    uint32_t MurmurHash32A(const void *key, size_t len, unsigned seed);
 }

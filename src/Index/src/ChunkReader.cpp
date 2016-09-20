@@ -64,7 +64,11 @@ namespace BitFunnel
 
         Consume(0);
 
-        m_processor.OnDocumentExit(m_next - start);
+        if (m_next - start < 0)
+        {
+            throw FatalError("length underflow.");
+        }
+        m_processor.OnDocumentExit(static_cast<size_t>(m_next - start));
     }
 
 
@@ -120,11 +124,11 @@ namespace BitFunnel
             char c = PeekChar();
             if (c >= '0' && c <= '9')
             {
-                value |= (c - '0');
+                value |= (static_cast<uint64_t>(c - '0'));
             }
             else if (c >= 'a' && c <= 'f')
             {
-                value |= (c - 'a' + 10);
+                value |= (static_cast<uint64_t>(c - 'a' + 10));
             }
             else
             {
