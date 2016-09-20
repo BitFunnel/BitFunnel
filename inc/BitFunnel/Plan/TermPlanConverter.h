@@ -3,12 +3,9 @@
 
 namespace BitFunnel
 {
-    namespace Allocators
-    {
-        class IAllocator;
-    }
 
-    class FalsePositiveEvaluationNode;
+    // class FalsePositiveEvaluationNode;
+    class IAllocator;
     class IIndexConfiguration;
     class RowPlan;
     class TermMatchNode;
@@ -21,8 +18,8 @@ namespace BitFunnel
                                            bool generateNonBodyPlan,
                                            Allocators::IAllocator& allocator);
 
-        static FalsePositiveEvaluationNode const & BuildFalsePositiveEvaluationPlan(
-                TermMatchNode const & termMatchNode,
-                Allocators::IAllocator& allocator);
+        // static FalsePositiveEvaluationNode const & BuildFalsePositiveEvaluationPlan(
+        //         TermMatchNode const & termMatchNode,
+        //         Allocators::IAllocator& allocator);
     };
 }

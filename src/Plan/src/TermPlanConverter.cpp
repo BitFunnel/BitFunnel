@@ -6,12 +6,12 @@
 #include "BitFunnel/TermMatchNodes.h"
 #include "BitFunnel/TermPlanConverter.h"
 #include "TermMatchTreeConverter.h"
-#include "TermMatchTreeToFalsePositiveEvaluationTreeConverter.h"
+// #include "TermMatchTreeToFalsePositiveEvaluationTreeConverter.h"
 
 namespace BitFunnel
 {
-    RowPlan const & TermPlanConverter::BuildRowPlan(TermMatchNode const & termMatchNode, 
-                                                    IIndexConfiguration const & index, 
+    RowPlan const & TermPlanConverter::BuildRowPlan(TermMatchNode const & termMatchNode,
+                                                    IIndexConfiguration const & index,
                                                     bool generateNonBodyPlan,
                                                     Allocators::IAllocator& allocator)
     {
@@ -24,13 +24,13 @@ namespace BitFunnel
     }
 
 
-    FalsePositiveEvaluationNode const & TermPlanConverter::BuildFalsePositiveEvaluationPlan(
-        const TermMatchNode& termMatchNode,
-        Allocators::IAllocator& allocator)
-    {
-        FalsePositiveEvaluationNode const & falsePositiveTree = 
-            TermMatchTreeToFalsePositiveEvaluationTreeConverter::BuildFalsePositiveEvaluationTree(allocator, termMatchNode);
+    // FalsePositiveEvaluationNode const & TermPlanConverter::BuildFalsePositiveEvaluationPlan(
+    //     const TermMatchNode& termMatchNode,
+    //     Allocators::IAllocator& allocator)
+    // {
+    //     FalsePositiveEvaluationNode const & falsePositiveTree =
+    //         TermMatchTreeToFalsePositiveEvaluationTreeConverter::BuildFalsePositiveEvaluationTree(allocator, termMatchNode);
 
-        return falsePositiveTree;
-    }
+    //     return falsePositiveTree;
+    // }
 }
