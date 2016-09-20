@@ -48,7 +48,7 @@ endif()
 # Wno-float-equal is because we have tests for serializing and deserialization of floats that compare exact values.
 # Wno-exit-time-destructors is for Logging
 set(GTEST_REQUIRED_FLAGS "-Wno-shift-sign-overflow -Wno-missing-noreturn -Wno-used-but-marked-unused -Wno-deprecated -Wno-missing-variable-declarations -Wno-global-constructors")
-set(WEVERYTHING_TODO_FLAGS "-Wno-weak-vtables -Wno-format-nonliteral -Wno-switch-enum -Wno-non-virtual-dtor")
+set(WEVERYTHING_TODO_FLAGS "-Wno-format-nonliteral -Wno-switch-enum -Wno-non-virtual-dtor")
 set(WEVERYTHING_FLAGS "-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-undef -Wno-missing-prototypes -Wno-float-equal -Wno-exit-time-destructors ${GTEST_REQUIRED_FLAGS} ${WEVERYTHING_TODO_FLAGS}")
 
 if(MSVC)

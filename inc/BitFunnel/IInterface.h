@@ -22,6 +22,11 @@
 
 #pragma once
 
+#ifdef __clang__
+// Pure abstract classes "should" have a vtable in every translation unit.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
 
 namespace BitFunnel
 {
@@ -33,3 +38,7 @@ namespace BitFunnel
         virtual ~IInterface() {}
     };
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
