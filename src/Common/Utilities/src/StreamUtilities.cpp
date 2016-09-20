@@ -76,7 +76,7 @@ namespace BitFunnel
             // no reasonable way to overflow this, but we check anyway since
             // this is not believed to be a performance critical path. It's
             // possible that we should just use streamsize everywhere.
-            LogAssertB(len < std::numeric_limits<std::streamsize>::max(),
+            LogAssertB(len < static_cast<size_t>(std::numeric_limits<std::streamsize>::max()),
                        "streamsize overflow.");
             stream.write(static_cast<const char*>(buffer + offset),
                          static_cast<streamsize>(len));

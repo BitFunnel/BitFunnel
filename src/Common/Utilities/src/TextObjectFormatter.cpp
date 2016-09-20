@@ -183,7 +183,7 @@ namespace BitFunnel
     void TextObjectFormatter::Indent()
     {
         // TODO: m_indentation * 2 could theoretically overflow an unsigned.
-        LogAssertB(m_indentation * 2 < std::numeric_limits<int>::max(),
+        LogAssertB(m_indentation * 2 < static_cast<unsigned int>(std::numeric_limits<int>::max()),
                    "m_indentation overflow.");
         int actualIndentation = static_cast<int>(m_indentation) * 2;
         m_output << std::setfill(' ') <<
