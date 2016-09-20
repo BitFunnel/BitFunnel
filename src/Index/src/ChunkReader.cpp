@@ -39,12 +39,14 @@ namespace BitFunnel
           m_next(start),
           m_end(end)
     {
-        if (m_next == m_end) {
+        if (m_next == m_end)
+        {
             throw FatalError("Attempt to read empty chunk.");
         }
 
         m_processor.OnFileEnter();
-        while (PeekChar() != 0) {
+        while (PeekChar() != 0)
+        {
             ProcessDocument();
         }
 
@@ -58,7 +60,8 @@ namespace BitFunnel
         char const * start = m_next;
         uint64_t id = GetDocId();
         m_processor.OnDocumentEnter(id);
-        while (PeekChar() != 0) {
+        while (PeekChar() != 0)
+        {
             ProcessStream();
         }
 
@@ -76,7 +79,8 @@ namespace BitFunnel
     {
         Term::StreamId id = GetStreamId();
         m_processor.OnStreamEnter(id);
-        while (PeekChar() != 0) {
+        while (PeekChar() != 0)
+        {
             m_processor.OnTerm(GetToken());
         }
 
@@ -90,7 +94,8 @@ namespace BitFunnel
     {
         char const * begin = m_next;
 
-        while (PeekChar() != 0) {
+        while (PeekChar() != 0)
+        {
             GetChar();
         }
 
@@ -144,7 +149,8 @@ namespace BitFunnel
 
     char ChunkReader::PeekChar()
     {
-        if (m_next == m_end) {
+        if (m_next == m_end)
+        {
             throw FatalError("Attempt to read beyond end of buffer.");
         }
         else
@@ -156,7 +162,8 @@ namespace BitFunnel
 
     char ChunkReader::GetChar()
     {
-        if (m_next == m_end) {
+        if (m_next == m_end)
+        {
             throw FatalError("Attempt to read beyond end of buffer.");
         }
         else
@@ -167,7 +174,8 @@ namespace BitFunnel
 
     void ChunkReader::Consume(char c)
     {
-        if (PeekChar() != c) {
+        if (PeekChar() != c)
+        {
             std::stringstream msg;
             msg << "Expected character " << c << ". ";
             msg << "Found character " << PeekChar() << ".";
