@@ -4,6 +4,8 @@ This is an experiment in text search/retrieval. It doesn't work (yet). We're mak
 
 If you really want to try things out, we have some instructions on [how to index Wikipedia](http://bitfunnel.org/index-build-tools/), and [how to play with our query parser](http://bitfunnel.org/a-small-query-language/). However, the system doesn't do anything useful to an end user -- these instructions are intended to allow contributors to build and run part of a system for the purpose of understand or debugging the system. If you're looking to play with an incomplete and likely buggy system, go ahead! If you want a working search index that you can use in production, check back later.
 
+If you want a description of one of the core ideas, see [this StrangeLoop talk transcript](http://bitfunnel.org/strangeloop/). See our [engineering diary](http://bitfunnel.org/blog-archive/) for descriptions of other parts of the system. We seem to be adding new descriptions at least once a week, and we (sometimes) go back and update old descriptions as things change.
+
 [![Build status](https://ci.appveyor.com/api/projects/status/b65lb8wn2r7ux7d2/branch/master?svg=true)](https://ci.appveyor.com/project/danluu/bitfunnel/branch/master)
 
 Dependencies
