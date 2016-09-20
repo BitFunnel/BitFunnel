@@ -478,6 +478,12 @@ namespace BitFunnel
                 << ")" << std::endl;
 
             IIngestor & ingestor = GetEnvironment().GetIngestor();
+
+            
+            // TODO: Come up with a better heuristic for deciding which
+            // bits to display. Current algorithm is to display bits for
+            // the first 64 documents with ids less than 1000.
+            
             std::vector<DocId> ids;
             for (DocId id = 0; id <= 1000; ++id)
             {
@@ -491,6 +497,7 @@ namespace BitFunnel
                 }
             }
             
+            // Print out 100s digit of DocId.
             std::cout << "                 d ";
             for (auto id : ids)
             {
@@ -498,6 +505,7 @@ namespace BitFunnel
             }
             std::cout << std::endl;
 
+            // Print ouf 10s digit of DocId.
             std::cout << "                 o ";
             for (auto id : ids)
             {
@@ -505,6 +513,7 @@ namespace BitFunnel
             }
             std::cout << std::endl;
 
+            // Print out 1s digit of DocId.
             std::cout << "                 c ";
             for (auto id : ids)
             {
@@ -512,6 +521,7 @@ namespace BitFunnel
             }
             std::cout << std::endl;
             
+            // Print out RowIds and their bits.
             for (auto row : rows)
             {
                 std::cout
@@ -524,14 +534,8 @@ namespace BitFunnel
 
                 if (m_mode == Mode::Rows)
                 {
-//                    IIngestor & ingestor = GetEnvironment().GetIngestor();
-
-                    // TODO: Come up with a better heuristic for deciding which
-                    // bits to display. Current algorithm is to display bits for
-                    // the first 64 documents with ids less than 1000.
-                    
                     std::cout << ": ";
-                    for (DocId id = 0; id <= 1000; ++id)
+                    for (auto id : ids)
                     {
                         if (ingestor.Contains(id))
                         {
