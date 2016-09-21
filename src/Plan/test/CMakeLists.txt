@@ -1,6 +1,7 @@
 # BitFunnel/src/Plan/test
 
 set(CPPFILES
+    AbstractRowTest.cpp
     CompileNodeTest.cpp
     MatchTreeRewriterTest.cpp
     PlainTextCodeGenerator.cpp
