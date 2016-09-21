@@ -47,9 +47,10 @@ endif()
 # Wno-missing-prototypes is because we commonly declare functions without prototypes in tests.
 # Wno-float-equal is because we have tests for serializing and deserialization of floats that compare exact values.
 # Wno-exit-time-destructors is for Logging
+# Wno-switch-enum is because we often have a "default" case that throws for all invalid types.
 set(GTEST_REQUIRED_FLAGS "-Wno-shift-sign-overflow -Wno-missing-noreturn -Wno-used-but-marked-unused -Wno-deprecated -Wno-missing-variable-declarations -Wno-global-constructors -Wno-weak-vtables")
-set(WEVERYTHING_TODO_FLAGS "-Wno-format-nonliteral -Wno-switch-enum -Wno-non-virtual-dtor")
-set(WEVERYTHING_FLAGS "-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-undef -Wno-missing-prototypes -Wno-float-equal -Wno-exit-time-destructors ${GTEST_REQUIRED_FLAGS} ${WEVERYTHING_TODO_FLAGS}")
+set(WEVERYTHING_TODO_FLAGS "-Wno-format-nonliteral -Wno-non-virtual-dtor")
+set(WEVERYTHING_FLAGS "-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-undef -Wno-missing-prototypes -Wno-float-equal -Wno-exit-time-destructors -Wno-switch-enum ${GTEST_REQUIRED_FLAGS} ${WEVERYTHING_TODO_FLAGS}")
 
 if(MSVC)
   set(COMMON_CXX_FLAGS "${COMMON_CXX_FLAGS} /W4 /WX")
