@@ -27,6 +27,11 @@
 
 #include "BitFunnel/IInterface.h"   // Base class.
 
+#ifdef __clang__
+// Pure abstract classes "should" have a vtable in every translation unit.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
 
 namespace BitFunnel
 {
@@ -41,3 +46,7 @@ namespace BitFunnel
                         std::ios_base::openmode mode = std::ios::in) = 0;
     };
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif

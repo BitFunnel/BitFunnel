@@ -27,6 +27,13 @@
 
 // TODO: Add logging method.
 
+#ifdef __clang__
+// TODO: see https://github.com/BitFunnel/BitFunnel/issues/208
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
+
+
 namespace BitFunnel
 {
     class RecoverableError : public std::runtime_error
@@ -55,3 +62,7 @@ namespace BitFunnel
         NotImplemented();
     };
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif

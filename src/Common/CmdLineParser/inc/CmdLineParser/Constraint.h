@@ -32,6 +32,11 @@ namespace CmdLine
 {
     class IOptionalParameter;
 
+#ifdef __clang__
+// Pure abstract classes "should" have a vtable in every translation unit.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
     //*************************************************************************
     //
     // IConstraint
@@ -47,6 +52,9 @@ namespace CmdLine
         virtual bool IsSatisfied() const = 0;
         virtual void Description(std::ostream& out) const = 0;
     };
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
     //*************************************************************************
     //

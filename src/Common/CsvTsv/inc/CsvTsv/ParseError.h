@@ -30,6 +30,11 @@ namespace CsvTsv
 {
     class IFieldParser;
 
+#ifdef __clang__
+// TODO: see https://github.com/BitFunnel/BitFunnel/issues/208
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
     class Error : public std::runtime_error
     {
     public:
@@ -51,6 +56,9 @@ namespace CsvTsv
         unsigned m_line;
         unsigned m_position;
     };
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 
     class ParseErrorBuilder

@@ -135,6 +135,12 @@ namespace CsvTsv
     };
 
 
+#ifdef __clang__
+// Pure abstract classes "should" have a vtable in every translation unit.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
+
     //*************************************************************************
     //
     // IFieldParser
@@ -267,8 +273,16 @@ namespace CsvTsv
         virtual void WriteRowEnd() = 0;
         virtual void WriteEpilogue() = 0;
     };
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 
+#ifdef __clang__
+// TODO: why isn't Column IColumn since it's pure abstract.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
     class Column
     {
     public:
@@ -285,6 +299,9 @@ namespace CsvTsv
 
         virtual void Reset() = 0;
     };
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 
     //*************************************************************************
