@@ -82,14 +82,9 @@ namespace BitFunnel
 #ifdef BITFUNNEL_PLATFORM_WINDOWS
             VirtualFree(m_rawBuffer, 0, MEM_RELEASE);
 #else
-            if (munmap(m_rawBuffer, m_actualSize) == -1)
-            {
-                std::stringstream errorMessage;
-                errorMessage << "AlignedBuffer Failed to mmap: "
-                             << std::strerror(errno)
-                             << std::endl;
-                throw RecoverableError(errorMessage.str());
-            }
+            // TODO: note that munamp == -1 indicates failure and we don't check
+            // for failure. We should at least log this error.
+            munmap(m_rawBuffer, m_actualSize);
 #endif
         }
     }

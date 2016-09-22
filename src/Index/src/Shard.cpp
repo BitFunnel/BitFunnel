@@ -280,7 +280,6 @@ namespace BitFunnel
     void Shard::RecycleSlice(Slice& slice)
     {
         std::vector<void*>* oldSlices = nullptr;
-        size_t newSliceCount;
 
         {
             std::lock_guard<std::mutex> lock(m_slicesLock);
@@ -305,8 +304,6 @@ namespace BitFunnel
             {
                 throw RecoverableError("Slice buffer to be removed is not found in the active slice buffers list");
             }
-
-            newSliceCount = newSlices->size();
 
             oldSlices = m_sliceBuffers.load();
             m_sliceBuffers = newSlices;
