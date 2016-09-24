@@ -228,12 +228,15 @@ namespace BitFunnel
             }
 
             Environment & environment = GetEnvironment();
+            IFileSystem & fileSystem =
+                environment.GetFileSystem();
             IConfiguration const & configuration =
                 environment.GetConfiguration();
             IIngestor & ingestor = environment.GetIngestor();
             size_t threadCount = 1;
 
             auto manifest = Factories::CreateChunkManifestIngestor(
+                fileSystem,
                 filePaths,
                 configuration,
                 ingestor,

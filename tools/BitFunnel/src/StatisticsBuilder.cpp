@@ -134,7 +134,8 @@ namespace BitFunnel
         bool generateTermToText) const
     {
         // TODO: cast of gramSize can be removed when it's fixed to be unsigned.
-        auto index = Factories::CreateSimpleIndex(intermediateDirectory,
+        auto index = Factories::CreateSimpleIndex(m_fileSystem,
+                                                  intermediateDirectory,
                                                   static_cast<size_t>(gramSize),
                                                   generateTermToText);
         index->StartIndex(true);
@@ -153,6 +154,7 @@ namespace BitFunnel
         IIngestor & ingestor = index->GetIngestor();
 
         auto manifest = Factories::CreateChunkManifestIngestor(
+            m_fileSystem,
             filePaths,
             configuration,
             ingestor,

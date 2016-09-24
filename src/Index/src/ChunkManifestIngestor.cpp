@@ -24,6 +24,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
 #include "ChunkIngestor.h"
@@ -34,24 +35,30 @@ namespace BitFunnel
 {
     std::unique_ptr<IChunkManifestIngestor>
         Factories::CreateChunkManifestIngestor(
+            IFileSystem& fileSystem,
             std::vector<std::string> const & filePaths,
             IConfiguration const & config,
             IIngestor& ingestor,
             bool cacheDocuments)
     {
         return std::unique_ptr<IChunkManifestIngestor>(
-            new ChunkManifestIngestor(filePaths,
-                                      config,
-                                      ingestor,
-                                      cacheDocuments));
+            new ChunkManifestIngestor(
+                fileSystem,
+                filePaths,
+                config,
+                ingestor,
+                cacheDocuments));
     }
 
 
-    ChunkManifestIngestor::ChunkManifestIngestor(std::vector<std::string> const & filePaths,
-                                                 IConfiguration const & config,
-                                                 IIngestor& ingestor,
-                                                 bool cacheDocuments)
-      : m_filePaths(filePaths),
+    ChunkManifestIngestor::ChunkManifestIngestor(
+        IFileSystem& fileSystem,
+        std::vector<std::string> const & filePaths,
+        IConfiguration const & config,
+        IIngestor& ingestor,
+        bool cacheDocuments)
+      : m_fileSystem(fileSystem),
+        m_filePaths(filePaths),
         m_config(config),
         m_ingestor(ingestor),
         m_cacheDocuments(cacheDocuments)
@@ -77,8 +84,10 @@ namespace BitFunnel
             << "ChunkManifestIngestor::IngestChunk: filePath = "
             << m_filePaths[index] << std::endl;
 
-        std::ifstream input(m_filePaths[index], std::ios::binary);
-        if (!input.is_open())
+        auto input = m_fileSystem.OpenForRead(m_filePaths[index].c_str(),
+                                              std::ios::binary);
+
+        if (input->fail())
         {
             std::stringstream message;
             message << "Failed to open chunk file '"
@@ -87,14 +96,14 @@ namespace BitFunnel
             throw FatalError(message.str());
         }
 
-        input.seekg(0, input.end);
-        auto length = input.tellg();
-        input.seekg(0, input.beg);
+        input->seekg(0, input->end);
+        auto length = input->tellg();
+        input->seekg(0, input->beg);
 
         std::vector<char> chunkData;
         chunkData.reserve(static_cast<size_t>(length) + 1ull);
         chunkData.insert(chunkData.begin(),
-                         (std::istreambuf_iterator<char>(input)),
+                         (std::istreambuf_iterator<char>(*input)),
                          std::istreambuf_iterator<char>());
 
         // NOTE: The act of constructing a ChunkIngestor causes the bytes in

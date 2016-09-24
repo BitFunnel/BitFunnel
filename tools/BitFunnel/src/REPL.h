@@ -54,6 +54,10 @@ namespace BitFunnel
                 size_t gramSize,
                 size_t threadCount) const;
 
-//        IFileSystem& m_fileSystem;
+        //
+        // Constructor parameters.
+        //
+
+        IFileSystem& m_fileSystem;
     };
 }

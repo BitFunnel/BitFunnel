@@ -41,8 +41,8 @@
 
 namespace BitFunnel
 {
-    TermTableBuilderTool::TermTableBuilderTool(IFileSystem& /*fileSystem*/)
-//      : m_fileSystem(fileSystem)
+    TermTableBuilderTool::TermTableBuilderTool(IFileSystem& fileSystem)
+      : m_fileSystem(fileSystem)
     {
     }
 
@@ -108,16 +108,16 @@ namespace BitFunnel
     {
         output << "Loading files for TermTable build." << std::endl;
 
-        auto fileSystem = Factories::CreateFileSystem();
-
         auto fileManager = Factories::CreateFileManager(intermediateDirectory,
                                                         intermediateDirectory,
                                                         intermediateDirectory,
-                                                        *fileSystem);
+                                                        m_fileSystem);
 
-        auto terms(Factories::CreateDocumentFrequencyTable(*fileManager->DocFreqTable(shard).OpenForRead()));
+        auto terms(Factories::CreateDocumentFrequencyTable(
+            *fileManager->DocFreqTable(shard).OpenForRead()));
 
-        auto treatment(Factories::CreateTreatmentPrivateShardRank0And3(density, snr));
+        auto treatment(Factories::CreateTreatmentPrivateShardRank0And3(
+            density, snr));
 
         auto facts(Factories::CreateFactSet());
 
@@ -125,36 +125,13 @@ namespace BitFunnel
 
         output << "Starting TermTable build." << std::endl;
 
-        auto termTableBuilderTool(Factories::CreateTermTableBuilder(density,
-                                                                adhocFrequency,
-                                                                *treatment,
-                                                                *terms,
-                                                                *facts,
-                                                                *termTable));
-        //std::unique_ptr<ITermTableBuilder> termTableBuilder = Factories::CreateTermTableBuilderTool(density,
-        //                                                        adhocFrequency,
-        //                                                        *treatment,
-        //                                                        *terms,
-        //                                                        *facts,
-        //                                                        *termTable);
-
-        // Strange bug here. The call to termTableBuilder->Print seems to use the vtable from
-        // the tools/BitFunnel/src/TermTableBuilder (vtable for IExecutabe) instead of the
-        // vtable for src/Index/src/TermTableBuilder (vtable of ITermTableBuilder).
-
-        // Suspect it has to do with the fact that there are two classes called TermTableBuilder,
-        // one which inherits from ITermTableBuilder and one which inherits from IExecutable.
-
-        // Still, it is hard to see how the std::unique_ptr can point to an object with a
-        // TermTableBuilder::IExecutable vtable and a TermTableBuilder::ITermTableBuilder
-        // body. Single stepping shows that the correct constructor is called (that is,
-        // TermTableBuilder : ITermTableBuilder) and it seems to run correctly to completion.
-        // From the debugger, in this function (BuildTermTable()), inspection of the unique_ptr
-        // seems to show that it points to the correct class (TermTableBuilder::ITermTable).
-        // Single-stepping into the Print() command goes to TermTableBuilder::IExecutable::Main()
-        // which is in the same vtable slot as the desired TermTableBuilder::ITermTableBuilder::Print().
-
-        // Repro steps: run tools/BitFunnel/Executable with parameters "termtable  c:\temp\wiki\out1"
+        auto termTableBuilderTool(
+            Factories::CreateTermTableBuilder(density,
+                                              adhocFrequency,
+                                              *treatment,
+                                              *terms,
+                                              *facts,
+                                              *termTable));
 
         termTableBuilderTool->Print(output);
 

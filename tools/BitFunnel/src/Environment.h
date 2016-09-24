@@ -33,28 +33,31 @@
 
 namespace BitFunnel
 {
+    class IFileSystem;
     class TaskFactory;
     class TaskPool;
 
     class Environment : public NonCopyable
     {
     public:
-        Environment(char const * directory,
+        Environment(IFileSystem& fileSystem,
+                    char const * directory,
                     size_t gramSize,
                     size_t threadCount);
 
-        TaskFactory & GetTaskFactory() const;
-
-        TaskPool & GetTaskPool() const;
-
         void StartIndex();
 
+        IFileSystem & GetFileSystem() const;
+        TaskFactory & GetTaskFactory() const;
+        TaskPool & GetTaskPool() const;
         IConfiguration const & GetConfiguration() const;
         IIngestor & GetIngestor() const;
         ITermTable const & GetTermTable() const;
 
     private:
         void RegisterCommands();
+
+        IFileSystem& m_fileSystem;
 
         std::unique_ptr<TaskFactory> m_taskFactory;
         std::unique_ptr<TaskPool> m_taskPool;

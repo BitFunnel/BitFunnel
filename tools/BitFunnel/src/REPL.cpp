@@ -32,8 +32,8 @@
 
 namespace BitFunnel
 {
-    REPL::REPL(IFileSystem& /*fileSystem*/)
-//      : m_fileSystem(fileSystem)
+    REPL::REPL(IFileSystem& fileSystem)
+      : m_fileSystem(fileSystem)
     {
     }
 
@@ -132,7 +132,8 @@ namespace BitFunnel
             << "gram size = " << gramSize << std::endl
             << std::endl;
 
-        Environment environment(directory,
+        Environment environment(m_fileSystem,
+                                directory,
                                 gramSize,
                                 threadCount);
 
@@ -166,26 +167,35 @@ namespace BitFunnel
         {
             try
             {
+                // Check for eof to handle the case where input is not cin.
+                if (input.eof())
+                {
+                    break;
+                }
+
                 output << factory.GetNextTaskId() << ": ";
                 output.flush();
 
                 std::string line;
                 std::getline(input, line);
 
-                std::unique_ptr<ICommand> task(factory.CreateTask(line.c_str()));
+                if (line.length() != 0)
+                {
+                    std::unique_ptr<ICommand> task(factory.CreateTask(line.c_str()));
 
-                if (task->GetType() == ICommand::Type::Exit)
-                {
-                    task->Execute();
-                    break;
-                }
-                else if (task->GetType() == ICommand::Type::Asynchronous)
-                {
-                    taskPool.TryEnqueue(std::move(task));
-                }
-                else
-                {
-                    task->Execute();
+                    if (task->GetType() == ICommand::Type::Exit)
+                    {
+                        task->Execute();
+                        break;
+                    }
+                    else if (task->GetType() == ICommand::Type::Asynchronous)
+                    {
+                        taskPool.TryEnqueue(std::move(task));
+                    }
+                    else
+                    {
+                        task->Execute();
+                    }
                 }
             }
             catch (RecoverableError e)

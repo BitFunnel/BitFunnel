@@ -34,21 +34,27 @@
 namespace BitFunnel
 {
     std::unique_ptr<ISimpleIndex>
-        Factories::CreateSimpleIndex(char const * directory,
+        Factories::CreateSimpleIndex(IFileSystem& fileSystem,
+                                     char const * directory,
                                      size_t gramSize,
                                      bool generateTermToText)
     {
         return std::unique_ptr<ISimpleIndex>(
-            new SimpleIndex(directory, gramSize, generateTermToText));
+            new SimpleIndex(fileSystem,
+                            directory,
+                            gramSize,
+                            generateTermToText));
     }
 
 
-    SimpleIndex::SimpleIndex(char const * directory,
+    SimpleIndex::SimpleIndex(IFileSystem& fileSystem,
+                             char const * directory,
                              size_t gramSize,
                              bool generateTermToText)
         // TODO: Don't like passing *this to TaskFactory.
         // What if TaskFactory calls back before SimpleIndex is fully initialized?
-        : m_directory(directory),
+        : m_fileSystem(fileSystem),
+          m_directory(directory),
           m_gramSize(static_cast<Term::GramSize>(gramSize)),
           m_generateTermToText(generateTermToText)
     {
@@ -63,13 +69,11 @@ namespace BitFunnel
 
     void SimpleIndex::StartIndex(bool forStatistics)
     {
-        m_fileSystem = Factories::CreateFileSystem();
-
         char const * directory = m_directory.c_str();
         m_fileManager = Factories::CreateFileManager(directory,
                                                      directory,
                                                      directory,
-                                                     *m_fileSystem);
+                                                     m_fileSystem);
 
         m_schema = Factories::CreateDocumentDataSchema();
 
@@ -159,6 +163,12 @@ namespace BitFunnel
     IFileManager & SimpleIndex::GetFileManager() const
     {
         return *m_fileManager;
+    }
+
+
+    IFileSystem & SimpleIndex::GetFileSystem() const
+    {
+        return m_fileSystem;
     }
 
 

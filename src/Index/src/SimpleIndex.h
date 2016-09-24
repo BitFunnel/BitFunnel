@@ -46,7 +46,8 @@ namespace BitFunnel
     class SimpleIndex : public ISimpleIndex, public NonCopyable
     {
     public:
-        SimpleIndex(char const * directory,
+        SimpleIndex(IFileSystem& fileSystem,
+                    char const * directory,
                     size_t gramSize,
                     bool generateTermtoText);
 
@@ -57,6 +58,7 @@ namespace BitFunnel
 
         virtual IConfiguration const & GetConfiguration() const override;
         virtual IFileManager & GetFileManager() const override;
+        virtual IFileSystem & GetFileSystem() const override;
         virtual IIngestor & GetIngestor() const override;
         virtual IRecycler & GetRecycler() const override;
         virtual ITermTable const & GetTermTable() const override;
@@ -69,6 +71,7 @@ namespace BitFunnel
         // Constructor parameters.
         //
 
+        IFileSystem& m_fileSystem;
         std::string m_directory;
         Term::GramSize m_gramSize;
         bool m_generateTermToText;
@@ -78,7 +81,6 @@ namespace BitFunnel
         // Members initialized by StartIndex().
         //
 
-        std::unique_ptr<IFileSystem> m_fileSystem;
         std::unique_ptr<IFileManager> m_fileManager;
         std::unique_ptr<IDocumentDataSchema> m_schema;
         std::unique_ptr<IRecycler> m_recycler;

@@ -62,9 +62,11 @@ namespace BitFunnel
     }
 
 
-    void RowTableDescriptor::Initialize(void* sliceBuffer, ITermTable const & termTable) const
+    void RowTableDescriptor::Initialize(void* sliceBuffer,
+                                        ITermTable const & termTable) const
     {
-        char* const rowTableBuffer = reinterpret_cast<char*>(sliceBuffer) + m_bufferOffset;
+        char* const rowTableBuffer =
+            reinterpret_cast<char*>(sliceBuffer) + m_bufferOffset;
         memset(rowTableBuffer, 0, GetBufferSize(m_capacity, m_rowCount, m_rank));
 
         // The "match-all" row needs to be initialized differently.
@@ -73,7 +75,8 @@ namespace BitFunnel
         auto it = rows.begin();
         if (it == rows.end())
         {
-            RecoverableError error("RowTableDescriptor::Initialize: expected at least one row.");
+            RecoverableError
+                error("RowTableDescriptor::Initialize: expected at least one row.");
             throw error;
         }
 

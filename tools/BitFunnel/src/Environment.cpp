@@ -30,15 +30,18 @@
 
 namespace BitFunnel
 {
-    Environment::Environment(char const * directory,
+    Environment::Environment(IFileSystem& fileSystem,
+                             char const * directory,
                              size_t gramSize,
                              size_t threadCount)
         // TODO: Don't like passing *this to TaskFactory.
         // What if TaskFactory calls back before Environment is fully initialized?
-        : m_taskFactory(new TaskFactory(*this)),
+        : m_fileSystem(fileSystem),
+          m_taskFactory(new TaskFactory(*this)),
           // Start one extra thread for the Recycler.
           m_taskPool(new TaskPool(threadCount + 1)),
-          m_index(Factories::CreateSimpleIndex(directory, gramSize, false))
+          m_index(Factories::CreateSimpleIndex(
+              m_fileSystem,directory, gramSize, false))
     {
         RegisterCommands();
     }
@@ -59,6 +62,18 @@ namespace BitFunnel
     }
 
 
+    void Environment::StartIndex()
+    {
+        m_index->StartIndex(false);
+    }
+
+
+    IFileSystem & Environment::GetFileSystem() const
+    {
+        return m_fileSystem;
+    }
+
+
     TaskFactory & Environment::GetTaskFactory() const
     {
         return *m_taskFactory;
@@ -68,12 +83,6 @@ namespace BitFunnel
     TaskPool & Environment::GetTaskPool() const
     {
         return *m_taskPool;
-    }
-
-
-    void Environment::StartIndex()
-    {
-        m_index->StartIndex(false);
     }
 
 

@@ -37,6 +37,7 @@ namespace BitFunnel
     class IDocumentFrequencyTable;
     class IFactSet;
     class IFileManager;
+    class IFileSystem;
     class IIndexedIdfTable;
     class IIngestor;
     class IRecycler;
@@ -60,6 +61,7 @@ namespace BitFunnel
 
         std::unique_ptr<IChunkManifestIngestor>
             CreateChunkManifestIngestor(
+                IFileSystem& fileSystem,
                 std::vector<std::string> const & filePaths,
                 IConfiguration const & config,
                 IIngestor& ingestor,
@@ -91,9 +93,11 @@ namespace BitFunnel
 
         std::unique_ptr<IRecycler> CreateRecycler();
 
-        std::unique_ptr<ISimpleIndex> CreateSimpleIndex(char const * directory,
-                                                        size_t gramSize,
-                                                        bool generateTermToText);
+        std::unique_ptr<ISimpleIndex> CreateSimpleIndex(
+            IFileSystem& fileSystem,
+            char const * directory,
+            size_t gramSize,
+            bool generateTermToText);
 
         std::unique_ptr<ISliceBufferAllocator>
             CreateSliceBufferAllocator(size_t blockSize, size_t blockCount);

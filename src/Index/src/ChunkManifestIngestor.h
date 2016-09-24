@@ -31,12 +31,14 @@
 namespace BitFunnel
 {
     class IConfiguration;
+    class IFileSystem;
     class IIngestor;
 
     class ChunkManifestIngestor : public IChunkManifestIngestor
     {
     public:
-        ChunkManifestIngestor(std::vector<std::string> const & filePaths,
+        ChunkManifestIngestor(IFileSystem& fileSystem,
+                              std::vector<std::string> const & filePaths,
                               IConfiguration const & config,
                               IIngestor& ingestor,
                               bool cacheDocuments);
@@ -54,6 +56,8 @@ namespace BitFunnel
         //
         // Constructor parameters
         //
+
+        IFileSystem& m_fileSystem;
         std::vector<std::string> const & m_filePaths;
         IConfiguration const & m_config;
         IIngestor& m_ingestor;

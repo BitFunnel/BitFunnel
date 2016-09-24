@@ -31,7 +31,7 @@ namespace BitFunnel
     size_t GetMinimumBlockSize(IDocumentDataSchema const & schema,
                                ITermTable const & termTable)
     {
-        static const DocIndex capacity = 
+        const DocIndex capacity =
             Row::DocumentsInRank0Row(1, termTable.GetMaxRankUsed());
 
         return Shard::InitializeDescriptors(nullptr,

@@ -50,6 +50,10 @@ namespace BitFunnel
             double snr,
             double adhocFrequency) const;
 
-//        IFileSystem& m_fileSystem;
+        //
+        // Constructor parameters.
+        //
+
+        IFileSystem& m_fileSystem;
     };
 }

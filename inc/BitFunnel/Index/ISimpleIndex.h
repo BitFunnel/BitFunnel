@@ -29,6 +29,7 @@ namespace BitFunnel
 {
     class IConfiguration;
     class IFileManager;
+    class IFileSystem;
     class IIngestor;
     class IRecycler;
     class ITermTable;
@@ -69,6 +70,7 @@ namespace BitFunnel
 
         virtual IConfiguration const & GetConfiguration() const = 0;
         virtual IFileManager & GetFileManager() const = 0;
+        virtual IFileSystem & GetFileSystem() const = 0;
         virtual IIngestor & GetIngestor() const = 0;
         virtual IRecycler & GetRecycler() const = 0;
         virtual ITermTable const & GetTermTable() const = 0;
