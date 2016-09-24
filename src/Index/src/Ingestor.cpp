@@ -91,16 +91,15 @@ namespace BitFunnel
     }
 
 
-    void Ingestor::PrintStatistics() const
+    void Ingestor::PrintStatistics(std::ostream& out) const
     {
-        std::cout << "Shard count:" << m_shards.size() << std::endl;
-        std::cout << "Document count: " << m_documentCount << std::endl;
-        std::cout
+        out << "Shard count:" << m_shards.size() << std::endl
+            << "Document count: " << m_documentCount << std::endl
             << "Bytes/Document: "
             << static_cast<double>(m_totalSourceByteSize) / m_documentCount
-            << std::endl;
-        std::cout << "Total bytes read: " << m_totalSourceByteSize << std::endl;
-        std::cout << "Posting count: " << m_histogram.GetPostingCount() << std::endl;
+            << std::endl
+            << "Total bytes read: " << m_totalSourceByteSize << std::endl
+            << "Posting count: " << m_histogram.GetPostingCount() << std::endl;
         // TODO: print out term count? Not sure how to do this since they are spread across shards.
     }
 

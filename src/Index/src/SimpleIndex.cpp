@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>
-
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/Helpers.h"
@@ -133,7 +131,7 @@ namespace BitFunnel
         const ShardId tempId = 0;
         const size_t blockSize =
             GetMinimumBlockSize(*m_schema, m_termTables->GetTermTable(tempId));
-        std::cout << "Blocksize: " << blockSize << std::endl;
+//        std::cout << "Blocksize: " << blockSize << std::endl;
 
         const size_t initialBlockCount = 512;
         m_sliceAllocator = Factories::CreateSliceBufferAllocator(blockSize,

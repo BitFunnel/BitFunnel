@@ -22,13 +22,13 @@
 
 #pragma once
 
-#include <iosfwd>                               // std::istream& parameter.
-#include <memory>                               // std::unique_ptr parameter.
-#include <vector>                               // std::vector return type.
+#include <iosfwd>                           // std::istream& parameter.
+#include <memory>                           // std::unique_ptr parameter.
+#include <vector>                           // std::vector return type.
 
-#include "BitFunnel/IInterface.h"               // IIngestor inherits from IInterface.
-#include "BitFunnel/Index/IFactSet.h"           // FactHandle parameter.
-#include "BitFunnel/Index/DocumentHandle.h"     // DocHandle return value.
+#include "BitFunnel/IInterface.h"           // inherits from IInterface.
+#include "BitFunnel/Index/IFactSet.h"       // FactHandle parameter.
+#include "BitFunnel/Index/DocumentHandle.h" // DocHandle return value.
 
 
 namespace BitFunnel
@@ -65,7 +65,7 @@ namespace BitFunnel
     {
     public:
         // TODO: Remove this temporary method.
-        virtual void PrintStatistics() const = 0;
+        virtual void PrintStatistics(std::ostream& out) const = 0;
 
         // Writes out the following data structions in locations defined by the
         // FileManager:

@@ -177,7 +177,7 @@ namespace BitFunnel
             << "  Ingestion rate (bytes/s): "
             << totalSourceBytes / elapsedTime << std::endl;
 
-        ingestor.PrintStatistics();
+        ingestor.PrintStatistics(output);
 
         if (generateStatistics)
         {

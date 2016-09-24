@@ -62,7 +62,7 @@ namespace BitFunnel
         virtual ~Ingestor();
 
         // TODO: Remove this temporary method.
-        virtual void PrintStatistics() const override;
+        virtual void PrintStatistics(std::ostream& out) const override;
 
         // Writes out the following data structions in locations defined by the
         // FileManager:
