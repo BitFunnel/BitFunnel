@@ -32,5 +32,5 @@ int main(int argc, char** argv)
 {
     auto fileSystem = BitFunnel::Factories::CreateFileSystem();
     BitFunnel::BitFunnelTool tool(*fileSystem);
-    return tool.Main(std::cin, std::cout, argc, argv);
+    return tool.Main(std::cin, std::cout, argc, const_cast<char const **>(argv));
 }

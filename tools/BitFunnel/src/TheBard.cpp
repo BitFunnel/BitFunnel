@@ -92,7 +92,7 @@ namespace BitFunnel
         {
             std::cout << "Gathering corpus statistics." << std::endl;
 
-            std::vector<char *> argv = {
+            std::vector<char const *> argv = {
                 "BitFunnel",
                 "statistics",
                 "manifest.txt",
@@ -115,7 +115,7 @@ namespace BitFunnel
         {
             std::cout << "Building the TermTable." << std::endl;
 
-            std::vector<char *> argv = {
+            std::vector<char const *> argv = {
                 "BitFunnel",
                 "termtable",
                 "config"
@@ -140,7 +140,7 @@ namespace BitFunnel
         // Use the tool to run the REPL.
         //
         {
-            std::vector<char *> argv = {
+            std::vector<char const *> argv = {
                 "BitFunnel",
                 "repl",
                 "config"

@@ -40,7 +40,7 @@ namespace BitFunnel
         virtual int Main(std::istream& input,
                          std::ostream& output,
                          int argc,
-                         char *argv[]) override;
+                         char const *argv[]) override;
 
     private:
         void Advice(std::ostream& output) const;

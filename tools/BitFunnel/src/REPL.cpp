@@ -41,7 +41,7 @@ namespace BitFunnel
     int REPL::Main(std::istream& input,
                    std::ostream& output,
                    int argc,
-                   char** argv)
+                   char const *argv[])
     {
         CmdLine::CmdLineParser parser(
             "StatisticsBuilder",

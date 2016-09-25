@@ -44,7 +44,7 @@ namespace BitFunnel
     int BitFunnelTool::Main(std::istream& input,
                             std::ostream& output,
                             int argc,
-                            char** argv)
+                            char const *argv[])
     {
         int returnCode = 1;
 
@@ -67,7 +67,7 @@ namespace BitFunnel
                 executable->Main(input,
                                  output,
                                  static_cast<int>(args.size()),
-                                 const_cast<char**>(args.data()));
+                                 args.data());
                 returnCode = 0;
             }
             else
@@ -108,7 +108,7 @@ namespace BitFunnel
 
     std::vector<char const *> BitFunnelTool::FilterArgs(
         int argc,
-        char *argv[],
+        char const *argv[],
         char const * name) const
     {
         std::vector<char const *> args;

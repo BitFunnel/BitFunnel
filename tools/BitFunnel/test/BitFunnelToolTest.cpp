@@ -79,7 +79,7 @@ namespace BitFunnel
         // Use the tool to run the statistics builder.
         //
         {
-            std::vector<char *> argv = {
+            std::vector<char const *> argv = {
                 "BitFunnel",
                 "statistics",
                 "manifest.txt",
@@ -97,7 +97,7 @@ namespace BitFunnel
         // Use the tool to run the TermTable builder.
         //
         {
-            std::vector<char *> argv = {
+            std::vector<char const *> argv = {
                 "BitFunnel",
                 "termtable",
                 "config"
@@ -114,7 +114,7 @@ namespace BitFunnel
         // Use the tool to run the REPL.
         //
         {
-            std::vector<char *> argv = {
+            std::vector<char const *> argv = {
                 "BitFunnel",
                 "repl",
                 "config"

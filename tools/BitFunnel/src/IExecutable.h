@@ -35,6 +35,6 @@ namespace BitFunnel
         virtual int Main(std::istream& input,
                          std::ostream& output,
                          int argc,
-                         char *argv[]) = 0;
+                         char const *argv[]) = 0;
     };
 }

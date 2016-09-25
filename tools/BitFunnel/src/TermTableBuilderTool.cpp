@@ -50,7 +50,7 @@ namespace BitFunnel
     int TermTableBuilderTool::Main(std::istream& /*input*/,
                                std::ostream& output,
                                int argc,
-                               char** argv)
+                               char const *argv[])
     {
         CmdLine::CmdLineParser parser(
             "TermTableBuilderTool",

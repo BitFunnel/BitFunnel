@@ -42,7 +42,7 @@ namespace BitFunnel
         virtual int Main(std::istream& input,
                          std::ostream& output,
                          int argc,
-                         char *argv[]) override;
+                         char const *argv[]) override;
 
     private:
         // Constructs the IExecutable associated with the specified subcommand.
@@ -57,7 +57,7 @@ namespace BitFunnel
         // name.
         std::vector<char const *> FilterArgs(
             int argc,
-            char *argv[],
+            char const *argv[],
             char const * name) const;
 
         // Prints the top-level usage message for the BitFunnel command.
