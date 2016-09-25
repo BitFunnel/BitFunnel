@@ -110,7 +110,7 @@ namespace BitFunnel
     template <typename T, unsigned CAPACITY>
     T& FixedCapacityVector<T, CAPACITY>::PushBack()
     {
-        LogAssertB(m_size < CAPACITY);
+        LogAssertB(m_size < CAPACITY, "FixedCapacityVector overflow.");
         T* object = new (m_entries + m_size) T();
 
         // Only increment m_size if call to T::T() was successful. This
@@ -126,7 +126,7 @@ namespace BitFunnel
     template <typename A>
     T& FixedCapacityVector<T, CAPACITY>::PushBack(const A& a)
     {
-        LogAssertB(m_size < CAPACITY);
+        LogAssertB(m_size < CAPACITY, "FixedCapacityVector overflow.");
         T* object = new (m_entries + m_size) T(a);
 
         // Only increment m_size if call to T::T() was successful. This
@@ -142,7 +142,7 @@ namespace BitFunnel
     template <typename A, typename B>
     T& FixedCapacityVector<T, CAPACITY>::PushBack(const A& a, const B& b)
     {
-        LogAssertB(m_size < CAPACITY);
+        LogAssertB(m_size < CAPACITY, "FixedCapacityVector overflow.");
         T* object = new (m_entries + m_size) T(a, b);
 
         // Only increment m_size if call to T::T() was successful. This
@@ -158,7 +158,7 @@ namespace BitFunnel
     template <typename A, typename B, typename C>
     T& FixedCapacityVector<T, CAPACITY>::PushBack(const A& a, const B& b, const C& c)
     {
-        LogAssertB(m_size < CAPACITY);
+        LogAssertB(m_size < CAPACITY, "FixedCapacityVector overflow.");
         T* object = new (m_entries + m_size) T(a, b, c);
 
         // Only increment m_size if call to T::T() was successful. This
@@ -174,7 +174,7 @@ namespace BitFunnel
     template <typename A, typename B, typename C, typename D>
     T& FixedCapacityVector<T, CAPACITY>::PushBack(const A& a, const B& b, const C& c, const D& d)
     {
-        LogAssertB(m_size < CAPACITY);
+        LogAssertB(m_size < CAPACITY, "FixedCapacityVector overflow.");
         T* object = new (m_entries + m_size) T(a, b, c, d);
 
         // Only increment m_size if call to T::T() was successful. This
@@ -203,7 +203,7 @@ namespace BitFunnel
     template <class T, unsigned CAPACITY>
     T& FixedCapacityVector<T, CAPACITY>::operator[](unsigned index)
     {
-        LogAssertB(index < m_size);
+        LogAssertB(index < m_size, "out of bounds access.");
         return m_entries[index];
     }
 
@@ -211,7 +211,7 @@ namespace BitFunnel
     template <class T, unsigned CAPACITY>
     const T& FixedCapacityVector<T, CAPACITY>::operator[](unsigned index) const
     {
-        LogAssertB(index < m_size);
+        LogAssertB(index < m_size, "out of bounds access.");
         return m_entries[index];
     }
 
@@ -219,7 +219,7 @@ namespace BitFunnel
     template <class T, unsigned CAPACITY>
     T& FixedCapacityVector<T, CAPACITY>::Back()
     {
-        LogAssertB(m_size > 0);
+        LogAssertB(m_size > 0, "underflow.");
         return m_entries[m_size - 1];
     }
 
@@ -227,7 +227,7 @@ namespace BitFunnel
     template <class T, unsigned CAPACITY>
     const T& FixedCapacityVector<T, CAPACITY>::Back() const
     {
-        LogAssertB(m_size > 0);
+        LogAssertB(m_size > 0, "underflow.");
         return m_entries[m_size - 1];
     }
 }

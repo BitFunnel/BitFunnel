@@ -10,6 +10,7 @@ set(CPPFILES
     BlockingQueueTest.cpp
     ConstructorDestructorCounter.cpp
     FileHeaderTest.cpp
+    FixedCapacityVectorTest.cpp
     MurmurHashTest.cpp
     PackedArrayTest.cpp
     RandomTest.cpp
