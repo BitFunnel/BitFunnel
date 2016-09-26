@@ -1,27 +1,26 @@
 #pragma once
 
 #include "BitFunnel/NonCopyable.h"
-#include "BitFunnel/RowMatchNodes.h"
+#include "BitFunnel/Plan/RowMatchNode.h"
+#include "BitFunnel/Plan/TermMatchNode.h"
+#include "Term.h"  // needed for maxGramSize.
 // #include "BitFunnel/Stream.h"
-#include "BitFunnel/TermMatchNodes.h"
 
 
 namespace BitFunnel
 {
     class IAllocator;
-    class IIndexConfiguration;
+    class IIndexedIdfTable;
     class PlanRows;
-    template <typename T, unsigned LOG2_CAPACITY>
+    template <typename T, size_t LOG2_CAPACITY>
     class RingBuffer;
-    class Term;
-
 
     class TermMatchTreeConverter : NonCopyable
     {
     public:
-        TermMatchTreeConverter(const IIndexConfiguration& index,
+        TermMatchTreeConverter(const IIndexedIdfTable& index,
                                PlanRows& planRows,
-                               bool generateNonBodyPlan,
+                               // bool generateNonBodyPlan,
                                IAllocator& allocator);
 
         const RowMatchNode& BuildRowMatchTree(const TermMatchNode& root);
@@ -37,13 +36,14 @@ namespace BitFunnel
 
         // Builds a RowMatchNode for a soft-deleted document row. This row
         // excludes documents which are marked as soft-deleted, from matching.
-        const RowMatchNode* BuildSoftDeletedMatchNode();
+        const RowMatchNode* BuildDocumentActiveMatchNode();
 
-        const Term GetUnigramTerm(char const * text, char const * suffix, Classification classification) const;
+        const Term GetUnigramTerm(char const * text, char const * suffix, Term::StreamId streamId) const;
         void ProcessNGramBuffer(RowMatchNode::Builder& builder,
-                                RingBuffer<Term, c_log2MaxGramSize + 1>& termBuffer);
+                                RingBuffer<Term, Term::c_log2MaxGramSize + 1>& termBuffer);
         void AppendTermRows(RowMatchNode::Builder& builder, const Term& term);
-        void AppendTermRows(RowMatchNode::Builder& builder, const FactHandle& fact);
+        // TODO: need to handle facts.
+        // void AppendTermRows(RowMatchNode::Builder& builder, const FactHandle& fact);
 
         IAllocator& m_allocator;
         const IIndexedIdfTable& m_idfTable;
