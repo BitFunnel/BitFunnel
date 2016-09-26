@@ -20,7 +20,7 @@ namespace BitFunnel
     TermMatchTreeConverter::TermMatchTreeConverter(const IIndexedIdfTable& idfTable,
                                                    PlanRows& planRows,
                                                    bool generateNonBodyPlan,
-                                                   Allocators::IAllocator& allocator)
+                                                   IAllocator& allocator)
         : m_idfTable(idfTable),
           m_planRows(planRows),
           // m_generateNonBodyPlan(generateNonBodyPlan),

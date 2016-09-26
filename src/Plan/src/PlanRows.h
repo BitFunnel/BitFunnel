@@ -10,18 +10,18 @@
 
 namespace BitFunnel
 {
-    class IIndexConfiguration;
+    class ISimpleIndex;
     class IInputStream;
 
 
     class PlanRows : public IPlanRows, NonCopyable
     {
     public:
-        PlanRows(const IIndexConfiguration& index);
+        PlanRows(const ISimpleIndex& index);
 
         // Constructs PlanRows from data previously persisted to a stream by
         // the Write() method.
-        PlanRows(IInputStream& stream, const IIndexConfiguration& index);
+        PlanRows(IInputStream& stream, const ISimpleIndex& index);
 
         virtual ~PlanRows();
 
@@ -72,7 +72,7 @@ namespace BitFunnel
             RowId m_rowIds[c_maxShardIdCount];
         };
 
-        const IIndexConfiguration& m_index;
+        const ISimpleIndex& m_index;
 
         FixedCapacityVector<Entry, c_maxRowsPerQuery> m_rows;
     };

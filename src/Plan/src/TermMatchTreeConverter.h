@@ -22,7 +22,7 @@ namespace BitFunnel
         TermMatchTreeConverter(const IIndexConfiguration& index,
                                PlanRows& planRows,
                                bool generateNonBodyPlan,
-                               Allocators::IAllocator& allocator);
+                               IAllocator& allocator);
 
         const RowMatchNode& BuildRowMatchTree(const TermMatchNode& root);
 
@@ -45,7 +45,7 @@ namespace BitFunnel
         void AppendTermRows(RowMatchNode::Builder& builder, const Term& term);
         void AppendTermRows(RowMatchNode::Builder& builder, const FactHandle& fact);
 
-        Allocators::IAllocator& m_allocator;
+        IAllocator& m_allocator;
         const IIndexedIdfTable& m_idfTable;
         PlanRows& m_planRows;
 

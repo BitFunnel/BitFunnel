@@ -84,4 +84,8 @@ namespace BitFunnel
     // is pulled over from the old code, but hasn't been re-thought through.
     typedef int8_t RowCount;
     static const RowCount c_maxRowsPerTerm = 12;
+
+    // TODO: make c_maxRowsPerQuery a product of c_maxRowsPerTerm and something
+    // else. See TFS 567354.
+    static const unsigned c_maxRowsPerQuery = 500;
 }

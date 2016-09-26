@@ -1,18 +1,15 @@
-#include "stdafx.h"
-
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
-#include "BitFunnel/Factories.h"
-#include "BitFunnel/IIndexConfiguration.h"
-#include "BitFunnel/ITermTableCollection.h"
-#include "BitFunnel/StreamUtilities.h"
+#include "BitFunnel/Allocators/IAllocator.h"
+#include "BitFunnel/Index/ISimpleIndex.h"
+#include "BitFunnel/Utilities/StreamUtilities.h"
+#include "BitFunnel/Plan/Factories.h"
 #include "PlanRows.h"
 
 
 namespace BitFunnel
 {
     IPlanRows& Factories::CreatePlanRows(IInputStream& input,
-                                         const IIndexConfiguration& index,
-                                         Allocators::IAllocator& allocator)
+                                         const ISimpleIndex& index,
+                                         IAllocator& allocator)
     {
         return *new (allocator.Allocate(sizeof(PlanRows))) PlanRows(input, index);
     }
@@ -23,13 +20,13 @@ namespace BitFunnel
     // PlanRows
     //
     //*************************************************************************
-    PlanRows::PlanRows(const IIndexConfiguration& index)
+    PlanRows::PlanRows(const ISimpleIndex& index)
         : m_index(index)
     {
     }
 
 
-    PlanRows::PlanRows(IInputStream& stream, const IIndexConfiguration& index)
+    PlanRows::PlanRows(IInputStream& stream, const ISimpleIndex& index)
         : m_index(index)
     {
         const unsigned size = StreamUtilities::ReadField<unsigned>(stream);
@@ -48,7 +45,9 @@ namespace BitFunnel
 
     ShardId PlanRows::GetShardCount() const
     {
-        return static_cast<unsigned>(m_index.GetShardCount());
+        // TODO: must eventually support multiple shards.
+        // return static_cast<unsigned>(m_index.GetShardCount());
+        return 1;
     }
 
 
@@ -58,9 +57,11 @@ namespace BitFunnel
     }
 
 
-    const ITermTable& PlanRows::GetTermTable(ShardId shard) const
+    const ITermTable& PlanRows::GetTermTable(ShardId /*shard*/) const
     {
-        return *m_index.GetTermTables().GetTermTable(shard);
+        // TODO: may need to support multiple term tables.
+        // return *m_index.GetTermTables().GetTermTable(shard);
+        return m_index.GetTermTable();
     }
 
 
@@ -70,7 +71,7 @@ namespace BitFunnel
     }
 
 
-    // Add a row to the PlanRows. 
+    // Add a row to the PlanRows.
     AbstractRow PlanRows::AddRow(Rank rank)
     {
         m_rows.PushBack(m_rows.GetSize(), rank);
@@ -118,7 +119,7 @@ namespace BitFunnel
     {
         m_id = StreamUtilities::ReadField<unsigned>(stream);
         m_rank = StreamUtilities::ReadField<Rank>(stream);
-        StreamUtilities::ReadArray(stream, m_rowIds, c_maxShardCount);
+        StreamUtilities::ReadArray(stream, m_rowIds, c_maxShardIdCount);
     }
 
 
@@ -136,14 +137,14 @@ namespace BitFunnel
 
     RowId& PlanRows::Entry::operator[](ShardId shard)
     {
-        LogAssertB(shard < c_maxShardCount);
+        LogAssertB(shard < c_maxShardIdCount, "ShardId overflow.");
         return m_rowIds[shard];
     }
 
 
     RowId const & PlanRows::Entry::operator[](ShardId shard) const
     {
-        LogAssertB(shard < c_maxShardCount);
+        LogAssertB(shard < c_maxShardIdCount, "ShardId overflow.");
         return m_rowIds[shard];
     }
 
@@ -152,6 +153,6 @@ namespace BitFunnel
     {
         StreamUtilities::WriteField(stream, m_id);
         StreamUtilities::WriteField(stream, m_rank);
-        StreamUtilities::WriteArray(stream, m_rowIds, c_maxShardCount);
+        StreamUtilities::WriteArray(stream, m_rowIds, c_maxShardIdCount);
     }
 }

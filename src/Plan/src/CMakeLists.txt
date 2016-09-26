@@ -5,7 +5,7 @@ set(CPPFILES
     AbstractRowEnumerator.cpp
     CompileNode.cpp
     MatchTreeRewriter.cpp
-    # PlanRows.cpp
+    PlanRows.cpp
     QueryParser.cpp
     QueryPipeline.cpp
     # QueryPlanner.cpp
