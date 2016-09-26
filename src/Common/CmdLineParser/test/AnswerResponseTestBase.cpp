@@ -113,7 +113,6 @@ namespace CmdLine
 
     void AnswerResponseTestBase::EmitPrologue()
     {
-        m_out << "#include \"stdafx.h\"\n\n";
         m_out << "#include \"" << m_className << ".h\"\n\n";
         m_out << "namespace " << m_namespace << "\n{\n";
         m_out << "    void " << m_className << "::InitializeCases()\n";
