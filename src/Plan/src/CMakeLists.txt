@@ -2,6 +2,7 @@
 
 set(CPPFILES
     AbstractRow.cpp
+    ByteCodeInterpreter.cpp
     CompileNode.cpp
     MatchTreeRewriter.cpp
     QueryParser.cpp
@@ -24,6 +25,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    ByteCodeInterpreter.h
     CompileNode.h
     MatchTreeRewriter.h
     RankDownCompiler.h
