@@ -177,6 +177,7 @@ set(UTILITIES_HFILES
 )
 
 set(LOGGER_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/Check.h
   ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/ConsoleLogger.h
   ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/ILogger.h
   ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/Logging.h

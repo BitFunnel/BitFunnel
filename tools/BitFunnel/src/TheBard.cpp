@@ -29,6 +29,7 @@
 #include "BitFunnel/Data/Sonnets.h"
 #include "BitFunnelTool.h"
 #include "CmdLineParser/CmdLineParser.h"
+#include "LoggerInterfaces/Check.h"
 
 
 namespace BitFunnel
@@ -46,6 +47,18 @@ namespace BitFunnel
     //*************************************************************************
     void Run(bool verbose)
     {
+        try
+        {
+            CHECK_EQ(verbose, true) << "Hello world.";
+            CHECK_NE(verbose, false) << "Hello world.";
+        }
+        catch (Logging::CheckException e)
+        {
+
+        }
+
+//        auto op = Logging::CmpHelperNE(verbose, true);
+
         //
         // This example uses the RAM filesystem.
         //
