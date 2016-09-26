@@ -2,17 +2,13 @@
 
 #include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/RowMatchNodes.h"
-#include "BitFunnel/Stream.h"
+// #include "BitFunnel/Stream.h"
 #include "BitFunnel/TermMatchNodes.h"
 
 
 namespace BitFunnel
 {
-    namespace Allocators
-    {
-        class IAllocator;
-    }
-
+    class IAllocator;
     class IIndexConfiguration;
     class PlanRows;
     template <typename T, unsigned LOG2_CAPACITY>
@@ -23,8 +19,8 @@ namespace BitFunnel
     class TermMatchTreeConverter : NonCopyable
     {
     public:
-        TermMatchTreeConverter(const IIndexConfiguration& index, 
-                               PlanRows& planRows, 
+        TermMatchTreeConverter(const IIndexConfiguration& index,
+                               PlanRows& planRows,
                                bool generateNonBodyPlan,
                                Allocators::IAllocator& allocator);
 
@@ -39,7 +35,7 @@ namespace BitFunnel
         const RowMatchNode* BuildMatchTree(const TermMatchNode::Unigram& node);
         const RowMatchNode* BuildMatchTree(const TermMatchNode::Fact& node);
 
-        // Builds a RowMatchNode for a soft-deleted document row. This row 
+        // Builds a RowMatchNode for a soft-deleted document row. This row
         // excludes documents which are marked as soft-deleted, from matching.
         const RowMatchNode* BuildSoftDeletedMatchNode();
 
@@ -50,10 +46,10 @@ namespace BitFunnel
         void AppendTermRows(RowMatchNode::Builder& builder, const FactHandle& fact);
 
         Allocators::IAllocator& m_allocator;
-        const IIndexConfiguration& m_index;
+        const IIndexedIdfTable& m_idfTable;
         PlanRows& m_planRows;
 
         // A flag to indicate if NonBodyQueryPlan is requested to be generated.
-        bool m_generateNonBodyPlan;
+        // bool m_generateNonBodyPlan;
     };
 }

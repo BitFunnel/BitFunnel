@@ -3,8 +3,8 @@
 #include <iosfwd>
 
 #include "BitFunnel/BitFunnelTypes.h"
-#include "BitFunnel/IPlanRows.h"
 #include "BitFunnel/NonCopyable.h"
+#include "BitFunnel/Plan/IPlanRows.h"
 #include "FixedCapacityVector.h"
 
 
@@ -69,7 +69,7 @@ namespace BitFunnel
         private:
             unsigned m_id;
             Rank m_rank;
-            RowId m_rowIds[c_maxShardCount];
+            RowId m_rowIds[c_maxShardIdCount];
         };
 
         const IIndexConfiguration& m_index;

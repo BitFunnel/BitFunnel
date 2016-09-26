@@ -1,21 +1,15 @@
-#include "stdafx.h"
-
 #include <sstream>
 
 #include "AbstractRowEnumerator.h"
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
-#include "BitFunnel/BitFunnelErrors.h"
-#include "BitFunnel/ICommonPhrases.h"
-#include "BitFunnel/IIndexConfiguration.h"
-#include "BitFunnel/IIndexedDocFreqTable.h"
-#include "BitFunnel/IMetaWordTierHintMap.h"
-#include "BitFunnel/ITermTable.h"
-#include "BitFunnel/Tier.h"
-#include "ClassificationConverter.h"
+#include "BitFunnel/Allocators/IAllocator.h"
+// #include "BitFunnel/BitFunnelErrors.h"
+#include "BitFunnel/Index/ITermTable.h"
+#include "BitFunnel/Index/IIndexedIdfTable.h"
+#include "BitFunnel/Plan/IPlanRows.h"
 #include "LoggerInterfaces/Logging.h"
 #include "PlanRows.h"
 #include "RingBuffer.h"
-#include "BitFunnel/RowMatchNodes.h"
+#include "BitFunnel/RowMatchNode.h"
 #include "BitFunnel/StringVector.h"
 #include "TermMatchTreeConverter.h"
 #include "TextObjectFormatter.h"
@@ -23,13 +17,13 @@
 
 namespace BitFunnel
 {
-    TermMatchTreeConverter::TermMatchTreeConverter(const IIndexConfiguration& index,
+    TermMatchTreeConverter::TermMatchTreeConverter(const IIndexedIdfTable& idfTable,
                                                    PlanRows& planRows,
                                                    bool generateNonBodyPlan,
                                                    Allocators::IAllocator& allocator)
-        : m_index(index),
+        : m_idfTable(idfTable),
           m_planRows(planRows),
-          m_generateNonBodyPlan(generateNonBodyPlan),
+          // m_generateNonBodyPlan(generateNonBodyPlan),
           m_allocator(allocator)
     {
     }
@@ -167,10 +161,10 @@ namespace BitFunnel
 
         AppendTermRows(builder, GetUnigramTerm(node.GetText(), node.GetSuffix(), node.GetClassification()));
 
-        if (m_generateNonBodyPlan && node.GetClassification() == BitFunnel::Full)
-        {
-            AppendTermRows(builder, GetUnigramTerm(node.GetText(), node.GetSuffix(), BitFunnel::NonBody));
-        }
+        // if (m_generateNonBodyPlan && node.GetClassification() == BitFunnel::Full)
+        // {
+        //     AppendTermRows(builder, GetUnigramTerm(node.GetText(), node.GetSuffix(), BitFunnel::NonBody));
+        // }
 
         return builder.Complete();
     }
@@ -198,34 +192,6 @@ namespace BitFunnel
             ClassificationToStreamClassification(classification);
 
         Tier termTier;
-
-        switch(classification)
-        {
-        case Full:
-            {
-                termTier = DDRTier;
-            }
-            break;
-        case NonBody:
-            {
-                termTier = DDRTier;
-            }
-            break;
-        case MetaWord:
-            {
-                termTier = m_index.GetMetaWordTierHintMap().GetTierHint(text);
-            }
-            break;
-        case ClickBoost:
-            {
-                termTier = SSDTier;
-            }
-            break;
-        default:
-            {
-                termTier = InvalidTier;
-            }
-        }
 
         return Term(termHash, termClassification, termIdf, termTier);
     }
