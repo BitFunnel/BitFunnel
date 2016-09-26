@@ -2,6 +2,7 @@
 
 set(CPPFILES
     AbstractRow.cpp
+    # AbstractRowEnumerator.cpp
     CompileNode.cpp
     MatchTreeRewriter.cpp
     QueryParser.cpp
@@ -14,6 +15,7 @@ set(CPPFILES
     RowPlan.cpp
     StringVector.cpp
     TermMatchNode.cpp
+    # TermMatchTreeConverter.cpp
     TermMatchTreeEvaluator.cpp
 )
 

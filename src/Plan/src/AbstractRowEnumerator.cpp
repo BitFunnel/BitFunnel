@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "AbstractRowEnumerator.h"
 #include "BitFunnel/IPlanRows.h"
 #include "BitFunnel/Stream.h"
