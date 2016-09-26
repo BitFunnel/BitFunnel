@@ -2,7 +2,7 @@
 
 set(CPPFILES
     AbstractRow.cpp
-    # AbstractRowEnumerator.cpp
+    AbstractRowEnumerator.cpp
     CompileNode.cpp
     MatchTreeRewriter.cpp
     QueryParser.cpp

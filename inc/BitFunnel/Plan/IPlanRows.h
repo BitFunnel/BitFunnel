@@ -2,9 +2,9 @@
 
 #include <iosfwd>
 
-#include "BitFunnel/AbstractRow.h"
 #include "BitFunnel/BitFunnelTypes.h"
-#include "BitFunnel/RowId.h"
+#include "BitFunnel/Index/RowId.h"
+#include "BitFunnel/Plan/AbstractRow.h"
 
 
 namespace BitFunnel

@@ -1,24 +1,18 @@
 #include "AbstractRowEnumerator.h"
-#include "BitFunnel/IPlanRows.h"
-#include "BitFunnel/Stream.h"
-#include "BitFunnel/TermInfo.h"
-#include "BitFunnel/Tier.h"
+#include "BitFunnel/Index/ITermTable.h"
+#include "BitFunnel/Index/RowIdSequence.h"
+#include "BitFunnel/Plan/IPlanRows.h"
+// #include "BitFunnel/Stream.h"
 #include "LoggerInterfaces/Logging.h"
 
+// TODO: port this to use C++ iterator interface?
 
 namespace BitFunnel
 {
-    // Return true if a tier is serving index.
-    static bool IsServingTier(Tier tier)
-    {
-        return tier == DDRTier;
-    }
-
-
     AbstractRowEnumerator::AbstractRowEnumerator(const Term& term,
                                                  IPlanRows& planRows)
-        : m_term(&term),
-          m_fact(nullptr)
+        : m_term(&term)
+          // m_fact(nullptr)
     {
         // Initialize the RowIds for the match-all and match-none terms for all the shards.
         GetSystemRowIds(planRows);
@@ -27,32 +21,33 @@ namespace BitFunnel
         // IPlanRows.
         for (ShardId shard = 0; shard < planRows.GetShardCount(); ++shard)
         {
-            TermInfo termInfo(term, planRows.GetTermTable(shard));
-            ProcessShard(termInfo, planRows, shard);
+            RowIdSequence rowIdSequence(term, planRows.GetTermTable(shard));
+            ProcessShard(rowIdSequence, planRows, shard);
         }
 
         FinishInitialization(planRows);
     }
 
 
-    AbstractRowEnumerator::AbstractRowEnumerator(const FactHandle& fact,
-                                                 IPlanRows& planRows)
-        : m_term(nullptr),
-          m_fact(&fact)
-    {
-        // Initialize the RowIds for the match-all and match-none terms for all the shards.
-        GetSystemRowIds(planRows);
+    // TODO: implement this constructor.
+    // AbstractRowEnumerator::AbstractRowEnumerator(const FactHandle& fact,
+    //                                              IPlanRows& planRows)
+    //     : m_term(nullptr),
+    //       m_fact(&fact)
+    // {
+    //     // Initialize the RowIds for the match-all and match-none terms for all the shards.
+    //     GetSystemRowIds(planRows);
 
-        // Look up the RowIds for the fact in each Shard and add them to the
-        // IPlanRows.
-        for (ShardId shard = 0; shard < planRows.GetShardCount(); ++shard)
-        {
-            TermInfo termInfo(fact, planRows.GetTermTable(shard));
-            ProcessShard(termInfo, planRows, shard);
-        }
+    //     // Look up the RowIds for the fact in each Shard and add them to the
+    //     // IPlanRows.
+    //     for (ShardId shard = 0; shard < planRows.GetShardCount(); ++shard)
+    //     {
+    //         TermInfo termInfo(fact, planRows.GetTermTable(shard));
+    //         ProcessShard(termInfo, planRows, shard);
+    //     }
 
-        FinishInitialization(planRows);
-    }
+    //     FinishInitialization(planRows);
+    // }
 
 
     void AbstractRowEnumerator::GetSystemRowIds(IPlanRows& planRows)
@@ -60,21 +55,18 @@ namespace BitFunnel
         // Initialize the RowIds for the match-all and match-none terms for all the shards.
         for (ShardId shard = 0; shard < planRows.GetShardCount(); ++shard)
         {
-            TermInfo matchAllTermInfo(ITermTable::GetMatchAllTerm(), planRows.GetTermTable(shard));
-            TermInfo matchNoneTermInfo(ITermTable::GetMatchNoneTerm(), planRows.GetTermTable(shard));
+            RowIdSequence matchAll(planRows.GetTermTable(shard).GetMatchAllTerm(),
+                                   planRows.GetTermTable(shard));
+            RowIdSequence matchNone(planRows.GetTermTable(shard).GetMatchNoneTerm(),
+                                    planRows.GetTermTable(shard));
 
-            LogAssertB(matchAllTermInfo.MoveNext());
-            m_matchAllTermRowIds[shard] = matchAllTermInfo.Current();
-            LogAssertB(!matchAllTermInfo.MoveNext())
-
-            LogAssertB(matchNoneTermInfo.MoveNext());
-            m_matchNoneTermRowIds[shard] = matchNoneTermInfo.Current();
-            LogAssertB(!matchNoneTermInfo.MoveNext())
+            m_matchAllTermRowIds[shard] = *matchAll.begin();
+            m_matchNoneTermRowIds[shard] = *matchNone.begin();
         }
     }
 
 
-    void AbstractRowEnumerator::ProcessShard(TermInfo& termInfo,
+    void AbstractRowEnumerator::ProcessShard(RowIdSequence& rows,
                                              IPlanRows& planRows,
                                              ShardId shard)
     {
@@ -82,30 +74,12 @@ namespace BitFunnel
         unsigned rowsPerRank[c_maxRankValue + 1] = { 0 };
 
         // Enumerate the RowIds associated with the Term in this Shard.
-        while (termInfo.MoveNext())
+        auto it = rows.begin();
+        while (it != rows.end())
         {
-            const RowId rowId = termInfo.Current();
-            const Rank rank = rowId.GetRank();
-
-            RowId physicalRowId = rowId;
-
-            if (!IsServingTier(rowId.GetTier()))
-            {
-                physicalRowId = m_matchNoneTermRowIds[shard];
-                LogB(Logging::Info,
-                    "BitFunnelQueryPlanning",
-                    "Row (shard, tier, rank, rowIndex) (%u, %s, %u, %u) for term with "
-                    "term hash %I64u, classification %s, GramSize %u, tier %s is in "
-                    "a non-serving tier, this row is replaced with match all term row.",
-                    rowId.GetShard(),
-                    TierToString(rowId.GetTier()),
-                    rowId.GetRank(),
-                    rowId.GetIndex(),
-                    m_term->GetRawHash(),
-                    Stream::ClassificationToString(m_term->GetClassification()),
-                    m_term->GetGramSize(),
-                    TierToString(m_term->GetTierHint()));
-            }
+            auto row = *it;
+            const Rank rank = row.GetRank();
+            RowId physicalRowId = row;
 
             // Initialize index with the RowId's position in the current Rank.
             unsigned index = rowsPerRank[rank];
@@ -137,34 +111,36 @@ namespace BitFunnel
             {
                 if (m_term != nullptr)
                 {
+                    // TODO: log this.
                     // Row limit reached when adding RowIds for a term.
-                    LogB(Logging::Warning,
-                        "IndexServe",
-                        "Row count limit reached for term with term hash %I64u "
-                        "classification %s, GramSize %u, tier %s, as a result row with id"
-                        "(shard, tier, rank, rowIndex) (%u, %s, %u, %u) is ignored.",
-                        m_term->GetRawHash(),
-                        Stream::ClassificationToString(m_term->GetClassification()),
-                        m_term->GetGramSize(),
-                        TierToString(m_term->GetTierHint()),
-                        physicalRowId.GetShard(),
-                        TierToString(physicalRowId.GetTier()),
-                        physicalRowId.GetRank(),
-                        physicalRowId.GetIndex());
+                    // LogB(Logging::Warning,
+                    //     "IndexServe",
+                    //     "Row count limit reached for term with term hash %I64u "
+                    //     "classification %s, GramSize %u, tier %s, as a result row with id"
+                    //     "(shard, tier, rank, rowIndex) (%u, %s, %u, %u) is ignored.",
+                    //     m_term->GetRawHash(),
+                    //     Stream::ClassificationToString(m_term->GetClassification()),
+                    //     m_term->GetGramSize(),
+                    //     TierToString(m_term->GetTierHint()),
+                    //     physicalRowId.GetShard(),
+                    //     TierToString(physicalRowId.GetTier()),
+                    //     physicalRowId.GetRank(),
+                    //     physicalRowId.GetIndex());
                 }
                 else
                 {
+                    // TODO: log this.
                     // Row limit reached when adding RowIds for a fact.
-                    LogB(Logging::Warning,
-                        "IndexServe",
-                        "Row count limit reached for fact with FactHandle value of %I64u, "
-                        "as a result row with id"
-                        "(shard, tier, rank, rowIndex) (%u, %s, %u, %u) is ignored.",
-                        static_cast<Term::Hash>(*m_fact),
-                        physicalRowId.GetShard(),
-                        TierToString(physicalRowId.GetTier()),
-                        physicalRowId.GetRank(),
-                        physicalRowId.GetIndex());
+                    // LogB(Logging::Warning,
+                    //     "IndexServe",
+                    //     "Row count limit reached for fact with FactHandle value of %I64u, "
+                    //     "as a result row with id"
+                    //     "(shard, tier, rank, rowIndex) (%u, %s, %u, %u) is ignored.",
+                    //     static_cast<Term::Hash>(*m_fact),
+                    //     physicalRowId.GetShard(),
+                    //     TierToString(physicalRowId.GetTier()),
+                    //     physicalRowId.GetRank(),
+                    //     physicalRowId.GetIndex());
                 }
             }
         }
@@ -233,7 +209,7 @@ namespace BitFunnel
 
     AbstractRow AbstractRowEnumerator::Current() const
     {
-        LogAssertB(m_currentRow >= 0);
+        LogAssertB(m_currentRow >= 0, "row underflow?");
 
         return m_rows[m_currentRank][m_currentRow];
     }
