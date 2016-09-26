@@ -14,7 +14,7 @@ namespace BitFunnel
     class IPlanRows
     {
     public:
-        virtual ~IPlanRows() {};
+        virtual ~IPlanRows() {}
 
         virtual ShardId GetShardCount() const = 0;
         virtual unsigned GetRowCount() const = 0;

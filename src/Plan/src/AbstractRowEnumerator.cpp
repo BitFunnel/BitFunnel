@@ -209,9 +209,9 @@ namespace BitFunnel
 
     AbstractRow AbstractRowEnumerator::Current() const
     {
-        LogAssertB(m_currentRow >= 0, "row underflow?");
+        LogAssertB(m_currentRow >= 0, "sentinal value in m_currentRow.");
 
-        return m_rows[m_currentRank][m_currentRow];
+        return m_rows[m_currentRank][static_cast<unsigned>(m_currentRow)];
     }
 
 

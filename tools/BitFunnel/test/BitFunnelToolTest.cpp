@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <limits>
 #include <sstream>
 #include <stddef.h>
 #include <string>
@@ -63,7 +64,7 @@ namespace BitFunnel
                 name << "sonnet" << i;
                 auto out = fileSystem->OpenForWrite(name.str().c_str());
                 out->write(Sonnets::chunks[i].second,
-                           Sonnets::chunks[i].first);
+                           static_cast<std::streamsize>(Sonnets::chunks[i].first));
 
                 // Add chunk file to manifest.
                 *manifest << name.str() << std::endl;

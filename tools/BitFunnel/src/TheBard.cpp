@@ -73,8 +73,9 @@ namespace BitFunnel
                 std::stringstream name;
                 name << "sonnet" << i;
                 auto out = fileSystem->OpenForWrite(name.str().c_str());
+                // TODO: consider checking for cast overflow?
                 out->write(Sonnets::chunks[i].second,
-                           Sonnets::chunks[i].first);
+                           static_cast<std::streamsize>(Sonnets::chunks[i].first));
 
                 // Add chunk file to manifest.
                 *manifest << name.str() << std::endl;
