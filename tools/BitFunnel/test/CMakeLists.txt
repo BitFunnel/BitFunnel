@@ -30,6 +30,6 @@ set_property(TARGET BitFunnelToolTest PROPERTY PROJECT_LABEL "Test")
 
 # NOTE: The ordering Utilities-Index is important for XCode. If you reverse
 # Utilities and Index, we will get linker errors.
-target_link_libraries (BitFunnelToolTest Data CmdLineParser CsvTsv BitFunnelTool Plan Utilities Index Configuration CsvTsv Utilities gtest gtest_main)
+target_link_libraries (BitFunnelToolTest BitFunnelTool Data CmdLineParser CsvTsv Plan Utilities Index Configuration CsvTsv Utilities gtest gtest_main)
 
 add_test(NAME BitFunnelToolTest COMMAND BitFunnelToolTest)
