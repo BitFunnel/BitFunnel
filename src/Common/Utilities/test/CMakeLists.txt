@@ -8,6 +8,7 @@ set(CPPFILES
     Array2DTest.cpp
     BlockAllocatorTest.cpp
     BlockingQueueTest.cpp
+    CheckTest.cpp
     ConstructorDestructorCounter.cpp
     FileHeaderTest.cpp
     FixedCapacityVectorTest.cpp
