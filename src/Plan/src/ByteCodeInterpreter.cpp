@@ -131,7 +131,7 @@ Address TODO comments.
                 throw NotImplemented("Constant opcode not implemented.");
                 //m_valueStack.push_back(row);
                 //m_ip++;
-                break;
+                //break;
             case Opcode::Not:
                 m_valueStack.back() = ~m_valueStack.back();
                 m_ip++;
