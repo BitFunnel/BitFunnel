@@ -24,6 +24,7 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "ByteCodeInterpreter.h"
+#include "LoggerInterfaces/Check.h"
 
 
 namespace BitFunnel
@@ -31,13 +32,13 @@ namespace BitFunnel
 /*
 TODO
 
-Check macro framework.
-Seal method on ByteCodeGenerator.
 Pass results processor callback.
 Mock row tables.
 For loop for slices.
 Unit tests.
 Replace std::vector with FixedCapacityVector.
+Review zero flag.
+Figure out how Rank0 instructions read rows.
 Address TODO comments.
 
 */
@@ -203,10 +204,34 @@ Address TODO comments.
     // ByteCodeGenerator
     //
     //*************************************************************************
+    ByteCodeGenerator::ByteCodeGenerator()
+        : m_sealed(false)
+    {
+    }
+
+
+    void ByteCodeGenerator::Seal()
+    {
+        EnsureSealed(false);
+
+        // Mark the end of the generated code.
+        m_code.emplace_back(ByteCodeInterpreter::Opcode::End);
+
+        // Verify that all labels have been placed.
+        for (size_t i = 0; i < m_jumpTable.size(); ++i)
+        {
+            CHECK_NE(m_jumpTable[i], nullptr)
+                << "Label " << i << " has not been placed.";
+        }
+
+        m_sealed = true;
+    }
+
 
     std::vector<ByteCodeInterpreter::Instruction> const &
         ByteCodeGenerator::GetCode() const
     {
+        EnsureSealed(true);
         return m_code;
     }
 
@@ -214,26 +239,30 @@ Address TODO comments.
     std::vector<ByteCodeInterpreter::Instruction const *> const &
         ByteCodeGenerator::GetJumpTable() const
     {
+        EnsureSealed(true);
         return m_jumpTable;
     }
 
 
-    void ByteCodeGenerator::AndRow(size_t id, bool inverted, size_t rankDelta)
+    void ByteCodeGenerator::AndRow(size_t row, bool inverted, size_t rankDelta)
     {
+        EnsureSealed(false);
         m_code.emplace_back(
-            ByteCodeInterpreter::Opcode::AndRow, id, rankDelta, inverted);
+            ByteCodeInterpreter::Opcode::AndRow, row, rankDelta, inverted);
     }
 
 
-    void ByteCodeGenerator::LoadRow(size_t id, bool inverted, size_t rankDelta)
+    void ByteCodeGenerator::LoadRow(size_t row, bool inverted, size_t rankDelta)
     {
+        EnsureSealed(false);
         m_code.emplace_back(
-            ByteCodeInterpreter::Opcode::LoadRow, id, rankDelta, inverted);
+            ByteCodeInterpreter::Opcode::LoadRow, row, rankDelta, inverted);
     }
 
 
     void ByteCodeGenerator::LeftShiftOffset(size_t shift)
     {
+        EnsureSealed(false);
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::LeftShiftOffset, shift);
     }
@@ -241,6 +270,7 @@ Address TODO comments.
 
     void ByteCodeGenerator::RightShiftOffset(size_t shift)
     {
+        EnsureSealed(false);
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::RightShiftOffset, shift);
     }
@@ -248,6 +278,7 @@ Address TODO comments.
 
     void ByteCodeGenerator::IncrementOffset()
     {
+        EnsureSealed(false);
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::IncrementOffset);
     }
@@ -255,6 +286,7 @@ Address TODO comments.
 
     void ByteCodeGenerator::Push()
     {
+        EnsureSealed(false);
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::Push);
     }
@@ -262,6 +294,7 @@ Address TODO comments.
 
     void ByteCodeGenerator::Pop()
     {
+        EnsureSealed(false);
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::Pop);
     }
@@ -269,6 +302,7 @@ Address TODO comments.
 
     void ByteCodeGenerator::AndStack()
     {
+        EnsureSealed(false);
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::AndStack);
     }
@@ -276,12 +310,14 @@ Address TODO comments.
 
     void ByteCodeGenerator::Constant(int /*value*/)
     {
+        EnsureSealed(false);
         throw NotImplemented("Constant opcode not implemented.");
     }
 
 
     void ByteCodeGenerator::Not()
     {
+        EnsureSealed(false);
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::Not);
     }
@@ -289,6 +325,7 @@ Address TODO comments.
 
     void ByteCodeGenerator::OrStack()
     {
+        EnsureSealed(false);
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::OrStack);
     }
@@ -296,14 +333,15 @@ Address TODO comments.
 
     void ByteCodeGenerator::UpdateFlags()
     {
+        EnsureSealed(false);
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::UpdateFlags);
     }
 
 
-
     void ByteCodeGenerator::Report()
     {
+        EnsureSealed(false);
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::Report);
     }
@@ -311,64 +349,79 @@ Address TODO comments.
 
     ICodeGenerator::Label ByteCodeGenerator::AllocateLabel()
     {
+        EnsureSealed(false);
         Label label = static_cast<Label>(m_jumpTable.size());
         m_jumpTable.push_back(nullptr);
-        // TODO: Seal operation could make sure there are
-        // no nullptrs in the jump table.
         return label;
     }
 
 
     void ByteCodeGenerator::PlaceLabel(Label label)
     {
-        // TODO: bounds check.
-        // TODO: check for double place.
-        m_jumpTable[label] = (&m_code.back()) + 1;
+        EnsureSealed(false);
+        CHECK_NE(m_jumpTable.at(label), nullptr)
+            << "Label " << label << " has already been placed.";
+
+        m_jumpTable.at(label) = (&m_code.back()) + 1;
     }
 
 
-    // TODO: Ensure label is not too big.
     void ByteCodeGenerator::Call(Label label)
     {
+        EnsureSealed(false);
+        CHECK_LT(label, m_jumpTable.size())
+            << "Call to unknown label " << label;
+
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::Call, label);
     }
 
 
-    // TODO: Ensure label is not too big.
     void ByteCodeGenerator::Jmp(Label label)
     {
+        EnsureSealed(false);
+        CHECK_LT(label, m_jumpTable.size())
+            << "Jmp to unknown label " << label;
+
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::Jmp, label);
     }
 
 
-    // TODO: Ensure label is not too big.
     void ByteCodeGenerator::Jnz(Label label)
     {
+        EnsureSealed(false);
+        CHECK_LT(label, m_jumpTable.size())
+            << "Jnz to unknown label " << label;
+
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::Jnz, label);
     }
 
 
-    // TODO: Ensure label is not too big.
     void ByteCodeGenerator::Jz(Label label)
     {
+        EnsureSealed(false);
+        CHECK_LT(label, m_jumpTable.size())
+            << "Jz to unknown label " << label;
+
         m_code.emplace_back(
-            ByteCodeInterpreter::Opcode::Jnz, label);
+            ByteCodeInterpreter::Opcode::Jz, label);
     }
 
 
     void ByteCodeGenerator::Return()
     {
+        EnsureSealed(false);
         m_code.emplace_back(
             ByteCodeInterpreter::Opcode::Return);
     }
 
 
-    void ByteCodeGenerator::End()
+    void ByteCodeGenerator::EnsureSealed(bool sealed) const
     {
-        m_code.emplace_back(
-            ByteCodeInterpreter::Opcode::End);
+        CHECK_EQ(sealed, m_sealed)
+            << (sealed ? "class must be sealed." :
+                         "class already sealed.");
     }
 }
