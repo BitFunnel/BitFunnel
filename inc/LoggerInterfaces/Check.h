@@ -52,8 +52,8 @@ namespace Logging
 
     template <typename T>
     void StreamOut(std::stringstream& stream,
-                   typename std::enable_if<std::is_pointer<T>::value &&
-                            !std::is_convertible<T, char const *>::value ||
+                   typename std::enable_if<(std::is_pointer<T>::value &&
+                            !std::is_convertible<T, char const *>::value) ||
                             std::is_null_pointer<T>::value, T const &>::type value)
     {
         if (value == nullptr)
