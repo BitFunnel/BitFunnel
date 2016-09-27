@@ -117,7 +117,7 @@ namespace BitFunnel
         }
 
         // Check that reverse N-grams aren't included.
-        for (int i = text.size()-1; i >= 0; --i)
+        for (int i = static_cast<int>(text.size())-1; i >= 0; --i)
         {
             Term term(text[i], streamId, *config);
             for (int j = i-1; j >= 0; --j)
