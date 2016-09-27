@@ -3,8 +3,10 @@
 #include "AbstractRowEnumerator.h"
 #include "BitFunnel/Allocators/IAllocator.h"
 // #include "BitFunnel/BitFunnelErrors.h"
+#include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/IIndexedIdfTable.h"
+#include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Plan/IPlanRows.h"
 #include "BitFunnel/Plan/RowMatchNode.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
@@ -19,12 +21,12 @@
 
 namespace BitFunnel
 {
-    TermMatchTreeConverter::TermMatchTreeConverter(const IIndexedIdfTable& idfTable,
+    TermMatchTreeConverter::TermMatchTreeConverter(const ISimpleIndex& index,
                                                    PlanRows& planRows,
                                                    // bool generateNonBodyPlan,
                                                    IAllocator& allocator)
         : m_allocator(allocator),
-          m_idfTable(idfTable),
+          m_index(index),
           m_planRows(planRows)
           // m_generateNonBodyPlan(generateNonBodyPlan),
 
@@ -46,11 +48,12 @@ namespace BitFunnel
 
          if (mainMatchTree == nullptr)
          {
+             // TODO: handle error using BitFunnel error handling.
              std::stringstream output;
              output << "Conversion between TermPlan and RowPlan resulted in an empty MatchTree: \n";
              TextObjectFormatter formatter(output);
              root.Format(formatter);
-             throw QueryError(output.str().c_str());
+             throw output.str().c_str();
          }
          else
          {
@@ -65,9 +68,9 @@ namespace BitFunnel
 
     const RowMatchNode* TermMatchTreeConverter::BuildDocumentActiveMatchNode()
     {
-        const Term documentActiveDocumentTerm = ITermTable::GetDocumentActiveTerm();
+        const Term documentActiveDocumentTerm = m_index.GetTermTable().GetDocumentActiveTerm();
         AbstractRowEnumerator rowEnumerator(documentActiveDocumentTerm, m_planRows);
-        LogAssertB(rowEnumerator.MoveNext(), "couldn't documentActive row.");
+        LogAssertB(rowEnumerator.MoveNext(), "couldn't find documentActive row.");
 
         const RowMatchNode* result = RowMatchNode::Builder::CreateRowNode(rowEnumerator.Current(), m_allocator);
 
@@ -140,7 +143,7 @@ namespace BitFunnel
         StringVector const & stringVector = node.GetGrams();
         for (unsigned i = 0; i < stringVector.GetSize(); ++i)
         {
-            *termBuffer.PushBack() = GetUnigramTerm(stringVector[i], node.GetSuffix(), node.GetStream());
+            *termBuffer.PushBack() = GetUnigramTerm(stringVector[i], node.GetSuffix(), node.GetStreamId());
 
             if (termBuffer.GetCount() == Term::c_maxGramSize)
             {
@@ -161,9 +164,9 @@ namespace BitFunnel
     {
         RowMatchNode::Builder builder(RowMatchNode::AndMatch, m_allocator);
 
-        AppendTermRows(builder, GetUnigramTerm(node.GetText(), node.GetSuffix(), node.GetStream()));
+        AppendTermRows(builder, GetUnigramTerm(node.GetText(), node.GetSuffix(), node.GetStreamId()));
 
-        // if (m_generateNonBodyPlan && node.GetStream() == BitFunnel::Full)
+        // if (m_generateNonBodyPlan && node.GetStreamId() == BitFunnel::Full)
         // {
         //     AppendTermRows(builder, GetUnigramTerm(node.GetText(), node.GetSuffix(), BitFunnel::NonBody));
         // }
@@ -174,9 +177,9 @@ namespace BitFunnel
 
     const RowMatchNode* TermMatchTreeConverter::BuildMatchTree(const TermMatchNode::Fact& node)
     {
-        RowMatchNode::Builder builder(RowMatchNode::AndMatch, m_allocator);
-
-        AppendTermRows(builder, node.GetFact());
+        // TODO: need to add support for Facts.
+        // RowMatchNode::Builder builder(RowMatchNode::AndMatch, m_allocator);
+        // AppendTermRows(builder, node.GetFact());
 
         return builder.Complete();
     }
@@ -188,7 +191,7 @@ namespace BitFunnel
     const Term TermMatchTreeConverter::GetUnigramTerm(char const * text, char const * suffix, Term::StreamId streamId) const
     {
         Term::Hash termHash = Term::ComputeQualifiedRawHash(text, suffix);
-        IdfX10 termIdf = m_idfTable.GetIdf(termHash);
+        IdfX10 termIdf = m_index.GetConfiguration().GetIdfTable().GetIdf(termHash);
 
         const int gramSize = 1;
         return Term(termHash, streamId, termIdf, gramSize);

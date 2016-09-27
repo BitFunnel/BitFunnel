@@ -10,7 +10,7 @@
 namespace BitFunnel
 {
     class IAllocator;
-    class IIndexedIdfTable;
+    class ISimpleIndex;
     class PlanRows;
     template <typename T, size_t LOG2_CAPACITY>
     class RingBuffer;
@@ -18,7 +18,7 @@ namespace BitFunnel
     class TermMatchTreeConverter : NonCopyable
     {
     public:
-        TermMatchTreeConverter(const IIndexedIdfTable& index,
+        TermMatchTreeConverter(const ISimpleIndex& index,
                                PlanRows& planRows,
                                // bool generateNonBodyPlan,
                                IAllocator& allocator);
@@ -46,7 +46,7 @@ namespace BitFunnel
         // void AppendTermRows(RowMatchNode::Builder& builder, const FactHandle& fact);
 
         IAllocator& m_allocator;
-        const IIndexedIdfTable& m_idfTable;
+        const ISimpleIndex& m_index;
         PlanRows& m_planRows;
 
         // A flag to indicate if NonBodyQueryPlan is requested to be generated.
