@@ -103,7 +103,8 @@ namespace BitFunnel
         d.CloseStream();
         d.CloseDocument(0);
 
-        for (size_t i = 0; i < text.size(); i++)
+        // Check for each N-gram.
+        for (size_t i = 0; i < text.size(); ++i)
         {
             Term term(text[i], streamId, *config);
             for (size_t j = i+1; j < text.size(); ++j)
@@ -112,6 +113,18 @@ namespace BitFunnel
                 term.AddTerm(subTerm, *config);
                 EXPECT_TRUE(d.Contains(subTerm));
                 EXPECT_TRUE(d.Contains(term));
+            }
+        }
+
+        // Check that reverse N-grams aren't included.
+        for (int i = text.size()-1; i >= 0; --i)
+        {
+            Term term(text[i], streamId, *config);
+            for (int j = i-1; j >= 0; --j)
+            {
+                Term subTerm(text[j], streamId, *config);
+                term.AddTerm(subTerm, *config);
+                EXPECT_FALSE(d.Contains(term));
             }
         }
 
