@@ -36,10 +36,11 @@ namespace BitFunnel
     {
         const Term::StreamId streamId = 0;
         const DocId docId = 0;
+        const size_t gramSize = 1;
 
         auto idfTable = Factories::CreateIndexedIdfTable();
         auto config =
-            Factories::CreateConfiguration(1, false, *idfTable);
+            Factories::CreateConfiguration(gramSize, false, *idfTable);
         Document d(*config, docId);
 
         std::array<char const *, 5> text {{
@@ -61,6 +62,55 @@ namespace BitFunnel
         for (auto word : text)
         {
             Term term(word, streamId, *config);
+            EXPECT_TRUE(d.Contains(term));
+        }
+
+        // TODO: check other 2-grams.
+        Term twoGram(text[0], streamId, *config);
+        Term partTwo(text[1], streamId, *config);
+        twoGram.AddTerm(partTwo, *config);
+        EXPECT_FALSE(d.Contains(twoGram));
+
+        Term unexpected("unexpected", streamId, *config);
+        EXPECT_FALSE(d.Contains(unexpected));
+    }
+
+
+    TEST(Document, containsNGram)
+    {
+        const Term::StreamId streamId = 0;
+        const DocId docId = 0;
+        const size_t gramSize = 5;
+
+        auto idfTable = Factories::CreateIndexedIdfTable();
+        auto config =
+            Factories::CreateConfiguration(gramSize, false, *idfTable);
+        Document d(*config, docId);
+
+        std::array<char const *, 5> text {{
+            "one",
+            "two",
+            "three",
+            "four",
+            "five"
+         }};
+
+        d.OpenStream(streamId);
+        for (auto word : text)
+        {
+            d.AddTerm(word);
+        }
+        d.CloseStream();
+        d.CloseDocument(0);
+
+        // TODO: This only checks for grams starting at [0] and doesn't check
+        // other sub-grams.
+        Term term(text[0], streamId, *config);
+        for (size_t i = 1; i < text.size(); ++i)
+        {
+            Term subTerm(text[i], streamId, *config);
+            term.AddTerm(subTerm, *config);
+            EXPECT_TRUE(d.Contains(subTerm));
             EXPECT_TRUE(d.Contains(term));
         }
 
