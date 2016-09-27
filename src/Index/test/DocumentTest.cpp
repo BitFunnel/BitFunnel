@@ -103,15 +103,16 @@ namespace BitFunnel
         d.CloseStream();
         d.CloseDocument(0);
 
-        // TODO: This only checks for grams starting at [0] and doesn't check
-        // other sub-grams.
-        Term term(text[0], streamId, *config);
-        for (size_t i = 1; i < text.size(); ++i)
+        for (size_t i = 0; i < text.size(); i++)
         {
-            Term subTerm(text[i], streamId, *config);
-            term.AddTerm(subTerm, *config);
-            EXPECT_TRUE(d.Contains(subTerm));
-            EXPECT_TRUE(d.Contains(term));
+            Term term(text[i], streamId, *config);
+            for (size_t j = i+1; j < text.size(); ++j)
+            {
+                Term subTerm(text[j], streamId, *config);
+                term.AddTerm(subTerm, *config);
+                EXPECT_TRUE(d.Contains(subTerm));
+                EXPECT_TRUE(d.Contains(term));
+            }
         }
 
         Term unexpected("unexpected", streamId, *config);
