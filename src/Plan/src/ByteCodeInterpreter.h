@@ -22,7 +22,8 @@
 
 #pragma once
 
-#include <cstdint>
+#include <cstddef>                          // size_t, ptrdiff_t parameter.
+#include <cstdint>                          // uint32_t embedded.
 #include <vector>
 
 #include "BitFunnel/BitFunnelTypes.h"       // Rank parameter.
@@ -33,6 +34,7 @@
 namespace BitFunnel
 {
     class ByteCodeGenerator;
+    class IResultsProcessor;
 
     //*************************************************************************
     //
@@ -63,12 +65,16 @@ namespace BitFunnel
         // some sort of IResultsProcessor callback and an array of Shard
         // buffer pointers.
         ByteCodeInterpreter(ByteCodeGenerator & code,
-                            uint64_t const * const * rows);
+                            IResultsProcessor & resultsProcessor,
+                            size_t sliceCount,
+                            uint64_t * const * sliceBuffers,
+                            size_t iterationsPerSlice,
+                            ptrdiff_t const * rowOffsets);
 
         // Runs the instruction sequence for a specified number of iterations.
         // Each iteration processes a single quadword of row data at the
         // highest rank in the plan.
-        void Run(size_t iterationCount);
+        void Run();
 
         // Virtual machine opcodes. With the exception of the End opcode,
         // these values have a 1:1 correspondance with the ICodeGenerator
@@ -162,9 +168,11 @@ namespace BitFunnel
         };
 
     private:
+        void ProcessOneSlice(size_t slice);
+
         // Executes the instruction sequence for the specified iteration
         // number.
-        void RunOneIteration(size_t iteration);
+        void RunOneIteration(uint64_t const * sliceBuffer, size_t iteration);
 
         //
         // Cached constructor parameters.
@@ -173,7 +181,14 @@ namespace BitFunnel
         std::vector<Instruction> const & m_code;
         std::vector<Instruction const *> const & m_jumpTable;
 
-        uint64_t const * const * m_rows;
+        IResultsProcessor & m_resultsProcessor;
+
+        size_t m_sliceCount;
+        uint64_t * const * m_sliceBuffers;
+        size_t m_iterationsPerSlice;
+
+        ptrdiff_t const * m_rowOffsets;
+
 
         //
         // Virtual machine state.

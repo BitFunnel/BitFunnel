@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include <inttypes.h>   // For uint*_t.
-#include <stddef.h>     // For size_t.
+#include <cstdint>  // int8_t embedded.
+#include <cstddef>  // size_t embedded.
 
 
 namespace BitFunnel
@@ -82,6 +82,7 @@ namespace BitFunnel
 
     // TODO: do we really need RowCount and RowIndex to be seperate types? This
     // is pulled over from the old code, but hasn't been re-thought through.
+    // TODO: Why isn't RowCount unsigned?
     typedef int8_t RowCount;
     static const RowCount c_maxRowsPerTerm = 12;
 

@@ -23,10 +23,11 @@
 
 #pragma once
 
-#include <inttypes.h>  // For uint64_t.
+#include <cstdint>                          // uint64_t* parameter.
 
-#include "BitFunnel/BitFunnelTypes.h"  // For Rank.
-#include "BitFunnel/Index/DocumentHandle.h"  // For DocIndex.
+#include "BitFunnel/BitFunnelTypes.h"       // Rank parameter.
+#include "BitFunnel/Index/DocumentHandle.h" // DocIndex parameter.
+
 
 namespace BitFunnel
 {

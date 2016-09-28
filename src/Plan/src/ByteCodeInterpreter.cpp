@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Plan/IResultsProcessor.h"
 #include "ByteCodeInterpreter.h"
 #include "LoggerInterfaces/Check.h"
 
@@ -41,6 +42,13 @@ Review zero flag.
 Figure out how Rank0 instructions read rows.
 Address TODO comments.
 
+Verify code against MachineCodeGenerator.cpp.
+Decide on type of Slices
+  void const * or uint64_t const *
+  If uint64_t, must ensure 8-byte alignment of buffer and rows.
+  This must be commented. In other words, rows are not only aligned
+  for performance - they are also aligned to support pointer arithmatic.
+
 */
 
     //*************************************************************************
@@ -50,23 +58,44 @@ Address TODO comments.
     //*************************************************************************
     ByteCodeInterpreter::ByteCodeInterpreter(
         ByteCodeGenerator & code,
-        uint64_t const * const * rows)
+        IResultsProcessor & resultsProcessor,
+        size_t sliceCount,
+        uint64_t * const * sliceBuffers,
+        size_t iterationsPerSlice,
+        ptrdiff_t const * rowOffsets)
       : m_code(code.GetCode()),
         m_jumpTable(code.GetJumpTable()),
-        m_rows(rows)
+        m_resultsProcessor(resultsProcessor),
+        m_sliceCount(sliceCount),
+        m_sliceBuffers(sliceBuffers),
+        m_iterationsPerSlice(iterationsPerSlice),
+        m_rowOffsets(rowOffsets)
     {
     }
 
 
-    void ByteCodeInterpreter::Run(size_t iterationCount)
+    void ByteCodeInterpreter::Run()
     {
-        for (size_t i = 0; i < iterationCount; ++i)
+        for (size_t i = 0; i < m_sliceCount; ++i)
         {
-            RunOneIteration(i);
+            ProcessOneSlice(i);
         }
     }
 
-    void ByteCodeInterpreter::RunOneIteration(size_t iteration)
+
+    void ByteCodeInterpreter::ProcessOneSlice(size_t slice)
+    {
+        auto sliceBuffer = m_sliceBuffers[slice];
+        for (size_t i = 0; i < m_iterationsPerSlice; ++i)
+        {
+            RunOneIteration(sliceBuffer, i);
+        }
+    }
+
+
+    void ByteCodeInterpreter::RunOneIteration(
+        uint64_t const * sliceBuffer,
+        size_t iteration)
     {
         m_ip = m_code.data();
         m_offset = iteration;
@@ -82,18 +111,18 @@ Address TODO comments.
             {
             case Opcode::AndRow:
                 {
-                    auto rowPtr = m_rows[row];
-                    auto x = *(rowPtr + (m_offset >> delta));
-                    m_accumulator &= (inverted ? ~x : x);
+                    auto rowPtr = sliceBuffer + m_rowOffsets[row];
+                    auto value = *(rowPtr + (m_offset >> delta));
+                    m_accumulator &= (inverted ? ~value : value);
                     m_zeroFlag = (m_accumulator == 0);
                     m_ip++;
                 }
                 break;
             case Opcode::LoadRow:
                 {
-                    auto rowPtr = m_rows[row];
-                    auto x = *(rowPtr + (m_offset >> delta));
-                    m_accumulator = (inverted ? ~x : x);
+                    auto rowPtr = sliceBuffer + m_rowOffsets[row];
+                    auto value = *(rowPtr + (m_offset >> delta));
+                    m_accumulator = (inverted ? ~value : value);
                     m_zeroFlag = (m_accumulator == 0);
                     m_ip++;
                 }
@@ -121,26 +150,21 @@ Address TODO comments.
                 break;
             case Opcode::AndStack:
                 {
-                    auto left = m_valueStack.back();
+                    m_accumulator &= m_valueStack.back();
                     m_valueStack.pop_back();
-                    m_valueStack.back() &= left;
                     m_ip++;
                 }
                 break;
             case Opcode::Constant:
                 throw NotImplemented("Constant opcode not implemented.");
-                //m_valueStack.push_back(row);
-                //m_ip++;
-                //break;
             case Opcode::Not:
-                m_valueStack.back() = ~m_valueStack.back();
+                m_accumulator = !m_accumulator;
                 m_ip++;
                 break;
             case Opcode::OrStack:
                 {
-                    auto left = m_valueStack.back();
+                    m_accumulator |= m_valueStack.back();
                     m_valueStack.pop_back();
-                    m_valueStack.back() |= left;
                     m_ip++;
                 }
                 break;
@@ -158,6 +182,7 @@ Address TODO comments.
                     << m_offset
                     << ")"
                     << std::endl;
+                m_resultsProcessor.AddResult(m_accumulator, m_offset);
                 m_ip++;
                 break;
             case Opcode::Call:
@@ -194,8 +219,10 @@ Address TODO comments.
             default:
                 RecoverableError error("ByteCodeInterpreter:: bad opcode.");
                 throw error;
-            }
-        }
+            }  // switch
+        }  // while
+
+        m_resultsProcessor.FinishIteration(sliceBuffer);
     }
 
 
