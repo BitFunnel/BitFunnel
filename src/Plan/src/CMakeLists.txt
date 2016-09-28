@@ -17,7 +17,7 @@ set(CPPFILES
     RowPlan.cpp
     StringVector.cpp
     TermMatchNode.cpp
-    # TermMatchTreeConverter.cpp
+    TermMatchTreeConverter.cpp
     TermMatchTreeEvaluator.cpp
 )
 

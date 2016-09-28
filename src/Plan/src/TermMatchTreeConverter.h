@@ -38,7 +38,7 @@ namespace BitFunnel
         // excludes documents which are marked as soft-deleted, from matching.
         const RowMatchNode* BuildDocumentActiveMatchNode();
 
-        const Term GetUnigramTerm(char const * text, char const * suffix, Term::StreamId streamId) const;
+        const Term GetUnigramTerm(char const * text, Term::StreamId streamId) const;
         void ProcessNGramBuffer(RowMatchNode::Builder& builder,
                                 RingBuffer<Term, Term::c_log2MaxGramSize + 1>& termBuffer);
         void AppendTermRows(RowMatchNode::Builder& builder, const Term& term);

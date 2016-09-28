@@ -143,7 +143,8 @@ namespace BitFunnel
         StringVector const & stringVector = node.GetGrams();
         for (unsigned i = 0; i < stringVector.GetSize(); ++i)
         {
-            *termBuffer.PushBack() = GetUnigramTerm(stringVector[i], node.GetSuffix(), node.GetStreamId());
+            *termBuffer.PushBack() = GetUnigramTerm(stringVector[i],
+                                                    node.GetStreamId());
 
             if (termBuffer.GetCount() == Term::c_maxGramSize)
             {
@@ -164,23 +165,22 @@ namespace BitFunnel
     {
         RowMatchNode::Builder builder(RowMatchNode::AndMatch, m_allocator);
 
-        AppendTermRows(builder, GetUnigramTerm(node.GetText(), node.GetSuffix(), node.GetStreamId()));
+        AppendTermRows(builder, GetUnigramTerm(node.GetText(), node.GetStreamId()));
 
         // if (m_generateNonBodyPlan && node.GetStreamId() == BitFunnel::Full)
         // {
-        //     AppendTermRows(builder, GetUnigramTerm(node.GetText(), node.GetSuffix(), BitFunnel::NonBody));
+        //     AppendTermRows(builder, GetUnigramTerm(node.GetText(),  BitFunnel::NonBody));
         // }
 
         return builder.Complete();
     }
 
 
-    const RowMatchNode* TermMatchTreeConverter::BuildMatchTree(const TermMatchNode::Fact& node)
+    const RowMatchNode* TermMatchTreeConverter::BuildMatchTree(const TermMatchNode::Fact& /*node*/)
     {
         // TODO: need to add support for Facts.
-        // RowMatchNode::Builder builder(RowMatchNode::AndMatch, m_allocator);
+        RowMatchNode::Builder builder(RowMatchNode::AndMatch, m_allocator);
         // AppendTermRows(builder, node.GetFact());
-
         return builder.Complete();
     }
 
@@ -188,30 +188,25 @@ namespace BitFunnel
     // TODO: is this method needed at all? In the old codebase, there was a
     // giant switch based on Classification in order to determine the Tier. The
     // rewrite contains neither Tier nor Classification.
-    const Term TermMatchTreeConverter::GetUnigramTerm(char const * text, char const * suffix, Term::StreamId streamId) const
+    const Term TermMatchTreeConverter::GetUnigramTerm(char const * text, Term::StreamId streamId) const
     {
-        Term::Hash termHash = Term::ComputeQualifiedRawHash(text, suffix);
-        IdfX10 termIdf = m_index.GetConfiguration().GetIdfTable().GetIdf(termHash);
-
-        const int gramSize = 1;
-        return Term(termHash, streamId, termIdf, gramSize);
+        // TODO: get rid of GetUnigramTerm? It's pointless when used like this.
+        return Term(text, streamId, m_index.GetConfiguration());
     }
 
 
     void TermMatchTreeConverter::ProcessNGramBuffer(RowMatchNode::Builder& builder,
                                                     RingBuffer<Term, Term::c_log2MaxGramSize + 1>& gramBuffer)
     {
-        NGramBuilder nGramBuilder;
-        for (unsigned i = 0; i < gramBuffer.GetCount(); ++i)
+        const size_t count = gramBuffer.GetCount();
+        LogAssertB(count > 0, "must have non-empty gram.");
+
+        Term term(gramBuffer[0]);
+        AppendTermRows(builder, term);
+        for (size_t n = 1; n < count; ++n)
         {
-            nGramBuilder.AddGram(gramBuffer[i].GetRawHash(), gramBuffer[i].GetIdfSum());
-
-            AppendTermRows(builder, Term(nGramBuilder, gramBuffer[i].GetStream()));
-
-            // if (m_generateNonBodyPlan && gramBuffer[i].GetClassification() == Stream::Full)
-            // {
-            //     AppendTermRows(builder, Term(nGramBuilder, Stream::NonBody, tierHint));
-            // }
+            term.AddTerm(gramBuffer[n], m_index.GetConfiguration());
+            AppendTermRows(builder, term);
         }
         gramBuffer.PopFront();
     }
