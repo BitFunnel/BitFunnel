@@ -9,7 +9,7 @@ set(CPPFILES
     PlanRows.cpp
     QueryParser.cpp
     QueryPipeline.cpp
-    # QueryPlanner.cpp
+    QueryPlanner.cpp
     RankDownCompiler.cpp
     RankZeroCompiler.cpp
     RegisterAllocator.cpp

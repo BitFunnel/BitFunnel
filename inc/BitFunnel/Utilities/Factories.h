@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <iosfwd>
 #include <memory>  // For std::unique_ptr.
 #include <vector>  // For std::vector.
 
@@ -31,6 +32,7 @@
 namespace BitFunnel
 {
     class IBlockAllocator;
+    class IObjectFormatter;
     class ITaskProcessor;
     class ITokenManager;
 
@@ -38,6 +40,9 @@ namespace BitFunnel
     {
         std::unique_ptr<IBlockAllocator>
             CreateBlockAllocator(size_t blockSize, size_t totalBlockCount);
+
+        // TODO: return unique_ptr.
+        IObjectFormatter* CreateObjectFormatter(std::ostream& output);
 
         std::unique_ptr<ITaskDistributor>
             CreateTaskDistributor(

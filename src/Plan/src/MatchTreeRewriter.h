@@ -23,12 +23,11 @@
 #pragma once
 
 #include "BitFunnel/NonCopyable.h"        // Inherits from NonCopyable.
-
+#include "BitFunnel/Plan/RowMatchNode.h"  // Uses RowMatchNode::Or, etc.
 
 namespace BitFunnel
 {
     class IAllocator;
-
 
     //*************************************************************************
     //

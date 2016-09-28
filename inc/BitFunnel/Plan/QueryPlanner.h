@@ -3,24 +3,20 @@
 #include "BitFunnel/NonCopyable.h"        // Inherits from NonCopyable.
 
 
-namespace X64
-{
-    class X64FunctionGenerator;
-}
+// namespace X64
+// {
+//     class X64FunctionGenerator;
+// }
 
 
 namespace BitFunnel
 {
-    namespace Allocators
-    {
-        class IAllocator;
-    }
-
-    class IIndexConfiguration;
+    class IAllocator;
     class IPlanRows;
+    class ISimpleIndex;
     class IThreadResources;
     class TermPlan;
-    class X64::X64FunctionGenerator;
+    // class X64::X64FunctionGenerator;
 
     class QueryPlanner : public NonCopyable
     {
@@ -28,18 +24,18 @@ namespace BitFunnel
         // Constructs a QueryPlanner with the specified resources.
         QueryPlanner(TermPlan const & termPlan,
                      unsigned targetRowCount,
-                     IIndexConfiguration const & index,
-                     IThreadResources& threadResources,
-                     Allocators::IAllocator& allocator,
-                     IDiagnosticStream* diagnosticStream,
-                     bool generateNonBodyPlan,
-                     unsigned maxIterationsScannedBetweenTerminationChecks);
+                     ISimpleIndex const & index,
+                     // IThreadResources& threadResources,
+                     IAllocator& allocator,
+                     IDiagnosticStream* diagnosticStream);
+                     // bool generateNonBodyPlan,
+                     // unsigned maxIterationsScannedBetweenTerminationChecks);
 
         //
         // IQueryPlanner methods.
         //
 
-        const CompiledFunction GetMatchingFunction() const;
+        // const CompiledFunction GetMatchingFunction() const;
 
         IPlanRows const & GetPlanRows() const;
 
@@ -77,7 +73,7 @@ namespace BitFunnel
 
         // The maximum number of iterations that can be performed before a termination
         // check is mandatory. Details can be found in the MatchTreeCodeGenerator.
-        const unsigned m_maxIterationsScannedBetweenTerminationChecks;
+        // const unsigned m_maxIterationsScannedBetweenTerminationChecks;
 
         // First available row pointer register is R8.
         // TODO: is this valid on all platforms or only on Windows?

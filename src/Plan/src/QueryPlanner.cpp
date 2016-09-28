@@ -1,24 +1,21 @@
 #include "BitFunnel/Allocators/IAllocator.h"
-#include "BitFunnel/BitFunnelErrors.h"
-#include "BitFunnel/CompiledFunction.h"
-#include "BitFunnel/Factories.h"
+// #include "BitFunnel/CompiledFunction.h"
 #include "BitFunnel/IDiagnosticStream.h"
-#include "BitFunnel/IObjectFormatter.h"
-#include "BitFunnel/IPlanRows.h"
+#include "BitFunnel/Plan/IPlanRows.h"
 // #include "BitFunnel/IThreadResources.h"
-#include "BitFunnel/QueryPlanner.h"
-#include "BitFunnel/RowPlan.h"
-#include "BitFunnel/TermMatchNodes.h"
-#include "BitFunnel/TermPlan.h"
-#include "BitFunnel/TermPlanConverter.h"
-#include "BitFunnel/Tier.h"
+#include "BitFunnel/Plan/QueryPlanner.h"
+#include "BitFunnel/Plan/RowPlan.h"
+#include "BitFunnel/Plan/TermMatchNode.h"
+#include "BitFunnel/Plan/TermPlan.h"
+#include "BitFunnel/Plan/TermPlanConverter.h"
+#include "BitFunnel/Utilities/Factories.h"
+#include "BitFunnel/Utilities/IObjectFormatter.h"
 #include "CompileNode.h"
 #include "LoggerInterfaces/Logging.h"
 // #include "MatchTreeCodeGenerator.h"
 #include "MatchTreeRewriter.h"
 #include "RankDownCompiler.h"
 #include "RegisterAllocator.h"
-#include "RowPlanCompiler.h"
 
 
 namespace BitFunnel
@@ -46,14 +43,14 @@ namespace BitFunnel
 
     QueryPlanner::QueryPlanner(TermPlan const & termPlan,
                                unsigned targetRowCount,
-                               IIndexConfiguration const & index,
+                               ISimpleIndex const & index,
                                // IThreadResources& threadResources,
-                               Allocators::IAllocator& allocator,
-                               IDiagnosticStream* diagnosticStream,
-                               bool generateNonBodyPlan,
-                               unsigned maxIterationsScannedBetweenTerminationChecks)
-        : m_x64FunctionGeneratorWrapper(threadResources),
-          m_maxIterationsScannedBetweenTerminationChecks(maxIterationsScannedBetweenTerminationChecks)
+                               IAllocator& allocator,
+                               IDiagnosticStream* diagnosticStream)
+                               // bool generateNonBodyPlan,
+                               // unsigned maxIterationsScannedBetweenTerminationChecks)
+    // : // m_x64FunctionGeneratorWrapper(threadResources),
+    //   m_maxIterationsScannedBetweenTerminationChecks(maxIterationsScannedBetweenTerminationChecks)
     {
         std::auto_ptr<IObjectFormatter> formatter;
 
@@ -72,7 +69,7 @@ namespace BitFunnel
         RowPlan const & rowPlan =
             TermPlanConverter::BuildRowPlan(termPlan.GetMatchTree(),
                                             index,
-                                            generateNonBodyPlan,
+                                            // generateNonBodyPlan,
                                             allocator);
 
         if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/row"))
@@ -104,17 +101,9 @@ namespace BitFunnel
                     RowId row = m_planRows->PhysicalRow(shard, id);
 
                     out << "(" << shard << ", " << id << "): ";
-                    if (row.GetTier() == InvalidTier)
-                    {
-                        out << "(no row)" << std::endl;
-                    }
-                    else
-                    {
-                        out << "RowId(" << row.GetShard();
-                        out << ", " << row.GetRank();
-                        out << ", " << TierToString(row.GetTier());
-                        out << ", " << row.GetIndex() << ")" << std::endl;
-                    }
+                    out << "RowId(" << row.GetShard();
+                    out << ", " << row.GetRank();
+                    out << ", " << row.GetIndex() << ")" << std::endl;
                 }
             }
         }
