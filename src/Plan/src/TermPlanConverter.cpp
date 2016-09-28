@@ -1,4 +1,4 @@
-#include <new>
+#include <new>  // Required to use placement new.
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "PlanRows.h"
