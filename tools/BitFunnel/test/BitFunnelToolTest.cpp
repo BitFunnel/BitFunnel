@@ -88,9 +88,9 @@ namespace BitFunnel
             };
 
             tool.Main(std::cin,
-                        std::cout,
-                        static_cast<int>(argv.size()),
-                        argv.data());
+                      std::cout,
+                      static_cast<int>(argv.size()),
+                      argv.data());
         }
 
 
@@ -105,9 +105,9 @@ namespace BitFunnel
             };
 
             tool.Main(std::cin,
-                        std::cout,
-                        static_cast<int>(argv.size()),
-                        argv.data());
+                      std::cout,
+                      static_cast<int>(argv.size()),
+                      argv.data());
         }
 
 
