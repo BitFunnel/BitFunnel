@@ -19,7 +19,7 @@ namespace BitFunnel
     class IDiagnosticStream
     {
     public:
-        virtual ~IDiagnosticStream() {};
+        virtual ~IDiagnosticStream() {}
 
         // Adds the diagnostic keyword prefix to the list of prefixes that
         // enable diagnostics.

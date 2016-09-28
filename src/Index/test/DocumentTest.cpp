@@ -119,10 +119,10 @@ namespace BitFunnel
         // Check that reverse N-grams aren't included.
         for (int i = static_cast<int>(text.size())-1; i >= 0; --i)
         {
-            Term term(text[i], streamId, *config);
+            Term term(text[static_cast<size_t>(i)], streamId, *config);
             for (int j = i-1; j >= 0; --j)
             {
-                Term subTerm(text[j], streamId, *config);
+                Term subTerm(text[static_cast<size_t>(j)], streamId, *config);
                 term.AddTerm(subTerm, *config);
                 EXPECT_FALSE(d.Contains(term));
             }

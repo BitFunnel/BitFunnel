@@ -52,11 +52,10 @@ namespace BitFunnel
     // : // m_x64FunctionGeneratorWrapper(threadResources),
     //   m_maxIterationsScannedBetweenTerminationChecks(maxIterationsScannedBetweenTerminationChecks)
     {
-        std::auto_ptr<IObjectFormatter> formatter;
-
         if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/term"))
         {
             std::ostream& out = diagnosticStream->GetStream();
+            // TODO: why is this an auto_ptr?
             std::auto_ptr<IObjectFormatter>
                 formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
 
@@ -75,6 +74,7 @@ namespace BitFunnel
         if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/row"))
         {
             std::ostream& out = diagnosticStream->GetStream();
+            // TODO: why is this an auto_ptr?
             std::auto_ptr<IObjectFormatter>
                 formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
 
