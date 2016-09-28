@@ -9,12 +9,12 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Plan/IPlanRows.h"
 #include "BitFunnel/Plan/RowMatchNode.h"
+#include "BitFunnel/Term.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
 #include "BitFunnel/Utilities/RingBuffer.h"
 #include "LoggerInterfaces/Logging.h"
 #include "PlanRows.h"
 #include "StringVector.h"
-#include "Term.h"
 #include "TermMatchTreeConverter.h"
 
 

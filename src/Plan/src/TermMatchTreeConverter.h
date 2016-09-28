@@ -3,7 +3,7 @@
 #include "BitFunnel/NonCopyable.h"
 #include "BitFunnel/Plan/RowMatchNode.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
-#include "Term.h"  // needed for maxGramSize.
+#include "BitFunnel/Term.h"  // needed for maxGramSize.
 // #include "BitFunnel/Stream.h"
 
 
