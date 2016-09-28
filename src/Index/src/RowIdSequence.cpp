@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 
-//#include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
+#include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/PackedRowIdSequence.h"
 #include "BitFunnel/Index/RowId.h"
@@ -52,19 +52,20 @@ namespace BitFunnel
 
 
     // TODO: Implement this constructor.
-    //RowIdSequence::RowIdSequence(FactHandle fact, ITermTable const & termTable)
-    //  : m_hash(0),
-    //    m_termTable(termTable)
-    //{
-    //    // TODO: Figure out how to eliminate StreamId::Metaword for facts.
-    //    // Do we just create c_MetaWordStreamId? Can user's use this StreamId?
-    //    const Term term(static_cast<Term::Hash>(fact),
-    //                    StreamId::MetaWord,
-    //                    static_cast<Term::IdfX10>(0));
+    RowIdSequence::RowIdSequence(FactHandle fact, ITermTable const & termTable)
+     : m_hash(0),
+       m_termTable(termTable)
+    {
+        throw fact;
+       // // TODO: Figure out how to eliminate StreamId::Metaword for facts.
+       // // Do we just create c_MetaWordStreamId? Can user's use this StreamId?
+       // const Term term(static_cast<Term::Hash>(fact),
+       //                 StreamId::MetaWord,
+       //                 static_cast<Term::IdfX10>(0));
 
-    //    const PackedTermInfo info = termTable.GetTermInfo(term, m_termKind);
-    //    Initialize(info);
-    //}
+       // const PackedTermInfo info = termTable.GetTermInfo(term, m_termKind);
+       // Initialize(info);
+    }
 
 
     RowIdSequence::const_iterator RowIdSequence::begin() const

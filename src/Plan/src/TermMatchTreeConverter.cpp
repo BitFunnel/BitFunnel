@@ -176,11 +176,11 @@ namespace BitFunnel
     }
 
 
-    const RowMatchNode* TermMatchTreeConverter::BuildMatchTree(const TermMatchNode::Fact& /*node*/)
+    const RowMatchNode* TermMatchTreeConverter::BuildMatchTree(const TermMatchNode::Fact& node)
     {
         // TODO: need to add support for Facts.
         RowMatchNode::Builder builder(RowMatchNode::AndMatch, m_allocator);
-        // AppendTermRows(builder, node.GetFact());
+        AppendTermRows(builder, node.GetFact());
         return builder.Complete();
     }
 
@@ -230,34 +230,34 @@ namespace BitFunnel
         }
     }
 
-    // TODO: need to handle facts.
-    // void TermMatchTreeConverter::AppendTermRows(RowMatchNode::Builder& builder, const FactHandle& fact)
-    // {
-    //     // The m_planRows.IsFull() check is an optimization to avoid unnecessary work for the rows
-    //     // which will be ignored in case that the PlanRows is full inside AbstractRowEnumerator.
-    //     // Theoretically, this check can be added at an even higher level in the code such as
-    //     // BuildMatchTree(Unigram) or BuildMatchTree(Phrase). We add this optimization code here because
-    //     // we think checking the PlanRow is full or not at this level is already good enough
-    //     // from a performance point of view.
-    //     // TODO TFS 16063. Consider returning true/false from these methods
-    //     // when IPlanRows is full. Consider combining Term/Fact code paths together.
-    //     if (!m_planRows.IsFull())
-    //     {
-    //         AbstractRowEnumerator rowEnumerator(fact, m_planRows);
-    //         while (rowEnumerator.MoveNext())
-    //         {
-    //             builder.AddChild(RowMatchNode::Builder::CreateRowNode(rowEnumerator.Current(),
-    //                                                                   m_allocator));
-    //         }
-    //     }
-    //     else
-    //     {
-    //         // No space in IPlanRows for processing a fact TermMatchNode in the tree.
-    //         LogB(Logging::Warning,
-    //              "IndexServe",
-    //              "Row count limit reached for fact with FactHandle value of %u "
-    //              "when processing a TermMatchNode",
-    //              fact);
-    //     }
-    // }
+    void TermMatchTreeConverter::AppendTermRows(RowMatchNode::Builder& builder, const FactHandle& fact)
+    {
+        // The m_planRows.IsFull() check is an optimization to avoid unnecessary work for the rows
+        // which will be ignored in case that the PlanRows is full inside AbstractRowEnumerator.
+        // Theoretically, this check can be added at an even higher level in the code such as
+        // BuildMatchTree(Unigram) or BuildMatchTree(Phrase). We add this optimization code here because
+        // we think checking the PlanRow is full or not at this level is already good enough
+        // from a performance point of view.
+        // TODO TFS 16063. Consider returning true/false from these methods
+        // when IPlanRows is full. Consider combining Term/Fact code paths together.
+        if (!m_planRows.IsFull())
+        {
+            AbstractRowEnumerator rowEnumerator(fact, m_planRows);
+            while (rowEnumerator.MoveNext())
+            {
+                builder.AddChild(RowMatchNode::Builder::CreateRowNode(rowEnumerator.Current(),
+                                                                      m_allocator));
+            }
+        }
+        else
+        {
+            // TODO: handle error.
+            // No space in IPlanRows for processing a fact TermMatchNode in the tree.
+            // LogB(Logging::Warning,
+            //      "IndexServe",
+            //      "Row count limit reached for fact with FactHandle value of %u "
+            //      "when processing a TermMatchNode",
+            //      fact);
+        }
+    }
 }

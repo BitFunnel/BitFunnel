@@ -25,6 +25,7 @@
 
 #include "BitFunnel/Exceptions.h"                   // Inline code.
 #include "BitFunnel/NonCopyable.h"                  // TermInfo inherits from NonCopyable.
+#include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
 #include "BitFunnel/Index/PackedRowIdSequence.h"    // PackedRowIdSequence::Type member.
 #include "BitFunnel/Index/RowId.h"                  // RowId return value.
 #include "BitFunnel/Term.h"                         // Embeds Term::Hash.
@@ -53,10 +54,9 @@ namespace BitFunnel
         // the supplied ITermTable.
         RowIdSequence(Term const & term, ITermTable const & termTable);
 
-        // TODO: Implement this constructor.
         // Constructs a TermInfo for a fact based on information in the
         // supplied ITermTable.
-        //RowIdSequence(FactHandle fact, ITermTable const & termTable);
+        RowIdSequence(FactHandle fact, ITermTable const & termTable);
 
         class const_iterator;
         const_iterator begin() const;

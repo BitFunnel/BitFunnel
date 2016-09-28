@@ -42,8 +42,7 @@ namespace BitFunnel
         void ProcessNGramBuffer(RowMatchNode::Builder& builder,
                                 RingBuffer<Term, Term::c_log2MaxGramSize + 1>& termBuffer);
         void AppendTermRows(RowMatchNode::Builder& builder, const Term& term);
-        // TODO: need to handle facts.
-        // void AppendTermRows(RowMatchNode::Builder& builder, const FactHandle& fact);
+        void AppendTermRows(RowMatchNode::Builder& builder, const FactHandle& fact);
 
         IAllocator& m_allocator;
         const ISimpleIndex& m_index;

@@ -45,11 +45,10 @@ namespace BitFunnel
         // mapping from AbstractRow to RowId in the IPlanRows.
         AbstractRowEnumerator(const Term& term, IPlanRows& planRows);
 
-        // TODO: implement this constructor.
         // Looks up the RowIds associated with the Fact in each of the Shards,
         // determines the number of AbstractRows required, then constructs the
         // mapping from AbstractRow to RowId in the IPlanRows.
-        // AbstractRowEnumerator(const FactHandle& fact, IPlanRows& planRows);
+        AbstractRowEnumerator(const FactHandle& fact, IPlanRows& planRows);
 
         //
         // IEnumerator<AbstractRow*> methods.

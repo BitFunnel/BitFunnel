@@ -1,4 +1,5 @@
 #include "AbstractRowEnumerator.h"
+#include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/IPlanRows.h"
@@ -29,25 +30,24 @@ namespace BitFunnel
     }
 
 
-    // TODO: implement this constructor.
-    // AbstractRowEnumerator::AbstractRowEnumerator(const FactHandle& fact,
-    //                                              IPlanRows& planRows)
-    //     : m_term(nullptr),
-    //       m_fact(&fact)
-    // {
-    //     // Initialize the RowIds for the match-all and match-none terms for all the shards.
-    //     GetSystemRowIds(planRows);
+    AbstractRowEnumerator::AbstractRowEnumerator(const FactHandle& fact,
+                                                 IPlanRows& planRows)
+        : m_term(nullptr)
+          // m_fact(&fact)
+    {
+        // Initialize the RowIds for the match-all and match-none terms for all the shards.
+        GetSystemRowIds(planRows);
 
-    //     // Look up the RowIds for the fact in each Shard and add them to the
-    //     // IPlanRows.
-    //     for (ShardId shard = 0; shard < planRows.GetShardCount(); ++shard)
-    //     {
-    //         TermInfo termInfo(fact, planRows.GetTermTable(shard));
-    //         ProcessShard(termInfo, planRows, shard);
-    //     }
+        // Look up the RowIds for the fact in each Shard and add them to the
+        // IPlanRows.
+        for (ShardId shard = 0; shard < planRows.GetShardCount(); ++shard)
+        {
+            RowIdSequence rowIdSequence(fact, planRows.GetTermTable(shard));
+            ProcessShard(rowIdSequence, planRows, shard);
+        }
 
-    //     FinishInitialization(planRows);
-    // }
+        FinishInitialization(planRows);
+    }
 
 
     void AbstractRowEnumerator::GetSystemRowIds(IPlanRows& planRows)
