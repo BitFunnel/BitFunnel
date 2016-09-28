@@ -6,7 +6,7 @@ namespace BitFunnel
 
     // class FalsePositiveEvaluationNode;
     class IAllocator;
-    class IIndexConfiguration;
+    class ISimpleIndex;
     class RowPlan;
     class TermMatchNode;
 
@@ -14,12 +14,12 @@ namespace BitFunnel
     {
     public:
         static const RowPlan& BuildRowPlan(const TermMatchNode& termMatchNode,
-                                           const IIndexConfiguration& index,
-                                           bool generateNonBodyPlan,
-                                           Allocators::IAllocator& allocator);
+                                           const ISimpleIndex& index,
+                                           // bool generateNonBodyPlan,
+                                           IAllocator& allocator);
 
         // static FalsePositiveEvaluationNode const & BuildFalsePositiveEvaluationPlan(
         //         TermMatchNode const & termMatchNode,
-        //         Allocators::IAllocator& allocator);
+        //         IAllocator& allocator);
     };
 }
