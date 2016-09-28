@@ -1,13 +1,12 @@
-#include "stdafx.h"
+#include "gtest/gtest.h"
 
-#include "BitFunnel/FalsePositiveEvaluationNode.h"
-#include "BitFunnel/ITermTable.h"
-#include "BitFunnel/ITermTableCollection.h"
-#include "BitFunnel/RowMatchNodes.h"
-#include "BitFunnel/RowPlan.h"
-#include "BitFunnel/TermInfo.h"
-#include "BitFunnel/TermMatchNodes.h"
-#include "BitFunnel/TermPlanConverter.h"
+// #include "BitFunnel/FalsePositiveEvaluationNode.h"
+#include "BitFunnel/Index/ITermTable.h"
+#include "BitFunnel/Index/RowIdSequence.h"
+#include "BitFunnel/Plan/RowMatchNode.h"
+#include "BitFunnel/Plan/RowPlan.h"
+#include "BitFunnel/Plan/TermMatchNode.h"
+#include "BitFunnel/Plan/TermPlanConverter.h"
 #include "MockIndexConfiguration.h"
 #include "MockTermTable.h"
 #include "PrivateHeapAllocator.h"
@@ -20,7 +19,7 @@ namespace BitFunnel
 {
     namespace TermPlanConverterUnitTest
     {
-        void VerifyTermPlanConverterCase(char const * inputTermPlan, 
+        void VerifyTermPlanConverterCase(char const * inputTermPlan,
                                          char const * expectedRowPlan,
                                          char const * expectedFalsePositiveEvaluationTree,
                                          IIndexConfiguration const & index,
@@ -52,7 +51,7 @@ namespace BitFunnel
             std::stringstream outputForFalsePositiveEvaluationTree;
             TextObjectFormatter formatterForFalsePositiveEvaluationTree(outputForFalsePositiveEvaluationTree);
             falsePositiveEvaluationTree.Format(formatterForFalsePositiveEvaluationTree);
-        
+
             TestEqual(expectedFalsePositiveEvaluationTree, outputForFalsePositiveEvaluationTree.str().c_str());
 
         }
@@ -67,7 +66,7 @@ namespace BitFunnel
             {
                 ngram.AddGram(Term::ComputeQualifiedRawHash(grams[i], suffix), 0);
             }
-            
+
             const Term term(ngram, classification, DDRTier);
 
             return term.GetClassifiedHash();
@@ -83,7 +82,7 @@ namespace BitFunnel
         static std::vector<DocIndex> s_defaultShardCapacities(CreateDefaultShardCapacities());
 
 
-        TestCase(LeafTreeConversion)
+        TEST(TermPlanConverter,LeafTreeConversion)
         {
             MockIndexConfiguration index(s_defaultShardCapacities);
 
@@ -120,15 +119,15 @@ namespace BitFunnel
                 << "}";
 
             // Generate full query plan.
-            VerifyTermPlanConverterCase(input, 
-                                        expectedFullQueryPlan, 
+            VerifyTermPlanConverterCase(input,
+                                        expectedFullQueryPlan,
                                         expectedFalsePositiveEvaluationPlan.str().c_str(),
-                                        index, 
+                                        index,
                                         false);
         }
 
 
-        TestCase(LeafTreeWithSuffixConversion)
+        TEST(TermPlanConverter,LeafTreeWithSuffixConversion)
         {
             MockIndexConfiguration index(s_defaultShardCapacities);
 
@@ -173,7 +172,7 @@ namespace BitFunnel
         }
 
 
-        TestCase(NonBodyPlanWithFull)
+        TEST(TermPlanConverter,NonBodyPlanWithFull)
         {
             MockIndexConfiguration index(s_defaultShardCapacities);
 
@@ -220,15 +219,15 @@ namespace BitFunnel
                 << "}";
 
             // Generate nonbody query plan.
-            VerifyTermPlanConverterCase(input, 
-                                        expectedNonBodyQueryPlan, 
+            VerifyTermPlanConverterCase(input,
+                                        expectedNonBodyQueryPlan,
                                         expectedFalsePositiveEvaluationPlan.str().c_str(),
-                                        index, 
+                                        index,
                                         true);
         }
 
 
-        TestCase(NonBodyPlanWithMetaword)
+        TEST(TermPlanConverter,NonBodyPlanWithMetaword)
         {
             MockIndexConfiguration index(s_defaultShardCapacities);
 
@@ -265,10 +264,10 @@ namespace BitFunnel
                 << "}";
 
             // Verify full plan case.
-            VerifyTermPlanConverterCase(input, 
-                                        expectedMetawordQueryPlan, 
+            VerifyTermPlanConverterCase(input,
+                                        expectedMetawordQueryPlan,
                                         expectedFalsePositiveEvaluationPlan.str().c_str(),
-                                        index, 
+                                        index,
                                         false);
 
 
@@ -277,15 +276,15 @@ namespace BitFunnel
             char const * expectedNonBodyQueryPlan = expectedMetawordQueryPlan;
 
             // Generate nonbody query plan.
-            VerifyTermPlanConverterCase(input, 
+            VerifyTermPlanConverterCase(input,
                                         expectedNonBodyQueryPlan,
                                         expectedFalsePositiveEvaluationPlan.str().c_str(),
-                                        index, 
-                                        true);      
+                                        index,
+                                        true);
         }
 
 
-        TestCase(NonBodyPlanWithPhrase)
+        TEST(TermPlanConverter,NonBodyPlanWithPhrase)
         {
             MockIndexConfiguration index(s_defaultShardCapacities);
 
@@ -422,10 +421,10 @@ namespace BitFunnel
                 << "  ]\n"
                 << "}";
 
-            VerifyTermPlanConverterCase(input, 
-                                        expectedNonBodyQueryPlan, 
+            VerifyTermPlanConverterCase(input,
+                                        expectedNonBodyQueryPlan,
                                         expectedFalsePositiveEvaluationPlan.str().c_str(),
-                                        index, 
+                                        index,
                                         true);
         }
 
@@ -442,7 +441,7 @@ namespace BitFunnel
         }
 
 
-        TestCase(UnigramAndFact)
+        TEST(TermPlanConverter,UnigramAndFact)
         {
             MockIndexConfiguration index(s_defaultShardCapacities);
 
@@ -496,15 +495,15 @@ namespace BitFunnel
                 << "  Children: FPMatchData(" << GetClassifiedHash(grams, nullptr, classification) << ", 1)\n"
                 << "}";
 
-            VerifyTermPlanConverterCase(input, 
-                                        expectedRowPlan, 
+            VerifyTermPlanConverterCase(input,
+                                        expectedRowPlan,
                                         expectedFalsePositiveEvaluationPlan.str().c_str(),
-                                        index, 
+                                        index,
                                         false);
         }
 
 
-        TestCase(UnigramAndFactWithNonBody)
+        TEST(TermPlanConverter,UnigramAndFactWithNonBody)
         {
             MockIndexConfiguration index(s_defaultShardCapacities);
 
@@ -567,40 +566,33 @@ namespace BitFunnel
                 << "  Children: FPMatchData(" << GetClassifiedHash(grams, nullptr, classification) << ", 1)\n"
                 << "}";
 
-            VerifyTermPlanConverterCase(input, 
-                                        expectedRowPlan, 
+            VerifyTermPlanConverterCase(input,
+                                        expectedRowPlan,
                                         expectedFalsePositiveEvaluationPlan.str().c_str(),
-                                        index, 
+                                        index,
                                         true);
         }
 
 
         // Verify that a term exists in the term table and all of its rows
         // belong to a given tier.
-        void VerifyTier(Term term, ITermTable const & termTable, Tier expectedTier)
+        void VerifyTier(Term term, ITermTable const & termTable)
         {
             TermInfo termInfo(term, termTable);
             TestAssert(!termInfo.IsEmpty());
-
-            while (termInfo.MoveNext())
-            {
-                const RowId rowId = termInfo.Current();
-                TestEqual(expectedTier, rowId.GetTier());
-            }
         }
 
 
-        // Verify that a term with the given text exists in the term table and 
+        // Verify that a term with the given text exists in the term table and
         // all of its rows belong to a given tier.
-        void VerifyTier(const char * termText, ITermTable const & termTable, Tier expectedTier)
+        void VerifyTier(const char * termText, ITermTable const & termTable)
         {
-            VerifyTier(Term(Term::ComputeRawHash(termText), Stream::Full, 0, expectedTier), 
-                       termTable, 
-                       expectedTier);
+            VerifyTier(Term(Term::ComputeRawHash(termText), Stream::Full, 0),
+                       termTable);
         }
 
 
-        TestCase(PhraseNodeConversion)
+        TEST(TermPlanConverter,PhraseNodeConversion)
         {
             char const * input =
                 "Phrase {\n"
@@ -667,26 +659,26 @@ namespace BitFunnel
 
             MockIndexConfiguration index(s_defaultShardCapacities);
             VerifyTermPlanConverterCase(input,
-                                        expected, 
+                                        expected,
                                         expectedFalsePositiveEvaluationPlan.str().c_str(),
-                                        index, 
+                                        index,
                                         false);
 
             ITermTable const & termTable = *index.GetTermTables().GetTermTable(0);
 
-            VerifyTier("654", termTable, DDRTier);
-            VerifyTier("321", termTable, DDRTier);
+            VerifyTier("654", termTable);
+            VerifyTier("321", termTable);
 
             NGramBuilder ngram;
             ngram.AddGram(Term::ComputeRawHash("321"), 0);
             ngram.AddGram(Term::ComputeRawHash("654"), 0);
             const Term phraseTerm(ngram, Stream::Full, SSDTier);
 
-            VerifyTier(phraseTerm, termTable, SSDTier);
+            VerifyTier(phraseTerm, termTable);
         }
 
 
-        TestCase(PhraseNodeWithSuffixConversion)
+        TEST(TermPlanConverter,PhraseNodeWithSuffixConversion)
         {
             char const * input =
                 "Phrase {\n"
@@ -760,19 +752,19 @@ namespace BitFunnel
 
             ITermTable const & termTable = *index.GetTermTables().GetTermTable(0);
 
-            VerifyTier("654", termTable, DDRTier);
-            VerifyTier("321", termTable, DDRTier);
+            VerifyTier("654", termTable);
+            VerifyTier("321", termTable);
 
             NGramBuilder ngram;
             ngram.AddGram(Term::ComputeRawHash("321"), 0);
             ngram.AddGram(Term::ComputeRawHash("654"), 0);
             const Term phraseTerm(ngram, Stream::Full, SSDTier);
 
-            VerifyTier(phraseTerm, termTable, SSDTier);
+            VerifyTier(phraseTerm, termTable);
         }
 
 
-        TestCase(SimpleTreeWithInteriorNodesConversion)
+        TEST(TermPlanConverter,SimpleTreeWithInteriorNodesConversion)
         {
             char const * input =
                 "And {\n"
@@ -834,14 +826,14 @@ namespace BitFunnel
 
             MockIndexConfiguration index(s_defaultShardCapacities);
             VerifyTermPlanConverterCase(input,
-                                        expected, 
+                                        expected,
                                         expectedFalsePositiveEvaluationPlan.str().c_str(),
-                                        index, 
+                                        index,
                                         false);
         }
 
 
-        TestCase(SimpleTreeWithSuffix)
+        TEST(TermPlanConverter,SimpleTreeWithSuffix)
         {
             char const * input =
                 "And {\n"
@@ -910,7 +902,7 @@ namespace BitFunnel
         }
 
 
-        TestCase(ComplexTreeUsingAllNodeTypes)
+        TEST(TermPlanConverter,ComplexTreeUsingAllNodeTypes)
         {
             char const * input =
                 "And {\n"
@@ -961,7 +953,7 @@ namespace BitFunnel
                 "  Match: And {\n"
                 "    Children: [\n"
 
-                // zzzStream @ nonbody 
+                // zzzStream @ nonbody
                 "      Row(80, 0, 0, false),\n"
                 "      Row(79, 0, 0, false),\n"
 
@@ -1166,9 +1158,9 @@ namespace BitFunnel
 
             MockIndexConfiguration index(s_defaultShardCapacities);
             VerifyTermPlanConverterCase(input,
-                                        expected, 
+                                        expected,
                                         expectedFalsePositiveEvaluationPlan.str().c_str(),
-                                        index, 
+                                        index,
                                         false);
         }
     }
