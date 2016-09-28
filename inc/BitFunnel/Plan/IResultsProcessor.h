@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <cstdint>                  // uint64_t parameter.
+#include <stdint.h>                 // uint64_t parameter.
 
 #include "BitFunnel/IInterface.h"   // Base class.
 

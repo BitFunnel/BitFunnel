@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include <cstdint>  // int8_t embedded.
-#include <cstddef>  // size_t embedded.
+#include <stdint.h>     // int8_t embedded.
+#include <stddef.h>     // size_t embedded.
 
 
 namespace BitFunnel

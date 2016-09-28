@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <cstdint>                          // uint64_t* parameter.
+#include <stdint.h>                          // uint64_t* parameter.
 
 #include "BitFunnel/BitFunnelTypes.h"       // Rank parameter.
 #include "BitFunnel/Index/DocumentHandle.h" // DocIndex parameter.

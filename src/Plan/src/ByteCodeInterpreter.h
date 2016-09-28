@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include <cstddef>                          // size_t, ptrdiff_t parameter.
-#include <cstdint>                          // uint32_t embedded.
+#include <stddef.h>                         // size_t, ptrdiff_t parameter.
+#include <stdint.h>                         // uint32_t embedded.
 #include <vector>
 
 #include "BitFunnel/BitFunnelTypes.h"       // Rank parameter.
