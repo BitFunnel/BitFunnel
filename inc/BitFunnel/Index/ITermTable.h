@@ -57,6 +57,7 @@ namespace BitFunnel
         //     supply the combination of Rank values in the generated adhoc
         //     row. The RowIndex values are ignored as they are replaced by
         //     different hashes of the term's raw hash.
+        //   Invoke CloseAdhocTerm(idf, gramSize)
         //
         // The Row counts are recorded via calls to SetRowCounts(). This method
         // should be called once for each Rank in [0..c_maxRankValue].
