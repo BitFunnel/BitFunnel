@@ -44,6 +44,7 @@ set(PRIVATE_HFILES
     BlockAllocator.h
     MurmurHash2.h
     PackedArray.h
+    Primes.h
     Rounding.h
     SimpleBuffer.h
     SimpleHashPolicy.h

@@ -33,6 +33,7 @@ namespace BitFunnel
 {
     class IChunkManifestIngestor;
     class IConfiguration;
+    class IDocument;
     class IDocumentDataSchema;
     class IDocumentFrequencyTable;
     class IFactSet;
@@ -71,6 +72,9 @@ namespace BitFunnel
             CreateConfiguration(size_t maxGramSize,
                                 bool keepTermText,
                                 IIndexedIdfTable const & idfTable);
+
+        std::unique_ptr<IDocument>
+            CreateDocument(IConfiguration const & configuration, DocId id);
 
         std::unique_ptr<IDocumentDataSchema> CreateDocumentDataSchema();
 

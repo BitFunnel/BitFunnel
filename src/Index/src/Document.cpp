@@ -25,6 +25,7 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/DocumentHandle.h"
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "Document.h"
 #include "LoggerInterfaces/Logging.h"
@@ -32,6 +33,14 @@
 
 namespace BitFunnel
 {
+    std::unique_ptr<IDocument> Factories::CreateDocument(
+        IConfiguration const & configuration,
+        DocId id)
+    {
+        return std::unique_ptr<IDocument>(new Document(configuration, id));
+    }
+
+
     Document::Document(IConfiguration const & configuration, DocId id)
         : m_configuration(configuration),
           m_docId(id),
