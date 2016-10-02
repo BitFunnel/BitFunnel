@@ -215,7 +215,7 @@ namespace BitFunnel
         bool m_zeroFlag;
     };
 
-    std::ostream& operator<<(std::ostream& out, const ByteCodeInterpreter::Opcode value)
+    inline std::ostream& operator<<(std::ostream& out, const ByteCodeInterpreter::Opcode value)
     {
         out << static_cast<unsigned>(value);
         return out;

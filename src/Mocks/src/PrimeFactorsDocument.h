@@ -22,70 +22,44 @@
 
 #pragma once
 
-#include <memory>                           // std::unique_ptr return value.
+#include <memory>                       // std::unique_ptr return value.
 
-#include "BitFunnel/BitFunnelTypes.h"       // DocId parameter.
-#include "BitFunnel/Index/IDocument.h"      // Base class.
-
+#include "BitFunnel/BitFunnelTypes.h"   // DocId parameter.
+#include "BitFunnel/Term.h"             // Term::StreamId parameter.
 
 namespace BitFunnel
 {
     class IConfiguration;
+    class IDocument;
+    class IFileSystem;
 
     //*************************************************************************
     //
-    // PrimeFactorsDocument
+    // CreatePrimeFactorsDocument
     //
     //*************************************************************************
     std::unique_ptr<IDocument>
         CreatePrimeFactorsDocument(IConfiguration const & config, DocId id);
 
-    //class PrimeFactorsDocument : public IDocument
-    //{
-    //public:
-    //    // Constructs a document containing terms corresponding to the prime
-    //    // factors of the supplied DocId. The document will also contain a term
-    //    // corresponding to 1 and the DocId.
-    //    //
-    //    // The current implementation does not provide support for phrases.
-    //    PrimeFactorsDocument(DocId id);
 
-    //    // Returns the number of postings this document will contribute
-    //    // to the index. This method is used to determine which shard
-    //    // will hold the document.
-    //    virtual size_t GetPostingCount() const override;
-
-    //    // Returns the number of bytes of the source representation of this
-    //    // document. Used to compute ingestion rate (bytes/second) statistic.
-    //    //
-    //    // Since this document wasn't constructed from text, the byte size is
-    //    // computes as the length of a string containing a comma-separated
-    //    // list of the text representation of each factor. For example, the
-    //    // document with DocId=100 would be modeled as the string,
-    //    //     "1,2,2,5,5"
-    //    // so its source byte size would be 9.
-    //    virtual size_t GetSourceByteSize() const override;
-
-    //    // Ingests the contents of this document into the index at via
-    //    // the supplied DocumentHandle.
-    //    virtual void Ingest(DocumentHandle handle) const override;
-
-    //    // Returns true iff the document contains a specific term.
-    //    virtual bool Contains(Term & term) const override;
+    //*************************************************************************
+    //
+    // CreatePrimeFactorsTermTable
+    //
+    //*************************************************************************
+    std::unique_ptr<ITermTable>
+        CreatePrimeFactorsTermTable(DocId maxDocId,
+                                    Term::StreamId /*streamId*/);
 
 
-    //    // NOT IMPLEMENTED. Throws BitFunnel::NotImplemented.
-    //    virtual void OpenStream(Term::StreamId id) override;
-
-    //    // NOT IMPLEMENTED. Throws BitFunnel::NotImplemented.
-    //    virtual void AddTerm(char const * term) override;
-
-    //    // NOT IMPLEMENTED. Throws BitFunnel::NotImplemented.
-    //    virtual void CloseStream() override;
-
-    //    // NOT IMPLEMENTED. Throws BitFunnel::NotImplemented.
-    //    virtual void CloseDocument(size_t sourceByteSize) override;
-
-    //private:
-    //};
+    //*************************************************************************
+    //
+    // CreatePrimeFactorsIndex
+    //
+    //*************************************************************************
+    std::unique_ptr<ISimpleIndex>
+        CreatePrimeFactorsIndex(IFileSystem & fileSystem,
+                                DocId maxDocId,
+                                Term::StreamId /*streamId*/,
+                                IConfiguration const & /*config*/);
 }

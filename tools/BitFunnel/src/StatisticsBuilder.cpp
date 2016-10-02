@@ -134,11 +134,11 @@ namespace BitFunnel
         bool generateTermToText) const
     {
         // TODO: cast of gramSize can be removed when it's fixed to be unsigned.
-        auto index = Factories::CreateSimpleIndex(m_fileSystem,
-                                                  intermediateDirectory,
-                                                  static_cast<size_t>(gramSize),
-                                                  generateTermToText);
-        index->StartIndex(true);
+        auto index = Factories::CreateSimpleIndex(m_fileSystem);
+        index->ConfigureForStatistics(intermediateDirectory,
+                                      static_cast<size_t>(gramSize),
+                                      generateTermToText);
+        index->StartIndex();
 
 
         // TODO: Add try/catch around file operations.

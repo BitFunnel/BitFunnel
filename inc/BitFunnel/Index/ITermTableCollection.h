@@ -23,6 +23,7 @@
 #pragma once
 
 #include <cstddef>                      // size_t return value.
+#include <memory>                       // std::unique_ptr parameter.
 
 #include <BitFunnel/BitFunnelTypes.h>   // ShardId parameter.
 #include <BitFunnel/IInterface.h>       // Base class.
@@ -37,6 +38,7 @@ namespace BitFunnel
     class ITermTableCollection
     {
     public:
+        virtual void AddTermTable(std::unique_ptr<ITermTable> termTable) = 0;
         virtual ITermTable & GetTermTable(ShardId shard) const = 0;
         virtual size_t size() const = 0;
     };
