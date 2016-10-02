@@ -32,6 +32,14 @@
 namespace BitFunnel
 {
     std::unique_ptr<ITermTableCollection>
+        Factories::CreateTermTableCollection()
+    {
+        return std::unique_ptr<ITermTableCollection>(
+            new TermTableCollection());
+    }
+
+
+    std::unique_ptr<ITermTableCollection>
         Factories::CreateTermTableCollection(ShardId shardCount)
     {
         return std::unique_ptr<ITermTableCollection>(
@@ -44,6 +52,11 @@ namespace BitFunnel
     {
         return std::unique_ptr<ITermTableCollection>(
             new TermTableCollection(fileManager, shardCount));
+    }
+
+
+    TermTableCollection::TermTableCollection()
+    {
     }
 
 
@@ -70,6 +83,12 @@ namespace BitFunnel
             m_termTables.emplace_back(
                 std::unique_ptr<ITermTable>(new TermTable(*input)));
         }
+    }
+
+
+    void TermTableCollection::AddTermTable(std::unique_ptr<ITermTable> termTable)
+    {
+        m_termTables.push_back(std::move(termTable));
     }
 
 

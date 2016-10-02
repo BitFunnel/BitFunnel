@@ -22,33 +22,21 @@
 
 #pragma once
 
-#include <vector>                                   // std::vector embedded.
+#include <memory>                       // std::unique_ptr return value.
 
-#include "BitFunnel/BitFunnelTypes.h"               // ShardId parameter.
-#include "BitFunnel/Index/ITermTableCollection.h"   // Base class.
-
+#include "BitFunnel/BitFunnelTypes.h"   // DocId paramter.
+#include "BitFunnel/Term.h"             // Term::StreamId paramter.
 
 namespace BitFunnel
 {
-    class IFileManager;
-    class ITermTable;
+    class IFileSystem;
+    class ISimpleIndex;
 
-    class TermTableCollection : public ITermTableCollection
+    namespace Factories
     {
-    public:
-        TermTableCollection();
-        TermTableCollection(ShardId shardCount);
-        TermTableCollection(IFileManager & fileManager, ShardId shardCount);
-
-        //
-        // ITermTableCollection members.
-        //
-
-        virtual void AddTermTable(std::unique_ptr<ITermTable> termTable) override;
-        virtual ITermTable & GetTermTable(ShardId shard) const override;
-        virtual size_t size() const override;
-
-    private:
-        std::vector<std::unique_ptr<ITermTable>> m_termTables;
-    };
+        std::unique_ptr<ISimpleIndex>
+            CreatePrimeFactorsIndex(IFileSystem & fileSystem,
+                                    DocId maxDocId,
+                                    Term::StreamId streamId);
+    }
 }

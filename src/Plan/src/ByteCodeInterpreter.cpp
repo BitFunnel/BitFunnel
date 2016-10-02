@@ -386,7 +386,7 @@ Decide on type of Slices
     void ByteCodeGenerator::PlaceLabel(Label label)
     {
         EnsureSealed(false);
-        CHECK_NE(m_jumpTable.at(label), nullptr)
+        CHECK_EQ(m_jumpTable.at(label), nullptr)
             << "Label " << label << " has already been placed.";
 
         m_jumpTable.at(label) = (&m_code.back()) + 1;

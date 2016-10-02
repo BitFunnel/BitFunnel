@@ -143,6 +143,10 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Token.h
 )
 
+set(MOCKS_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Mocks/Factories.h
+)
+
 set(PLAN_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/AbstractRow.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/Factories.h
@@ -192,6 +196,7 @@ set(PUBLIC_HFILES
   ${CONFIGURATION_HFILES}
   ${DATA_HFILES}
   ${INDEX_HFILES}
+  ${MOCKS_HFILES}
   ${PLAN_HFILES}
   ${UTILITIES_HFILES}
   ${LOGGER_HFILES}
@@ -206,6 +211,7 @@ source_group("BitFunnel" FILES ${BITFUNNEL_HFILES})
 source_group("BitFunnel\\Configuration" FILES ${CONFIGURATION_HFILES})
 source_group("BitFunnel\\Data" FILES ${DATA_HFILES})
 source_group("BitFunnel\\Index" FILES ${INDEX_HFILES})
+source_group("BitFunnel\\Mocks" FILES ${MOCKS_HFILES})
 source_group("BitFunnel\\Plan" FILES ${PLAN_HFILES})
 source_group("BitFunnel\\Utilities" FILES ${UTILITIES_HFILES})
 source_group("Logger" FILES ${LOGGER_HFILES})
