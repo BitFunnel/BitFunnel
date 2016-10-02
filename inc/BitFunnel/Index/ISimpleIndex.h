@@ -22,17 +22,24 @@
 
 #pragma once
 
+#include <memory>                   // std::unique_ptr parameter.
+
 #include "BitFunnel/IInterface.h"   // Base class.
 
 
 namespace BitFunnel
 {
     class IConfiguration;
+    class IDocumentDataSchema;
     class IFileManager;
     class IFileSystem;
+    class IIndexedIdfTable;
     class IIngestor;
     class IRecycler;
+    class IShardDefinition;
+    class ISliceBufferAllocator;
     class ITermTable;
+    class ITermTableCollection;
 
 
     //*************************************************************************
@@ -47,6 +54,35 @@ namespace BitFunnel
     class ISimpleIndex : public IInterface
     {
     public:
+
+        virtual void SetConfiguration(
+            std::unique_ptr<IConfiguration> config) = 0;
+        virtual void SetFileManager(
+            std::unique_ptr<IFileManager> fileManager) = 0;
+        //virtual void SetFileSystem(
+        //    std::unique_ptr<IFileSystem> fileSystem) = 0;
+        virtual void SetIdfTable(
+            std::unique_ptr<IIndexedIdfTable> idfTable) = 0;
+        virtual void SetSchema(
+            std::unique_ptr<IDocumentDataSchema> schema) = 0;
+        virtual void SetShardDefinition(
+            std::unique_ptr<IShardDefinition> definition) = 0;
+        virtual void SetSliceBufferAllocator(
+            std::unique_ptr<ISliceBufferAllocator> sliceAllocator) = 0;
+        virtual void SetTermTableCollection(
+            std::unique_ptr<ITermTableCollection> termTables) = 0;
+
+        virtual void ConfigureForStatistics(char const * directory,
+                                            size_t gramSize,
+                                            bool generateTermToText) = 0;
+
+        virtual void ConfigureForServing(char const * directory,
+                                         size_t gramSize,
+                                         bool generateTermToText) = 0;
+
+        virtual void ConfigureAsMock(size_t gramSize,
+                                     bool generateTermToText) = 0;
+
         // Instantiates all of the classes necessary to form a BitFunnel Index.
         // Then starts the index. If forStatistics == true, the index will be
         // started for statistics generation, gathering data for
@@ -62,7 +98,7 @@ namespace BitFunnel
         //
         // Note: this method starts a background thread for the IRecycler.
         // This thread is shut down in StopIndex().
-        virtual void StartIndex(bool forStatistics) = 0;
+        virtual void StartIndex() = 0;
 
         // Performs an orderly shutdown, then tears down all of the classes
         // created by StartIndex(). Must be called before class destruction.
@@ -73,6 +109,8 @@ namespace BitFunnel
         virtual IFileSystem & GetFileSystem() const = 0;
         virtual IIngestor & GetIngestor() const = 0;
         virtual IRecycler & GetRecycler() const = 0;
+
+        // TODO: return ITermTableCollection or take ShardId.
         virtual ITermTable const & GetTermTable() const = 0;
     };
 }

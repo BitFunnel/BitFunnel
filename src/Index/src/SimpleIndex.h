@@ -46,14 +46,46 @@ namespace BitFunnel
     class SimpleIndex : public ISimpleIndex, public NonCopyable
     {
     public:
-        SimpleIndex(IFileSystem& fileSystem,
-                    char const * directory,
-                    size_t gramSize,
-                    bool generateTermtoText);
+        SimpleIndex(IFileSystem& fileSystem);
 
         virtual ~SimpleIndex();
 
-        virtual void StartIndex(bool forStatistics) override;
+        //
+        // Configuration override methods.
+        // Call these methods before StartIndex() to override the
+        // default behavior.
+        //
+        virtual void SetConfiguration(
+            std::unique_ptr<IConfiguration> config) override;
+        virtual void SetFileManager(
+            std::unique_ptr<IFileManager> fileManager) override;
+        //virtual void SetFileSystem(
+        //    std::unique_ptr<IFileSystem> fileSystem) override;
+        virtual void SetIdfTable(
+            std::unique_ptr<IIndexedIdfTable> idfTable) override;
+        virtual void SetSchema(
+            std::unique_ptr<IDocumentDataSchema> schema) override;
+        virtual void SetShardDefinition(
+            std::unique_ptr<IShardDefinition> definition) override;
+        virtual void SetSliceBufferAllocator(
+            std::unique_ptr<ISliceBufferAllocator> sliceAllocator) override;
+        virtual void SetTermTableCollection(
+            std::unique_ptr<ITermTableCollection> termTables) override;
+
+
+        virtual void ConfigureForStatistics(char const * directory,
+                                            size_t gramSize,
+                                            bool generateTermToText) override;
+
+        virtual void ConfigureForServing(char const * directory,
+                                         size_t gramSize,
+                                         bool generateTermToText) override;
+
+        virtual void ConfigureAsMock(size_t gramSize,
+                                     bool generateTermToText) override;
+
+
+        virtual void StartIndex() override;
         virtual void StopIndex() override;
 
         virtual IConfiguration const & GetConfiguration() const override;
@@ -63,8 +95,10 @@ namespace BitFunnel
         virtual IRecycler & GetRecycler() const override;
         virtual ITermTable const & GetTermTable() const override;
 
-
     private:
+        void EnsureStarted(bool started) const;
+        void ConfigureSliceAllocator();
+
         static void RecyclerThreadEntryPoint(void * data);
 
         //
@@ -72,15 +106,14 @@ namespace BitFunnel
         //
 
         IFileSystem& m_fileSystem;
-        std::string m_directory;
-        Term::GramSize m_gramSize;
-        bool m_generateTermToText;
 
+        bool m_isStarted;
 
         //
         // Members initialized by StartIndex().
         //
 
+//        std::unique_ptr<IFileSystem> m_fileSystem;
         std::unique_ptr<IFileManager> m_fileManager;
         std::unique_ptr<IDocumentDataSchema> m_schema;
         std::unique_ptr<IRecycler> m_recycler;

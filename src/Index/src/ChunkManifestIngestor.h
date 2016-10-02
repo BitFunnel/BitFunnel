@@ -44,7 +44,7 @@ namespace BitFunnel
                               bool cacheDocuments);
 
         //
-        // IChunkManifestIngestor
+        // IChunkManifestIngestor methods
         //
 
         virtual size_t GetChunkCount() const override;

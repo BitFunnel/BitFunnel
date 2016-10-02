@@ -97,11 +97,7 @@ namespace BitFunnel
 
         std::unique_ptr<IRecycler> CreateRecycler();
 
-        std::unique_ptr<ISimpleIndex> CreateSimpleIndex(
-            IFileSystem& fileSystem,
-            char const * directory,
-            size_t gramSize,
-            bool generateTermToText);
+        std::unique_ptr<ISimpleIndex> CreateSimpleIndex(IFileSystem& fileSystem);
 
         std::unique_ptr<ISliceBufferAllocator>
             CreateSliceBufferAllocator(size_t blockSize, size_t blockCount);
@@ -117,6 +113,8 @@ namespace BitFunnel
                                    IFactSet const & facts,
                                    ITermTable & termTable);
 
+        std::unique_ptr<ITermTableCollection>
+            CreateTermTableCollection();
         std::unique_ptr<ITermTableCollection>
             CreateTermTableCollection(ShardId shardCount);
         std::unique_ptr<ITermTableCollection>

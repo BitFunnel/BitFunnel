@@ -22,10 +22,17 @@
 
 #include <string>
 
+#include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocument.h"
+#include "BitFunnel/Index/IIndexedIdfTable.h"
+#include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/ITermTable.h"
+#include "BitFunnel/Index/ITermTableCollection.h"
+#include "BitFunnel/Mocks/Factories.h"
 #include "BitFunnel/Term.h"
+#include "LoggerInterfaces/Check.h"
 #include "PrimeFactorsDocument.h"
 #include "Primes.h"
 
@@ -36,15 +43,35 @@
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // CreatePrimeFactorsDocument
+    //
+    //*************************************************************************
+
+    // Constructs a document containing terms corresponding to the prime
+    // factors of the supplied DocId.
+    //
+    // The current implementation does not provide support for phrases.
+    //
+    // Since this document wasn't constructed from text, the source byte size
+    // is computed as the length of a string containing a comma-separated
+    // list of the text representation of each factor. For example, the
+    // document with DocId=100 would be modeled as the string,
+    //     "2,2,5,5"
+    // so its source byte size would be 7.
     std::unique_ptr<IDocument>
         CreatePrimeFactorsDocument(IConfiguration const & config,
                                    DocId docId,
                                    Term::StreamId streamId)
     {
+        const size_t maxPrime = Primes::c_primesBelow10000.back();
+        CHECK_LE(docId, maxPrime * maxPrime)
+            << "DocId too large.";
+
         auto document = Factories::CreateDocument(config, docId);
         document->OpenStream(streamId);
-        document->AddTerm("1");
-        size_t sourceByteSize = 1;
+        size_t sourceByteSize = 0;
 
         for (size_t i = 0; i < Primes::c_primesBelow10000.size(); ++i)
         {
@@ -65,9 +92,13 @@ namespace BitFunnel
             }
         }
 
-        //std::string term = std::to_string(docId);
-        //document->AddTerm(term.c_str());
-        //sourceByteSize += (1 + term.size());
+        // Ensure that all prime factors were found. We could miss some
+        // prime factors if the square root of the docId is larger than
+        // the largest entry in the list of primes. This is more of a logic
+        // sanity check since the CHECK_LE at the top of the function should
+        // guard against this case.
+        CHECK_EQ(docId, 1ull)
+            << "DocId value is too large.";
 
         document->CloseDocument(sourceByteSize);
 
@@ -75,10 +106,14 @@ namespace BitFunnel
     }
 
 
+    //*************************************************************************
+    //
+    // CreatePrimeFactorsTermTable
+    //
+    //*************************************************************************
     std::unique_ptr<ITermTable>
         CreatePrimeFactorsTermTable(DocId maxDocId,
-                                    Term::StreamId /*streamId*/,
-                                    IConfiguration const & /*config*/)
+                                    Term::StreamId /*streamId*/)
     {
         const ShardId shard = 0;
         const Rank rank = 0;
@@ -111,5 +146,37 @@ namespace BitFunnel
         termTable->Seal();
 
         return termTable;
+    }
+
+
+    //*************************************************************************
+    //
+    // CreatePrimeFactorsIndex
+    //
+    //*************************************************************************
+    std::unique_ptr<ISimpleIndex>
+        Factories::CreatePrimeFactorsIndex(IFileSystem & fileSystem,
+                                           DocId maxDocId,
+                                           Term::StreamId streamId)
+    {
+        auto termTableCollection =
+            Factories::CreateTermTableCollection();
+        auto termTable =
+            CreatePrimeFactorsTermTable(maxDocId, streamId);
+        termTableCollection->AddTermTable(std::move(termTable));
+
+        auto idfTable = Factories::CreateIndexedIdfTable();
+
+        auto index = Factories::CreateSimpleIndex(fileSystem);
+        index->SetTermTableCollection(std::move(termTableCollection));
+        index->SetIdfTable(std::move(idfTable));
+
+        const Term::GramSize gramSize = 1;
+        const bool generateTermToText = false;
+        index->ConfigureAsMock(gramSize, generateTermToText);
+
+        index->StartIndex();
+
+        return index;
     }
 }
