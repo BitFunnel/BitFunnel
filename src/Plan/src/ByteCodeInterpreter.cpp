@@ -57,10 +57,10 @@ Decide on type of Slices
     //
     //*************************************************************************
     ByteCodeInterpreter::ByteCodeInterpreter(
-        ByteCodeGenerator & code,
+        ByteCodeGenerator const & code,
         IResultsProcessor & resultsProcessor,
         size_t sliceCount,
-        uint64_t * const * sliceBuffers,
+        char * const * sliceBuffers,
         size_t iterationsPerSlice,
         ptrdiff_t const * rowOffsets)
       : m_code(code.GetCode()),
@@ -94,7 +94,7 @@ Decide on type of Slices
 
 
     void ByteCodeInterpreter::RunOneIteration(
-        uint64_t const * sliceBuffer,
+        char const * sliceBuffer,
         size_t iteration)
     {
         m_ip = m_code.data();
@@ -111,8 +111,10 @@ Decide on type of Slices
             {
             case Opcode::AndRow:
                 {
-                    auto rowPtr = sliceBuffer + m_rowOffsets[row];
-                    auto value = *(rowPtr + (m_offset >> delta));
+                    uint64_t const * rowPtr = 
+                        reinterpret_cast<uint64_t const *>(
+                            sliceBuffer + m_rowOffsets[row]);
+                    uint64_t value = *(rowPtr + (m_offset >> delta));
                     m_accumulator &= (inverted ? ~value : value);
                     m_zeroFlag = (m_accumulator == 0);
                     m_ip++;

@@ -126,7 +126,7 @@ namespace BitFunnel
 
         // Returns a number of Shards and a Shard with the given ShardId.
         virtual size_t GetShardCount() const override;
-        virtual Shard& GetShard(size_t shard) const override;
+        virtual IShard& GetShard(size_t shard) const override;
 
         virtual IRecycler& GetRecycler() const override;
 

@@ -56,6 +56,7 @@ namespace BitFunnel
         RowTableDescriptor(DocIndex capacity,
                            RowIndex rowCount,
                            Rank rank,
+                           Rank maxRank,
                            ptrdiff_t bufferOffset);
 
         // Copy constructor from another RowTableDescriptor. Required so that
@@ -96,7 +97,8 @@ namespace BitFunnel
         // buffer for all RowTables.
         static size_t GetBufferSize(DocIndex capacity,
                                     RowIndex rowCount,
-                                    Rank rank);
+                                    Rank rank,
+                                    Rank maxRank);
 
     private:
         // Declare but don't implement. This is required for a std::vector to
@@ -117,6 +119,7 @@ namespace BitFunnel
         const DocIndex m_capacity;
         const RowIndex m_rowCount;
         const Rank m_rank;
+        const Rank m_maxRank;
 
         // Offset where this RowTable starts in the slice buffer.
         const ptrdiff_t m_bufferOffset;

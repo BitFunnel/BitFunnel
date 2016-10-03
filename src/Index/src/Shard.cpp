@@ -241,6 +241,8 @@ namespace BitFunnel
                                         IDocumentDataSchema const & docDataSchema,
                                         ITermTable const & termTable)
     {
+        const Rank maxRank = termTable.GetMaxRankUsed();
+
         ptrdiff_t currentOffset = 0;
 
         // Start of the DocTable is at offset 0.
@@ -253,19 +255,21 @@ namespace BitFunnel
 
         currentOffset += DocTableDescriptor::GetBufferSize(sliceCapacity, docDataSchema);
 
-        for (Rank r = 0; r <= c_maxRankValue; ++r)
+        for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
         {
             // TODO: see if this alignment matters.
             // currentOffset = RoundUp(currentOffset, c_rowTableByteAlignment);
 
-            const RowIndex rowCount = termTable.GetTotalRowCount(r);
+            const RowIndex rowCount = termTable.GetTotalRowCount(rank);
 
             if (shard != nullptr)
             {
-                shard->m_rowTables.emplace_back(sliceCapacity, rowCount, r, currentOffset);
+                shard->m_rowTables.emplace_back(
+                    sliceCapacity, rowCount, rank, maxRank, currentOffset);
             }
 
-            currentOffset += RowTableDescriptor::GetBufferSize(sliceCapacity, rowCount, r);
+            currentOffset += RowTableDescriptor::GetBufferSize(
+                sliceCapacity, rowCount, rank, maxRank);
         }
 
         // A pointer to a Slice is placed at the end of the slice buffer.

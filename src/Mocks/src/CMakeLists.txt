@@ -11,7 +11,6 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
-    PrimeFactorsDocument.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

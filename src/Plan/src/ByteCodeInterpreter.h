@@ -64,10 +64,10 @@ namespace BitFunnel
         // NOTE: This method is a work-in-progress. It will eventually take
         // some sort of IResultsProcessor callback and an array of Shard
         // buffer pointers.
-        ByteCodeInterpreter(ByteCodeGenerator & code,
+        ByteCodeInterpreter(ByteCodeGenerator const & code,
                             IResultsProcessor & resultsProcessor,
                             size_t sliceCount,
-                            uint64_t * const * sliceBuffers,
+                            char * const * sliceBuffers,
                             size_t iterationsPerSlice,
                             ptrdiff_t const * rowOffsets);
 
@@ -172,7 +172,7 @@ namespace BitFunnel
 
         // Executes the instruction sequence for the specified iteration
         // number.
-        void RunOneIteration(uint64_t const * sliceBuffer, size_t iteration);
+        void RunOneIteration(char const * sliceBuffer, size_t iteration);
 
         //
         // Cached constructor parameters.
@@ -184,7 +184,7 @@ namespace BitFunnel
         IResultsProcessor & m_resultsProcessor;
 
         size_t m_sliceCount;
-        uint64_t * const * m_sliceBuffers;
+        char * const * m_sliceBuffers;
         size_t m_iterationsPerSlice;
 
         ptrdiff_t const * m_rowOffsets;
