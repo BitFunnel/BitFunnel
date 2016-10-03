@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream>     // TODO: Remove
 #include <string>
 
 #include "BitFunnel/Configuration/Factories.h"
@@ -27,13 +28,14 @@
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocument.h"
 #include "BitFunnel/Index/IIndexedIdfTable.h"
+#include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
+#include "BitFunnel/Index/ISliceBufferAllocator.h"
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/ITermTableCollection.h"
 #include "BitFunnel/Mocks/Factories.h"
 #include "BitFunnel/Term.h"
 #include "LoggerInterfaces/Check.h"
-#include "PrimeFactorsDocument.h"
 #include "Primes.h"
 
 
@@ -61,44 +63,74 @@ namespace BitFunnel
     //     "2,2,5,5"
     // so its source byte size would be 7.
     std::unique_ptr<IDocument>
-        CreatePrimeFactorsDocument(IConfiguration const & config,
-                                   DocId docId,
-                                   Term::StreamId streamId)
+        Factories::CreatePrimeFactorsDocument(IConfiguration const & config,
+                                              DocId docId,
+                                              DocId maxDocId,
+                                              Term::StreamId streamId)
     {
         const size_t maxPrime = Primes::c_primesBelow10000.back();
         CHECK_LE(docId, maxPrime * maxPrime)
-            << "DocId too large.";
+            << "DocId has a prime factor that is not available.";
+
+        CHECK_LE(docId, maxDocId);
 
         auto document = Factories::CreateDocument(config, docId);
         document->OpenStream(streamId);
         size_t sourceByteSize = 0;
 
-        for (size_t i = 0; i < Primes::c_primesBelow10000.size(); ++i)
+        std::cout << "DocId " << docId << std::endl;
+
+        // Arrange for "0" term row to contain quadwords 0, 1, 2, 3, ...
+        size_t quadword = docId >> 6;
+        size_t bit = docId % 64;
+        if ((quadword & (1ull << bit)) != 0)
         {
-            size_t p = Primes::c_primesBelow10000[i];
-            if (p > docId)
-            {
-                break;
-            }
-            else
-            {
-                while ((docId % p) == 0)
-                {
-                    auto const & term = Primes::c_primesBelow10000Text[i];
-                    document->AddTerm(term.c_str());
-                    docId /= p;
-                    sourceByteSize += (1 + term.size());
-                }
-            }
+            std::string term("0");
+            std::cout << "  " << term << std::endl;
+            document->AddTerm(term.c_str());
+            sourceByteSize += (1 + term.size());
         }
 
-        // Ensure that all prime factors were found. We could miss some
-        // prime factors if the square root of the docId is larger than
-        // the largest entry in the list of primes. This is more of a logic
-        // sanity check since the CHECK_LE at the top of the function should
-        // guard against this case.
-        CHECK_EQ(docId, 1ull)
-            << "DocId value is too large.";
+        if (docId == 0)
+        {
+            for (DocId i = 0; i <= maxDocId; ++i)
+            {
+                auto const & term = Primes::c_primesBelow10000Text[i];
+                std::cout << "  " << term << std::endl;
+                document->AddTerm(term.c_str());
+                sourceByteSize += (1 + term.size());
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < Primes::c_primesBelow10000.size(); ++i)
+            {
+                size_t p = Primes::c_primesBelow10000[i];
+                if (p > docId)
+                {
+                    break;
+                }
+                else
+                {
+                    while ((docId % p) == 0)
+                    {
+                        auto const & term = Primes::c_primesBelow10000Text[i];
+                        std::cout << "  " << term << std::endl;
+                        document->AddTerm(term.c_str());
+                        docId /= p;
+                        sourceByteSize += (1 + term.size());
+                    }
+                }
+            }
+
+            // Ensure that all prime factors were found. We could miss some
+            // prime factors if the square root of the docId is larger than
+            // the largest entry in the list of primes. This is more of a logic
+            // sanity check since the CHECK_LE at the top of the function should
+            // guard against this case.
+            CHECK_EQ(docId, 1ull)
+                << "DocId value is too large.";
+        }
 
         document->CloseDocument(sourceByteSize);
 
@@ -112,16 +144,27 @@ namespace BitFunnel
     //
     //*************************************************************************
     std::unique_ptr<ITermTable>
-        CreatePrimeFactorsTermTable(DocId maxDocId,
-                                    Term::StreamId /*streamId*/)
+        Factories::CreatePrimeFactorsTermTable(DocId maxDocId,
+                                               Term::StreamId /*streamId*/)
     {
         const ShardId shard = 0;
         const Rank rank = 0;
         const RowIndex adhocRowCount = 1;   // Need at least one adhoc row to avoid divide by zero.
-        RowIndex explicitRowCount = 0;
+        RowIndex explicitRowCount = ITermTable::SystemTerm::Count;
 
         auto termTable = Factories::CreateTermTable();
 
+        // Term "0"
+        termTable->OpenTerm();
+        termTable->AddRowId(RowId(shard, rank, explicitRowCount++));
+        termTable->CloseTerm(Term::ComputeRawHash("0"));
+
+        // Term "1"
+        termTable->OpenTerm();
+        termTable->AddRowId(RowId(shard, rank, explicitRowCount++));
+        termTable->CloseTerm(Term::ComputeRawHash("1"));
+
+        // Terms for primes.
         for (size_t i = 0; i < Primes::c_primesBelow10000.size(); ++i)
         {
             size_t p = Primes::c_primesBelow10000[i];
@@ -159,23 +202,51 @@ namespace BitFunnel
                                            DocId maxDocId,
                                            Term::StreamId streamId)
     {
+        // Create special PrimeFactors TermTables containing explicit,
+        // private row mappings for terms "0", "1", and the text representation
+        // of primes less than or equal to maxDocId.
         auto termTableCollection =
             Factories::CreateTermTableCollection();
         auto termTable =
-            CreatePrimeFactorsTermTable(maxDocId, streamId);
+            Factories::CreatePrimeFactorsTermTable(maxDocId, streamId);
         termTableCollection->AddTermTable(std::move(termTable));
 
-        auto idfTable = Factories::CreateIndexedIdfTable();
+        // Need to create our own slice buffer allocator because matcher tests
+        // are more comprehensive if there are at least two quadwords in every
+        // RowTable row. The ISimpleIndex::CongigureAsMock() method creates an
+        // allocator with the absolute minimum block size, which results in a
+        // single quadword per row.
+        //
+        // TODO: Might want to add a check that rows have at least 2 quadwords.
+        // Right now the hard-coded blocksize yields 13 quadwords at rank 0,
+        // but this could change if the TermTable was configured to use higher
+        // ranks.
+        size_t blockSize = 10000;
+        size_t blockCount = 512;
+        auto sliceAllocator =
+            Factories::CreateSliceBufferAllocator(blockSize,
+                                                  blockCount);
 
         auto index = Factories::CreateSimpleIndex(fileSystem);
         index->SetTermTableCollection(std::move(termTableCollection));
-        index->SetIdfTable(std::move(idfTable));
+        index->SetSliceBufferAllocator(std::move(sliceAllocator));
 
         const Term::GramSize gramSize = 1;
         const bool generateTermToText = false;
         index->ConfigureAsMock(gramSize, generateTermToText);
 
         index->StartIndex();
+
+        for (DocId docId = 0; docId <= maxDocId; ++docId)
+        {
+            auto document = 
+                Factories::CreatePrimeFactorsDocument(
+                    index->GetConfiguration(),
+                    docId,
+                    maxDocId,
+                    streamId);
+            index->GetIngestor().Add(docId, *document);
+        }
 
         return index;
     }

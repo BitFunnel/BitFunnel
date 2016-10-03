@@ -275,10 +275,43 @@ namespace BitFunnel
     }
 
 
-    void SimpleIndex::ConfigureAsMock(size_t /*gramSize*/,
-                                      bool /*generateTermToText*/)
+    void SimpleIndex::ConfigureAsMock(size_t gramSize,
+                                      bool generateTermToText)
     {
         EnsureStarted(false);
+
+        // TODO: Load schema from file.
+        if (m_schema.get() == nullptr)
+        {
+            m_schema = Factories::CreateDocumentDataSchema();
+        }
+
+        // TODO: Load shard definition from file.
+        if (m_shardDefinition.get() == nullptr)
+        {
+            m_shardDefinition =
+                Factories::CreateShardDefinition();
+        }
+
+        if (m_termTables.get() == nullptr)
+        {
+            m_termTables =
+                Factories::CreateTermTableCollection(
+                    m_shardDefinition->GetShardCount());
+        }
+
+        if (m_idfTable == nullptr)
+        {
+            m_idfTable = Factories::CreateIndexedIdfTable();
+        }
+
+        if (m_configuration.get() == nullptr)
+        {
+            m_configuration =
+                Factories::CreateConfiguration(gramSize,
+                                               generateTermToText,
+                                               *m_idfTable);
+        }
     }
 
 

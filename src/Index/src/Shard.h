@@ -27,13 +27,14 @@
 #include <ostream>                          // TODO: Remove this temporary include.
 #include <vector>
 
+#include "BitFunnel/Index/IShard.h"         // Base class.
 #include "BitFunnel/NonCopyable.h"          // Base class.
 #include "BitFunnel/Term.h"
-#include "DocTableDescriptor.h"              // Required for embedded std::unique_ptr.
-#include "DocumentFrequencyTableBuilder.h"   // std::unique_ptr to this.
-#include "DocumentHandleInternal.h"          // Return value.
-#include "RowTableDescriptor.h"              // Required for embedded std::vector.
-#include "Slice.h"                           // std::unique_ptr template parameter.
+#include "DocTableDescriptor.h"             // Required for embedded std::unique_ptr.
+#include "DocumentFrequencyTableBuilder.h"  // std::unique_ptr to this.
+#include "DocumentHandleInternal.h"         // Return value.
+#include "RowTableDescriptor.h"             // Required for embedded std::vector.
+#include "Slice.h"                          // std::unique_ptr template parameter.
 
 
 namespace BitFunnel
@@ -60,7 +61,7 @@ namespace BitFunnel
     // Thread safety: all public methods are thread safe.
     //
     //*************************************************************************
-    class Shard : private NonCopyable
+    class Shard : private NonCopyable, public IShard
     {
     public:
         // Constructs an empty Shard with no slices. sliceBufferSize must be

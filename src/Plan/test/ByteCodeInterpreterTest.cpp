@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iomanip>
+#include <iostream>
+
 #include "gtest/gtest.h"
 
 #include "Allocator.h"
@@ -27,8 +30,12 @@
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
+#include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Mocks/Factories.h"
+#include "BitFunnel/Plan/IResultsProcessor.h"
+#include "BitFunnel/Term.h"
 #include "ByteCodeInterpreter.h"
 #include "CompileNode.h"
 #include "TextObjectParser.h"
@@ -36,6 +43,38 @@
 
 namespace BitFunnel
 {
+    class ResultsProcessor : public IResultsProcessor
+    {
+    public:
+        void AddResult(uint64_t accumulator,
+                       size_t offset) override
+        {
+            std::cout
+                << "AddResult("
+                << std::hex << accumulator
+                << ", " << offset
+                << ")" << std::endl;
+        }
+
+
+        bool FinishIteration(void const * /*sliceBuffer*/) override
+        {
+            std::cout
+                << "FinishIteration()" << std::endl;
+            return false;
+        }
+
+
+        bool TerminatedEarly() const override
+        {
+            std::cout
+                << "TerminatedEarly()" << std::endl;
+            return false;
+        }
+
+    private:
+    };
+
     size_t c_allocatorBufferSize = 1000000;
 
     void GenerateCode(char const * rowPlanText,
@@ -52,9 +91,42 @@ namespace BitFunnel
     }
 
 
-    void RunTest()
+    RowId GetFirstRow(ITermTable const & termTable,
+                      Term term)
     {
-        const DocId maxDocId = 63;
+        RowIdSequence rows(term, termTable);
+
+        auto it = rows.begin();
+        // TODO: Implement operator << for RowIdSequence::const_iterator.
+        //CHECK_NE(it, rows.end())
+        //    << "Expected at least one row.";
+
+        RowId row =  *it;
+
+        ++it;
+        // TODO: Implement operator << for RowIdSequence::const_iterator.
+        //CHECK_EQ(it, rows.end())
+        //    << "Expected no more than one row.";
+
+        return row;
+    }
+
+
+    ptrdiff_t GetRowOffset(char const * text,
+                           Term::StreamId stream,
+                           IConfiguration const & config,
+                           ITermTable const & termTable,
+                           IShard const & shard)
+    {
+        Term term(text, stream, config);
+        RowId row = GetFirstRow(termTable, term);
+        return shard.GetRowOffset(row);
+    }
+
+
+    void RunTest(ByteCodeGenerator const & code)
+    {
+        const DocId maxDocId = 800;
         const Term::StreamId streamId = 0;
 
         const size_t maxGramSize = 1;
@@ -65,7 +137,47 @@ namespace BitFunnel
             Factories::CreatePrimeFactorsIndex(*fileSystem,
                                                maxDocId,
                                                streamId);
-        //index->GetIngestor().GetShard();
+
+        const ShardId shardId = 0;
+        auto & shard = index->GetIngestor().GetShard(shardId);
+
+        std::vector<ptrdiff_t> rowOffsets;
+
+        rowOffsets.push_back(GetRowOffset(
+            "0",
+            streamId,
+            index->GetConfiguration(),
+            index->GetTermTable(),
+            shard));
+        rowOffsets.push_back(GetRowOffset(
+            "1",
+            streamId,
+            index->GetConfiguration(),
+            index->GetTermTable(),
+            shard));
+        rowOffsets.push_back(GetRowOffset(
+            "2",
+            streamId,
+            index->GetConfiguration(),
+            index->GetTermTable(),
+            shard));
+
+        Rank c_maxRank = 0;
+
+        auto & sliceBuffers = shard.GetSliceBuffers();
+        auto iterationsPerSlice = shard.GetSliceCapacity() / (64ull << c_maxRank);
+
+        ResultsProcessor resultsProcessor;
+
+        ByteCodeInterpreter interpreter(
+            code,
+            resultsProcessor,
+            sliceBuffers.size(),
+            reinterpret_cast<char* const *>(sliceBuffers.data()),
+            iterationsPerSlice,
+            rowOffsets.data());
+
+        interpreter.Run();
     }
 
 
@@ -84,5 +196,8 @@ namespace BitFunnel
 
         ByteCodeGenerator code;
         GenerateCode(text, code);
+        code.Seal();
+
+        RunTest(code);
     }
 }
