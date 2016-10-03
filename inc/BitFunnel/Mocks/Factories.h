@@ -29,11 +29,22 @@
 
 namespace BitFunnel
 {
+    class IConfiguration;
     class IFileSystem;
     class ISimpleIndex;
 
     namespace Factories
     {
+        std::unique_ptr<IDocument>
+            CreatePrimeFactorsDocument(IConfiguration const & config,
+                                       DocId docId,
+                                       DocId maxDocId,
+                                       Term::StreamId streamId);
+
+        std::unique_ptr<ITermTable>
+            CreatePrimeFactorsTermTable(DocId maxDocId,
+                                        Term::StreamId streamId);
+
         std::unique_ptr<ISimpleIndex>
             CreatePrimeFactorsIndex(IFileSystem & fileSystem,
                                     DocId maxDocId,

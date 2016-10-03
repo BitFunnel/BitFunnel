@@ -35,12 +35,14 @@ namespace BitFunnel
     RowTableDescriptor::RowTableDescriptor(DocIndex capacity,
                                            RowIndex rowCount,
                                            Rank rank,
+                                           Rank maxRank,
                                            ptrdiff_t rowTableBufferOffset)
         : m_capacity(capacity),
           m_rowCount(rowCount),
           m_rank(rank),
+          m_maxRank(maxRank),
           m_bufferOffset(rowTableBufferOffset),
-          m_bytesPerRow(Row::BytesInRow(capacity, rank))
+          m_bytesPerRow(Row::BytesInRow(capacity, rank, maxRank))
     {
         // Make sure capacity is properly rounded already.
         // TODO: fix.
@@ -56,6 +58,7 @@ namespace BitFunnel
         : m_capacity(other.m_capacity),
           m_rowCount(other.m_rowCount),
           m_rank(other.m_rank),
+          m_maxRank(other.m_maxRank),
           m_bufferOffset(other.m_bufferOffset),
           m_bytesPerRow(other.m_bytesPerRow)
     {
@@ -67,7 +70,9 @@ namespace BitFunnel
     {
         char* const rowTableBuffer =
             reinterpret_cast<char*>(sliceBuffer) + m_bufferOffset;
-        memset(rowTableBuffer, 0, GetBufferSize(m_capacity, m_rowCount, m_rank));
+        memset(rowTableBuffer,
+               0,
+               GetBufferSize(m_capacity, m_rowCount, m_rank, m_maxRank));
 
         // The "match-all" row needs to be initialized differently.
         RowIdSequence rows(termTable.GetMatchAllTerm(), termTable);
@@ -161,14 +166,16 @@ namespace BitFunnel
     /* static */
     size_t RowTableDescriptor::GetBufferSize(DocIndex capacity,
                                              RowIndex rowCount,
-                                             Rank rank)
+                                             Rank rank,
+                                             Rank maxRank)
     {
         // Make sure capacity is properly rounded already.
         // TODO: fix.
         // LogAssertB(capacity == Row::DocumentsInRank0Row(capacity),
         //            "capacity not evenly rounded.");
 
-        return static_cast<unsigned>(Row::BytesInRow(capacity, rank) * rowCount);
+        return static_cast<unsigned>(
+            Row::BytesInRow(capacity, rank, maxRank) * rowCount);
     }
 
 

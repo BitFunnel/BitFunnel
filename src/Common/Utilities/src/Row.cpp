@@ -63,17 +63,11 @@ namespace BitFunnel
     }
 
 
-    size_t Row::BytesInRow(DocIndex documentCount, Rank rowRank)
+    size_t Row::BytesInRow(DocIndex documentCount,
+                           Rank rowRank,
+                           Rank maxRank)
     {
-        return DocumentsInRank0Row(documentCount) >> (3ull + rowRank);
-    }
-
-
-    // TODO: Remove this overload. Force all users to be intentional about
-    // the second parameter.
-    DocIndex Row::DocumentsInRank0Row(DocIndex documentCount)
-    {
-        return DocumentsInRank0Row(documentCount, c_maxRankValue);
+        return DocumentsInRank0Row(documentCount, maxRank) >> (3ull + rowRank);
     }
 
 
