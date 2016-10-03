@@ -55,8 +55,7 @@ namespace BitFunnel
         if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/term"))
         {
             std::ostream& out = diagnosticStream->GetStream();
-            // TODO: why is this an auto_ptr?
-            std::auto_ptr<IObjectFormatter>
+            std::unique_ptr<IObjectFormatter>
                 formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
 
             out << "--------------------" << std::endl;
@@ -74,8 +73,7 @@ namespace BitFunnel
         if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/row"))
         {
             std::ostream& out = diagnosticStream->GetStream();
-            // TODO: why is this an auto_ptr?
-            std::auto_ptr<IObjectFormatter>
+            std::unique_ptr<IObjectFormatter>
                 formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
 
             out << "--------------------" << std::endl;
@@ -89,7 +87,7 @@ namespace BitFunnel
         if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/planrows"))
         {
             std::ostream& out = diagnosticStream->GetStream();
-            std::auto_ptr<IObjectFormatter>
+            std::unique_ptr<IObjectFormatter>
                 formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
 
             out << "--------------------" << std::endl;
@@ -119,7 +117,7 @@ namespace BitFunnel
         if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/rewrite"))
         {
             std::ostream& out = diagnosticStream->GetStream();
-            std::auto_ptr<IObjectFormatter>
+            std::unique_ptr<IObjectFormatter>
                 formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
 
             out << "--------------------" << std::endl;
@@ -136,7 +134,7 @@ namespace BitFunnel
         if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/compile"))
         {
             std::ostream& out = diagnosticStream->GetStream();
-            std::auto_ptr<IObjectFormatter>
+            std::unique_ptr<IObjectFormatter>
                 formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
 
             out << "--------------------" << std::endl;
