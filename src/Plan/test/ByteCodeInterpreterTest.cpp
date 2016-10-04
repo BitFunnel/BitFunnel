@@ -181,6 +181,45 @@ namespace BitFunnel
     }
 
 
+    //class MockSlice
+    //{
+    //public:
+    //    MockSlice(size_t sliceNumber,
+    //              size_t quadwordsPerSlice,
+    //              size_t rowCount);
+
+    //    std::vector<ptrdiff_t>
+    //        GetRowOffsets(std::vector<size_t> rowIndices) const;
+
+    //private:
+    //    std::vector<std::vector<uint64_t>> m_rows;
+    //};
+
+    //MockSlice::MockSlice(size_t sliceNumber,
+    //                     size_t quadwordsPerSlice,
+    //                     size_t rowCount)
+    //{
+
+    //}
+
+    //class MockIndex
+    //{
+    //public:
+    //    MockIndex(size_t sliceCount,
+    //              size_t quadwordsPerSlice,
+    //              size_t rowCount);
+
+    //private:
+    //    std::vector<MockSlice> m_slices;
+    //};
+
+
+    //void RunTest2()
+    //{
+    //    std::vector<uint64_t> rowOffsetsSlice1 =
+    //}
+
+
     TEST(ByteCodeInterpreter, Placeholder)
     {
         char const * text =
