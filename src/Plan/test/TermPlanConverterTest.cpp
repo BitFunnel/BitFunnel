@@ -21,9 +21,7 @@ namespace BitFunnel
     {
         void VerifyTermPlanConverterCase(char const * inputTermPlan,
                                          char const * expectedRowPlan,
-                                         char const * expectedFalsePositiveEvaluationTree,
-                                         ISimpleIndex const & index,
-                                         bool anyQueryPlanType)
+                                         ISimpleIndex const & index)
         {
             // TODO: this can probably be smaller.
             Allocator allocator(4096);
@@ -36,41 +34,13 @@ namespace BitFunnel
             // Verify RowPlan.
             const RowPlan& rowPlan = TermPlanConverter::BuildRowPlan(termMatchNode,
                                                                      index,
-                                                                     anyQueryPlanType,
                                                                      allocator);
 
             std::stringstream outputForRowPlan;
             TextObjectFormatter formatterForRowPlan(outputForRowPlan);
             rowPlan.Format(formatterForRowPlan);
 
-            TestEqual(expectedRowPlan, outputForRowPlan.str().c_str());
-
-            // Verify FalsePositiveEvaluationTree.
-            FalsePositiveEvaluationNode const & falsePositiveEvaluationTree
-                = TermPlanConverter::BuildFalsePositiveEvaluationPlan(termMatchNode, allocator);
-
-            std::stringstream outputForFalsePositiveEvaluationTree;
-            TextObjectFormatter formatterForFalsePositiveEvaluationTree(outputForFalsePositiveEvaluationTree);
-            falsePositiveEvaluationTree.Format(formatterForFalsePositiveEvaluationTree);
-
-            TestEqual(expectedFalsePositiveEvaluationTree, outputForFalsePositiveEvaluationTree.str().c_str());
-
-        }
-
-
-        // Helper function to compute the term classified hash from text and classification.
-        Term::Hash GetClassifiedHash(char* grams[], char * suffix, Stream::Classification classification)
-        {
-            NGramBuilder ngram;
-
-            for (unsigned i = 0; grams[i] != nullptr; ++i)
-            {
-                ngram.AddGram(Term::ComputeQualifiedRawHash(grams[i], suffix), 0);
-            }
-
-            const Term term(ngram, classification, DDRTier);
-
-            return term.GetClassifiedHash();
+            EXPECT_EQ(expectedRowPlan, outputForRowPlan.str().c_str());
         }
 
 
@@ -109,22 +79,10 @@ namespace BitFunnel
                 "  }\n"
                 "}";
 
-            std::stringstream expectedFalsePositiveEvaluationPlan;
-
-            char* grams[] = { "foo", nullptr };
-            Stream::Classification classification = Stream::Full;
-
-            expectedFalsePositiveEvaluationPlan
-                << "Term {\n"
-                << "  Children: FPMatchData(" << GetClassifiedHash(grams, nullptr, classification) << ", 1)\n"
-                << "}";
-
             // Generate full query plan.
             VerifyTermPlanConverterCase(input,
                                         expectedFullQueryPlan,
-                                        expectedFalsePositiveEvaluationPlan.str().c_str(),
-                                        index,
-                                        false);
+                                        index);
         }
 
 
