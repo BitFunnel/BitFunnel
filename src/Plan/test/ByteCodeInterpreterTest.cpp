@@ -129,8 +129,6 @@ namespace BitFunnel
         const DocId maxDocId = 800;
         const Term::StreamId streamId = 0;
 
-        const size_t maxGramSize = 1;
-
         auto fileSystem = Factories::CreateRAMFileSystem();
 
         auto index =

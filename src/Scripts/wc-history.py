@@ -18,7 +18,8 @@ def checkout(sha):
     p_checkout.wait()
 
 
-# Output from `git log --date=local --format="%h,%ad"`
+# Output from
+# git log --date=format:'%Y-%m-%d %H:%M:%S' --format="%h,%ad"
 git_log = [line.strip() for line in open('log-date')]
 git_log.reverse()
 
