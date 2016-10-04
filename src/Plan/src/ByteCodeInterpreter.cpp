@@ -111,7 +111,7 @@ Decide on type of Slices
             {
             case Opcode::AndRow:
                 {
-                    uint64_t const * rowPtr = 
+                    uint64_t const * rowPtr =
                         reinterpret_cast<uint64_t const *>(
                             sliceBuffer + m_rowOffsets[row]);
                     uint64_t value = *(rowPtr + (m_offset >> delta));
@@ -122,8 +122,10 @@ Decide on type of Slices
                 break;
             case Opcode::LoadRow:
                 {
-                    auto rowPtr = sliceBuffer + m_rowOffsets[row];
-                    auto value = *(rowPtr + (m_offset >> delta));
+                    uint64_t const *  rowPtr =
+                        reinterpret_cast<uint64_t const *>
+                            (sliceBuffer + m_rowOffsets[row]);
+                    uint64_t value = *(rowPtr + (m_offset >> delta));
                     m_accumulator = (inverted ? ~value : value);
                     m_zeroFlag = (m_accumulator == 0);
                     m_ip++;
