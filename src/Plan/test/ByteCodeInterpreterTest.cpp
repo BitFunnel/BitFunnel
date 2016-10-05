@@ -43,24 +43,126 @@
 
 namespace BitFunnel
 {
+    class Results
+    {
+    public:
+        //Results(std::vector<void *> const & slices)
+        //  : m_slices(slices)
+        //{
+        //}
+
+
+        void Add(uint64_t accumulator,
+                 size_t offset,
+                 size_t slice)
+        {
+            if (accumulator != 0)
+            {
+                m_expected.push_back({ accumulator, offset, slice });
+                std::cout
+                    << "Expect: " << std::hex << accumulator << std::dec
+                    << ", " << offset
+                    << ", " << slice << std::endl;
+            }
+            else
+            {
+                std::cout
+                    << "XXXXXX: " << std::hex << accumulator << std::dec
+                    << ", " << offset
+                    << ", " << slice << std::endl;
+            }
+        }
+
+
+        void Check(size_t index,
+                   uint64_t accumulator,
+                   size_t offset,
+                   void const * slice,
+                   std::vector<void *> const & slices) const
+        {
+            // ASSERT, rather than EXPECT to avoid out of bounds array index.
+            ASSERT_LT(index, m_expected.size());
+            auto const & expected = m_expected[index];
+            EXPECT_EQ(accumulator, expected.m_accumulator);
+            EXPECT_EQ(offset, expected.m_offset);
+            EXPECT_EQ(slice, slices[expected.m_slice]);
+        }
+
+
+        size_t GetResultCount() const
+        {
+            return m_expected.size();
+        }
+
+    private:
+        struct Expected
+        {
+            uint64_t m_accumulator;
+            size_t m_offset;
+            size_t m_slice;
+        };
+
+        std::vector<Expected> m_expected;
+    };
+
+
     class ResultsProcessor : public IResultsProcessor
     {
     public:
+        ResultsProcessor(Results const & expected,
+                         std::vector<void *> const & slices)
+          : m_iterationCount(0),
+            m_resultsCount(0),
+            m_expected(expected),
+            m_slices(slices)
+        {
+        }
+
+
         void AddResult(uint64_t accumulator,
                        size_t offset) override
         {
             std::cout
                 << "AddResult("
-                << std::hex << accumulator
+                << std::hex << accumulator << std::dec
                 << ", " << offset
                 << ")" << std::endl;
+
+            m_observed.push_back({ accumulator, offset });
+
+            //// TODO: Dedupe
+            //DocId id = 0;
+            //while (accumulator != 0)
+            //{
+            //    if ((accumulator & 1) == 1)
+            //    {
+            //        m_results.push_back(id + (offset << 6));
+            //    }
+            //    accumulator >>= 1;
+            //    ++id;
+            //}
         }
 
 
-        bool FinishIteration(void const * /*sliceBuffer*/) override
+        bool FinishIteration(void const * sliceBuffer) override
         {
             std::cout
-                << "FinishIteration()" << std::endl;
+                << "FinishIteration(" << m_iterationCount++ 
+                << ", " << std::hex << sliceBuffer << std::dec
+                << ")" << std::endl;
+
+            for (size_t i = 0; i < m_observed.size(); ++i)
+            {
+                m_expected.Check(m_resultsCount++,
+                                 m_observed[i].m_accumulator,
+                                 m_observed[i].m_offset,
+                                 sliceBuffer,
+                                 m_slices);
+            }
+
+            m_observed.clear();
+
+            // TODO: Should this return true or false?
             return false;
         }
 
@@ -72,8 +174,40 @@ namespace BitFunnel
             return false;
         }
 
+
+        //void PrintResults(std::ostream& output)
+        //{
+        //    output << "Matches: ";
+        //    for (auto id : m_observed)
+        //    {
+        //        output << id << " ";
+        //    }
+        //    output << std::endl;
+        //}
+
+
+        void Check()
+        {
+            EXPECT_EQ(m_resultsCount, m_expected.GetResultCount());
+        }
+
     private:
+        size_t m_iterationCount;
+        size_t m_resultsCount;
+        Results const & m_expected;
+        std::vector<void *> const & m_slices;
+
+        struct Observed
+        {
+            uint64_t m_accumulator;
+            size_t m_offset;
+        };
+
+        std::vector<Observed> m_observed;
+
+//        std::vector<DocId> m_results;
     };
+
 
     size_t c_allocatorBufferSize = 1000000;
 
@@ -124,17 +258,18 @@ namespace BitFunnel
     }
 
 
-    void RunTest(ByteCodeGenerator const & code)
+    void RunTest(ByteCodeGenerator const & code,
+                 Results const & expected)
     {
-        const DocId maxDocId = 800;
+        // TODO: Verify reason for crash with maxDocId == 832.
+        // Think it is hard-coded iteration count.
+        const DocId maxDocId = 831;
         const Term::StreamId streamId = 0;
 
         auto fileSystem = Factories::CreateRAMFileSystem();
 
-        auto index =
-            Factories::CreatePrimeFactorsIndex(*fileSystem,
-                                               maxDocId,
-                                               streamId);
+        auto index = Factories::CreatePrimeFactorsIndex(
+            *fileSystem, maxDocId, streamId);
 
         const ShardId shardId = 0;
         auto & shard = index->GetIngestor().GetShard(shardId);
@@ -165,7 +300,7 @@ namespace BitFunnel
         auto & sliceBuffers = shard.GetSliceBuffers();
         auto iterationsPerSlice = shard.GetSliceCapacity() / (64ull << c_maxRank);
 
-        ResultsProcessor resultsProcessor;
+        ResultsProcessor resultsProcessor(expected, sliceBuffers);
 
         ByteCodeInterpreter interpreter(
             code,
@@ -176,49 +311,14 @@ namespace BitFunnel
             rowOffsets.data());
 
         interpreter.Run();
+
+        resultsProcessor.Check();
+
+//        resultsProcessor.PrintResults(std::cout);
     }
 
 
-    //class MockSlice
-    //{
-    //public:
-    //    MockSlice(size_t sliceNumber,
-    //              size_t quadwordsPerSlice,
-    //              size_t rowCount);
-
-    //    std::vector<ptrdiff_t>
-    //        GetRowOffsets(std::vector<size_t> rowIndices) const;
-
-    //private:
-    //    std::vector<std::vector<uint64_t>> m_rows;
-    //};
-
-    //MockSlice::MockSlice(size_t sliceNumber,
-    //                     size_t quadwordsPerSlice,
-    //                     size_t rowCount)
-    //{
-
-    //}
-
-    //class MockIndex
-    //{
-    //public:
-    //    MockIndex(size_t sliceCount,
-    //              size_t quadwordsPerSlice,
-    //              size_t rowCount);
-
-    //private:
-    //    std::vector<MockSlice> m_slices;
-    //};
-
-
-    //void RunTest2()
-    //{
-    //    std::vector<uint64_t> rowOffsetsSlice1 =
-    //}
-
-
-    TEST(ByteCodeInterpreter, Placeholder)
+    TEST(ByteCodeInterpreter, AndRowJzDelta0)
     {
         char const * text =
             "LoadRowJz {"
@@ -235,6 +335,158 @@ namespace BitFunnel
         GenerateCode(text, code);
         code.Seal();
 
-        RunTest(code);
+        // Expect 9 results.
+        //           X   X X   X X X   X     X X
+        //  Row 0: 0 1 2 3 4   5 6 7 8 9   A B C
+        //  Row 2: 5 5 5 5 5   5 5 5 5 5   5 5 5
+        // Result:   1   1 4   5 4 5   1     1 4
+        // Offset: 0 1 2 3 4   0 1 2 3 4   0 1 2
+        //  Slice: 0 0 0 0 0   1 1 1 1 1   2 2 2
+        const uint64_t row2 = 0x5555555555555555ull;
+
+        Results expected;
+        for (size_t index = 0; index < 13; ++index)
+        {
+            const size_t slice = index / 5;
+            const size_t offset = index % 5;
+            const uint64_t row0 = (slice * 5) + offset;
+            expected.Add(row2 & row0, offset, slice);
+        }
+
+        RunTest(code, expected);
     }
+
+
+    TEST(ByteCodeInterpreter, AndRowJzDelta0Inverted)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(0, 0, 0, false),"      // Row(0) is 0, 1, 2, ...
+            "  Child: AndRowJz {"
+            "    Row: Row(2, 0, 0, true),"     // Row(2) is AAAAAAA....
+            "    Child: Report {"
+            "      Child: "
+            "    }"
+            "  }"
+            "}";
+
+        ByteCodeGenerator code;
+        GenerateCode(text, code);
+        code.Seal();
+
+        const uint64_t row2 = 0x5555555555555555ull;
+
+        Results expected;
+        for (size_t index = 0; index < 13; ++index)
+        {
+            const size_t slice = index / 5;
+            const size_t offset = index % 5;
+            const uint64_t row0 = (slice * 5) + offset;
+            expected.Add(~row2 & row0, offset, slice);
+        }
+
+        RunTest(code, expected);
+    }
+
+
+    TEST(ByteCodeInterpreter, AndRowJzDelta1)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(2, 0, 0, false),"      // Row(2) is AAAAAAA....
+            "  Child: AndRowJz {"
+            "    Row: Row(0, 0, 1, false),"    // Row(0) is 0, 1, 2, ...
+            "    Child: Report {"
+            "      Child: "
+            "    }"
+            "  }"
+            "}";
+
+        ByteCodeGenerator code;
+        GenerateCode(text, code);
+        code.Seal();
+
+        const uint64_t row2 = 0x5555555555555555ull;
+
+        Results expected;
+        for (size_t index = 0; index < 13; ++index)
+        {
+            const size_t slice = index / 5;
+            const size_t offset = index % 5;
+            const uint64_t row0 = (slice * 5) + offset / 2;
+            expected.Add(row2 & row0, offset, slice);
+        }
+
+        RunTest(code, expected);
+    }
+
+
+    TEST(ByteCodeInterpreter, AndRowJzDelta1Inverted)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(2, 0, 0, false),"      // Row(2) is AAAAAAA....
+            "  Child: AndRowJz {"
+            "    Row: Row(0, 0, 1, true),"     // Row(0) is 0, 1, 2, ...
+            "    Child: Report {"
+            "      Child: "
+            "    }"
+            "  }"
+            "}";
+
+        ByteCodeGenerator code;
+        GenerateCode(text, code);
+        code.Seal();
+
+        const uint64_t row2 = 0x5555555555555555ull;
+
+        Results expected;
+        for (size_t index = 0; index < 13; ++index)
+        {
+            const size_t slice = index / 5;
+            const size_t offset = index % 5;
+            const uint64_t row0 = (slice * 5) + offset / 2;
+            expected.Add(row2 & ~row0, offset, slice);
+        }
+
+        RunTest(code, expected);
+    }
+
+    // TODO: Expected loop needs to refer to actual row data values.
+    //       Need fixture to get access to index that was built before all tests.
+    // TODO: Code generation can be moved into RunTest
+
+    //TEST(ByteCodeInterpreter, AndRowJzMatches)
+    //{
+    //    char const * text =
+    //        "LoadRowJz {"
+    //        "  Row: Row(2, 0, 0, false),"
+    //        "  Child: AndRowJz {"
+    //        "    Row: Row(3, 0, 0, false),"
+    //        "    Child: AndRowJz {"
+    //        "      Row: Row(5, 0, 0, false),"
+    //        "      Child: Report {"
+    //        "        Child: "
+    //        "      }"
+    //        "    }"
+    //        "  }"
+    //        "}";
+
+    //    ByteCodeGenerator code;
+    //    GenerateCode(text, code);
+    //    code.Seal();
+
+    //    const uint64_t row2 = 0x5555555555555555ull;
+
+    //    Results expected;
+    //    for (size_t index = 0; index < 13; ++index)
+    //    {
+    //        const size_t slice = index / 5;
+    //        const size_t offset = index % 5;
+    //        const uint64_t row0 = (slice * 5) + offset / 2;
+    //        expected.Add(row2 & ~row0, offset, slice);
+    //    }
+
+    //    RunTest(code, expected);
+    //}
 }
