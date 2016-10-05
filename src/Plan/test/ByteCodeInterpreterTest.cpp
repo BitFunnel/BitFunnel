@@ -38,20 +38,43 @@
 #include "BitFunnel/Term.h"
 #include "ByteCodeInterpreter.h"
 #include "CompileNode.h"
+#include "Primes.h"
 #include "TextObjectParser.h"
 
 
 namespace BitFunnel
 {
-    class Results
+    //*************************************************************************
+    //
+    // ExpectedResults maintains information about a sequence of calls to
+    // IResultsProcessor::AddResult() and IResultsProcessor::FinishIteration().
+    // This information is used to verify the correctness of a matching
+    // algorithm that invokes methods on an IResultsProcessor.
+    //
+    //*************************************************************************
+    class ExpectedResults
     {
     public:
-        //Results(std::vector<void *> const & slices)
-        //  : m_slices(slices)
-        //{
-        //}
-
-
+        // The class is configured by adding a sequence of of records
+        // describing the expected interactions betweeen the matcher and its
+        // IResultsProcessor. Each call to Add() corresponds to expectation
+        // that the matcher will invoke IResultsProcessor::AddResult(). The
+        // accumulator and offset parameters to Add() are the expected
+        // parameters to AddResult().
+        //
+        // The usage pattern for IResultsProcessor is a sequence of calls
+        // to AddResult() interspersed with calls to FinishIteration().
+        // The call to FinishIteration() provides the void* slice buffer
+        // pointer that is applicable to the sequence of calls to AddResult()
+        // since the previous call to FinishIteration() (or the start of
+        // the matching algorithm if there was no previous call to
+        // FinishIteration().
+        //
+        // The third parameter of the Add() method indicates the slice
+        // that expected to be passed on the next call to FinishIteration.
+        // The slice parameter is a size_t index into an array of slice
+        // buffer pointers associated with the index.
+        // 
         void Add(uint64_t accumulator,
                  size_t offset,
                  size_t slice)
@@ -106,18 +129,49 @@ namespace BitFunnel
     };
 
 
-    class ResultsProcessor : public IResultsProcessor
+    //*************************************************************************
+    //
+    // VerifyingResultsProcessor
+    //
+    //*************************************************************************
+    class VerifyingResultsProcessor : public IResultsProcessor
     {
     public:
-        ResultsProcessor(Results const & expected,
-                         std::vector<void *> const & slices)
+        VerifyingResultsProcessor(/*ExpectedResults const & expected,*/
+                                  std::vector<void *> const & slices)
           : m_iterationCount(0),
             m_resultsCount(0),
-            m_expected(expected),
+//            m_expected(expected),
             m_slices(slices)
         {
         }
 
+
+        void ExpectResult(uint64_t accumulator,
+                          size_t offset,
+                          size_t slice)
+        {
+            if (accumulator != 0)
+            {
+                m_expectedResults.push_back({ accumulator, offset, slice });
+                std::cout
+                    << "Expect: " << std::hex << accumulator << std::dec
+                    << ", " << offset
+                    << ", " << slice << std::endl;
+            }
+            else
+            {
+                std::cout
+                    << "XXXXXX: " << std::hex << accumulator << std::dec
+                    << ", " << offset
+                    << ", " << slice << std::endl;
+            }
+        }
+
+
+        //
+        // IResultsProcessor methods.
+        //
 
         void AddResult(uint64_t accumulator,
                        size_t offset) override
@@ -153,12 +207,40 @@ namespace BitFunnel
 
             for (size_t i = 0; i < m_observed.size(); ++i)
             {
-                m_expected.Check(m_resultsCount++,
-                                 m_observed[i].m_accumulator,
-                                 m_observed[i].m_offset,
-                                 sliceBuffer,
-                                 m_slices);
+                // Would like to ASSERT, rather than EXPECT to avoid out of
+                // bounds array index below. Unfortunately ASSERT cannot be
+                // used inside of a function that returns bool. Hence, we
+                // EXPECT_LT and then break on failure.
+                EXPECT_LT(m_resultsCount, m_expectedResults.size());
+                if (m_resultsCount >= m_expectedResults.size())
+                {
+                    break;
+                }
+
+                auto const & expected = m_expectedResults[m_resultsCount];
+                auto const & observed = m_observed[i];
+
+                EXPECT_EQ(observed.m_accumulator, expected.m_accumulator);
+                EXPECT_EQ(observed.m_offset, expected.m_offset);
+                EXPECT_EQ(sliceBuffer, m_slices[expected.m_slice]);
+
+                m_resultsCount++;
+                //m_expected.Check(m_resultsCount++,
+                //                 m_observed[i].m_accumulator,
+                //                 m_observed[i].m_offset,
+                //                 sliceBuffer,
+                //                 m_slices);
             }
+
+
+            //for (size_t i = 0; i < m_observed.size(); ++i)
+            //{
+            //    m_expected.Check(m_resultsCount++,
+            //                     m_observed[i].m_accumulator,
+            //                     m_observed[i].m_offset,
+            //                     sliceBuffer,
+            //                     m_slices);
+            //}
 
             m_observed.clear();
 
@@ -188,14 +270,24 @@ namespace BitFunnel
 
         void Check()
         {
-            EXPECT_EQ(m_resultsCount, m_expected.GetResultCount());
+            EXPECT_EQ(m_resultsCount, m_expectedResults.size());
+//            EXPECT_EQ(m_resultsCount, m_expected.GetResultCount());
         }
 
     private:
         size_t m_iterationCount;
         size_t m_resultsCount;
-        Results const & m_expected;
+//        ExpectedResults const & m_expected;
         std::vector<void *> const & m_slices;
+
+        struct Expected
+        {
+            uint64_t m_accumulator;
+            size_t m_offset;
+            size_t m_slice;
+        };
+
+        std::vector<Expected> m_expectedResults;
 
         struct Observed
         {
@@ -246,76 +338,173 @@ namespace BitFunnel
     }
 
 
-    ptrdiff_t GetRowOffset(char const * text,
-                           Term::StreamId stream,
-                           IConfiguration const & config,
-                           ITermTable const & termTable,
-                           IShard const & shard)
+    //ptrdiff_t GetRowOffset(char const * text,
+    //                       Term::StreamId stream,
+    //                       IConfiguration const & config,
+    //                       ITermTable const & termTable,
+    //                       IShard const & shard)
+    //{
+    //    Term term(text, stream, config);
+    //    RowId row = GetFirstRow(termTable, term);
+    //    return shard.GetRowOffset(row);
+    //}
+
+    class MockIndex
     {
-        Term term(text, stream, config);
-        RowId row = GetFirstRow(termTable, term);
-        return shard.GetRowOffset(row);
-    }
+    public:
+        static const DocId maxDocId = 831;
+        static const Term::StreamId streamId = 0;
+        static const size_t maxGramSize = 1;
+        static const Rank c_maxRank = 0;
+        static const ShardId c_shardId = 0;
 
 
-    void RunTest(ByteCodeGenerator const & code,
-                 Results const & expected)
-    {
-        // TODO: Verify reason for crash with maxDocId == 832.
-        // Think it is hard-coded iteration count.
-        const DocId maxDocId = 831;
-        const Term::StreamId streamId = 0;
+        MockIndex()
+        {
+            m_fileSystem = Factories::CreateRAMFileSystem();
 
-        auto fileSystem = Factories::CreateRAMFileSystem();
+            m_index = Factories::CreatePrimeFactorsIndex(
+                *m_fileSystem, maxDocId, streamId);
 
-        auto index = Factories::CreatePrimeFactorsIndex(
-            *fileSystem, maxDocId, streamId);
+            const size_t c_rowCount = 6;
 
-        const ShardId shardId = 0;
-        auto & shard = index->GetIngestor().GetShard(shardId);
+            auto & shard = m_index->GetIngestor().GetShard(c_shardId);
 
-        std::vector<ptrdiff_t> rowOffsets;
+            for (size_t i = 0; i < c_rowCount; ++i)
+            {
+                char const * term;
+                if (i == 0)
+                {
+                    term = "0";
+                }
+                else if (i == 1)
+                {
+                    term = "1";
+                }
+                else
+                {
+                    term = Primes::c_primesBelow10000Text[i - 2].c_str();
+                }
+                m_rowOffsets.push_back(
+                    GetRowOffset(
+                        term,
+                        streamId,
+                        m_index->GetConfiguration(),
+                        m_index->GetTermTable(),
+                        shard));
+            }
+        }
 
-        rowOffsets.push_back(GetRowOffset(
-            "0",
-            streamId,
-            index->GetConfiguration(),
-            index->GetTermTable(),
-            shard));
-        rowOffsets.push_back(GetRowOffset(
-            "1",
-            streamId,
-            index->GetConfiguration(),
-            index->GetTermTable(),
-            shard));
-        rowOffsets.push_back(GetRowOffset(
-            "2",
-            streamId,
-            index->GetConfiguration(),
-            index->GetTermTable(),
-            shard));
 
-        Rank c_maxRank = 0;
+        void RunTest(char const * codeText,
+                     VerifyingResultsProcessor & resultsProcessor)
+        {
+            ByteCodeGenerator code;
+            GenerateCode(codeText, code);
+            code.Seal();
 
-        auto & sliceBuffers = shard.GetSliceBuffers();
-        auto iterationsPerSlice = shard.GetSliceCapacity() / (64ull << c_maxRank);
+            auto & shard = m_index->GetIngestor().GetShard(c_shardId);
+            auto & sliceBuffers = shard.GetSliceBuffers();
+            auto iterationsPerSlice = shard.GetSliceCapacity() / (64ull << c_maxRank);
 
-        ResultsProcessor resultsProcessor(expected, sliceBuffers);
+            ByteCodeInterpreter interpreter(
+                code,
+                resultsProcessor,
+                sliceBuffers.size(),
+                reinterpret_cast<char* const *>(sliceBuffers.data()),
+                iterationsPerSlice,
+                m_rowOffsets.data());
 
-        ByteCodeInterpreter interpreter(
-            code,
-            resultsProcessor,
-            sliceBuffers.size(),
-            reinterpret_cast<char* const *>(sliceBuffers.data()),
-            iterationsPerSlice,
-            rowOffsets.data());
+            interpreter.Run();
 
-        interpreter.Run();
+            resultsProcessor.Check();
+        }
 
-        resultsProcessor.Check();
 
-//        resultsProcessor.PrintResults(std::cout);
-    }
+        std::vector<void *> const & GetSliceBuffers() const
+        {
+            auto & shard = m_index->GetIngestor().GetShard(c_shardId);
+            return shard.GetSliceBuffers();
+        }
+
+    private:
+        static ptrdiff_t GetRowOffset(char const * text,
+                                      Term::StreamId stream,
+                                      IConfiguration const & config,
+                                      ITermTable const & termTable,
+                                      IShard const & shard)
+        {
+            Term term(text, stream, config);
+            RowId row = GetFirstRow(termTable, term);
+            return shard.GetRowOffset(row);
+        }
+
+        std::unique_ptr<IFileSystem> m_fileSystem;
+        std::unique_ptr<ISimpleIndex> m_index;
+        std::vector<ptrdiff_t> m_rowOffsets;
+    };
+
+
+//    void RunTest(ByteCodeGenerator const & code,
+//                 VerifyingResultsProcessor & resultsProcessor)
+//    {
+//        // TODO: Verify reason for crash with maxDocId == 832.
+//        // Think it is hard-coded iteration count.
+//        const DocId maxDocId = 831;
+//        const Term::StreamId streamId = 0;
+//
+//        const size_t maxGramSize = 1;
+//
+//        auto fileSystem = Factories::CreateRAMFileSystem();
+//
+//        auto index = Factories::CreatePrimeFactorsIndex(
+//            *fileSystem, maxDocId, streamId);
+//
+//        const ShardId shardId = 0;
+//        auto & shard = index->GetIngestor().GetShard(shardId);
+//
+//        std::vector<ptrdiff_t> rowOffsets;
+//
+//        rowOffsets.push_back(GetRowOffset(
+//            "0",
+//            streamId,
+//            index->GetConfiguration(),
+//            index->GetTermTable(),
+//            shard));
+//        rowOffsets.push_back(GetRowOffset(
+//            "1",
+//            streamId,
+//            index->GetConfiguration(),
+//            index->GetTermTable(),
+//            shard));
+//        rowOffsets.push_back(GetRowOffset(
+//            "2",
+//            streamId,
+//            index->GetConfiguration(),
+//            index->GetTermTable(),
+//            shard));
+//
+//        Rank c_maxRank = 0;
+//
+//        auto & sliceBuffers = shard.GetSliceBuffers();
+//        auto iterationsPerSlice = shard.GetSliceCapacity() / (64ull << c_maxRank);
+//
+////        VerifyingResultsProcessor resultsProcessor(sliceBuffers);
+//
+//        ByteCodeInterpreter interpreter(
+//            code,
+//            resultsProcessor,
+//            sliceBuffers.size(),
+//            reinterpret_cast<char* const *>(sliceBuffers.data()),
+//            iterationsPerSlice,
+//            rowOffsets.data());
+//
+//        interpreter.Run();
+//
+//        resultsProcessor.Check();
+//
+////        resultsProcessor.PrintResults(std::cout);
+//    }
 
 
     TEST(ByteCodeInterpreter, AndRowJzDelta0)
@@ -331,9 +520,8 @@ namespace BitFunnel
             "  }"
             "}";
 
-        ByteCodeGenerator code;
-        GenerateCode(text, code);
-        code.Seal();
+
+        MockIndex index;
 
         // Expect 9 results.
         //           X   X X   X X X   X     X X
@@ -344,16 +532,17 @@ namespace BitFunnel
         //  Slice: 0 0 0 0 0   1 1 1 1 1   2 2 2
         const uint64_t row2 = 0x5555555555555555ull;
 
-        Results expected;
-        for (size_t index = 0; index < 13; ++index)
+        VerifyingResultsProcessor expected(index.GetSliceBuffers());
+        for (size_t iteration = 0; iteration < 13; ++iteration)
         {
-            const size_t slice = index / 5;
-            const size_t offset = index % 5;
+            const size_t slice = iteration / 5;
+            const size_t offset = iteration % 5;
             const uint64_t row0 = (slice * 5) + offset;
-            expected.Add(row2 & row0, offset, slice);
+            expected.ExpectResult(row2 & row0, offset, slice);
         }
 
-        RunTest(code, expected);
+        index.RunTest(text, expected);
+//        RunTest(code, expected);
     }
 
 
@@ -370,22 +559,20 @@ namespace BitFunnel
             "  }"
             "}";
 
-        ByteCodeGenerator code;
-        GenerateCode(text, code);
-        code.Seal();
+        MockIndex index;
 
         const uint64_t row2 = 0x5555555555555555ull;
 
-        Results expected;
-        for (size_t index = 0; index < 13; ++index)
+        VerifyingResultsProcessor expected(index.GetSliceBuffers());
+        for (size_t iteration = 0; iteration < 13; ++iteration)
         {
-            const size_t slice = index / 5;
-            const size_t offset = index % 5;
+            const size_t slice = iteration / 5;
+            const size_t offset = iteration % 5;
             const uint64_t row0 = (slice * 5) + offset;
-            expected.Add(~row2 & row0, offset, slice);
+            expected.ExpectResult(~row2 & row0, offset, slice);
         }
 
-        RunTest(code, expected);
+        index.RunTest(text, expected);
     }
 
 
@@ -402,22 +589,20 @@ namespace BitFunnel
             "  }"
             "}";
 
-        ByteCodeGenerator code;
-        GenerateCode(text, code);
-        code.Seal();
+        MockIndex index;
 
         const uint64_t row2 = 0x5555555555555555ull;
 
-        Results expected;
-        for (size_t index = 0; index < 13; ++index)
+        VerifyingResultsProcessor expected(index.GetSliceBuffers());
+        for (size_t iteration = 0; iteration < 13; ++iteration)
         {
-            const size_t slice = index / 5;
-            const size_t offset = index % 5;
+            const size_t slice = iteration / 5;
+            const size_t offset = iteration % 5;
             const uint64_t row0 = (slice * 5) + offset / 2;
-            expected.Add(row2 & row0, offset, slice);
+            expected.ExpectResult(row2 & row0, offset, slice);
         }
 
-        RunTest(code, expected);
+        index.RunTest(text, expected);
     }
 
 
@@ -434,22 +619,20 @@ namespace BitFunnel
             "  }"
             "}";
 
-        ByteCodeGenerator code;
-        GenerateCode(text, code);
-        code.Seal();
+        MockIndex index;
 
         const uint64_t row2 = 0x5555555555555555ull;
 
-        Results expected;
-        for (size_t index = 0; index < 13; ++index)
+        VerifyingResultsProcessor expected(index.GetSliceBuffers());
+        for (size_t iteration = 0; iteration < 13; ++iteration)
         {
-            const size_t slice = index / 5;
-            const size_t offset = index % 5;
+            const size_t slice = iteration / 5;
+            const size_t offset = iteration % 5;
             const uint64_t row0 = (slice * 5) + offset / 2;
-            expected.Add(row2 & ~row0, offset, slice);
+            expected.ExpectResult(row2 & ~row0, offset, slice);
         }
 
-        RunTest(code, expected);
+        index.RunTest(text, expected);
     }
 
     // TODO: Expected loop needs to refer to actual row data values.
@@ -478,7 +661,7 @@ namespace BitFunnel
 
     //    const uint64_t row2 = 0x5555555555555555ull;
 
-    //    Results expected;
+    //    ExpectedResults expected;
     //    for (size_t index = 0; index < 13; ++index)
     //    {
     //        const size_t slice = index / 5;
