@@ -56,7 +56,14 @@ namespace BitFunnel
     : m_hash(0),
       m_termTable(termTable)
     {
-       throw fact;
+        // We're throwing because this isn't implemented yet.  This if is
+        // because, on some configurations of VC++, throwing causes the build to
+        // error out. For reasons we don't understand, this doesn't happen in
+        // AppVeyor CI.
+        if (fact != 17u)
+        {
+            throw fact;
+        }
       // // TODO: Figure out how to eliminate StreamId::Metaword for facts.
       // // Do we just create c_MetaWordStreamId? Can user's use this StreamId?
       // const Term term(static_cast<Term::Hash>(fact),
