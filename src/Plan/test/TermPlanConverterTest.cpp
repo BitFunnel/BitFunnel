@@ -1,18 +1,21 @@
 #include "gtest/gtest.h"
 
-// #include "BitFunnel/FalsePositiveEvaluationNode.h"
 #include "Allocator.h"
+#include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/ITermTable.h"
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/RowIdSequence.h"
-#include "BitFunnel/Utilities/TextObjectFormatter.h"
 #include "BitFunnel/Plan/RowMatchNode.h"
 #include "BitFunnel/Plan/RowPlan.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Plan/TermPlanConverter.h"
+#include "BitFunnel/Utilities/TextObjectFormatter.h"
+#include "TextObjectParser.h"
+// #include "BitFunnel/FalsePositiveEvaluationNode.h"
 // #include "MockIndexConfiguration.h"
 // #include "MockTermTable.h"
-#include "TextObjectParser.h"
 
 
 namespace BitFunnel
@@ -55,7 +58,10 @@ namespace BitFunnel
 
         TEST(TermPlanConverter,LeafTreeConversion)
         {
-            MockIndexConfiguration index(s_defaultShardCapacities);
+            // MockIndexConfiguration index(s_defaultShardCapacities);
+
+            auto filesystem = Factories::CreateFileSystem();
+            auto index = Factories::CreateSimpleIndex(*filesystem);
 
             char const * input = "Unigram(\"foo\", full)";
 
@@ -82,7 +88,7 @@ namespace BitFunnel
             // Generate full query plan.
             VerifyTermPlanConverterCase(input,
                                         expectedFullQueryPlan,
-                                        index);
+                                        *index);
         }
 
 

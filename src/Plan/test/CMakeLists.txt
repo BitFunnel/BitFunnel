@@ -46,7 +46,6 @@ set_property(TARGET PlanTest PROPERTY PROJECT_LABEL "Test")
 # NOTE: The ordering Utilities-Plan is important for XCode. If you reverse
 # Utilities and Plan, we will get linker errors.
 # TODO: do we really need Configuration?
-# TODO: do we need CsvTsv?
-target_link_libraries (PlanTest TestShared Plan Index Configuration Utilities Mocks Index CsvTsv gtest gtest_main)
+target_link_libraries (PlanTest TestShared Plan Index Configuration Utilities Mocks CsvTsv gtest gtest_main)
 
 add_test(NAME PlanTest COMMAND PlanTest)
