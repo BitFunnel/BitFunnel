@@ -27,7 +27,7 @@ namespace BitFunnel
                                          ISimpleIndex const & index)
         {
             // TODO: this can probably be smaller.
-            Allocator allocator(4096);
+            Allocator allocator(4096*256);
 
             std::stringstream input(inputTermPlan);
             TextObjectParser parser(input, allocator, &TermMatchNode::GetType);
@@ -43,7 +43,9 @@ namespace BitFunnel
             TextObjectFormatter formatterForRowPlan(outputForRowPlan);
             rowPlan.Format(formatterForRowPlan);
 
-            EXPECT_EQ(expectedRowPlan, outputForRowPlan.str().c_str());
+            std::string expected(expectedRowPlan);
+            EXPECT_EQ(expected, outputForRowPlan.str());
+
         }
 
 
@@ -62,8 +64,12 @@ namespace BitFunnel
 
             auto filesystem = Factories::CreateFileSystem();
             auto index = Factories::CreateSimpleIndex(*filesystem);
+            index->ConfigureAsMock(1, false); // TODO: there's no way this can work.
+            index->StartIndex();
 
-            char const * input = "Unigram(\"foo\", full)";
+            // 0 is the stream.  TODO: figure out what stream it should be when
+            // we have real StreamId support.
+            char const * input = "Unigram(\"foo\", 0)";
 
             char const * expectedFullQueryPlan =
                 "RowPlan {\n"
