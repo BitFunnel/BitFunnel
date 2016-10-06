@@ -159,9 +159,10 @@ namespace BitFunnel
         };
 
 
-        // Generate fake documents where each document contains term i iff the
-        // docId has bit i set, and then verify using a fake matcher that talks
-        // to the row table to get the appropriate address for the row.
+        // Generate fake documents where each document contains term i which
+        // is a prime number iff the docId is divisible by the prime number.
+        // Then verify using a fake matcher that talks to the row table to get
+        // the appropriate address for the row.
         TEST(Ingestor, Basic)
         {
             const int c_documentCount = 64;
