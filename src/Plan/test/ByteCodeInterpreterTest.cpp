@@ -84,7 +84,7 @@ namespace BitFunnel
         // that expected to be passed on the next call to FinishIteration.
         // The slice parameter is a size_t index into an array of slice
         // buffer pointers associated with the index.
-        // 
+        //
         void ExpectResult(uint64_t accumulator,
                           size_t offset,
                           size_t slice)
@@ -253,7 +253,8 @@ namespace BitFunnel
 
 
         void RunTest(char const * codeText,
-                     VerifyingResultsProcessor & resultsProcessor)
+                     VerifyingResultsProcessor & resultsProcessor,
+                     Rank initialRank)
         {
             ByteCodeGenerator code;
             GenerateCode(codeText, code);
@@ -261,7 +262,7 @@ namespace BitFunnel
 
             auto & shard = m_index->GetIngestor().GetShard(c_shardId);
             auto & sliceBuffers = shard.GetSliceBuffers();
-            auto iterationsPerSlice = shard.GetSliceCapacity() / (64ull << c_maxRank);
+            auto iterationsPerSlice = GetIterations(initialRank);
 
             ByteCodeInterpreter interpreter(
                 code,
@@ -294,7 +295,35 @@ namespace BitFunnel
         }
 
 
+        size_t GetSliceNumber(size_t iteration) const
+        {
+            return iteration / GetIterationsPerSlice();
+        }
+
+
+        size_t GetOffset(size_t iteration) const
+        {
+            return iteration % GetIterationsPerSlice();
+        }
+
+
+        size_t GetIterations(Rank initialRank) const
+        {
+            auto & shard = m_index->GetIngestor().GetShard(c_shardId);
+            auto & sliceBuffers = shard.GetSliceBuffers();
+            auto iterationsPerSlice = GetIterationsPerSlice(initialRank);
+            return iterationsPerSlice * sliceBuffers.size();
+        }
+
+
     private:
+        size_t GetIterationsPerSlice(Rank initialRank) const
+        {
+            auto & shard = m_index->GetIngestor().GetShard(c_shardId);
+            return shard.GetSliceCapacity() / (64ull >> initialRank);
+        }
+
+
         static RowId GetFirstRow(ITermTable const & termTable,
                                  Term term)
         {
@@ -355,13 +384,13 @@ namespace BitFunnel
     //
     //*************************************************************************
 
-    TEST(ByteCodeInterpreter, AndRowJzDelta0TEST)
+    TEST(ByteCodeInterpreter, AndRowJzDelta0)
     {
         char const * text =
             "LoadRowJz {"
-            "  Row: Row(0, 0, 0, false),"      // Row(0) is 0, 1, 2, ...
+            "  Row: Row(0, 0, 0, false),"
             "  Child: AndRowJz {"
-            "    Row: Row(2, 0, 0, false),"    // Row(2) is 5555555....
+            "    Row: Row(2, 0, 0, false),"
             "    Child: Report {"
             "      Child: "
             "    }"
@@ -372,48 +401,17 @@ namespace BitFunnel
         MockIndex index;
 
         VerifyingResultsProcessor expected(index.GetSliceBuffers());
-        for (size_t iteration = 0; iteration < 13; ++iteration)
+        for (size_t iteration = 0; iteration < index.GetIterations(0); ++iteration)
         {
-            const size_t slice = iteration / 5;
-            const size_t offset = iteration % 5;
+            const size_t slice = index.GetSliceNumber(iteration);
+            const size_t offset = index.GetOffset(iteration);
 
             const uint64_t row0 = index.GetRow(0, slice, offset);
             const uint64_t row2 = index.GetRow(2, slice, offset);
             expected.ExpectResult(row2 & row0, offset, slice);
         }
 
-        index.RunTest(text, expected);
-    }
-
-
-    TEST(ByteCodeInterpreter, AndRowJzDelta0)
-    {
-        char const * text =
-            "LoadRowJz {"
-            "  Row: Row(0, 0, 0, false),"      // Row(0) is 0, 1, 2, ...
-            "  Child: AndRowJz {"
-            "    Row: Row(2, 0, 0, false),"    // Row(2) is 5555555....
-            "    Child: Report {"
-            "      Child: "
-            "    }"
-            "  }"
-            "}";
-
-
-        MockIndex index;
-
-        const uint64_t row2 = 0x5555555555555555ull;
-
-        VerifyingResultsProcessor expected(index.GetSliceBuffers());
-        for (size_t iteration = 0; iteration < 13; ++iteration)
-        {
-            const size_t slice = iteration / 5;
-            const size_t offset = iteration % 5;
-            const uint64_t row0 = (slice * 5) + offset;
-            expected.ExpectResult(row2 & row0, offset, slice);
-        }
-
-        index.RunTest(text, expected);
+        index.RunTest(text, expected, 0);
     }
 
 
@@ -421,9 +419,9 @@ namespace BitFunnel
     {
         char const * text =
             "LoadRowJz {"
-            "  Row: Row(0, 0, 0, false),"      // Row(0) is 0, 1, 2, ...
+            "  Row: Row(0, 0, 0, false),"
             "  Child: AndRowJz {"
-            "    Row: Row(2, 0, 0, true),"     // Row(2) is 5555555....
+            "    Row: Row(2, 0, 0, true),"
             "    Child: Report {"
             "      Child: "
             "    }"
@@ -432,18 +430,18 @@ namespace BitFunnel
 
         MockIndex index;
 
-        const uint64_t row2 = 0x5555555555555555ull;
-
         VerifyingResultsProcessor expected(index.GetSliceBuffers());
-        for (size_t iteration = 0; iteration < 13; ++iteration)
+        for (size_t iteration = 0; iteration < index.GetIterations(0); ++iteration)
         {
-            const size_t slice = iteration / 5;
-            const size_t offset = iteration % 5;
-            const uint64_t row0 = (slice * 5) + offset;
+            const size_t slice = index.GetSliceNumber(iteration);
+            const size_t offset = index.GetOffset(iteration);
+
+            const uint64_t row0 = index.GetRow(0, slice, offset);
+            const uint64_t row2 = index.GetRow(2, slice, offset);
             expected.ExpectResult(~row2 & row0, offset, slice);
         }
 
-        index.RunTest(text, expected);
+        index.RunTest(text, expected, 0);
     }
 
 
@@ -451,9 +449,9 @@ namespace BitFunnel
     {
         char const * text =
             "LoadRowJz {"
-            "  Row: Row(2, 0, 0, false),"      // Row(2) is 5555555....
+            "  Row: Row(2, 0, 0, false),"
             "  Child: AndRowJz {"
-            "    Row: Row(0, 0, 1, false),"    // Row(0) is 0, 1, 2, ...
+            "    Row: Row(0, 0, 1, false),"
             "    Child: Report {"
             "      Child: "
             "    }"
@@ -462,18 +460,18 @@ namespace BitFunnel
 
         MockIndex index;
 
-        const uint64_t row2 = 0x5555555555555555ull;
-
         VerifyingResultsProcessor expected(index.GetSliceBuffers());
-        for (size_t iteration = 0; iteration < 13; ++iteration)
+        for (size_t iteration = 0; iteration < index.GetIterations(0); ++iteration)
         {
-            const size_t slice = iteration / 5;
-            const size_t offset = iteration % 5;
-            const uint64_t row0 = (slice * 5) + offset / 2;
+            const size_t slice = index.GetSliceNumber(iteration);
+            const size_t offset = index.GetOffset(iteration);
+
+            const uint64_t row2 = index.GetRow(2, slice, offset);
+            const uint64_t row0 = index.GetRow(0, slice, offset / 2);
             expected.ExpectResult(row2 & row0, offset, slice);
         }
 
-        index.RunTest(text, expected);
+        index.RunTest(text, expected, 0);
     }
 
 
@@ -481,9 +479,9 @@ namespace BitFunnel
     {
         char const * text =
             "LoadRowJz {"
-            "  Row: Row(2, 0, 0, false),"      // Row(2) is 5555555....
+            "  Row: Row(2, 0, 0, false),"
             "  Child: AndRowJz {"
-            "    Row: Row(0, 0, 1, true),"     // Row(0) is 0, 1, 2, ...
+            "    Row: Row(0, 0, 1, true),"
             "    Child: Report {"
             "      Child: "
             "    }"
@@ -492,55 +490,87 @@ namespace BitFunnel
 
         MockIndex index;
 
-        const uint64_t row2 = 0x5555555555555555ull;
-
         VerifyingResultsProcessor expected(index.GetSliceBuffers());
-        for (size_t iteration = 0; iteration < 13; ++iteration)
+        for (size_t iteration = 0; iteration < index.GetIterations(0); ++iteration)
         {
-            const size_t slice = iteration / 5;
-            const size_t offset = iteration % 5;
-            const uint64_t row0 = (slice * 5) + offset / 2;
+            const size_t slice = index.GetSliceNumber(iteration);
+            const size_t offset = index.GetOffset(iteration);
+
+            const uint64_t row2 = index.GetRow(2, slice, offset);
+            const uint64_t row0 = index.GetRow(0, slice, offset / 2);
             expected.ExpectResult(row2 & ~row0, offset, slice);
         }
 
-        index.RunTest(text, expected);
+        index.RunTest(text, expected, 0);
     }
 
     // TODO: Expected loop needs to refer to actual row data values.
     //       Need fixture to get access to index that was built before all tests.
     // TODO: Code generation can be moved into RunTest
 
-    //TEST(ByteCodeInterpreter, AndRowJzMatches)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(2, 0, 0, false),"
-    //        "  Child: AndRowJz {"
-    //        "    Row: Row(3, 0, 0, false),"
-    //        "    Child: AndRowJz {"
-    //        "      Row: Row(5, 0, 0, false),"
-    //        "      Child: Report {"
-    //        "        Child: "
-    //        "      }"
-    //        "    }"
-    //        "  }"
-    //        "}";
+    TEST(ByteCodeInterpreter, AndRowJzMatches)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(2, 0, 0, false),"
+            "  Child: AndRowJz {"
+            "    Row: Row(3, 0, 0, false),"
+            "    Child: AndRowJz {"
+            "      Row: Row(5, 0, 0, false),"
+            "      Child: Report {"
+            "        Child: "
+            "      }"
+            "    }"
+            "  }"
+            "}";
 
-    //    ByteCodeGenerator code;
-    //    GenerateCode(text, code);
-    //    code.Seal();
+        MockIndex index;
 
-    //    const uint64_t row2 = 0x5555555555555555ull;
+        VerifyingResultsProcessor expected(index.GetSliceBuffers());
+        for (size_t iteration = 0; iteration < index.GetIterations(0); ++iteration)
+        {
+            const size_t slice = index.GetSliceNumber(iteration);
+            const size_t offset = index.GetOffset(iteration);
 
-    //    ExpectedResults expected;
-    //    for (size_t index = 0; index < 13; ++index)
-    //    {
-    //        const size_t slice = index / 5;
-    //        const size_t offset = index % 5;
-    //        const uint64_t row0 = (slice * 5) + offset / 2;
-    //        expected.Add(row2 & ~row0, offset, slice);
-    //    }
+            const uint64_t row2 = index.GetRow(2, slice, offset);
+            const uint64_t row3 = index.GetRow(3, slice, offset);
+            const uint64_t row5 = index.GetRow(5, slice, offset);
+            expected.ExpectResult(row2 & row3 & row5, offset, slice);
+        }
 
-    //    RunTest(code, expected);
-    //}
+        index.RunTest(text, expected, 0);
+    }
+
+
+    TEST(ByteCodeInterpreter, RankDownDelta1)
+    {
+        char const * text =
+            "RankDown {"
+            "  Delta: 1,"
+            "  Child: LoadRowJz {"
+            "    Row: Row(0, 5, 0, false),"
+            "    Child: Report {"
+            "      Child: "
+            "    }"
+            "  }"
+            "}";
+
+        MockIndex index;
+        const Rank c_initialRank = 1;
+
+        VerifyingResultsProcessor expected(index.GetSliceBuffers());
+        for (size_t iteration = 0; iteration < index.GetIterations(c_initialRank); ++iteration)
+        {
+            const size_t slice = index.GetSliceNumber(iteration);
+            const size_t offset = index.GetOffset(iteration);
+
+            for (size_t i = 0; i < 2; ++i)
+            {
+                const uint64_t row0 = index.GetRow(0, slice, 2 * offset + i);
+                expected.ExpectResult(row0, offset, slice);
+            }
+        }
+
+        index.RunTest(text, expected, c_initialRank);
+    }
 }

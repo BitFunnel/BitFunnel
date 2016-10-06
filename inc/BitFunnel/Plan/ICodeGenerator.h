@@ -59,7 +59,7 @@ namespace BitFunnel
 
         virtual void Report() = 0;
 
-        // Constrol flow primitives.
+        // Control flow primitives.
         virtual Label AllocateLabel() = 0;
         virtual void PlaceLabel(Label label) = 0;
         virtual void Call(Label label) = 0;
