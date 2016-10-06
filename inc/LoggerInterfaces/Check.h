@@ -71,14 +71,8 @@ namespace Logging
                    typename std::enable_if<std::is_convertible<T, char const *>::value &&
                             !std::is_null_pointer<T>::value, T const &>::type value)
     {
-        if (value == nullptr)
-        {
-            stream << "(empty string)";
-        }
-        else
-        {
-            stream << value;
-        }
+        // Based on the template, we can't have nullptr here.
+        stream << value;
     }
 
     template <typename T>
