@@ -1,3 +1,5 @@
+#include <iostream>  // TODO: remove.
+
 #include "AbstractRowEnumerator.h"
 #include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
 #include "BitFunnel/Index/ITermTable.h"
@@ -78,6 +80,7 @@ namespace BitFunnel
         while (it != rows.end())
         {
             auto row = *it;
+            ++it;
             const Rank rank = row.GetRank();
             RowId physicalRowId = row;
 

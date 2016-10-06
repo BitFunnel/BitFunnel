@@ -5,6 +5,7 @@
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/ITermTable.h"
+#include "BitFunnel/Index/ITermTableCollection.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/RowMatchNode.h"
@@ -61,15 +62,27 @@ namespace BitFunnel
         TEST(TermPlanConverter,LeafTreeConversion)
         {
             // MockIndexConfiguration index(s_defaultShardCapacities);
-
             auto filesystem = Factories::CreateFileSystem();
             auto index = Factories::CreateSimpleIndex(*filesystem);
-            index->ConfigureAsMock(1, false); // TODO: there's no way this can work.
+
+            auto termTable = Factories::CreateTermTable();
+            const size_t explicitRowCount = 100;
+            const size_t adhocRowCount = 200;
+            auto hash = Term::ComputeRawHash("foo");
+            termTable->OpenTerm();
+            termTable->AddRowId(RowId(0,0,0));
+            termTable->CloseTerm(hash);
+
+            auto termTableCollection = Factories::CreateTermTableCollection();
+            termTableCollection->AddTermTable(termTable);
+
+            index->SetTermTableCollection(termTableCollection);
+            index->ConfigureAsMock(1, false);
             index->StartIndex();
 
-            // 0 is the stream.  TODO: figure out what stream it should be when
+            // 13 is the stream.  TODO: figure out what stream it should be when
             // we have real StreamId support.
-            char const * input = "Unigram(\"foo\", 0)";
+            char const * input = "Unigram(\"foo\", 13)";
 
             char const * expectedFullQueryPlan =
                 "RowPlan {\n"
