@@ -100,9 +100,9 @@ namespace BitFunnel
             return true;
         }
 
-        std::vector<unsigned> Expected(unsigned query)
+        std::vector<DocId> Expected(unsigned query)
         {
-            std::vector<unsigned> results;
+            std::vector<DocId> results;
             for (DocId i = 0; i < documentCount; ++i)
             {
                 if (ExpectedMatch(i, query))
@@ -117,10 +117,10 @@ namespace BitFunnel
         // intersect rows as appropriate. This implies that the "0" query
         // matches all rows. Note that this only handles up to 64 bits, so
         // queries larger than 64 are bogus.
-        std::vector<unsigned> Match(unsigned query)
+        std::vector<DocId> Match(unsigned query)
         {
             uint64_t accumulator = std::numeric_limits<uint64_t>::max();
-            std::vector<unsigned> results;
+            std::vector<DocId> results;
 
             for (size_t i = 0; query != 0; query >>= 1, ++i)
             {
