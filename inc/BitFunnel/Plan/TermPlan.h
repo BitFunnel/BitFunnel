@@ -57,6 +57,6 @@ namespace BitFunnel
         // and TermPlan::Format().
         TermMatchNode const & m_matchTree;
         IScoringEngine const & m_scoringEngine;
-        QueryPreferences const & queryPreferences;
+        QueryPreferences const & m_queryPreferences;
     };
 }

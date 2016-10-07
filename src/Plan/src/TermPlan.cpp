@@ -35,7 +35,7 @@ namespace BitFunnel
                        QueryPreferences const & queryPreferences)
         : m_matchTree(matchTree),
           m_scoringEngine(scoringEngine),
-          queryPreferences(queryPreferences)
+          m_queryPreferences(queryPreferences)
     {
     }
 
@@ -63,6 +63,6 @@ namespace BitFunnel
 
     QueryPreferences const & TermPlan::GetQueryPreferences() const
     {
-        return queryPreferences;
+        return m_queryPreferences;
     }
 }
