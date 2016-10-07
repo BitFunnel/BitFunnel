@@ -173,6 +173,82 @@ namespace BitFunnel
         }
 
 
+        TEST(TermPlanConverter,Or)
+        {
+            // MockIndexConfiguration index(s_defaultShardCapacities);
+            auto filesystem = Factories::CreateFileSystem();
+            auto index = Factories::CreateSimpleIndex(*filesystem);
+
+            auto termTable = Factories::CreateTermTable();
+            const size_t adhocRowCount = 4;
+
+            termTable->OpenTerm();
+            auto hash = Term::ComputeRawHash("foo");
+            RowIndex explicitRowCount = ITermTable::SystemTerm::Count;
+            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->CloseTerm(hash);
+
+            termTable->OpenTerm();
+            hash = Term::ComputeRawHash("bar");
+            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->CloseTerm(hash);
+
+            termTable->SetRowCounts(0, explicitRowCount, adhocRowCount);
+            termTable->Seal();
+
+            auto termTableCollection = Factories::CreateTermTableCollection();
+            termTableCollection->AddTermTable(std::move(termTable));
+
+            index->SetTermTableCollection(std::move(termTableCollection));
+            index->ConfigureAsMock(1, false);
+            index->StartIndex();
+
+            // 13 is the stream.  TODO: figure out what stream it should be when
+            // we have real StreamId support.
+            char const * input =
+                "Or {\n"
+                "  Children: [\n"
+                "    Unigram(\"bar\", 13),\n"
+                "    Unigram(\"foo\", 13)\n"
+                "  ]\n"
+                "}";
+
+
+            char const * expectedFullQueryPlan =
+                "RowPlan {\n"
+                "  Match: And {\n"
+                "    Children: [\n"
+                "      Or {\n"
+                "        Children: [\n"
+                "          And {\n"
+                "            Children: [\n"
+                "              Row(4, 0, 0, false),\n"
+                "              Row(3, 0, 0, false)\n"
+                "            ]\n"
+                "          },\n"
+                "          And {\n"
+                "            Children: [\n"
+                "              Row(2, 0, 0, false),\n"
+                "              Row(1, 0, 0, false)\n"
+                "            ]\n"
+                "          }\n"
+                "        ]\n"
+                "      },\n"
+                "      Row(0, 0, 0, false)\n"
+                "    ]\n"
+                "  }\n"
+                "}";
+
+            // Generate full query plan.
+            VerifyTermPlanConverterCase(input,
+                                        expectedFullQueryPlan,
+                                        *index);
+        }
+
+
+
         // TODO: need to implement nonBody.
         // TEST(TermPlanConverter,NonBodyPlanWithFull)
         // {
