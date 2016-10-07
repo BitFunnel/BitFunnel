@@ -19,6 +19,7 @@ set(CPPFILES
     TermMatchNode.cpp
     TermMatchTreeConverter.cpp
     TermMatchTreeEvaluator.cpp
+    TermPlan.cpp
     TermPlanConverter.cpp
 )
 
