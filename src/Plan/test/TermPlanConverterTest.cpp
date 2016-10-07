@@ -66,17 +66,22 @@ namespace BitFunnel
             auto index = Factories::CreateSimpleIndex(*filesystem);
 
             auto termTable = Factories::CreateTermTable();
-            const size_t explicitRowCount = 100;
             const size_t adhocRowCount = 200;
             auto hash = Term::ComputeRawHash("foo");
+
             termTable->OpenTerm();
-            termTable->AddRowId(RowId(0,0,0));
+            RowIndex explicitRowCount = ITermTable::SystemTerm::Count;
+            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0,0,explicitRowCount++));
             termTable->CloseTerm(hash);
 
-            auto termTableCollection = Factories::CreateTermTableCollection();
-            termTableCollection->AddTermTable(termTable);
+            termTable->SetRowCounts(0, explicitRowCount, adhocRowCount);
+            termTable->Seal();
 
-            index->SetTermTableCollection(termTableCollection);
+            auto termTableCollection = Factories::CreateTermTableCollection();
+            termTableCollection->AddTermTable(std::move(termTable));
+
+            index->SetTermTableCollection(std::move(termTableCollection));
             index->ConfigureAsMock(1, false);
             index->StartIndex();
 
@@ -88,15 +93,8 @@ namespace BitFunnel
                 "RowPlan {\n"
                 "  Match: And {\n"
                 "    Children: [\n"
-
-                // foo @ full (2, 4, 1)
                 "      Row(2, 0, 0, false),\n"
                 "      Row(1, 0, 0, false),\n"
-                "      Row(6, 3, 0, false),\n"
-                "      Row(5, 3, 0, false),\n"
-                "      Row(4, 3, 0, false),\n"
-                "      Row(3, 3, 0, false),\n"
-                "      Row(7, 6, 0, false),\n"
 
                 // Soft-deleted row.
                 "      Row(0, 0, 0, false)\n"

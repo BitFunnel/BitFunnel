@@ -12,7 +12,7 @@ set(CPPFILES
     RowPlanTest.cpp
     QueryParserTest.cpp
     TermMatchNodeTest.cpp
-    # TermPlanConverterTest.cpp
+    TermPlanConverterTest.cpp
 )
 
 set(WINDOWS_CPPFILES
