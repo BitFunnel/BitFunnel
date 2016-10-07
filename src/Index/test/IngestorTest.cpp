@@ -177,7 +177,7 @@ namespace BitFunnel
         const int c_documentCount = 64;
         SyntheticIndex index(c_documentCount);
 
-        for (int i = 0; i < c_documentCount + 1; i++)
+        for (unsigned i = 0; i < c_documentCount + 1; i++)
         {
             index.VerifyQuery(i);
         }
