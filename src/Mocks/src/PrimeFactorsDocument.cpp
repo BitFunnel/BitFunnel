@@ -178,6 +178,7 @@ namespace BitFunnel
 
                 termTable->OpenTerm();
                 termTable->AddRowId(RowId(shard, rank, explicitRowCount++));
+                termTable->AddRowId(RowId(shard, rank + 1, explicitRowCount++));
                 termTable->CloseTerm(Term::ComputeRawHash(text.c_str()));
             }
         }
