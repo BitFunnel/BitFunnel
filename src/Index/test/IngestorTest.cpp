@@ -20,42 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <cmath>
-#include <iostream>
 #include <limits>
 #include <memory>
-#include <sstream>
-#include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
 
+#include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Configuration/Factories.h"
-#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
-#include "BitFunnel/Index/IRecycler.h"
+#include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
-#include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Mocks/Factories.h"
 #include "BitFunnel/Term.h"
-#include "Configuration.h"
-#include "Document.h"
-#include "DocumentDataSchema.h"
-#include "DocumentFrequencyTable.h"
-#include "IndexedIdfTable.h"
-#include "Ingestor.h"
 #include "Primes.h"
-#include "Recycler.h"
-#include "TrackingSliceBufferAllocator.h"
+
 
 namespace BitFunnel
 {
-    class IConfiguration;
+    static const Term::StreamId c_streamId = 0;
 
-    const Term::StreamId c_streamId = 0;
 
-    class SyntheticIndex {
+    class SyntheticIndex
+    {
     public:
         SyntheticIndex(unsigned documentCount)
         {
@@ -65,10 +54,12 @@ namespace BitFunnel
                                                          c_streamId);
         }
 
+
         IIngestor & GetIngestor() const
         {
             return m_index->GetIngestor();
         }
+
 
         void VerifyQuery(unsigned query)
         {
@@ -83,27 +74,44 @@ namespace BitFunnel
         }
 
     private:
-        const DocId documentCount = 64;
+        static const DocId c_documentCount = 64;
 
         bool ExpectedMatch(DocId id, unsigned query)
         {
-            for (size_t i = 0; query != 0; query >>= 1, ++i)
+            if (query == 0)
             {
-                    if (query & 0x1)
+                // Query 0 has no terms so it matches all documents.
+                return true;
+            }
+            else if (id == 0)
+            {
+                // Document 0 has no terms so it never matches
+                // a non-zero query.
+                return false;
+            }
+            else
+            {
+                // Document and query each have at least one term.
+                // Check for matches.
+                for (size_t i = 0; query != 0; query >>= 1, ++i)
+                {
+                    if ((query & 1) != 0)
                     {
                         if (id % Primes::c_primesBelow10000[i] != 0)
                         {
                             return false;
                         }
                     }
+                }
+                return true;
             }
-            return true;
         }
+
 
         std::vector<DocId> Expected(unsigned query)
         {
             std::vector<DocId> results;
-            for (DocId i = 0; i < documentCount; ++i)
+            for (DocId i = 0; i < c_documentCount; ++i)
             {
                 if (ExpectedMatch(i, query))
                 {
@@ -113,12 +121,15 @@ namespace BitFunnel
             return results;
         }
 
+
         // Start with an accumulator that matches all documents. Then
         // intersect rows as appropriate. This implies that the "0" query
         // matches all rows. Note that this only handles up to 64 bits, so
         // queries larger than 64 are bogus.
         std::vector<DocId> Match(unsigned query)
         {
+            // Load accumulator with 0xFFFFFFFFFFFFFFFF which matches
+            // all documents. Then intersect with rows of the query.
             uint64_t accumulator = std::numeric_limits<uint64_t>::max();
             std::vector<DocId> results;
 

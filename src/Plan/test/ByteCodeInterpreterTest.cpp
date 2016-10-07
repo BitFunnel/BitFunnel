@@ -240,7 +240,6 @@ namespace BitFunnel
 
         const Rank initialRank = 0;
         ByteCodeVerifier verifier(GetIndex(), initialRank);
-        verifier.VerboseMode(true);
 
         verifier.DeclareRow("2");
         verifier.DeclareRow("3");
@@ -281,8 +280,6 @@ namespace BitFunnel
 
         const Rank initialRank = 1;
         ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-        verifier.VerboseMode(true);
 
         verifier.DeclareRow("3");
 
