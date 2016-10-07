@@ -49,15 +49,22 @@ namespace BitFunnel
     const DocId c_maxDocId = 832;
     const Term::StreamId c_streamId = 0;
     static const ShardId c_shardId = 0;
+    static const size_t c_allocatorBufferSize = 1000000;
 
 
+    //
+    // Returns the ISimpleIndex that is shared by all of the tests
+    // in this file.
+    //
     ISimpleIndex const & GetIndex()
     {
+        // Create the IFileSystem on first call.
         if (g_fileSystem.get() == nullptr)
         {
             g_fileSystem = Factories::CreateRAMFileSystem();
         }
 
+        // Create the ISimpleIndex on first call.
         if (g_index.get() == nullptr)
         {
             g_index = Factories::CreatePrimeFactorsIndex(*g_fileSystem,
@@ -83,26 +90,41 @@ namespace BitFunnel
     class Verifier : public IResultsProcessor
     {
     public:
-        //static const ShardId c_shardId = 0;
-//        static const Term::StreamId c_streamId = 0;
-        static const size_t c_allocatorBufferSize = 1000000;
-
-
         Verifier(ISimpleIndex const & index, Rank initialRank)
           : m_index(index),
             m_initialRank(initialRank),
             m_slices(index.GetIngestor().GetShard(c_shardId).GetSliceBuffers()),
-            m_resultsCount(0)
-        {
-        }
-
-
-        size_t GetIterations() const
+            m_resultsCount(0),
+            m_verboseMode(false),
+            m_expectNoResults(false)
         {
             auto & shard = m_index.GetIngestor().GetShard(c_shardId);
             auto & sliceBuffers = shard.GetSliceBuffers();
             auto iterationsPerSlice = GetIterationsPerSlice();
-            return iterationsPerSlice * sliceBuffers.size();
+            auto iterationCount = iterationsPerSlice * sliceBuffers.size();
+
+            for (size_t i = 0; i < iterationCount; ++i)
+            {
+                m_iterationValues.push_back(i);
+            }
+        }
+
+
+        void VerboseMode(bool mode)
+        {
+            m_verboseMode = mode;
+        }
+
+
+        void ExpectNoResults()
+        {
+            m_expectNoResults = true;
+        }
+
+
+        std::vector<size_t> const & GetIterations() const
+        {
+            return m_iterationValues;
         }
 
 
@@ -118,7 +140,6 @@ namespace BitFunnel
         }
 
 
-        // Returns number of iterations per slice at rank 0.
         size_t GetIterationsPerSlice() const
         {
             auto & shard = m_index.GetIngestor().GetShard(c_shardId);
@@ -177,17 +198,23 @@ namespace BitFunnel
             if (accumulator != 0)
             {
                 m_expectedResults.push_back({ accumulator, offset, slice });
-                std::cout
-                    << "Expect: " << std::hex << accumulator << std::dec
-                    << ", " << offset
-                    << ", " << slice << std::endl;
+                if (m_verboseMode)
+                {
+                    std::cout
+                        << "Expect: " << std::hex << accumulator << std::dec
+                        << ", " << slice
+                        << ", " << offset << std::endl;
+                }
             }
             else
             {
-                std::cout
-                    << "XXXXXX: " << std::hex << accumulator << std::dec
-                    << ", " << offset
-                    << ", " << slice << std::endl;
+                if (m_verboseMode)
+                {
+                    std::cout
+                        << "XXXXXX: " << std::hex << accumulator << std::dec
+                        << ", " << slice
+                        << ", " << offset << std::endl;
+                }
             }
         }
 
@@ -199,11 +226,14 @@ namespace BitFunnel
         void AddResult(uint64_t accumulator,
                        size_t offset) override
         {
-            std::cout
-                << "AddResult("
-                << std::hex << accumulator << std::dec
-                << ", " << offset
-                << ")" << std::endl;
+            if (m_verboseMode)
+            {
+                std::cout
+                    << "AddResult("
+                    << std::hex << accumulator << std::dec
+                    << ", " << offset
+                    << ")" << std::endl;
+            }
 
             m_observed.push_back({ accumulator, offset });
         }
@@ -211,10 +241,13 @@ namespace BitFunnel
 
         bool FinishIteration(void const * sliceBuffer) override
         {
-            std::cout
-                << "FinishIteration("
-                << std::hex << sliceBuffer << std::dec
-                << ")" << std::endl;
+            if (m_verboseMode)
+            {
+                std::cout
+                    << "FinishIteration("
+                    << std::hex << sliceBuffer << std::dec
+                    << ")" << std::endl;
+            }
 
             for (size_t i = 0; i < m_observed.size(); ++i)
             {
@@ -254,14 +287,24 @@ namespace BitFunnel
         }
 
 
-        void Check()
-        {
-            EXPECT_EQ(m_resultsCount, m_expectedResults.size());
-        }
-
-
         void Verify(char const * codeText)
         {
+            // TODO: This check isn't too useful at the moment because
+            // document 0 matches all queries. Therefore, even a poorly
+            // constructed test will get at least one match.
+            if (m_expectNoResults)
+            {
+                ASSERT_EQ(m_expectedResults.size(), 0ull)
+                    << "Expecting no results, but ExpectResult() was called"
+                       "at least once with a non-zero accumulator value.";
+            }
+            else
+            {
+                ASSERT_GT(m_expectedResults.size(), 0ull)
+                    << "Expecting at least one result, but each call to "
+                       "ExpectResult() passed an empty accumulator.";
+            }
+
             ByteCodeGenerator code;
             GenerateCode(codeText, code);
             code.Seal();
@@ -269,18 +312,6 @@ namespace BitFunnel
             auto & shard = m_index.GetIngestor().GetShard(c_shardId);
             auto & sliceBuffers = shard.GetSliceBuffers();
             auto iterationsPerSlice = GetIterationsPerSlice();
-
-            //std::vector<ptrdiff_t> rowOffsets;
-            //for (RowId row : m_rows)
-            //{
-            //    rowOffsets.push_back(
-            //        GetRowOffset(
-            //            std::to_string(row.GetIndex()).c_str(),
-            //            c_streamId,
-            //            m_index.GetConfiguration(),
-            //            m_index.GetTermTable(),
-            //            shard));
-            //}
 
             ByteCodeInterpreter interpreter(
                 code,
@@ -292,7 +323,9 @@ namespace BitFunnel
 
             interpreter.Run();
 
-            Check();
+            // This check is necessary to detect the case where the final call
+            // to FinishIteration is missing.
+            EXPECT_EQ(m_resultsCount, m_expectedResults.size());
         }
 
     private:
@@ -347,10 +380,14 @@ namespace BitFunnel
         Rank m_initialRank;
         std::vector<void *> const & m_slices;
 
-//        std::vector<RowId> m_rows;
+        std::vector<size_t> m_iterationValues;
+
         std::vector<ptrdiff_t> m_rowOffsets;
 
         size_t m_resultsCount;
+
+        bool m_verboseMode;
+        bool m_expectNoResults;
 
         struct Expected
         {
@@ -370,191 +407,6 @@ namespace BitFunnel
         std::vector<Observed> m_observed;
     };
 
-
-
-    //*************************************************************************
-    //
-    // MockIndex
-    //
-    //*************************************************************************
-    class MockIndex
-    {
-    public:
-        static const DocId maxDocId = 831;
-        static const Term::StreamId streamId = 0;
-        static const size_t maxGramSize = 1;
-        static const Rank c_maxRank = 0;
-        static const ShardId c_shardId = 0;
-        const size_t c_rowCount = 20;
-
-        static const size_t c_allocatorBufferSize = 1000000;
-
-
-        MockIndex()
-        {
-            m_fileSystem = Factories::CreateRAMFileSystem();
-
-            m_index = Factories::CreatePrimeFactorsIndex(
-                *m_fileSystem, maxDocId, streamId);
-
-            auto & shard = m_index->GetIngestor().GetShard(c_shardId);
-
-            for (size_t i = 0; i < c_rowCount; ++i)
-            {
-                //char const * term;
-                //if (i == 0)
-                //{
-                //    term = "0";
-                //}
-                //else if (i == 1)
-                //{
-                //    term = "1";
-                //}
-                //else
-                //{
-                //    term = Primes::c_primesBelow10000Text[i - 2].c_str();
-                //}
-                m_rowOffsets.push_back(
-                    GetRowOffset(
-                        Primes::c_primesBelow10000Text[i].c_str(),
-                        streamId,
-                        m_index->GetConfiguration(),
-                        m_index->GetTermTable(),
-                        shard));
-            }
-        }
-
-
-        void RunTest(char const * codeText,
-                     Verifier & resultsProcessor,
-                     Rank initialRank)
-        {
-            ByteCodeGenerator code;
-            GenerateCode(codeText, code);
-            code.Seal();
-
-            auto & shard = m_index->GetIngestor().GetShard(c_shardId);
-            auto & sliceBuffers = shard.GetSliceBuffers();
-            auto iterationsPerSlice = GetIterationsPerSlice(initialRank);
-
-            ByteCodeInterpreter interpreter(
-                code,
-                resultsProcessor,
-                sliceBuffers.size(),
-                reinterpret_cast<char* const *>(sliceBuffers.data()),
-                iterationsPerSlice,
-                m_rowOffsets.data());
-
-            interpreter.Run();
-
-            resultsProcessor.Check();
-        }
-
-
-        std::vector<void *> const & GetSliceBuffers() const
-        {
-            auto & shard = m_index->GetIngestor().GetShard(c_shardId);
-            return shard.GetSliceBuffers();
-        }
-
-
-        uint64_t GetRow(size_t row, size_t slice, size_t offset)
-        {
-            auto const & slices = GetSliceBuffers();
-            char const * sliceBuffer = reinterpret_cast<char const *>(slices[slice]);
-            uint64_t const * rowPtr =
-                reinterpret_cast<uint64_t const *>(sliceBuffer + m_rowOffsets[row]);
-            return rowPtr[offset];
-        }
-
-
-        size_t GetSliceNumber(size_t iteration, Rank initialRank) const
-        {
-            return iteration / GetIterationsPerSlice(initialRank);
-        }
-
-
-        size_t GetOffset(size_t iteration, Rank initialRank) const
-        {
-            return iteration % GetIterationsPerSlice(initialRank);
-        }
-
-
-        size_t GetIterations(Rank initialRank) const
-        {
-            auto & shard = m_index->GetIngestor().GetShard(c_shardId);
-            auto & sliceBuffers = shard.GetSliceBuffers();
-            auto iterationsPerSlice = GetIterationsPerSlice(initialRank);
-            return iterationsPerSlice * sliceBuffers.size();
-        }
-
-
-        ISimpleIndex const & GetIndex() const
-        {
-            return *m_index;
-        }
-
-
-    private:
-        // Returns number of iterations per slice at rank 0.
-        size_t GetIterationsPerSlice(Rank initialRank) const
-        {
-            auto & shard = m_index->GetIngestor().GetShard(c_shardId);
-            return shard.GetSliceCapacity() >> 6 >> initialRank;
-        }
-
-
-        static RowId GetFirstRow(ITermTable const & termTable,
-                                 Term term)
-        {
-            RowIdSequence rows(term, termTable);
-
-            auto it = rows.begin();
-            // TODO: Implement operator << for RowIdSequence::const_iterator.
-            //CHECK_NE(it, rows.end())
-            //    << "Expected at least one row.";
-
-            RowId row = *it;
-
-            ++it;
-            // TODO: Implement operator << for RowIdSequence::const_iterator.
-            //CHECK_EQ(it, rows.end())
-            //    << "Expected no more than one row.";
-
-            return row;
-        }
-
-
-        static ptrdiff_t GetRowOffset(char const * text,
-                                      Term::StreamId stream,
-                                      IConfiguration const & config,
-                                      ITermTable const & termTable,
-                                      IShard const & shard)
-        {
-            Term term(text, stream, config);
-            RowId row = GetFirstRow(termTable, term);
-            return shard.GetRowOffset(row);
-        }
-
-
-        static void GenerateCode(char const * rowPlanText,
-                                 ByteCodeGenerator& code)
-        {
-            std::stringstream rowPlan(rowPlanText);
-
-            Allocator allocator(c_allocatorBufferSize);
-            TextObjectParser parser(rowPlan, allocator, &CompileNode::GetType);
-
-            CompileNode const & node = CompileNode::Parse(parser);
-
-            node.Compile(code);
-        }
-
-
-        std::unique_ptr<IFileSystem> m_fileSystem;
-        std::unique_ptr<ISimpleIndex> m_index;
-        std::vector<ptrdiff_t> m_rowOffsets;
-    };
 
 
     //*************************************************************************
@@ -583,9 +435,7 @@ namespace BitFunnel
         verifier.DeclareRow("2");
         verifier.DeclareRow("3");
 
-        for (size_t iteration = 0;
-             iteration < verifier.GetIterations();
-             ++iteration)
+        for (auto iteration : verifier.GetIterations())
         {
             const size_t slice = verifier.GetSliceNumber(iteration);
             const size_t offset = verifier.GetOffset(iteration);
@@ -618,7 +468,7 @@ namespace BitFunnel
         verifier.DeclareRow("2");
         verifier.DeclareRow("3");
 
-        for (size_t iteration = 0; iteration < verifier.GetIterations(); ++iteration)
+        for (auto iteration : verifier.GetIterations())
         {
             const size_t slice = verifier.GetSliceNumber(iteration);
             const size_t offset = verifier.GetOffset(iteration);
@@ -658,7 +508,7 @@ namespace BitFunnel
         verifier.DeclareRow("3");
         verifier.DeclareRow("2");
 
-        for (size_t iteration = 0; iteration < verifier.GetIterations(); ++iteration)
+        for (auto iteration : verifier.GetIterations())
         {
             const size_t slice = verifier.GetSliceNumber(iteration);
             const size_t offset = verifier.GetOffset(iteration);
@@ -698,7 +548,7 @@ namespace BitFunnel
         verifier.DeclareRow("3");
         verifier.DeclareRow("2");
 
-        for (size_t iteration = 0; iteration < verifier.GetIterations(); ++iteration)
+        for (auto iteration : verifier.GetIterations())
         {
             const size_t slice = verifier.GetSliceNumber(iteration);
             const size_t offset = verifier.GetOffset(iteration);
@@ -711,9 +561,6 @@ namespace BitFunnel
         verifier.Verify(text);
     }
 
-    //// TODO: Expected loop needs to refer to actual row data values.
-    ////       Need fixture to get access to index that was built before all tests.
-    //// TODO: Code generation can be moved into RunTest
 
     TEST(ByteCodeInterpreter, AndRowJzMatches)
     {
@@ -733,12 +580,13 @@ namespace BitFunnel
 
         const Rank initialRank = 0;
         Verifier verifier(GetIndex(), initialRank);
+        verifier.VerboseMode(true);
 
-        verifier.DeclareRow("2");
-        verifier.DeclareRow("3");
-        verifier.DeclareRow("5");
+        verifier.DeclareRow("23");
+        verifier.DeclareRow("11");
+        verifier.DeclareRow("17");
 
-        for (size_t iteration = 0; iteration < verifier.GetIterations(); ++iteration)
+        for (auto iteration : verifier.GetIterations())
         {
             const size_t slice = verifier.GetSliceNumber(iteration);
             const size_t offset = verifier.GetOffset(iteration);
@@ -769,9 +617,11 @@ namespace BitFunnel
         const Rank initialRank = 1;
         Verifier verifier(GetIndex(), initialRank);
 
+        verifier.VerboseMode(true);
+
         verifier.DeclareRow("3");
 
-        for (size_t iteration = 0; iteration < verifier.GetIterations(); ++iteration)
+        for (auto iteration : verifier.GetIterations())
         {
             const size_t slice = verifier.GetSliceNumber(iteration);
             const size_t offset = verifier.GetOffset(iteration);

@@ -78,30 +78,17 @@ namespace BitFunnel
         document->OpenStream(streamId);
         size_t sourceByteSize = 0;
 
-//        std::cout << "DocId " << docId << std::endl;
-
         // Arrange for "0" term row to contain quadwords 0, 1, 2, 3, ...
         size_t quadword = docId >> 6;
         size_t bit = docId % 64;
         if ((quadword & (1ull << bit)) != 0)
         {
             std::string term("0");
-//            std::cout << "  " << term << std::endl;
             document->AddTerm(term.c_str());
             sourceByteSize += (1 + term.size());
         }
 
-        if (docId == 0)
-        {
-            for (DocId i = 0; i <= maxDocId; ++i)
-            {
-                auto const & term = Primes::c_primesBelow10000Text[i];
-//                std::cout << "  " << term << std::endl;
-                document->AddTerm(term.c_str());
-                sourceByteSize += (1 + term.size());
-            }
-        }
-        else
+        if (docId != 0)
         {
             for (size_t i = 0; i < Primes::c_primesBelow10000.size(); ++i)
             {
@@ -115,7 +102,6 @@ namespace BitFunnel
                     while ((docId % p) == 0)
                     {
                         auto const & term = Primes::c_primesBelow10000Text[i];
-//                        std::cout << "  " << term << std::endl;
                         document->AddTerm(term.c_str());
                         docId /= p;
                         sourceByteSize += (1 + term.size());
