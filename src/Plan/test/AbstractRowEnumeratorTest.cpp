@@ -1,18 +1,16 @@
-#include "stdafx.h"
+#include "gtest/gtest.h"
 
+#include "Allocator.h"
 #include "AbstractRowEnumerator.h"
-#include "BitFunnel/Factories.h"
+// #include "BitFunnel/Factories.h"
 #include "BitFunnel/IFactSet.h"
 #include "BitFunnel/ITermTable.h"
 #include "BitFunnel/TermInfo.h"
-#include "MockIndexConfiguration.h"
-#include "MockTermTable.h"
-#include "MockTermTableCollection.h"
+// #include "MockIndexConfiguration.h"
+// n#include "MockTermTable.h"
+// #include "MockTermTableCollection.h"
 #include "PlanRows.h"
-#include "PrivateHeapAllocator.h"
 #include "Random.h"
-#include "SuiteCpp/UnitTest.h"
-
 
 namespace BitFunnel
 {
@@ -72,7 +70,8 @@ namespace BitFunnel
             {
                 const Term::Hash hash = randomTermHashGenerator();
 
-                Term term(hash, Stream::Full, 10, DDRTier);
+                // hash, stream, idf.
+                Term term(hash, 0, 10);
 
                 termList.push_back(term);
             }
@@ -101,7 +100,7 @@ namespace BitFunnel
             GenerateTermList(termList, termCount);
 
             // First, generate a non-truncated plan row.
-            PlanRows planRows(index);      
+            PlanRows planRows(index);
             GeneratePlanRows(planRows, termList);
 
             // Then, generate a truncated plan row using the same
@@ -110,7 +109,7 @@ namespace BitFunnel
             GeneratePlanRows(truncatedPlanRows, termList);
 
             // Test the assumption of the test.
-            TestEqual(static_cast<unsigned>(5), 
+            TestEqual(static_cast<unsigned>(5),
                       RestrictedCapacityPlanRows::c_maxRowsPerQuery);
 
             // Compare the truncated plan row with the normal plan row.
@@ -121,20 +120,20 @@ namespace BitFunnel
             TestEqual(RestrictedCapacityPlanRows::c_maxRowsPerQuery,
                       truncatedPlanRows.GetRowCount());
 
-            for (size_t rowIter = 0; 
+            for (size_t rowIter = 0;
                  rowIter < RestrictedCapacityPlanRows::c_maxRowsPerQuery;
                  ++rowIter)
             {
-                TestEqual(truncatedPlanRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetShard(), 
+                TestEqual(truncatedPlanRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetShard(),
                           planRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetShard());
 
-                TestEqual(truncatedPlanRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetTier(), 
+                TestEqual(truncatedPlanRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetTier(),
                           planRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetTier());
 
-                TestEqual(truncatedPlanRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetRank(), 
+                TestEqual(truncatedPlanRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetRank(),
                           planRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetRank());
 
-                TestEqual(truncatedPlanRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetIndex(), 
+                TestEqual(truncatedPlanRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetIndex(),
                           planRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetIndex());
             }
         }
@@ -163,16 +162,16 @@ namespace BitFunnel
                     RowId rowId = rows.Current();
 
                     // Verify that the rowIds are correctly set in the planRows.
-                    TestEqual(rowId.GetShard(), 
+                    TestEqual(rowId.GetShard(),
                               planRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetShard());
 
-                    TestEqual(rowId.GetTier(), 
+                    TestEqual(rowId.GetTier(),
                               planRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetTier());
 
-                    TestEqual(rowId.GetRank(), 
+                    TestEqual(rowId.GetRank(),
                               planRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetRank());
 
-                    TestEqual(rowId.GetIndex(), 
+                    TestEqual(rowId.GetIndex(),
                               planRows.PhysicalRow(0, static_cast<unsigned>(rowIter)).GetIndex());
 
                     rowIter++;
@@ -253,7 +252,7 @@ namespace BitFunnel
             std::vector<Term> termList;
             GenerateTermList(termList, termCount);
 
-            // Since for shard 1, the term has no rows for rank 3 and 6, so there will be 2 match-all 
+            // Since for shard 1, the term has no rows for rank 3 and 6, so there will be 2 match-all
             // padding rows for rank 3 and 6. In total, there will be 4 match-all rows.
             const unsigned expectedMatchAllRowCount = 4;
 
