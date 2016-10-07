@@ -4,6 +4,7 @@ set(CPPFILES
     # AbstractRowEnumeratorTest.cpp
     AbstractRowTest.cpp
     ByteCodeInterpreterTest.cpp
+    ByteCodeVerifier.cpp
     CompileNodeTest.cpp
     MatchTreeRewriterTest.cpp
     PlainTextCodeGenerator.cpp
@@ -22,6 +23,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    ByteCodeVerifier.h
     PlainTextCodeGenerator.h
 )
 
