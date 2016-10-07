@@ -43,6 +43,15 @@
 
 namespace BitFunnel
 {
+    // Duplicated code from Term.cpp. TODO: figure out how we should handle
+    // this. This is here because creating an N-gram from a Term requires a
+    // configuration, and using this was simpler.
+    // static uint64_t rotl64By1(uint64_t x)
+    // {
+    //     return (x << 1) | (x >> 63);
+    // }
+
+
     namespace TermPlanConverterUnitTest
     {
         void VerifyTermPlanConverterCase(char const * inputTermPlan,
@@ -143,6 +152,16 @@ namespace BitFunnel
             auto hash = Term::ComputeRawHash("foo");
             RowIndex explicitRowCount = ITermTable::SystemTerm::Count;
             termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->CloseTerm(hash);
+
+            // Inserting a dummy term doesn't change the Row numbers in the
+            // expected result. This is because the expected result is a
+            // RowPlan, which consists of AbstractRows. AbstractRows have an
+            // index that's relative to the plan (they index into a table of
+            // RowIds used in the plan); those aren't "physical" row addresses.
+            hash = Term::ComputeRawHash("dummyTerm");
+            termTable->OpenTerm();
             termTable->AddRowId(RowId(0,0,explicitRowCount++));
             termTable->CloseTerm(hash);
 
@@ -343,6 +362,97 @@ namespace BitFunnel
                                         *index);
         }
 
+
+        // TEST(TermPlanConverter,Phrase)
+        // {
+        //     // MockIndexConfiguration index(s_defaultShardCapacities);
+        //     auto filesystem = Factories::CreateFileSystem();
+        //     auto index = Factories::CreateSimpleIndex(*filesystem);
+
+        //     auto termTable = Factories::CreateTermTable();
+        //     const size_t adhocRowCount = 4;
+
+        //     termTable->OpenTerm();
+        //     auto fooHash = Term::ComputeRawHash("foo");
+        //     RowIndex explicitRowCount = ITermTable::SystemTerm::Count;
+        //     termTable->AddRowId(RowId(0,0,explicitRowCount++));
+        //     termTable->AddRowId(RowId(0,0,explicitRowCount++));
+        //     termTable->CloseTerm(fooHash);
+
+        //     termTable->OpenTerm();
+        //     auto barHash = Term::ComputeRawHash("bar");
+        //     termTable->AddRowId(RowId(0,0,explicitRowCount++));
+        //     termTable->AddRowId(RowId(0,0,explicitRowCount++));
+        //     termTable->AddRowId(RowId(0,0,explicitRowCount++));
+        //     termTable->CloseTerm(barHash);
+
+        //     auto bazHash = Term::ComputeRawHash("baz");
+        //     termTable->OpenTerm();
+        //     termTable->AddRowId(RowId(0,0,explicitRowCount++));
+        //     termTable->AddRowId(RowId(0,0,explicitRowCount++));
+        //     termTable->AddRowId(RowId(0,0,explicitRowCount++));
+        //     termTable->AddRowId(RowId(0,0,explicitRowCount++));
+        //     termTable->CloseTerm(bazHash);
+
+        //     auto dummyHash = Term::ComputeRawHash("dummyTerm");
+        //     termTable->OpenTerm();
+        //     while (explicitRowCount < 16)
+        //     {
+        //         termTable->AddRowId(RowId(0,0,explicitRowCount++));
+        //     }
+        //     termTable->CloseTerm(dummyHash);
+
+        //     // "foobar".
+        //     auto fooBarHash = rotl64By1(fooHash) ^ barHash;
+        //     termTable->OpenTerm();
+        //     termTable->AddRowId(RowId(0,0,explicitRowCount++));
+        //     termTable->CloseTerm(fooBarHash);
+
+        //     termTable->SetRowCounts(0, explicitRowCount, adhocRowCount);
+        //     termTable->Seal();
+
+        //     auto termTableCollection = Factories::CreateTermTableCollection();
+        //     termTableCollection->AddTermTable(std::move(termTable));
+
+        //     index->SetTermTableCollection(std::move(termTableCollection));
+        //     index->ConfigureAsMock(3, false);
+        //     index->StartIndex();
+
+        //     // 13 is the stream.  TODO: figure out what stream it should be when
+        //     // we have real StreamId support.
+        //     char const * input =
+        //         "Phrase {\n"
+        //         "  StreamId: 13,\n"
+        //         "  Grams: [\n"
+        //         "    \"foo\",\n"
+        //         "    \"bar\",\n"
+        //         "    \"baz\"\n"
+        //         "  ]\n"
+        //         "}";
+
+        //     char const * expectedFullQueryPlan =
+        //         "RowPlan {\n"
+        //         "  Match: And {\n"
+        //         "    Children: [\n"
+        //         "      Row(4, 0, 0, false),\n"
+        //         "      Row(3, 0, 0, false),\n"
+        //         "      Row(2, 0, 0, false),\n"
+        //         "      Row(1, 0, 0, false),\n"
+
+        //         // Soft-deleted row.
+        //         "      Row(0, 0, 0, false)\n"
+        //         "    ]\n"
+        //         "  }\n"
+        //         "}";
+
+        //     // Generate full query plan.
+        //     VerifyTermPlanConverterCase(input,
+        //                                 expectedFullQueryPlan,
+        //                                 *index);
+        // }
+
+
+        // TODO: need at least one test that tests ad hoc rows.
 
         // TODO: need to implement nonBody.
         // TEST(TermPlanConverter,NonBodyPlanWithFull)
