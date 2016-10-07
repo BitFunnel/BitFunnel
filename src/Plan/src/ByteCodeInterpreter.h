@@ -304,6 +304,7 @@ namespace BitFunnel
 
         bool m_sealed;
         std::vector<ByteCodeInterpreter::Instruction> m_code;
+        std::vector<size_t> m_jumpOffsets;
         std::vector<ByteCodeInterpreter::Instruction const *> m_jumpTable;
     };
 }

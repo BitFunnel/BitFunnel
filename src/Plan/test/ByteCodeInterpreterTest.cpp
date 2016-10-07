@@ -139,7 +139,7 @@ namespace BitFunnel
         }
 
 
-        uint64_t GetRowData(size_t row, size_t slice, size_t offset)
+        uint64_t GetRowData(size_t row, size_t offset, size_t slice)
         {
             auto & shard = m_index.GetIngestor().GetShard(c_shardId);
             auto const & slices = shard.GetSliceBuffers();
@@ -590,8 +590,8 @@ namespace BitFunnel
             const size_t slice = verifier.GetSliceNumber(iteration);
             const size_t offset = verifier.GetOffset(iteration);
 
-            const uint64_t row0 = verifier.GetRowData(0, slice, offset);
-            const uint64_t row1 = verifier.GetRowData(1, slice, offset);
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
             verifier.ExpectResult(row0 & row1, offset, slice);
         }
 
@@ -623,8 +623,8 @@ namespace BitFunnel
             const size_t slice = verifier.GetSliceNumber(iteration);
             const size_t offset = verifier.GetOffset(iteration);
 
-            const uint64_t row0 = verifier.GetRowData(0, slice, offset);
-            const uint64_t row1 = verifier.GetRowData(1, slice, offset);
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
             verifier.ExpectResult(row0 & ~row1, offset, slice);
         }
 
@@ -663,8 +663,8 @@ namespace BitFunnel
             const size_t slice = verifier.GetSliceNumber(iteration);
             const size_t offset = verifier.GetOffset(iteration);
 
-            const uint64_t row1 = verifier.GetRowData(1, slice, offset);
-            const uint64_t row0 = verifier.GetRowData(0, slice, offset / 2);
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
+            const uint64_t row0 = verifier.GetRowData(0, offset / 2, slice);
             verifier.ExpectResult(row1 & row0, offset, slice);
         }
 
@@ -703,8 +703,8 @@ namespace BitFunnel
             const size_t slice = verifier.GetSliceNumber(iteration);
             const size_t offset = verifier.GetOffset(iteration);
 
-            const uint64_t row1 = verifier.GetRowData(1, slice, offset);
-            const uint64_t row0 = verifier.GetRowData(0, slice, offset / 2);
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
+            const uint64_t row0 = verifier.GetRowData(0,  offset / 2, slice);
             verifier.ExpectResult(row1 & ~row0, offset, slice);
         }
 
@@ -743,9 +743,9 @@ namespace BitFunnel
             const size_t slice = verifier.GetSliceNumber(iteration);
             const size_t offset = verifier.GetOffset(iteration);
 
-            const uint64_t row0 = verifier.GetRowData(0, slice, offset);
-            const uint64_t row1 = verifier.GetRowData(1, slice, offset);
-            const uint64_t row2 = verifier.GetRowData(2, slice, offset);
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
+            const uint64_t row2 = verifier.GetRowData(2, offset, slice);
             verifier.ExpectResult(row0 & row1 & row2, offset, slice);
         }
 
@@ -753,35 +753,36 @@ namespace BitFunnel
     }
 
 
-    //TEST(ByteCodeInterpreter, RankDownDelta1)
-    //{
-    //    char const * text =
-    //        "RankDown {"
-    //        "  Delta: 1,"
-    //        "  Child: LoadRowJz {"
-    //        "    Row: Row(0, 5, 0, false),"
-    //        "    Child: Report {"
-    //        "      Child: "
-    //        "    }"
-    //        "  }"
-    //        "}";
+    TEST(ByteCodeInterpreter, RankDownDelta1)
+    {
+        char const * text =
+            "RankDown {"
+            "  Delta: 1,"
+            "  Child: LoadRowJz {"
+            "    Row: Row(0, 5, 0, false),"
+            "    Child: Report {"
+            "      Child: "
+            "    }"
+            "  }"
+            "}";
 
-    //    MockIndex index;
-    //    const Rank c_initialRank = 1;
+        const Rank initialRank = 1;
+        Verifier verifier(GetIndex(), initialRank);
 
-    //    VerifyingResultsProcessor expected(index.GetSliceBuffers());
-    //    for (size_t iteration = 0; iteration < index.GetIterations(c_initialRank); ++iteration)
-    //    {
-    //        const size_t slice = index.GetSliceNumber(iteration);
-    //        const size_t offset = index.GetOffset(iteration);
+        verifier.DeclareRow("3");
 
-    //        for (size_t i = 0; i < 2; ++i)
-    //        {
-    //            const uint64_t row0 = index.GetRow(0, slice, 2 * offset + i);
-    //            expected.ExpectResult(row0, offset, slice);
-    //        }
-    //    }
+        for (size_t iteration = 0; iteration < verifier.GetIterations(); ++iteration)
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
 
-    //    index.RunTest(text, expected, c_initialRank);
-    //}
+            for (size_t i = 0; i < 2; ++i)
+            {
+                const uint64_t row0 = verifier.GetRowData(0, offset + i, slice);
+                verifier.ExpectResult(row0, offset + i, slice);
+            }
+        }
+
+        verifier.Verify(text);
+    }
 }

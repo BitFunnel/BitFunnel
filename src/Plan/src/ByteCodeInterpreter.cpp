@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #include <iostream>
+#include <limits>
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Plan/IResultsProcessor.h"
@@ -192,7 +193,7 @@ Decide on type of Slices
                 m_ip++;
                 break;
             case Opcode::Call:
-                m_callStack.push_back(m_ip);
+                m_callStack.push_back(m_ip + 1);
                 m_ip = m_jumpTable[row];
                 break;
             case Opcode::Jmp:
@@ -258,6 +259,12 @@ Decide on type of Slices
         {
             CHECK_NE(m_jumpTable[i], nullptr)
                 << "Label " << i << " has not been placed.";
+        }
+
+        // Lookup ip values for each jump offset.
+        for (size_t offset : m_jumpOffsets)
+        {
+            m_jumpTable.push_back(&m_code[0] + offset);
         }
 
         m_sealed = true;
@@ -386,8 +393,11 @@ Decide on type of Slices
     ICodeGenerator::Label ByteCodeGenerator::AllocateLabel()
     {
         EnsureSealed(false);
-        Label label = static_cast<Label>(m_jumpTable.size());
-        m_jumpTable.push_back(nullptr);
+        Label label = static_cast<Label>(m_jumpOffsets.size());
+
+        // Use std::numeric_limits<size_t>::max() to mark this offset
+        // as allocated, but uninitialized.
+        m_jumpOffsets.push_back(std::numeric_limits<size_t>::max());
         return label;
     }
 
@@ -395,17 +405,17 @@ Decide on type of Slices
     void ByteCodeGenerator::PlaceLabel(Label label)
     {
         EnsureSealed(false);
-        CHECK_EQ(m_jumpTable.at(label), nullptr)
+        CHECK_EQ(m_jumpOffsets.at(label), std::numeric_limits<size_t>::max())
             << "Label " << label << " has already been placed.";
 
-        m_jumpTable.at(label) = (&m_code.back()) + 1;
+        m_jumpOffsets.at(label) = m_code.size();
     }
 
 
     void ByteCodeGenerator::Call(Label label)
     {
         EnsureSealed(false);
-        CHECK_LT(label, m_jumpTable.size())
+        CHECK_LT(label, m_jumpOffsets.size())
             << "Call to unknown label " << label;
 
         m_code.emplace_back(
@@ -416,7 +426,7 @@ Decide on type of Slices
     void ByteCodeGenerator::Jmp(Label label)
     {
         EnsureSealed(false);
-        CHECK_LT(label, m_jumpTable.size())
+        CHECK_LT(label, m_jumpOffsets.size())
             << "Jmp to unknown label " << label;
 
         m_code.emplace_back(
@@ -427,7 +437,7 @@ Decide on type of Slices
     void ByteCodeGenerator::Jnz(Label label)
     {
         EnsureSealed(false);
-        CHECK_LT(label, m_jumpTable.size())
+        CHECK_LT(label, m_jumpOffsets.size())
             << "Jnz to unknown label " << label;
 
         m_code.emplace_back(
@@ -438,7 +448,7 @@ Decide on type of Slices
     void ByteCodeGenerator::Jz(Label label)
     {
         EnsureSealed(false);
-        CHECK_LT(label, m_jumpTable.size())
+        CHECK_LT(label, m_jumpOffsets.size())
             << "Jz to unknown label " << label;
 
         m_code.emplace_back(
