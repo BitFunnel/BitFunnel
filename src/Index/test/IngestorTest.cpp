@@ -23,6 +23,7 @@
 #include <limits>
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 #include "gtest/gtest.h"
 
@@ -35,6 +36,7 @@
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Mocks/Factories.h"
 #include "BitFunnel/Term.h"
+#include "DocumentFrequencyTable.h"
 #include "Primes.h"
 
 
@@ -184,43 +186,41 @@ namespace BitFunnel
     }
 
 
-    /*
-      std::unordered_map<size_t, size_t>
-      CreateDocCountHistogram(DocumentFrequencyTable const & table,
-      unsigned docCount)
-      {
-      std::unordered_map<size_t, size_t> histogram;
-      for (size_t i = 0; i < table.size(); ++i)
-      {
-      auto entry = table[i];
-      ++histogram[static_cast<size_t>(round(entry.GetFrequency() * docCount))];
-      }
-      return histogram;
-      }
+    std::unordered_map<size_t, size_t>
+    CreateDocCountHistogram(DocumentFrequencyTable const & table,
+                            unsigned docCount)
+    {
+        std::unordered_map<size_t, size_t> histogram;
+        for (size_t i = 0; i < table.size(); ++i)
+        {
+            auto entry = table[i];
+            ++histogram[static_cast<size_t>(round(entry.GetFrequency() * docCount))];
+        }
+        return histogram;
+    }
 
+    // Ingest fake documents as in "Basic" test, then print statistics out
+    // to a stream. Verify the statistics by reading them out as a
+    // stream. Verify the statistics by reading them into the
+    // DocumentFrequencyTable constructor and checking the
+    // DocumentFrequencyTable.
+    TEST(Ingestor, DocFrequency64)
+    {
+        const int c_documentCount = 2;
+        SyntheticIndex index(c_documentCount);
+        std::stringstream stream;
+        index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
 
-      // Ingest fake documents as in "Basic" test, then print statistics out
-      // to a stream. Verify the statistics by reading them out as a
-      // stream. Verify the statistics by reading them into the
-      // DocumentFrequencyTable constructor and checking the
-      // DocumentFrequencyTable.
-      TEST(Ingestor, DocFrequency64)
-      {
-      const int c_documentCount = 64;
-      SyntheticIndex index(c_documentCount);
-      std::stringstream stream;
-      index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
+        std::cout << stream.str() << std::endl;
 
-      std::cout << stream.str() << std::endl;
+        DocumentFrequencyTable table(stream);
 
-      DocumentFrequencyTable table(stream);
+        EXPECT_EQ(table.size(), 6u);
+        std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
+        EXPECT_EQ(docFreqHistogram[32], 6u);
+    }
 
-      EXPECT_EQ(table.size(), 6u);
-      std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
-      EXPECT_EQ(docFreqHistogram[32], 6u);
-      }
-
-
+/*
       TEST(Ingestor, DocFrequency63)
       {
       const int c_documentCount = 63;
