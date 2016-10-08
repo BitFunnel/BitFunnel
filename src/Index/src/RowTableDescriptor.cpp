@@ -26,6 +26,7 @@
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/Row.h"
 #include "BitFunnel/Index/RowIdSequence.h"
+#include "LoggerInterfaces/Check.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RowTableDescriptor.h"
 
@@ -126,6 +127,8 @@ namespace BitFunnel
                                     RowIndex rowIndex,
                                     DocIndex docIndex) const
     {
+        CHECK_LT(rowIndex, m_rowCount)
+            << "rowIndex out of range.";
         uint64_t* const row = GetRowData(sliceBuffer, rowIndex);
         const size_t offset = QwordPositionFromDocIndex(docIndex);
 

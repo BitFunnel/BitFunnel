@@ -136,18 +136,20 @@ namespace BitFunnel
         const ShardId shard = 0;
         const Rank rank = 0;
         const RowIndex adhocRowCount = 1;   // Need at least one adhoc row to avoid divide by zero.
-        RowIndex explicitRowCount = ITermTable::SystemTerm::Count;
+        RowIndex explicitRowCount0 = ITermTable::SystemTerm::Count;
+        RowIndex explicitRowCount1 = 0;
+        RowIndex explicitRowCount2 = 0;
 
         auto termTable = Factories::CreateTermTable();
 
         // Term "0"
         termTable->OpenTerm();
-        termTable->AddRowId(RowId(shard, rank, explicitRowCount++));
+        termTable->AddRowId(RowId(shard, rank, explicitRowCount0++));
         termTable->CloseTerm(Term::ComputeRawHash("0"));
 
         // Term "1"
         termTable->OpenTerm();
-        termTable->AddRowId(RowId(shard, rank, explicitRowCount++));
+        termTable->AddRowId(RowId(shard, rank, explicitRowCount0++));
         termTable->CloseTerm(Term::ComputeRawHash("1"));
 
         // Terms for primes.
@@ -163,8 +165,9 @@ namespace BitFunnel
                 auto text = Primes::c_primesBelow10000Text[i];
 
                 termTable->OpenTerm();
-                termTable->AddRowId(RowId(shard, rank, explicitRowCount++));
-                termTable->AddRowId(RowId(shard, rank + 1, explicitRowCount++));
+                termTable->AddRowId(RowId(shard, rank, explicitRowCount0++));
+                termTable->AddRowId(RowId(shard, rank + 1, explicitRowCount1++));
+                termTable->AddRowId(RowId(shard, rank + 2, explicitRowCount2++));
                 termTable->CloseTerm(Term::ComputeRawHash(text.c_str()));
             }
         }
@@ -172,7 +175,9 @@ namespace BitFunnel
         // TODO: Consider adding zero RowIds for AdhocRows. i.e. no calls to
         // CloseAdhocTerm().
 
-        termTable->SetRowCounts(0, explicitRowCount, adhocRowCount);
+        termTable->SetRowCounts(0, explicitRowCount0, adhocRowCount);
+        termTable->SetRowCounts(1, explicitRowCount1, adhocRowCount);
+        termTable->SetRowCounts(2, explicitRowCount2, adhocRowCount);
         termTable->Seal();
 
         return termTable;
@@ -208,7 +213,7 @@ namespace BitFunnel
         // Right now the hard-coded blocksize yields 13 quadwords at rank 0,
         // but this could change if the TermTable was configured to use higher
         // ranks.
-        size_t blockSize = 10000;
+        size_t blockSize = 20000;
         size_t blockCount = 512;
         auto sliceAllocator =
             Factories::CreateSliceBufferAllocator(blockSize,

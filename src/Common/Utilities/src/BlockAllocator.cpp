@@ -30,6 +30,7 @@
 #include "LoggerInterfaces/Logging.h"
 #include "Rounding.h"
 
+
 namespace BitFunnel
 {
 
