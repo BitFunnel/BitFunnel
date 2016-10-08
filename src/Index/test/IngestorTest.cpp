@@ -199,6 +199,30 @@ namespace BitFunnel
         return histogram;
     }
 
+    // Test the number of terms in a corpus containing 3 documents
+    // Since there are 3 documents with Id - 0, 1, 2 - there can be
+    // only one term 2 since we are using CreatePrimeFactorIndex.
+    // We expect the document with Id 2 to have the term 2 and other
+    // documents to have none because each document should contain
+    // the terms which are prime numbers iff the document Id is divisible
+    // by the prime number
+    TEST(Ingestor, DocFrequency2)
+    {
+        const int c_documentCount = 2;
+        SyntheticIndex index(c_documentCount);
+        std::stringstream stream;
+        index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
+
+        std::cout << stream.str() << std::endl;
+
+        DocumentFrequencyTable table(stream);
+
+        EXPECT_EQ(table.size(), 1u);
+        std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
+        EXPECT_EQ(docFreqHistogram[1], 1u);
+    }
+
+/*
     // Ingest fake documents as in "Basic" test, then print statistics out
     // to a stream. Verify the statistics by reading them out as a
     // stream. Verify the statistics by reading them into the
@@ -220,7 +244,7 @@ namespace BitFunnel
         EXPECT_EQ(docFreqHistogram[32], 6u);
     }
 
-/*
+
       TEST(Ingestor, DocFrequency63)
       {
       const int c_documentCount = 63;
