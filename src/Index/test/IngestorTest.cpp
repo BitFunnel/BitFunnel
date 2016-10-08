@@ -50,9 +50,10 @@ namespace BitFunnel
     public:
         SyntheticIndex(unsigned documentCount)
         {
+            m_documentCount = documentCount;
             m_fileSystem = Factories::CreateFileSystem();
             m_index = Factories::CreatePrimeFactorsIndex(*m_fileSystem,
-                                                         documentCount,
+                                                         m_documentCount,
                                                          c_streamId);
         }
 
@@ -76,7 +77,6 @@ namespace BitFunnel
         }
 
     private:
-        static const DocId c_documentCount = 64;
 
         bool ExpectedMatch(DocId id, unsigned query)
         {
@@ -113,7 +113,7 @@ namespace BitFunnel
         std::vector<DocId> Expected(unsigned query)
         {
             std::vector<DocId> results;
-            for (DocId i = 0; i < c_documentCount; ++i)
+            for (DocId i = 0; i < m_documentCount; ++i)
             {
                 if (ExpectedMatch(i, query))
                 {
@@ -165,6 +165,7 @@ namespace BitFunnel
             return results;
         }
 
+        DocId m_documentCount;
         std::unique_ptr<IFileSystem> m_fileSystem;
         std::unique_ptr<ISimpleIndex> m_index;
     };
