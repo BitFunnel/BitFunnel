@@ -132,7 +132,7 @@ namespace BitFunnel
         bool operator==(TermTable const & other) const;
 
     private:
-        void ThrowIfSealed(bool value) const;
+        void EnsureSealed(bool value) const;
 
         static Term CreateSystemTerm(SystemTerm term);
 

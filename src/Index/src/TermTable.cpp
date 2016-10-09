@@ -136,14 +136,14 @@ namespace BitFunnel
 
     void TermTable::OpenTerm()
     {
-        ThrowIfSealed(true);
+        EnsureSealed(false);
         m_start = static_cast<RowIndex>(m_rowIds.size());
     }
 
 
     void TermTable::AddRowId(RowId row)
     {
-        ThrowIfSealed(true);
+        EnsureSealed(false);
         m_ranksInUse[row.GetRank()] = true;
         m_rowIds.push_back(row);
     }
@@ -152,7 +152,7 @@ namespace BitFunnel
     // TODO: PackedRowIdSequence::Type parameter.
     void TermTable::CloseTerm(Term::Hash hash)
     {
-        ThrowIfSealed(true);
+        EnsureSealed(false);
 
         // Verify that this Term::Hash hasn't been added previously.
         auto it = m_termHashToRows.find(hash);
@@ -176,7 +176,7 @@ namespace BitFunnel
 
     void TermTable::CloseAdhocTerm(Term::IdfX10 idf, Term::GramSize gramSize)
     {
-        ThrowIfSealed(true);
+        EnsureSealed(false);
 
         if (idf > Term::c_maxIdfX10Value || gramSize > Term::c_maxGramSize)
         {
@@ -195,7 +195,7 @@ namespace BitFunnel
                                  size_t explicitCount,
                                  size_t adhocCount)
     {
-        ThrowIfSealed(true);
+        EnsureSealed(false);
 
         m_explicitRowCounts[rank] = explicitCount;
         m_adhocRowCounts[rank] = adhocCount;
@@ -205,7 +205,7 @@ namespace BitFunnel
 
     void TermTable::SetFactCount(size_t factCount)
     {
-        ThrowIfSealed(true);
+        EnsureSealed(false);
 
         // Fact rows include the SystemTerm rows and one row for each user
         // defined fact.
@@ -215,7 +215,7 @@ namespace BitFunnel
 
     void TermTable::Seal()
     {
-        ThrowIfSealed(true);
+        EnsureSealed(false);
         m_sealed = true;
 
         // Determine maximum rank in use.
@@ -255,7 +255,7 @@ namespace BitFunnel
 
     Rank TermTable::GetMaxRankUsed() const
     {
-        ThrowIfSealed(false);
+        EnsureSealed(true);
         return m_maxRankInUse;
     }
 
@@ -392,7 +392,7 @@ namespace BitFunnel
         index += m_adhocRowCounts[0] + m_explicitRowCounts[0];
 
         // AnyRow is used to get a shard.
-        // TODO: investigate if we should split RowId to shard + 
+        // TODO: investigate if we should split RowId to shard +
         // shard-independent structure and keep m_shard in the TermTable.
         // TFS 15153.
         const RowId anyRow = m_rowIds[0];
@@ -401,7 +401,7 @@ namespace BitFunnel
         // rows. The caller specifies rowOffset = 0 in this case. The rationale
         // for this value is that a soft-deleted rowId must be consistent
         // between query planner and query runner regardless of the number of
-        // user facts defined. This is to guarantee consistency of this row 
+        // user facts defined. This is to guarantee consistency of this row
         // in case of canary deployment of the code that changes the list of
         // facts.
         return RowId(anyRow.GetShard(), 0, index);
@@ -425,9 +425,9 @@ namespace BitFunnel
     }
 
 
-    void TermTable::ThrowIfSealed(bool value) const
+    void TermTable::EnsureSealed(bool value) const
     {
-        if (m_sealed == value)
+        if (m_sealed != value)
         {
             char const * message = value ?
                 "TermTable: operation disallowed because TermTable is sealed." :
