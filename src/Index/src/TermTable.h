@@ -134,9 +134,18 @@ namespace BitFunnel
     private:
         void EnsureSealed(bool value) const;
 
+        // This is a helper method to catch careless bugs. There's no reason, in
+        // principle, that we should necessarily enforce this -- we could, for
+        // example, add n-grams by repeatedly closing the same Term with
+        // additional modifications. However, we don't do that now and we've had
+        // at least one (transient and quickly fixed) bug where we called
+        // CloseTerm multiple times without calling OpenTerm.
+        void EnsureTermOpen(bool value) const;
+
         static Term CreateSystemTerm(SystemTerm term);
 
         bool m_sealed;
+        bool m_termOpen;
 
         RowIndex m_start;
 

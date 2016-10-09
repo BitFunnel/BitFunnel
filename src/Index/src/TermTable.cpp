@@ -58,6 +58,7 @@ namespace BitFunnel
     //*************************************************************************
     TermTable::TermTable()
       : m_sealed(false),
+        m_termOpen(false),
         m_explicitRowCounts(c_maxRankValue + 1, 0),
         m_adhocRowCounts(c_maxRankValue + 1, 0),
         m_sharedRowCounts(c_maxRankValue + 1, 0),
@@ -137,6 +138,8 @@ namespace BitFunnel
     void TermTable::OpenTerm()
     {
         EnsureSealed(false);
+        EnsureTermOpen(false);
+        m_termOpen = true;
         m_start = static_cast<RowIndex>(m_rowIds.size());
     }
 
@@ -144,6 +147,7 @@ namespace BitFunnel
     void TermTable::AddRowId(RowId row)
     {
         EnsureSealed(false);
+        // NOTE: we don't EnsureTermOpen because we could add system rows via AddRowId.
         m_ranksInUse[row.GetRank()] = true;
         m_rowIds.push_back(row);
     }
@@ -153,6 +157,8 @@ namespace BitFunnel
     void TermTable::CloseTerm(Term::Hash hash)
     {
         EnsureSealed(false);
+        EnsureTermOpen(true);
+        m_termOpen = false;
 
         // Verify that this Term::Hash hasn't been added previously.
         auto it = m_termHashToRows.find(hash);
@@ -177,6 +183,8 @@ namespace BitFunnel
     void TermTable::CloseAdhocTerm(Term::IdfX10 idf, Term::GramSize gramSize)
     {
         EnsureSealed(false);
+        EnsureTermOpen(true);
+        m_termOpen = false;
 
         if (idf > Term::c_maxIdfX10Value || gramSize > Term::c_maxGramSize)
         {
@@ -217,6 +225,7 @@ namespace BitFunnel
     {
         EnsureSealed(false);
         m_sealed = true;
+        EnsureTermOpen(false);
 
         // Determine maximum rank in use.
         m_maxRankInUse = 0;
@@ -430,8 +439,22 @@ namespace BitFunnel
         if (m_sealed != value)
         {
             char const * message = value ?
-                "TermTable: operation disallowed because TermTable is sealed." :
-                "TermTable: operation disallowed before TermTable is sealed.";
+                "TermTable: operation disallowed before TermTable is sealed." :
+                "TermTable: operation disallowed beacuse TermTable is sealed.";
+            RecoverableError
+                error(message);
+            throw error;
+        }
+    }
+
+
+    void TermTable::EnsureTermOpen(bool value) const
+    {
+        if (m_termOpen != value)
+        {
+            char const * message = value ?
+                "TermTable: operation disallowed because Term isn't open." :
+                "TermTable: operation disallowed before Term is already open.";
             RecoverableError
                 error(message);
             throw error;
