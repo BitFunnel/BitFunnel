@@ -23,6 +23,7 @@
 #include <limits>
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 #include "gtest/gtest.h"
 
@@ -35,6 +36,7 @@
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Mocks/Factories.h"
 #include "BitFunnel/Term.h"
+#include "DocumentFrequencyTable.h"
 #include "Primes.h"
 
 
@@ -48,9 +50,10 @@ namespace BitFunnel
     public:
         SyntheticIndex(unsigned documentCount)
         {
+            m_documentCount = documentCount;
             m_fileSystem = Factories::CreateFileSystem();
             m_index = Factories::CreatePrimeFactorsIndex(*m_fileSystem,
-                                                         documentCount,
+                                                         m_documentCount,
                                                          c_streamId);
         }
 
@@ -74,7 +77,6 @@ namespace BitFunnel
         }
 
     private:
-        static const DocId c_documentCount = 64;
 
         bool ExpectedMatch(DocId id, unsigned query)
         {
@@ -111,7 +113,7 @@ namespace BitFunnel
         std::vector<DocId> Expected(unsigned query)
         {
             std::vector<DocId> results;
-            for (DocId i = 0; i < c_documentCount; ++i)
+            for (DocId i = 0; i < m_documentCount; ++i)
             {
                 if (ExpectedMatch(i, query))
                 {
@@ -163,6 +165,7 @@ namespace BitFunnel
             return results;
         }
 
+        DocId m_documentCount;
         std::unique_ptr<IFileSystem> m_fileSystem;
         std::unique_ptr<ISimpleIndex> m_index;
     };
@@ -184,41 +187,63 @@ namespace BitFunnel
     }
 
 
-    /*
-      std::unordered_map<size_t, size_t>
-      CreateDocCountHistogram(DocumentFrequencyTable const & table,
-      unsigned docCount)
-      {
-      std::unordered_map<size_t, size_t> histogram;
-      for (size_t i = 0; i < table.size(); ++i)
-      {
-      auto entry = table[i];
-      ++histogram[static_cast<size_t>(round(entry.GetFrequency() * docCount))];
-      }
-      return histogram;
-      }
+    std::unordered_map<size_t, size_t>
+    CreateDocCountHistogram(DocumentFrequencyTable const & table,
+                            unsigned docCount)
+    {
+        std::unordered_map<size_t, size_t> histogram;
+        for (size_t i = 0; i < table.size(); ++i)
+        {
+            auto entry = table[i];
+            ++histogram[static_cast<size_t>(round(entry.GetFrequency() * docCount))];
+        }
+        return histogram;
+    }
 
+    // Test the number of terms in a corpus containing 3 documents
+    // Since there are 3 documents with Id - 0, 1, 2 - there can be
+    // only one term 2 since we are using CreatePrimeFactorIndex.
+    // We expect the document with Id 2 to have the term 2 and other
+    // documents to have none because each document should contain
+    // the terms which are prime numbers iff the document Id is divisible
+    // by the prime number
+    TEST(Ingestor, DocFrequency2)
+    {
+        const int c_documentCount = 2;
+        SyntheticIndex index(c_documentCount);
+        std::stringstream stream;
+        index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
 
-      // Ingest fake documents as in "Basic" test, then print statistics out
-      // to a stream. Verify the statistics by reading them out as a
-      // stream. Verify the statistics by reading them into the
-      // DocumentFrequencyTable constructor and checking the
-      // DocumentFrequencyTable.
-      TEST(Ingestor, DocFrequency64)
-      {
-      const int c_documentCount = 64;
-      SyntheticIndex index(c_documentCount);
-      std::stringstream stream;
-      index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
+        std::cout << stream.str() << std::endl;
 
-      std::cout << stream.str() << std::endl;
+        DocumentFrequencyTable table(stream);
 
-      DocumentFrequencyTable table(stream);
+        EXPECT_EQ(table.size(), 1u);
+        std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
+        EXPECT_EQ(docFreqHistogram[1], 1u);
+    }
 
-      EXPECT_EQ(table.size(), 6u);
-      std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
-      EXPECT_EQ(docFreqHistogram[32], 6u);
-      }
+/*
+    // Ingest fake documents as in "Basic" test, then print statistics out
+    // to a stream. Verify the statistics by reading them out as a
+    // stream. Verify the statistics by reading them into the
+    // DocumentFrequencyTable constructor and checking the
+    // DocumentFrequencyTable.
+    TEST(Ingestor, DocFrequency64)
+    {
+        const int c_documentCount = 2;
+        SyntheticIndex index(c_documentCount);
+        std::stringstream stream;
+        index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
+
+        std::cout << stream.str() << std::endl;
+
+        DocumentFrequencyTable table(stream);
+
+        EXPECT_EQ(table.size(), 6u);
+        std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
+        EXPECT_EQ(docFreqHistogram[32], 6u);
+    }
 
 
       TEST(Ingestor, DocFrequency63)

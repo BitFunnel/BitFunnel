@@ -31,6 +31,9 @@
 
 namespace BitFunnel
 {
+
+    class TermToText;
+
     class IShard : public IInterface
     {
     public:
@@ -52,6 +55,9 @@ namespace BitFunnel
         // Returns the offset in the slice buffer where a pointer to the Slice
         // is stored. This is the same offset for all slices in the Shard.
         virtual ptrdiff_t GetSlicePtrOffset() const = 0;
+
+        virtual void TemporaryWriteDocumentFrequencyTable(std::ostream& out,
+                                                  TermToText const * termToText) const = 0;
+
     };
 }
-
