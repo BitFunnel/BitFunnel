@@ -25,8 +25,8 @@
 #include <cstddef>                      // size_t return value.
 #include <memory>                       // std::unique_ptr parameter.
 
-#include <BitFunnel/BitFunnelTypes.h>   // ShardId parameter.
-#include <BitFunnel/IInterface.h>       // Base class.
+#include "BitFunnel/BitFunnelTypes.h"   // ShardId parameter.
+#include "BitFunnel/IInterface.h"       // Base class.
 
 
 namespace BitFunnel
@@ -35,7 +35,7 @@ namespace BitFunnel
 
     // IInterface is a base class for all interfaces in BitFunnel.Library.
     // Its sole purpose is to define an empty virtual destructor.
-    class ITermTableCollection
+    class ITermTableCollection : public IInterface
     {
     public:
         virtual void AddTermTable(std::unique_ptr<ITermTable> termTable) = 0;

@@ -22,11 +22,14 @@
 
 #pragma once
 
+
+#include "BitFunnel/IInterface.h"           // inherits from IInterface.
+
 namespace BitFunnel
 {
     class IObjectFormatter;
 
-    class IPersistableObject
+    class IPersistableObject : public IInterface
     {
     public:
         virtual int GetTypeTag() const = 0;
