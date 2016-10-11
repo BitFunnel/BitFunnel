@@ -31,6 +31,8 @@ namespace BitFunnel
         ISimpleIndex const & m_index;
         ByteCodeGenerator m_code;
 
+        // accumulator:offset pair.
+        std::vector<std::pair<uint64_t, size_t>> m_addResultValues;
         std::vector<size_t> m_matches;
     };
 

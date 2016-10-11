@@ -21,12 +21,31 @@ namespace BitFunnel
     {
         std::cout << "AddResult acc:offset " << std::hex << accumulator
                   << std::dec << ":" << offset << std::endl;
+        m_addResultValues.push_back(std::make_pair(accumulator, offset));
     }
 
 
     bool SimplePlanner::FinishIteration(void const * sliceBuffer)
     {
+        // TODO: need to get real DocId via sliceBuffer.
         std::cout << "FinishIteration " << std::hex << sliceBuffer << std::dec << std::endl;
+        for (auto const & result : m_addResultValues)
+        {
+            uint64_t acc = result.first;
+            size_t offset = result.second;
+
+            size_t bitPos = 0;
+            while (acc != 0)
+            {
+                if (acc & 1)
+                {
+                    m_matches.push_back(offset * 64 + bitPos);
+                }
+                acc >>= 1;
+                ++bitPos;
+            }
+        }
+        // TODO: don't always return false.
         return false;
     }
 
@@ -140,6 +159,16 @@ namespace BitFunnel
                                        rowOffsets.data());
 
         intepreter.Run();
+        std::cout << "Matches" << std::endl;
+        // TODO: there's an off by one error here. Need to debug.
+        for (auto const & match : m_matches)
+        {
+            std::cout << match << " ";
+        }
+        std::cout << std::endl;
+
+        // TODO: make a report of difference between verifier and this. This
+        // probably should live above here and not here.
     }
 
 
