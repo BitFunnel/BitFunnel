@@ -22,29 +22,27 @@
 
 #pragma once
 
-#include <memory>  // std::unique_ptr return value.
-#include <vector>  // std::vector return value.
+#include <iosfwd>
+#include <vector>
 
-#include "BitFunnel/BitFunnelTypes.h"  // DocId.
+#include "BitFunnel/Plan/IMatchVerifier.h"  // base class.
 
 namespace BitFunnel
 {
-    class IAllocator;
-    class IInputStream;
-    class IMatchVerifier;
-    class IPlanRows;
-    class ISimpleIndex;
-    class TermMatchNode;
-
-    namespace Factories
+    class MatchVerifier : public IMatchVerifier
     {
-        std::unique_ptr<IMatchVerifier> CreateMatchVerifier();
+    public:
+        virtual void AddExpected(DocId) override;
+        virtual void AddObserved(DocId) override;
+        virtual void Verify() override;
+        virtual void Print(std::ostream &) const override;
+        virtual void Reset() override;
 
-
-        IPlanRows& CreatePlanRows(IInputStream& input,
-                                  const ISimpleIndex& index,
-                                  IAllocator& allocator);
-
-        std::vector<DocId> RunSimplePlanner(TermMatchNode const & tree, ISimpleIndex const & index);
-    }
+    private:
+        std::vector<DocId> m_expected;
+        std::vector<DocId> m_observed;
+        std::vector<DocId> m_truePositives;
+        std::vector<DocId> m_falsePositives;
+        std::vector<DocId> m_falseNegatives;
+    };
 }

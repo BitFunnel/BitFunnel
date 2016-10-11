@@ -37,6 +37,7 @@
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Plan/Factories.h"
+#include "BitFunnel/Plan/IMatchVerifier.h"
 #include "BitFunnel/Plan/QueryPipeline.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
 #include "BitFunnel/Index/RowIdSequence.h"
@@ -683,6 +684,8 @@ namespace BitFunnel
             }
             else
             {
+                auto verifier = Factories::CreateMatchVerifier();
+
                 auto & environment = GetEnvironment();
                 auto & cache = environment.GetIngestor().GetDocumentCache();
                 auto & config = environment.GetConfiguration();
@@ -702,6 +705,8 @@ namespace BitFunnel
                         std::cout
                             << "  DocId(" << entry.second << ") "
                             << std::endl;
+
+                        verifier->AddExpected(entry.second);
                     }
                 }
 
@@ -710,7 +715,17 @@ namespace BitFunnel
                     << documentCount << " documents."
                     << std::endl;
 
-                Factories::RunSimplePlanner(*tree, environment.GetSimpleIndex());
+                auto observed = Factories::RunSimplePlanner(*tree, environment.GetSimpleIndex());
+                for (auto id : observed)
+                {
+                    // TODO: this happens to work for the sonnets example
+                    // because DocIds == DocIndex + 1. That's a bug that needs
+                    // to be fixed.
+                    verifier->AddObserved(id+1);
+                }
+
+                verifier->Verify();
+                verifier->Print(std::cout);
             }
         }
         else

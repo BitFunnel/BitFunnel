@@ -17,11 +17,17 @@ namespace BitFunnel
     {
     public:
         SimplePlanner(TermMatchNode const & tree, ISimpleIndex const & index);
+
+        std::vector<DocId> const & GetMatches() const;
+
+        //
+        // IResultsProcessor methods.
+        //
         virtual void AddResult(uint64_t accumulator,
                                size_t offset) override;
-
         virtual bool FinishIteration(void const * sliceBuffer) override;
         virtual bool TerminatedEarly() const override;
+
     private:
         void Compile(size_t pos, Rank rank);
         void RankDown(size_t pos, Rank rank);

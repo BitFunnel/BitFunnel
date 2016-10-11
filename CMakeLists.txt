@@ -154,6 +154,7 @@ set(PLAN_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/ICodeGenerator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/IPlanRows.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/IResultsProcessor.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/IMatchVerifier.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/RowMatchNode.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/RowPlan.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/TermMatchNode.h

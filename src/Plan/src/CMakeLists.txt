@@ -6,6 +6,7 @@ set(CPPFILES
     ByteCodeInterpreter.cpp
     CompileNode.cpp
     MatchTreeRewriter.cpp
+    MatchVerifier.cpp
     PlanRows.cpp
     QueryParser.cpp
     QueryPipeline.cpp
@@ -34,6 +35,7 @@ set(PRIVATE_HFILES
     ByteCodeInterpreter.h
     CompileNode.h
     MatchTreeRewriter.h
+    MatchVerifier.h
     RankDownCompiler.h
     RankZeroCompiler.h
     RegisterAllocator.h
