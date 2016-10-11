@@ -1,10 +1,13 @@
 #include <algorithm>    // std::sort()
 #include <iostream>
 
+#include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/Factories.h"
+#include "BitFunnel/Plan/IResultsProcessor.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Term.h"
 #include "LoggerInterfaces/Check.h"
@@ -12,6 +15,27 @@
 
 namespace BitFunnel
 {
+
+    void SimplePlanner::AddResult(uint64_t accumulator,
+                                  size_t offset)
+    {
+        std::cout << "AddResult acc:offset " << std::hex << accumulator
+                  << std::dec << ":" << offset << std::endl;
+    }
+
+
+    bool SimplePlanner::FinishIteration(void const * sliceBuffer)
+    {
+        std::cout << "FinishIteration " << std::hex << sliceBuffer << std::dec << std::endl;
+        return false;
+    }
+
+
+    bool SimplePlanner::TerminatedEarly() const
+    {
+        return false;
+    }
+
     void Factories::RunSimplePlanner(TermMatchNode const & tree, ISimpleIndex const & index)
     {
         SimplePlanner simplePlanner(tree, index);
@@ -34,7 +58,7 @@ namespace BitFunnel
             }
             else
             {
-                m_code.AndRow(row.GetIndex(), false, 0);
+                m_code.AndRow(pos, false, 0);
                 Compile(pos + 1, rank);
             }
         }
@@ -89,8 +113,33 @@ namespace BitFunnel
         CHECK_GT(m_rows.size(), 0u);
         Rank rank = m_rows[0].GetRank();
         // false:0 is inverted:rankDelta.
-        m_code.LoadRow(m_rows[0].GetIndex(), false, 0u);
+        m_code.LoadRow(0u, false, 0u);
         Compile(1u, rank);
+        m_code.Seal();
+
+        const size_t c_shardId = 0u;
+        auto & shard = m_index.GetIngestor().GetShard(c_shardId);
+        auto & sliceBuffers = shard.GetSliceBuffers();
+        size_t sliceCount = sliceBuffers.size();
+
+        // Iterations per slice calculation.
+        auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> rank;
+
+        // Get Row offsets.
+        std::vector<ptrdiff_t> rowOffsets;
+        for (auto row : m_rows)
+        {
+            rowOffsets.push_back(shard.GetRowOffset(row));
+        }
+
+        ByteCodeInterpreter intepreter(m_code,
+                                       *this,
+                                       sliceCount,
+                                       reinterpret_cast<char* const *>(sliceBuffers.data()),
+                                       iterationsPerSlice,
+                                       rowOffsets.data());
+
+        intepreter.Run();
     }
 
 
