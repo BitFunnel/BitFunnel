@@ -30,6 +30,10 @@
 #include "LoggerInterfaces/Logging.h"
 #include "RowTableDescriptor.h"
 
+#ifdef _MSC_VER
+#include <intrin.h>  // For _interlockedbittestandreset64, etc.
+#endif
+
 
 namespace BitFunnel
 {
@@ -111,15 +115,15 @@ namespace BitFunnel
     {
         uint64_t* const row = GetRowData(sliceBuffer, rowIndex);
         const size_t offset = QwordPositionFromDocIndex(docIndex);
-
-        // Note that the offset here is shifted left by 6.
-        // return _bittest64(row + (offset >> 6), offset & 0x3F);
-
         uint64_t bitPos = docIndex & 0x3F;
+
+#ifdef _MSC_VER
+        return _bittest64(row + offset, bitPos);
+#else
         uint64_t bitMask = 1ull << bitPos;
         uint64_t maskedVal = *(row + offset) & bitMask;
-        // TODO: we probably don't need to shift the bit back down.
-        return maskedVal >> bitPos;
+        return maskedVal;
+#endif
     }
 
 
@@ -131,14 +135,15 @@ namespace BitFunnel
             << "rowIndex out of range.";
         uint64_t* const row = GetRowData(sliceBuffer, rowIndex);
         const size_t offset = QwordPositionFromDocIndex(docIndex);
-
-        // Note that the offset here is shifted left by 6.
-        // _interlockedbittestandset64(row + (offset >> 6), offset & 0x3F);
-
         uint64_t bitPos = docIndex & 0x3F;
+
+#ifdef _MSC_VER
+        _interlockedbittestandset64(row + offset, bitPos);
+#else
         uint64_t bitMask = 1ull << bitPos;
         uint64_t newVal = *(row + offset) | bitMask;
         *(row + offset) = newVal;
+#endif
     }
 
 
@@ -148,14 +153,15 @@ namespace BitFunnel
     {
         uint64_t* const row = GetRowData(sliceBuffer, rowIndex);
         const size_t offset = QwordPositionFromDocIndex(docIndex);
-
-        // Note that the offset here is shifted left by 6.
-        // _interlockedbittestandreset64(row + (offset >> 6), offset & 0x3F);
-
         uint64_t bitPos = docIndex & 0x3F;
+
+#ifdef _MSC_VER
+        _interlockedbittestandreset64(row + offset, bitPos);
+#else
         uint64_t bitMask = ~(1ull << bitPos);
         uint64_t newVal = *(row + offset) & bitMask;
         *(row + offset) = newVal;
+#endif
     }
 
 
