@@ -118,7 +118,7 @@ namespace BitFunnel
         uint64_t bitPos = docIndex & 0x3F;
 
 #ifdef _MSC_VER
-        return _bittest64(row + offset, bitPos);
+        return _bittest64(reinterpret_cast<long long const *>(row + offset), bitPos);
 #else
         // TODO: benchmark this vs. btc instruction.
         uint64_t bitMask = 1ull << bitPos;
@@ -140,7 +140,7 @@ namespace BitFunnel
 
 
 #ifdef _MSC_VER
-        _interlockedbittestandset64(row + offset, bitPos);
+        _interlockedbittestandset64(reinterpret_cast<long long *>(row + offset), bitPos);
 #else
         // TODO: figure out if this should really be +m.
         asm("lock btsq %1, %0" : "+m" (*(row + offset)) : "r" (bitPos));
@@ -160,7 +160,7 @@ namespace BitFunnel
         uint64_t bitPos = docIndex & 0x3F;
 
 #ifdef _MSC_VER
-        _interlockedbittestandreset64(row + offset, bitPos);
+        _interlockedbittestandreset64(reinterpret_cast<long long *>(row + offset), bitPos);
 #else
         // TODO: figure out if this should really be +m.
         asm("lock btrq %1, %0" : "+m" (*(row + offset)) : "r" (bitPos));
