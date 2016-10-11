@@ -40,6 +40,10 @@ namespace BitFunnel
                 if (acc & 1)
                 {
                     m_matches.push_back(offset * 64 + bitPos);
+                    // Below is an aborted change. It's harder to
+                    // const DocIndex docIndex = offset * 64 + bitPos;
+                    // DocumentHandle(index);
+                    // m_matches.push_back();
                 }
                 acc >>= 1;
                 ++bitPos;

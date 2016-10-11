@@ -53,6 +53,8 @@ namespace BitFunnel
         // hashtable.
         DocumentHandleInternal();
 
+        DocumentHandleInternal(Slice* slice, DocIndex index);
+
         // Constructs a handle from slice and offset (index) in the slice.
         DocumentHandleInternal(Slice* slice, DocIndex index, DocId id);
 

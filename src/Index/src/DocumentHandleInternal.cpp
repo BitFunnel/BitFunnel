@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "DocumentHandleInternal.h"
 #include "DocTableDescriptor.h"
@@ -31,6 +32,11 @@
 
 namespace BitFunnel
 {
+    DocumentHandle Factories::CreateDocumentHandle(Slice* slice, DocIndex index)
+    {
+        return DocumentHandleInternal(slice, index);
+    }
+
     //*************************************************************************
     //
     // DocumentHandle
@@ -132,6 +138,12 @@ namespace BitFunnel
 
     DocumentHandleInternal::DocumentHandleInternal()
         : DocumentHandle(nullptr, c_invalidDocIndex)
+    {
+    }
+
+
+    DocumentHandleInternal::DocumentHandleInternal(Slice* slice, DocIndex index)
+        : DocumentHandle(slice, index)
     {
     }
 

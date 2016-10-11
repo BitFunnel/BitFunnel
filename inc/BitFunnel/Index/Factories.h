@@ -27,6 +27,8 @@
 #include <vector>               // std::vector parameter.
 
 #include "BitFunnel/Term.h"     // Term::IdfX10 parameter.
+#include "BitFunnel/BitFunnelTypes.h"  // DocIndex parameter.
+#include "BitFunnel/Index/DocumentHandle.h"  // DocumentHandle return value.
 
 
 namespace BitFunnel
@@ -50,6 +52,7 @@ namespace BitFunnel
     class ITermTableBuilder;
     class ITermTableCollection;
     class ITermTreatment;
+    class Slice;
 
     namespace Factories
     {
@@ -80,6 +83,8 @@ namespace BitFunnel
 
         std::unique_ptr<IDocumentFrequencyTable>
             CreateDocumentFrequencyTable(std::istream& input);
+
+        DocumentHandle CreateDocumentHandle(Slice* slice, DocIndex index);
 
         std::unique_ptr<IFactSet> CreateFactSet();
 
@@ -123,7 +128,7 @@ namespace BitFunnel
 
         std::unique_ptr<ITermTreatment> CreateTreatmentPrivateRank0();
 
-        std::unique_ptr<ITermTreatment> 
+        std::unique_ptr<ITermTreatment>
             CreateTreatmentPrivateSharedRank0(double density, double snr);
 
         std::unique_ptr<ITermTreatment>
