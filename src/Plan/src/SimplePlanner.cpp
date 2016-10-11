@@ -6,6 +6,7 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/RowIdSequence.h"
+#include "BitFunnel/Index/Token.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IResultsProcessor.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
@@ -140,29 +141,35 @@ namespace BitFunnel
         Compile(1u, rank);
         m_code.Seal();
 
-        const size_t c_shardId = 0u;
-        auto & shard = m_index.GetIngestor().GetShard(c_shardId);
-        auto & sliceBuffers = shard.GetSliceBuffers();
-        size_t sliceCount = sliceBuffers.size();
-
-        // Iterations per slice calculation.
-        auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> rank;
-
-        // Get Row offsets.
-        std::vector<ptrdiff_t> rowOffsets;
-        for (auto row : m_rows)
+        // Get token before we GetSliceBuffers.
         {
-            rowOffsets.push_back(shard.GetRowOffset(row));
-        }
+            auto token = m_index.GetIngestor().GetTokenManager().RequestToken();
 
-        ByteCodeInterpreter intepreter(m_code,
-                                       *this,
-                                       sliceCount,
-                                       reinterpret_cast<char* const *>(sliceBuffers.data()),
-                                       iterationsPerSlice,
-                                       rowOffsets.data());
+            const size_t c_shardId = 0u;
+            auto & shard = m_index.GetIngestor().GetShard(c_shardId);
+            auto & sliceBuffers = shard.GetSliceBuffers();
+            size_t sliceCount = sliceBuffers.size();
 
-        intepreter.Run();
+            // Iterations per slice calculation.
+            auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> rank;
+
+            // Get Row offsets.
+            std::vector<ptrdiff_t> rowOffsets;
+            for (auto row : m_rows)
+                {
+                    rowOffsets.push_back(shard.GetRowOffset(row));
+                }
+
+            ByteCodeInterpreter intepreter(m_code,
+                                           *this,
+                                           sliceCount,
+                                           reinterpret_cast<char* const *>(sliceBuffers.data()),
+                                           iterationsPerSlice,
+                                           rowOffsets.data());
+
+            intepreter.Run();
+
+        } // End of token lifetime.
         std::cout << "Matches" << std::endl;
         // TODO: there's an off by one error here. Need to debug.
         for (auto const & match : m_matches)
