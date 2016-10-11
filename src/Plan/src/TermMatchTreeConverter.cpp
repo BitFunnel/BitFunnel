@@ -200,7 +200,6 @@ namespace BitFunnel
 
     const RowMatchNode* TermMatchTreeConverter::BuildMatchTree(const TermMatchNode::Fact& node)
     {
-        // TODO: need to add support for Facts.
         RowMatchNode::Builder builder(RowMatchNode::AndMatch, m_allocator);
         AppendTermRows(builder, node.GetFact());
         return builder.Complete();

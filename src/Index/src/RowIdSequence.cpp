@@ -64,11 +64,12 @@ namespace BitFunnel
         {
             throw fact;
         }
+
       // // TODO: Figure out how to eliminate StreamId::Metaword for facts.
       // // Do we just create c_MetaWordStreamId? Can user's use this StreamId?
-      // const Term term(static_cast<Term::Hash>(fact),
-      //                 StreamId::MetaWord,
-      //                 static_cast<Term::IdfX10>(0));
+      // const Term term(static_cast<Term::Hash>(fact), // TODO: need to figure out if we need to subtract 3 (or whatever)
+      //                 StreamId::MetaWord, // TODO: can pass dummy value since TermTable::GetRows doesn't use thsi for facts.
+      //                 static_cast<Term::IdfX10>(0)); // TODO: can pass dummy vaue for fact.
 
       // const PackedTermInfo info = termTable.GetTermInfo(term, m_termKind);
       // Initialize(info);
