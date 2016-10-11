@@ -28,11 +28,14 @@ namespace BitFunnel
     class IInputStream;
     class IPlanRows;
     class ISimpleIndex;
+    class TermMatchNode;
 
     namespace Factories
     {
         IPlanRows& CreatePlanRows(IInputStream& input,
                                   const ISimpleIndex& index,
                                   IAllocator& allocator);
+
+        void RunSimplePlanner(TermMatchNode const & tree, ISimpleIndex const & index);
     }
 }

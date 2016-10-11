@@ -98,6 +98,12 @@ namespace BitFunnel
     }
 
 
+    ISimpleIndex const & Environment::GetSimpleIndex() const
+    {
+        return *m_index;
+    }
+
+
     ITermTable const & Environment::GetTermTable() const
     {
         return m_index->GetTermTable();

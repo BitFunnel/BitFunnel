@@ -15,6 +15,7 @@ set(CPPFILES
     RegisterAllocator.cpp
     RowMatchNode.cpp
     RowPlan.cpp
+    SimplePlanner.cpp
     StringVector.cpp
     TermMatchNode.cpp
     TermMatchTreeConverter.cpp
@@ -36,6 +37,7 @@ set(PRIVATE_HFILES
     RankDownCompiler.h
     RankZeroCompiler.h
     RegisterAllocator.h
+    SimplePlanner.h
     StringVector.h
 )
 

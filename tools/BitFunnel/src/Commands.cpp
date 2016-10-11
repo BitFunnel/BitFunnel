@@ -36,6 +36,7 @@
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/Index/ITermTable.h"
+#include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/QueryPipeline.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
 #include "BitFunnel/Index/RowIdSequence.h"
@@ -482,11 +483,11 @@ namespace BitFunnel
 
             IIngestor & ingestor = GetEnvironment().GetIngestor();
 
-            
+
             // TODO: Come up with a better heuristic for deciding which
             // bits to display. Current algorithm is to display bits for
             // the first 64 documents with ids less than 1000.
-            
+
             std::vector<DocId> ids;
             for (DocId id = 0; id <= 1000; ++id)
             {
@@ -499,7 +500,7 @@ namespace BitFunnel
                     }
                 }
             }
-            
+
             // Print out 100s digit of DocId.
             std::cout << "                 d ";
             for (auto id : ids)
@@ -523,7 +524,7 @@ namespace BitFunnel
                 std::cout << (id %10);
             }
             std::cout << std::endl;
-            
+
             // Print out RowIds and their bits.
             for (auto row : rows)
             {
@@ -708,6 +709,8 @@ namespace BitFunnel
                     << matchCount << " match(es) out of "
                     << documentCount << " documents."
                     << std::endl;
+
+                Factories::RunSimplePlanner(*tree, environment.GetSimpleIndex());
             }
         }
         else

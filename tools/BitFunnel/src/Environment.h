@@ -51,6 +51,7 @@ namespace BitFunnel
         TaskFactory & GetTaskFactory() const;
         TaskPool & GetTaskPool() const;
         IConfiguration const & GetConfiguration() const;
+        ISimpleIndex const & GetSimpleIndex() const;
         IIngestor & GetIngestor() const;
         ITermTable const & GetTermTable() const;
 
