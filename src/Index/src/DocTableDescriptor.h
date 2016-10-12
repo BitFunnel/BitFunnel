@@ -175,6 +175,11 @@ namespace BitFunnel
         static size_t GetBufferSize(DocIndex capacity,
                                     IDocumentDataSchema const & schema);
 
+        // DocTable buffers are placed such that it is aligned with this 
+        // byte alignment. For performance reasons it is advantageous that
+        // it is placed either at quadword or at cacheline boundaries.
+        static const size_t c_docTableByteAlignment = c_bytesPerQuadword;
+
     private:
 
         // Declare but don't implement. This is required for a std::vector to

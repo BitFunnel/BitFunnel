@@ -33,9 +33,6 @@ namespace BitFunnel
 {
     namespace DocTableDescriptorTest
     {
-        // TODO: figure out what to do with this.
-        static const size_t c_docTableByteAlignment = 8;
-
         struct FixedSizeBlob0
         {
             unsigned m_field1;
@@ -86,7 +83,8 @@ namespace BitFunnel
         {
             static const DocIndex c_capacity = 1000;
             static const ptrdiff_t c_anyDocTableBufferOffset
-                = RoundUp<ptrdiff_t>(1234, c_docTableByteAlignment);
+                = RoundUp<ptrdiff_t>(
+                    1234, DocTableDescriptor::c_docTableByteAlignment);
 
             DocumentDataSchema schema;
             const VariableSizeBlobId variableBlob0 = schema.RegisterVariableSizeBlob();
@@ -99,7 +97,7 @@ namespace BitFunnel
 
             const size_t sliceBufferSize = static_cast<size_t>(c_anyDocTableBufferOffset) + actualBufferSize;
 
-            AlignedBuffer buffer(sliceBufferSize, c_docTableByteAlignment);
+            AlignedBuffer buffer(sliceBufferSize, DocTableDescriptor::c_docTableByteAlignment);
             void* alignedBuffer = buffer.GetBuffer();
 
             // Fill the allocated buffer with arbitrary byte value.
@@ -241,7 +239,8 @@ namespace BitFunnel
                             unsigned expectedBufferSize)
         {
             const size_t actualBufferSize = DocTableDescriptor::GetBufferSize(capacity, schema);
-            const size_t expectedBufferSizeRounded = RoundUp<size_t>(expectedBufferSize, c_docTableByteAlignment);
+            const size_t expectedBufferSizeRounded =
+                RoundUp<size_t>(expectedBufferSize, DocTableDescriptor::c_docTableByteAlignment);
             EXPECT_EQ(actualBufferSize, expectedBufferSizeRounded);
         }
 

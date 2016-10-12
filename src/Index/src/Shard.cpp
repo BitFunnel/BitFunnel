@@ -32,6 +32,7 @@
 #include "IRecyclable.h"
 #include "LoggerInterfaces/Logging.h"
 #include "Recycler.h"
+#include "Rounding.h"
 #include "Shard.h"
 
 
@@ -243,8 +244,9 @@ namespace BitFunnel
     {
         const Rank maxRank = termTable.GetMaxRankUsed();
 
-        ptrdiff_t currentOffset = 0;
+        size_t currentOffset = 0;
 
+        currentOffset = RoundUp(currentOffset, DocTableDescriptor::c_docTableByteAlignment);
         // Start of the DocTable is at offset 0.
         if (shard != nullptr)
         {
@@ -257,8 +259,7 @@ namespace BitFunnel
 
         for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
         {
-            // TODO: see if this alignment matters.
-            // currentOffset = RoundUp(currentOffset, c_rowTableByteAlignment);
+            currentOffset = RoundUp(currentOffset, RowTableDescriptor::c_rowTableByteAlignment);
 
             const RowIndex rowCount = termTable.GetTotalRowCount(rank);
 

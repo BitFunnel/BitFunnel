@@ -89,4 +89,14 @@ namespace BitFunnel
     // TODO: make c_maxRowsPerQuery a product of c_maxRowsPerTerm and something
     // else. See TFS 567354.
     static const unsigned c_maxRowsPerQuery = 500;
+
+    //
+    // Constants for alignment of different in-memory structures.
+    //
+
+    static const size_t c_bytesPerQuadword = 8;
+
+    // Number of bytes in a cache line. Note that this value could go to 128 if cache line pairing
+    // is enabled in the BIOS.
+    static const size_t c_bytesPerCacheLine = 64;
 }

@@ -55,7 +55,8 @@ namespace BitFunnel
         //            "capacity not evenly rounded.");
 
         // // Make sure offset of this RowTable is properly aligned.
-        // LogAssertB((rowTableBufferOffset % c_rowTableByteAlignment) == 0);
+        CHECK_EQ(rowTableBufferOffset % c_rowTableByteAlignment, 0)
+            << "incorrect buffer alignment.";
     }
 
 

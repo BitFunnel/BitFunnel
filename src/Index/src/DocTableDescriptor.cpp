@@ -28,6 +28,7 @@
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Utilities/StreamUtilities.h"
 #include "DocTableDescriptor.h"
+#include "LoggerInterfaces/Check.h"
 #include "Rounding.h"
 
 
@@ -119,8 +120,8 @@ namespace BitFunnel
           m_bytesPerItem(GetItemByteCount(schema))
     {
         // Make sure offset of the DocTable is properly aligned.
-        // LogAssertB((bufferOffset % c_docTableByteAlignment) == 0,
-        //           "DocTableDescriptor bufferOffset not aligned.");
+        CHECK_EQ(bufferOffset % c_docTableByteAlignment, 0)
+            << "incorrect buffer alignment.";
     }
 
 
