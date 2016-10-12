@@ -200,17 +200,19 @@ namespace BitFunnel
         return histogram;
     }
 
-    // Test the number of terms in a corpus containing 3 documents
-    // Since there are 3 documents with Id - 0, 1, 2 - there can be
-    // only one term 2 since we are using CreatePrimeFactorIndex.
-    // We expect the document with Id 2 to have the term 2 and other
-    // documents to have none because each document should contain
-    // the terms which are prime numbers iff the document Id is divisible
-    // by the prime number
+    // Test DocumentFrequencyTable with 3 documents (0, 1, 2). This uses a
+    // PrimeFactorIndex, which means that a document contains the term if the
+    // term divides the document. This means that the only term we expect is
+    // term "2" in docId 2.
+    //
+    // table.size() == 1u because there's only one term, "2", in any document.
+    //
+    // docFreqHistogram[1] == 1u because there's exactly 1 term that appears in
+    // 1 document.
     TEST(Ingestor, DocFrequency2)
     {
-        const int c_documentCount = 2;
-        SyntheticIndex index(c_documentCount);
+        const int c_maxDocId = 2;
+        SyntheticIndex index(c_maxDocId);
         std::stringstream stream;
         index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
 
@@ -219,28 +221,27 @@ namespace BitFunnel
         DocumentFrequencyTable table(stream);
 
         EXPECT_EQ(table.size(), 1u);
-        std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
+        std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_maxDocId);
         EXPECT_EQ(docFreqHistogram[1], 1u);
     }
 
-    // Ingest fake documents as in "Basic" test, then print statistics out
-    // to a stream. Verify the statistics by reading them out as a
-    // stream. Verify the statistics by reading them into the
-    // DocumentFrequencyTable constructor and checking the
-    // DocumentFrequencyTable.
-    // For instance for a document count of 64, there are documents with docID
-    // from 0 to 63. There are 18 prime numbers under 63. Hence the document
-    // freuqency table will have 18 elements in it.
-    // The document frequency histogram shows the number of terms for each document
-    // frequency.
-    // For instance term 2 occurs in 31 documents. Hence the docFreqHistogram[31] = 1
-    // because there's only one term (which is 2) which occurs in 31 documents.
-    // 37, 41, 43, 47, 53, 59, 61 - these 7 terms will appear only in one document each.
-    // Hence the docFreqHistogram[7] = 1.
+
+    // Test DocumentFrequencyTable with 64 documents (0, 1, 2, ..., 63). This
+    // uses a PrimeFactorIndex, which means that a document contains the term
+    // iff the term divides the document.
+    //
+    // table.size() == 18u because there are 18 primes <= 63.
+    //
+    // docFreqHistogram[31] == 1u because there's exactly 1 term that appears in
+    // 31 documents: the term "2" appears in documents 2, 4, 6, 8, ..., 62.
+    //
+    // docFreqHistogram[1] == 7u because there are 7 terms that appear in
+    // exactly 1 document: 37, 41, 43, 47, 53, 59, 61, i.e., all primes between
+    // 32 and 63 (inclusive).
     TEST(Ingestor, DocFrequency63)
     {
-        const int c_maxDocumentID = 63;
-        SyntheticIndex index(c_maxDocumentID);
+        const int c_maxDocId = 63;
+        SyntheticIndex index(c_maxDocId);
         std::stringstream stream;
         index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
 
@@ -249,7 +250,7 @@ namespace BitFunnel
         DocumentFrequencyTable table(stream);
 
         EXPECT_EQ(table.size(), 18u);
-        std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_maxDocumentID);
+        std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_maxDocId);
 
         EXPECT_EQ(docFreqHistogram[21], 1u);
         EXPECT_EQ(docFreqHistogram[31], 1u);
