@@ -210,16 +210,4 @@ namespace BitFunnel
         // Shifting by an additional m_rank gives the rankRWord.
         return docIndex >> (6 + m_rank);
     }
-
-
-    size_t RowTableDescriptor::BitPositionFromDocIndex(DocIndex docIndex) const
-    {
-        LogAssertB(docIndex < m_capacity, "docIndex out of range");
-
-        size_t rank0Word = docIndex >> 6;
-        size_t rankRWord = rank0Word >> m_rank;
-        // TODO: check if compiler is smart enough to avoid doing a % here.
-        size_t bitInWord = docIndex % 64;
-        return (rankRWord << 6) + bitInWord;
-    }
 }
