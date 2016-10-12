@@ -223,16 +223,24 @@ namespace BitFunnel
         EXPECT_EQ(docFreqHistogram[1], 1u);
     }
 
-/*
     // Ingest fake documents as in "Basic" test, then print statistics out
     // to a stream. Verify the statistics by reading them out as a
     // stream. Verify the statistics by reading them into the
     // DocumentFrequencyTable constructor and checking the
     // DocumentFrequencyTable.
-    TEST(Ingestor, DocFrequency64)
+    // For instance for a document count of 64, there are documents with docID
+    // from 0 to 63. There are 18 prime numbers under 63. Hence the document
+    // freuqency table will have 18 elements in it.
+    // The document frequency histogram shows the number of terms for each document
+    // frequency.
+    // For instance term 2 occurs in 31 documents. Hence the docFreqHistogram[31] = 1
+    // because there's only one term (which is 2) which occurs in 31 documents.
+    // 37, 41, 43, 47, 53, 59, 61 - these 7 terms will appear only in one document each.
+    // Hence the docFreqHistogram[7] = 1.
+    TEST(Ingestor, DocFrequency63)
     {
-        const int c_documentCount = 2;
-        SyntheticIndex index(c_documentCount);
+        const int c_maxDocumentID = 63;
+        SyntheticIndex index(c_maxDocumentID);
         std::stringstream stream;
         index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
 
@@ -240,40 +248,10 @@ namespace BitFunnel
 
         DocumentFrequencyTable table(stream);
 
-        EXPECT_EQ(table.size(), 6u);
-        std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
-        EXPECT_EQ(docFreqHistogram[32], 6u);
+        EXPECT_EQ(table.size(), 18u);
+        std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_maxDocumentID);
+
+        EXPECT_EQ(docFreqHistogram[21], 1u);
+        EXPECT_EQ(docFreqHistogram[31], 1u);
     }
-
-
-      TEST(Ingestor, DocFrequency63)
-      {
-      const int c_documentCount = 63;
-      SyntheticIndex index(c_documentCount);
-      std::stringstream stream;
-      index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
-
-      DocumentFrequencyTable table(stream);
-
-      EXPECT_EQ(table.size(), 6u);
-      std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
-      EXPECT_EQ(docFreqHistogram[31], 6u);
-      }
-
-
-      TEST(Ingestor, DocFrequency62)
-      {
-      const int c_documentCount = 62;
-      SyntheticIndex index(c_documentCount);
-      std::stringstream stream;
-      index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
-
-      DocumentFrequencyTable table(stream);
-
-      EXPECT_EQ(table.size(), 6u);
-      std::unordered_map<size_t, size_t> docFreqHistogram = CreateDocCountHistogram(table, c_documentCount);
-      EXPECT_EQ(docFreqHistogram[30], 5u);
-      EXPECT_EQ(docFreqHistogram[31], 1u);
-      }
-    */
 }
