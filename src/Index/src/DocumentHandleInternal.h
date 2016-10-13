@@ -72,5 +72,10 @@ namespace BitFunnel
         // Make the document visible to matcher. Must be called after the
         // document's content is fully ingested.
         void Activate();
+
+        // Represent the value that the default constructor assigns to the instances
+        // of DocumentHandle.
+        static const DocIndex c_invalidDocIndex =
+            std::numeric_limits<size_t>::max();
     };
 }

@@ -91,29 +91,51 @@ namespace BitFunnel
     }
 
 
+    void PrintDocIdVector(std::ostream & out,
+                          std::vector<DocId> const & documents)
+    {
+        for (size_t i = 0; i < documents.size(); ++i)
+        {
+            if (i > 0)
+            {
+                out << ", ";
+            }
+            out << documents[i];
+        }
+        out << std::endl;
+    }
+
+
     void MatchVerifier::Print(std::ostream & out) const
     {
-        out << "False Positives: " << std::endl;
-        for (auto id : m_falsePositives)
-        {
-            out << "  " << id << std::endl;
-        }
+        out << "False Positives: ";
+        PrintDocIdVector(out, m_falsePositives);
+        out << std::endl;
 
-        out << "False Negatives: " << std::endl;
-        for (auto id : m_falseNegatives)
-        {
-            out << "  " << id << std::endl;
-        }
+        out << "False Negatives: ";
+        PrintDocIdVector(out, m_falseNegatives);
+        out << std::endl;
 
-        out << "True Positives: " << std::endl;
-        for (auto id : m_truePositives)
-        {
-            out << "  " << id << std::endl;
-        }
+        out << "True Positives: ";
+        PrintDocIdVector(out, m_truePositives);
+        out << std::endl;
 
         out << "False Positives: "
-            << m_falsePositives.size()
-            << std::endl
+            << m_falsePositives.size();
+
+        size_t totalPositives =
+            m_falsePositives.size() + m_truePositives.size();
+        if (totalPositives > 0)
+        {
+            out
+                << " (rate = "
+                << static_cast<double>(
+                    m_falsePositives.size()) /
+                totalPositives
+                << ") ";
+        }
+
+        out << std::endl
             << "False Negatives: "
             << m_falseNegatives.size()
             << std::endl

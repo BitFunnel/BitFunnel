@@ -94,7 +94,10 @@ namespace BitFunnel
     // Constants for alignment of different in-memory structures.
     //
 
+    static const size_t c_bitsPerByte = 8;
     static const size_t c_bytesPerQuadword = 8;
+    static const size_t c_bitsPerQuadword = c_bitsPerByte * c_bytesPerQuadword;
+
 
     // Number of bytes in a cache line. Note that this value could go to 128 if cache line pairing
     // is enabled in the BIOS.

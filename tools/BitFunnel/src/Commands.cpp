@@ -702,9 +702,9 @@ namespace BitFunnel
                     if (matches)
                     {
                         ++matchCount;
-                        std::cout
-                            << "  DocId(" << entry.second << ") "
-                            << std::endl;
+                        //std::cout
+                        //    << "  DocId(" << entry.second << ") "
+                        //    << std::endl;
 
                         verifier->AddExpected(entry.second);
                     }
@@ -721,7 +721,7 @@ namespace BitFunnel
                     // TODO: this happens to work for the sonnets example
                     // because DocIds == DocIndex + 1. That's a bug that needs
                     // to be fixed.
-                    verifier->AddObserved(id+1);
+                    verifier->AddObserved(id);
                 }
 
                 verifier->Verify();

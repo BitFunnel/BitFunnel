@@ -209,13 +209,6 @@ namespace BitFunnel
     }
 
 
-    ptrdiff_t Shard::GetSlicePtrOffset() const
-    {
-        // A pointer to a Slice is placed in the end of the slice buffer.
-        return static_cast<ptrdiff_t>(m_sliceBufferSize - sizeof(void*));
-    }
-
-
     RowId Shard::GetDocumentActiveRowId() const
     {
         return m_documentActiveRowId;
@@ -246,17 +239,24 @@ namespace BitFunnel
 
         size_t currentOffset = 0;
 
+        // A pointer to a Slice object is placed at the beginning of the slice buffer.
+        currentOffset += sizeof(Slice*);
+
+        //
+        // DocTable
+        //
         currentOffset = RoundUp(currentOffset, DocTableDescriptor::c_docTableByteAlignment);
-        // Start of the DocTable is at offset 0.
         if (shard != nullptr)
         {
             shard->m_docTable.reset(new DocTableDescriptor(sliceCapacity,
                                                            docDataSchema,
                                                            currentOffset));
         }
-
         currentOffset += DocTableDescriptor::GetBufferSize(sliceCapacity, docDataSchema);
 
+        //
+        // RowTables
+        //
         for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
         {
             currentOffset = RoundUp(currentOffset, RowTableDescriptor::c_rowTableByteAlignment);
@@ -272,9 +272,6 @@ namespace BitFunnel
             currentOffset += RowTableDescriptor::GetBufferSize(
                 sliceCapacity, rowCount, rank, maxRank);
         }
-
-        // A pointer to a Slice is placed at the end of the slice buffer.
-        currentOffset += sizeof(void*);
 
         const size_t sliceBufferSize = static_cast<size_t>(currentOffset);
 
@@ -424,5 +421,13 @@ namespace BitFunnel
     void Shard::TemporaryWriteCumulativeTermCounts(std::ostream& out) const
     {
         m_docFrequencyTableBuilder->WriteCumulativeTermCounts(out);
+    }
+
+
+    // static
+    ptrdiff_t Shard::GetSlicePtrOffset()
+    {
+        // The slice pointer is at the beginning of the buffer.
+        return static_cast<ptrdiff_t>(0ull);
     }
 }

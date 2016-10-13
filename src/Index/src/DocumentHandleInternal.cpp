@@ -32,10 +32,13 @@
 
 namespace BitFunnel
 {
-    DocumentHandle Factories::CreateDocumentHandle(Slice* slice, DocIndex index)
+    DocumentHandle Factories::CreateDocumentHandle(void * sliceBuffer, DocIndex index)
     {
+        Slice* slice = *reinterpret_cast<Slice**>(
+            static_cast<char *>(sliceBuffer) + Shard::GetSlicePtrOffset());
         return DocumentHandleInternal(slice, index);
     }
+
 
     //*************************************************************************
     //

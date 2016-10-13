@@ -75,26 +75,40 @@ Decide on type of Slices
     }
 
 
-    void ByteCodeInterpreter::Run()
+    bool ByteCodeInterpreter::Run()
     {
         for (size_t i = 0; i < m_sliceCount; ++i)
         {
-            ProcessOneSlice(i);
+            bool terminate = ProcessOneSlice(i);
+            if (terminate)
+            {
+                return true;
+            }
         }
+
+        // false ==> ran to completion.
+        return false;
     }
 
 
-    void ByteCodeInterpreter::ProcessOneSlice(size_t slice)
+    bool ByteCodeInterpreter::ProcessOneSlice(size_t slice)
     {
         auto sliceBuffer = m_sliceBuffers[slice];
         for (size_t i = 0; i < m_iterationsPerSlice; ++i)
         {
-            RunOneIteration(sliceBuffer, i);
+            bool terminate = RunOneIteration(sliceBuffer, i);
+            if (terminate)
+            {
+                return true;
+            }
         }
+
+        // false ==> ran to completion.
+        return false;
     }
 
 
-    void ByteCodeInterpreter::RunOneIteration(
+    bool ByteCodeInterpreter::RunOneIteration(
         char const * sliceBuffer,
         size_t iteration)
     {
@@ -180,16 +194,11 @@ Decide on type of Slices
                 break;
             case Opcode::Report:
                 // TODO: Combine accumulator with value stack.
-                //std::cout
-                //    << "Report("
-                //    << std::hex
-                //    << m_accumulator
-                //    << ", "
-                //    << m_offset
-                //    << ")"
-                //    << std::endl;
-                m_resultsProcessor.AddResult(m_accumulator, m_offset);
-                calledAddResult = true;
+                if (m_accumulator != 0)
+                {
+                    m_resultsProcessor.AddResult(m_accumulator, m_offset);
+                    calledAddResult = true;
+                }
                 m_ip++;
                 break;
             case Opcode::Call:
@@ -229,10 +238,14 @@ Decide on type of Slices
             }  // switch
         }  // while
 
+
+        bool terminate = false;
         if (calledAddResult)
         {
-            m_resultsProcessor.FinishIteration(sliceBuffer);
+            terminate = m_resultsProcessor.FinishIteration(sliceBuffer);
         }
+
+        return terminate;
     }
 
 

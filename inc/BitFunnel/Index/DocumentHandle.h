@@ -35,12 +35,6 @@ namespace BitFunnel
     class Slice;
     class Term;
 
-    // Represent the value that the default constructor assigns to the instances
-    // of DocumentHandle.
-    static const DocIndex c_invalidDocIndex =
-        std::numeric_limits<size_t>::max();
-
-
     //*************************************************************************
     //
     // Represents a handle to the document that is being ingested. Implementators

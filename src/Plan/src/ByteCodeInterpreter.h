@@ -73,8 +73,9 @@ namespace BitFunnel
 
         // Runs the instruction sequence for a specified number of iterations.
         // Each iteration processes a single quadword of row data at the
-        // highest rank in the plan.
-        void Run();
+        // highest rank in the plan.  Returns true to indicate early
+        // termination.
+        bool Run();
 
         // Virtual machine opcodes. With the exception of the End opcode,
         // these values have a 1:1 correspondance with the ICodeGenerator
@@ -169,11 +170,12 @@ namespace BitFunnel
         };
 
     private:
-        void ProcessOneSlice(size_t slice);
+        //  Returns true to indicate early termination.
+        bool ProcessOneSlice(size_t slice);
 
         // Executes the instruction sequence for the specified iteration
-        // number.
-        void RunOneIteration(char const * sliceBuffer, size_t iteration);
+        // number. Returns true to indicate early termination.
+        bool RunOneIteration(char const * sliceBuffer, size_t iteration);
 
         //
         // Cached constructor parameters.

@@ -1,6 +1,7 @@
 #include <algorithm>    // std::sort()
 #include <iostream>
 
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
@@ -32,14 +33,9 @@ namespace BitFunnel
 
         // Sort RowIds by decreasing Rank.
         std::sort(m_rows.begin(), m_rows.end(), compare);
-        for (auto row : m_rows)
-        {
-            std::cout << "rank:index " << row.GetRank() << ":" << row.GetIndex() << std::endl;
-        }
 
         CHECK_GT(m_rows.size(), 0u);
         Rank rank = m_rows[0].GetRank();
-        // false:0 is inverted:rankDelta.
         m_code.LoadRow(0u, false, 0u);
         Compile(1u, rank);
         m_code.Seal();
@@ -73,16 +69,6 @@ namespace BitFunnel
             intepreter.Run();
 
         } // End of token lifetime.
-        std::cout << "Matches" << std::endl;
-        // TODO: there's an off by one error here. Need to debug.
-        for (auto const & match : m_matches)
-        {
-            std::cout << match << " ";
-        }
-        std::cout << std::endl;
-
-        // TODO: make a report of difference between verifier and this. This
-        // probably should live above here and not here.
     }
 
 
@@ -95,16 +81,12 @@ namespace BitFunnel
     void SimplePlanner::AddResult(uint64_t accumulator,
                                   size_t offset)
     {
-        std::cout << "AddResult acc:offset " << std::hex << accumulator
-                  << std::dec << ":" << offset << std::endl;
         m_addResultValues.push_back(std::make_pair(accumulator, offset));
     }
 
 
     bool SimplePlanner::FinishIteration(void const * sliceBuffer)
     {
-        // TODO: need to get real DocId via sliceBuffer.
-        std::cout << "FinishIteration " << std::hex << sliceBuffer << std::dec << std::endl;
         for (auto const & result : m_addResultValues)
         {
             uint64_t acc = result.first;
@@ -115,16 +97,17 @@ namespace BitFunnel
             {
                 if (acc & 1)
                 {
-                    m_matches.push_back(offset * 64 + bitPos);
-                    // Below is an aborted change. It's harder to
-                    // const DocIndex docIndex = offset * 64 + bitPos;
-                    // DocumentHandle(index);
-                    // m_matches.push_back();
+                    DocIndex docIndex = offset * c_bitsPerQuadword + bitPos;
+                    DocumentHandle handle =
+                        Factories::CreateDocumentHandle(const_cast<void*>(sliceBuffer), docIndex);
+                    m_matches.push_back(handle.GetDocId());
                 }
                 acc >>= 1;
                 ++bitPos;
             }
         }
+        m_addResultValues.clear();
+
         // TODO: don't always return false.
         return false;
     }

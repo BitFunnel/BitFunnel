@@ -105,10 +105,6 @@ namespace BitFunnel
         // Returns the offset of the row in the slice buffer in a shard.
         virtual ptrdiff_t GetRowOffset(RowId rowId) const;
 
-        // Returns the offset in the slice buffer where a pointer to the Slice
-        // is stored. This is the same offset for all slices in the Shard.
-        virtual ptrdiff_t GetSlicePtrOffset() const;
-
         //
         // Shard exclusive members.
         //
@@ -203,6 +199,11 @@ namespace BitFunnel
             GetCapacityForByteSize(size_t bufferByteSize,
                                    IDocumentDataSchema const & schema,
                                    ITermTable const & termTable);
+
+
+        // Returns the offset in the slice buffer where a pointer to the Slice
+        // is stored. This is the same offset for all slices in the Shard.
+        static ptrdiff_t GetSlicePtrOffset();
 
     private:
         // Tries to add a new slice. Throws if no memory in the allocator.

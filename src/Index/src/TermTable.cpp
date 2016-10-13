@@ -280,7 +280,6 @@ namespace BitFunnel
 
     double TermTable::GetBytesPerDocument(Rank rank) const
     {
-        const double c_bitsPerByte = 8.0;
         return GetTotalRowCount(rank) / pow(2.0, rank) / c_bitsPerByte;
     }
 
