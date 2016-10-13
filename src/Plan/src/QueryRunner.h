@@ -22,46 +22,47 @@
 
 #pragma once
 
-#include <vector>
-
-#include "ByteCodeInterpreter.h"
-#include "BitFunnel/Index/RowId.h"
-#include "BitFunnel/Plan/IResultsProcessor.h"
-
+#include <vector>       // std::vector parameter
 
 
 namespace BitFunnel
 {
-    class TermMatchNode;
+    class ISimpleIndex;
 
-
-    class SimplePlanner : public IResultsProcessor
+    class QueryRunner
     {
     public:
-        SimplePlanner(TermMatchNode const & tree, ISimpleIndex const & index);
+        class Statistics
+        {
+        public:
+            Statistics(size_t threadCount,
+                       size_t uniqueQueryCount,
+                       size_t processedCount,
+                       double elapsedTime);
 
-        std::vector<DocId> const & GetMatches() const;
+            void Print(std::ostream& out) const;
 
-        //
-        // IResultsProcessor methods.
-        //
-        virtual void AddResult(uint64_t accumulator,
-                               size_t offset) override;
-        virtual bool FinishIteration(void const * sliceBuffer) override;
-        virtual bool TerminatedEarly() const override;
+        private:
+            const size_t m_threadCount;
+            const size_t m_uniqueQueryCount;
+            size_t m_processedCount;
+            double m_elapsedTime;
+        };
 
-    private:
-        void Compile(size_t pos, Rank rank);
-        void RankDown(size_t pos, Rank rank);
-        void ExtractRowIds(TermMatchNode const & node);
 
-        std::vector<RowId> m_rows;
-        ISimpleIndex const & m_index;
-        ByteCodeGenerator m_code;
+        //QueryRunner(ISimpleIndex const & index,
+        //            size_t threadCount);
 
-        // accumulator:offset pair.
-        std::vector<std::pair<uint64_t, size_t>> m_addResultValues;
-        std::vector<size_t> m_matches;
+        static Statistics Run(ISimpleIndex const & index,
+                              size_t threadCount,
+                              std::vector<std::string> const & queries,
+                              size_t iterations);
+
+    //private:
+    //    //
+    //    // Constructor parameters
+    //    //
+    //    ISimpleIndex const & m_index;
+    //    const size_t m_threadCount;
     };
-
 }

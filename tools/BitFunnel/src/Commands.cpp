@@ -337,6 +337,8 @@ namespace BitFunnel
             m_isSingleQuery = false;
             if (command.compare("log") != 0)
             {
+                // TODO: Wire up query runner here.
+//                xyz;
                 RecoverableError error("Query expects \"one\" or \"log\".");
                 throw error;
             }

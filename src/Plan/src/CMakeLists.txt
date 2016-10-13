@@ -11,6 +11,7 @@ set(CPPFILES
     QueryParser.cpp
     QueryPipeline.cpp
     QueryPlanner.cpp
+    QueryRunner.cpp
     RankDownCompiler.cpp
     RankZeroCompiler.cpp
     RegisterAllocator.cpp
@@ -36,6 +37,7 @@ set(PRIVATE_HFILES
     CompileNode.h
     MatchTreeRewriter.h
     MatchVerifier.h
+    QueryRunner.h
     RankDownCompiler.h
     RankZeroCompiler.h
     RegisterAllocator.h
