@@ -72,18 +72,17 @@ namespace BitFunnel
     static const size_t c_maxShardIdCount = 1ul << c_log2MaxShardIdValue;
     static const size_t c_maxShardIdValue = c_maxShardIdCount - 1;
 
-    // RowIndex is the ordinal position of a row in a row table. The RowIndex
-    // of the first row is zero.
+    // RowIndex is the ordinal position of a row in a row table.
+    // The RowIndex of the first row is zero.
     // RowIndex is limited to fit within a 25-bit field. This constraint exists
-    // to bound the size of RowId to fit into 4-bytes.
+    // to bound the size of RowId and PackedRowIdSequence to fit into 4-bytes.
     typedef size_t RowIndex;
     static const size_t c_log2MaxRowIndexValue = 25;
     static const size_t c_maxRowIndexValue = (1ul << c_log2MaxRowIndexValue) - 1;
 
     // TODO: do we really need RowCount and RowIndex to be seperate types? This
     // is pulled over from the old code, but hasn't been re-thought through.
-    // TODO: Why isn't RowCount unsigned?
-    typedef int8_t RowCount;
+    typedef uint8_t RowCount;
     static const RowCount c_maxRowsPerTerm = 12;
 
     // TODO: make c_maxRowsPerQuery a product of c_maxRowsPerTerm and something

@@ -36,8 +36,8 @@ namespace BitFunnel
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #endif
-    RowId::RowId(ShardId shard, Rank rank, RowIndex index)
-        : m_shard(shard), m_rank(rank), m_index(index)
+    RowId::RowId(Rank rank, RowIndex index)
+        : m_rank(rank), m_index(index)
     {
         if (index > c_maxRowIndexValue)
         {
@@ -48,11 +48,6 @@ namespace BitFunnel
         {
             throw RecoverableError("RowId::RowId(): Rank out of range.");
         }
-
-        if (shard > c_maxShardIdValue)
-        {
-            throw RecoverableError("RowId::RowId(): ShardId out of range.");
-        }
 }
 #ifdef _MSC_VER
 #pragma warning(pop)
@@ -62,51 +57,22 @@ namespace BitFunnel
 #endif
 
     RowId::RowId()
-      : m_shard(0),
-        m_rank(0),
+      : m_rank(0),
         m_index(0)
     {
     }
 
 
     RowId::RowId(const RowId& other, RowIndex index)
-      : m_shard(other.m_shard),
-        m_rank(other.m_rank),
+      : m_rank(other.m_rank),
         m_index(static_cast<uint32_t>(other.m_index + index))
     {
-    }
-
-
-    RowId::RowId(uint32_t packedRepresentation)
-    {
-        m_index = packedRepresentation;
-        packedRepresentation >>= c_log2MaxRowIndexValue;
-        m_rank = packedRepresentation;
-        packedRepresentation >>= c_log2MaxRankValue;
-        m_shard = packedRepresentation;
-    }
-
-
-    uint32_t RowId::GetPackedRepresentation() const
-    {
-        uint32_t packedRepresentation = m_shard;
-        packedRepresentation <<= c_log2MaxRankValue;
-        packedRepresentation |= m_rank;
-        packedRepresentation <<= c_log2MaxRowIndexValue;
-        packedRepresentation |= m_index;
-        return packedRepresentation;
     }
 
 
     Rank RowId::GetRank() const
     {
         return m_rank;
-    }
-
-
-    ShardId RowId::GetShard() const
-    {
-        return m_shard;
     }
 
 
@@ -119,8 +85,7 @@ namespace BitFunnel
     bool RowId::operator==(const RowId& other) const
     {
         return m_index == other.GetIndex()
-            && m_rank == other.GetRank()
-            && m_shard == other.GetShard();
+            && m_rank == other.GetRank();
     }
 
 
@@ -132,11 +97,6 @@ namespace BitFunnel
 
     bool RowId::operator<(const RowId& other) const
     {
-        if (m_shard != other.m_shard)
-        {
-            return m_shard < other.m_shard;
-        }
-
         if (m_rank != other.m_rank)
         {
             return m_rank < other.m_rank;
@@ -148,25 +108,16 @@ namespace BitFunnel
 
     bool RowId::IsValid() const
     {
-    //     // DESIGN NOTE: this needs to change once we pass the query plan. We
-    //     // wanted to use the same JIT'ed code on each shard. But not all shards
-    //     // have the same number of rows. The way that's done is by duplicating
-    //     // rows so that every shard ends up as long as the longest
-    //     // shard. IsValid was used to find the boundary where things need to be
-    //     // duplicated.
+        // DESIGN NOTE: this needs to change once we pass the query plan. We
+        // wanted to use the same JIT'ed code on each shard. But not all shards
+        // have the same number of rows. The way that's done is by duplicating
+        // rows so that every shard ends up as long as the longest
+        // shard. IsValid was used to find the boundary where things need to be
+        // duplicated.
 
-    //     // It's not clear that we need to do this for the ported BitFunnel. We
-    //     // should conduct the experiment before really porting this over because
-    //     // it adds a significant amount of complexity.
+        // It's not clear that we need to do this for the ported BitFunnel. We
+        // should conduct the experiment before really porting this over because
+        // it adds a significant amount of complexity.
         return true;
-    }
-
-
-    // TODO: Who calls this?
-    unsigned RowId::GetPackedRepresentationBitCount()
-    {
-        return c_log2MaxShardIdValue
-               + c_log2MaxRankValue
-               + c_log2MaxRowIndexValue;
     }
 }

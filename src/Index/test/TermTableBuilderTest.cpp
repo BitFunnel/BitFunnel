@@ -162,7 +162,7 @@ namespace BitFunnel
             m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
-            m_termTable.AddRowId(RowId(0, 0, rows[0]++));
+            m_termTable.AddRowId(RowId(0, rows[0]++));
             m_termTable.CloseTerm(hash++);
 
             // Second term is configurated as a single shared rank 0 row, but
@@ -172,7 +172,7 @@ namespace BitFunnel
             m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
-            m_termTable.AddRowId(RowId(0, 0, rows[0]++));
+            m_termTable.AddRowId(RowId(0, rows[0]++));
             m_termTable.CloseTerm(hash++);
 
             // Third row is configured as a single shared rank 0 row. It's
@@ -184,7 +184,7 @@ namespace BitFunnel
 
             RowIndex third = rows[0];
             m_termTable.OpenTerm();
-            m_termTable.AddRowId(RowId(0, 0, rows[0]++));
+            m_termTable.AddRowId(RowId(0, rows[0]++));
             m_termTable.CloseTerm(hash++);
 
             // Fourth row is configured as a single shared rank 0 row. It's
@@ -196,7 +196,7 @@ namespace BitFunnel
 
             RowIndex fourth = rows[0];
             m_termTable.OpenTerm();
-            m_termTable.AddRowId(RowId(0, 0, rows[0]++));
+            m_termTable.AddRowId(RowId(0, rows[0]++));
             m_termTable.CloseTerm(hash++);
 
             // Fifth row is configured as a single shared rank 0 row. It's
@@ -207,7 +207,7 @@ namespace BitFunnel
             m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
-            m_termTable.AddRowId(RowId(0, 0, third));
+            m_termTable.AddRowId(RowId(0, third));
             m_termTable.CloseTerm(hash++);
 
             // Sixth row is configured as a pair of shared rank 0 rows. It's
@@ -218,8 +218,8 @@ namespace BitFunnel
             m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
-            m_termTable.AddRowId(RowId(0, 0, third));
-            m_termTable.AddRowId(RowId(0, 0, fourth));
+            m_termTable.AddRowId(RowId(0, third));
+            m_termTable.AddRowId(RowId(0, fourth));
             m_termTable.CloseTerm(hash++);
 
             // Seventh row is configured two shared rows, one rank 0 and one
@@ -231,8 +231,8 @@ namespace BitFunnel
             m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
-            m_termTable.AddRowId(RowId(0, 0, fourth));
-            m_termTable.AddRowId(RowId(0, 4, rows[4]++));
+            m_termTable.AddRowId(RowId(0, fourth));
+            m_termTable.AddRowId(RowId(4, rows[4]++));
             m_termTable.CloseTerm(hash++);
 
             const size_t adhocRowCount =

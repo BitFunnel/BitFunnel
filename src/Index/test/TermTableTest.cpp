@@ -61,7 +61,7 @@ namespace BitFunnel
                 termTable.OpenTerm();
                 for (size_t r = 0; r <= (i % 3); ++r)
                 {
-                    termTable.AddRowId(RowId(0, 0, r));
+                    termTable.AddRowId(RowId(0, r));
                 }
                 termTable.CloseTerm(hash);
             }
@@ -86,7 +86,7 @@ namespace BitFunnel
                     // immediately after the Adhoc rows.
                     // Expect RowId to be offset by adhocRowCount from the
                     // from the RowId passed to AddRowId().
-                    RowId expected = RowId(0, 0, r + adhocRowCount);
+                    RowId expected = RowId(0, r + adhocRowCount);
                     RowId observed = *it;
                     EXPECT_EQ(expected, observed);
                 }
@@ -239,7 +239,7 @@ namespace BitFunnel
                         // Invent a rank for this row. In this case just use
                         // the row number for the rank.
                         Rank rank = row;
-                        RowId rowId(0, rank, 0);
+                        RowId rowId(rank, 0);
 
                         // Record this RowId in the recipes for verification
                         recipes[idf][gramSize].push_back(rowId);
@@ -315,7 +315,7 @@ namespace BitFunnel
         TEST(TermTable, SystemRows)
         {
             TermTable termTable;
-            termTable.AddRowId(RowId(0, 0, 0));     // TermTable needs at least one row to function.
+            termTable.AddRowId(RowId(0, 0));     // TermTable needs at least one row to function.
 
             // Configurate row counts.
             const size_t explicitRowCount = 100;
@@ -330,7 +330,7 @@ namespace BitFunnel
             {
                 RowIdSequence rows(termTable.GetDocumentActiveTerm(), termTable);
                 auto it = rows.begin();
-                EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable::SystemTerm::DocumentActive));
+                EXPECT_EQ(*it, RowId(0, systemRowStart + ITermTable::SystemTerm::DocumentActive));
 
                 // Verify that iterator contains a single row. NOTE: Cannot use
                 // EXPECT_EQ with iterators.
@@ -342,7 +342,7 @@ namespace BitFunnel
                 // Match All Term
                 RowIdSequence rows(termTable.GetMatchAllTerm(), termTable);
                 auto it = rows.begin();
-                EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable::SystemTerm::MatchAll));
+                EXPECT_EQ(*it, RowId(0, systemRowStart + ITermTable::SystemTerm::MatchAll));
 
                 // Verify that iterator contains a single row. NOTE: Cannot use
                 // EXPECT_EQ with iterators.
@@ -354,7 +354,7 @@ namespace BitFunnel
                 // Soft Deleted Term
                 RowIdSequence rows(termTable.GetMatchNoneTerm(), termTable);
                 auto it = rows.begin();
-                EXPECT_EQ(*it, RowId(0, 0, systemRowStart + ITermTable::SystemTerm::MatchNone));
+                EXPECT_EQ(*it, RowId(0, systemRowStart + ITermTable::SystemTerm::MatchNone));
 
                 // Verify that iterator contains a single row. NOTE: Cannot use
                 // EXPECT_EQ with iterators.
@@ -382,7 +382,7 @@ namespace BitFunnel
             {
                 if (ranksInUse[rank])
                 {
-                    termTable.AddRowId(RowId(0, rank, 0));
+                    termTable.AddRowId(RowId(rank, 0));
                 }
             }
             termTable.CloseTerm(0ull);

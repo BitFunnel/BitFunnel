@@ -139,7 +139,7 @@ namespace BitFunnel
                     for (size_t i = 0; i < rcEntry.GetRowCount(); ++i)
                     {
                         // TODO: figure out ShardId value here.
-                        m_termTable.AddRowId(RowId(0, rcEntry.GetRank(), 0u));
+                        m_termTable.AddRowId(RowId(rcEntry.GetRank(), 0u));
                     }
                 }
 
@@ -277,7 +277,7 @@ namespace BitFunnel
 
             // Just reserve the RowIndex and then add the appropriate RowID to
             // the TermTableBuilder.
-            m_termTable.AddRowId(RowId(0, m_rank, m_currentRow++));
+            m_termTable.AddRowId(RowId(m_rank, m_currentRow++));
         }
         else if (f < m_adhocFrequency)
         {
@@ -338,7 +338,7 @@ namespace BitFunnel
             for (auto b : currentBins)
             {
                 // TODO: figure out ShardId value here.
-                m_termTable.AddRowId(RowId(0, m_rank, b.GetIndex()));
+                m_termTable.AddRowId(RowId(m_rank, b.GetIndex()));
             }
 
             // Reinsert the bins into m_bins.

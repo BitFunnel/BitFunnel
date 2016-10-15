@@ -69,19 +69,16 @@ namespace BitFunnel
         // TODO: Comment explaining why system rows are added first (rather than last).
         // Partial answer: so newly constructed TermTable is viable without a TermTableBuilder.
 
-        // TODO: Need to figure out shard. Use zero for now.
-        ShardId shard = 0;
-
         OpenTerm();
-        AddRowId(RowId(shard, 0, m_explicitRowCounts[0]++));
+        AddRowId(RowId(0, m_explicitRowCounts[0]++));
         CloseTerm(SystemTerm::DocumentActive);
 
         OpenTerm();
-        AddRowId(RowId(shard, 0, m_explicitRowCounts[0]++));
+        AddRowId(RowId(0, m_explicitRowCounts[0]++));
         CloseTerm(SystemTerm::MatchAll);
 
         OpenTerm();
-        AddRowId(RowId(shard, 0, m_explicitRowCounts[0]++));
+        AddRowId(RowId( 0, m_explicitRowCounts[0]++));
         CloseTerm(SystemTerm::MatchNone);
     }
 
@@ -375,7 +372,6 @@ namespace BitFunnel
 
         const RowId rowId = m_rowIds[index];
 
-        const ShardId shard = rowId.GetShard();
         const Rank rank = rowId.GetRank();
 
         const size_t adhocRowCount = m_adhocRowCounts[rank];
@@ -389,7 +385,7 @@ namespace BitFunnel
         hash = RotateRight(hash, variant & 0x3f) + variant;
 
         // Adhoc rows start at RowIndex 0.
-        return RowId(shard, rank, (hash % adhocRowCount));
+        return RowId(rank, (hash % adhocRowCount));
     }
 
 
@@ -408,12 +404,6 @@ namespace BitFunnel
         // with FactHandles 0..SystemTerm::Last.
         index += m_adhocRowCounts[0] + m_explicitRowCounts[0];
 
-        // AnyRow is used to get a shard.
-        // TODO: investigate if we should split RowId to shard +
-        // shard-independent structure and keep m_shard in the TermTable.
-        // TFS 15153.
-        const RowId anyRow = m_rowIds[0];
-
         // Soft-deleted document row is the first one after all regular
         // rows. The caller specifies rowOffset = 0 in this case. The rationale
         // for this value is that a soft-deleted rowId must be consistent
@@ -421,7 +411,7 @@ namespace BitFunnel
         // user facts defined. This is to guarantee consistency of this row
         // in case of canary deployment of the code that changes the list of
         // facts.
-        return RowId(anyRow.GetShard(), 0, index);
+        return RowId(0, index);
     }
 
 

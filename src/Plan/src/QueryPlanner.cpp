@@ -120,10 +120,10 @@ namespace BitFunnel
                 {
                     RowId row = m_planRows->PhysicalRow(shard, id);
 
-                    out << "(" << shard << ", " << id << "): ";
-                    out << "RowId(" << row.GetShard();
-                    out << ", " << row.GetRank();
-                    out << ", " << row.GetIndex() << ")" << std::endl;
+                    out 
+                        << "(" << shard << ", " << id << "): "
+                        << "RowId(" << ", " << row.GetRank()
+                        << ", " << row.GetIndex() << ")" << std::endl;
                 }
             }
         }

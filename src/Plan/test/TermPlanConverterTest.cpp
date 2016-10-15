@@ -101,8 +101,8 @@ namespace BitFunnel
 
             termTable->OpenTerm();
             RowIndex explicitRowCount = ITermTable::SystemTerm::Count;
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(hash);
 
             termTable->SetRowCounts(0, explicitRowCount, adhocRowCount);
@@ -151,8 +151,8 @@ namespace BitFunnel
             termTable->OpenTerm();
             auto hash = Term::ComputeRawHash("foo");
             RowIndex explicitRowCount = ITermTable::SystemTerm::Count;
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(hash);
 
             // Inserting a dummy term doesn't change the Row numbers in the
@@ -162,13 +162,13 @@ namespace BitFunnel
             // RowIds used in the plan); those aren't "physical" row addresses.
             hash = Term::ComputeRawHash("dummyTerm");
             termTable->OpenTerm();
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(hash);
 
             termTable->OpenTerm();
             hash = Term::ComputeRawHash("bar");
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(hash);
 
             termTable->SetRowCounts(0, explicitRowCount, adhocRowCount);
@@ -226,14 +226,14 @@ namespace BitFunnel
             termTable->OpenTerm();
             auto hash = Term::ComputeRawHash("foo");
             RowIndex explicitRowCount = ITermTable::SystemTerm::Count;
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(hash);
 
             termTable->OpenTerm();
             hash = Term::ComputeRawHash("bar");
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(hash);
 
             termTable->SetRowCounts(0, explicitRowCount, adhocRowCount);
@@ -301,14 +301,14 @@ namespace BitFunnel
             termTable->OpenTerm();
             auto hash = Term::ComputeRawHash("foo");
             RowIndex explicitRowCount = ITermTable::SystemTerm::Count;
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(hash);
 
             termTable->OpenTerm();
             hash = Term::ComputeRawHash("bar");
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(hash);
 
             termTable->SetRowCounts(0, explicitRowCount, adhocRowCount);
@@ -375,23 +375,23 @@ namespace BitFunnel
             termTable->OpenTerm();
             auto fooHash = Term::ComputeRawHash("foo");
             RowIndex explicitRowCount = ITermTable::SystemTerm::Count;
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(fooHash);
 
             termTable->OpenTerm();
             auto barHash = Term::ComputeRawHash("bar");
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(barHash);
 
             auto bazHash = Term::ComputeRawHash("baz");
             termTable->OpenTerm();
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(bazHash);
 
             // Inserting a dummy term doesn't change the Row numbers in the
@@ -403,26 +403,26 @@ namespace BitFunnel
             termTable->OpenTerm();
             while (explicitRowCount < 16)
             {
-                termTable->AddRowId(RowId(0,0,explicitRowCount++));
+                termTable->AddRowId(RowId(0, explicitRowCount++));
             }
             termTable->CloseTerm(dummyHash);
 
             // "foo bar".
             auto fooBarHash = rotl64By1(fooHash) ^ barHash;
             termTable->OpenTerm();
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(fooBarHash);
 
             // "bar baz".
             auto barBazHash = rotl64By1(barHash) ^ bazHash;
             termTable->OpenTerm();
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(barBazHash);
 
             // "foo bar baz".
             auto fooBarBazHash = rotl64By1(fooBarHash) ^ bazHash;
             termTable->OpenTerm();
-            termTable->AddRowId(RowId(0,0,explicitRowCount++));
+            termTable->AddRowId(RowId(0, explicitRowCount++));
             termTable->CloseTerm(fooBarBazHash);
 
 

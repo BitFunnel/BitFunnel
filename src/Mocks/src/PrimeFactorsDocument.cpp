@@ -133,7 +133,6 @@ namespace BitFunnel
         Factories::CreatePrimeFactorsTermTable(DocId maxDocId,
                                                Term::StreamId /*streamId*/)
     {
-        const ShardId shard = 0;
         const Rank rank = 0;
         const RowIndex adhocRowCount = 1;   // Need at least one adhoc row to avoid divide by zero.
         RowIndex explicitRowCount0 = ITermTable::SystemTerm::Count;
@@ -144,12 +143,12 @@ namespace BitFunnel
 
         // Term "0"
         termTable->OpenTerm();
-        termTable->AddRowId(RowId(shard, rank, explicitRowCount0++));
+        termTable->AddRowId(RowId(rank, explicitRowCount0++));
         termTable->CloseTerm(Term::ComputeRawHash("0"));
 
         // Term "1"
         termTable->OpenTerm();
-        termTable->AddRowId(RowId(shard, rank, explicitRowCount0++));
+        termTable->AddRowId(RowId(rank, explicitRowCount0++));
         termTable->CloseTerm(Term::ComputeRawHash("1"));
 
         // Terms for primes.
@@ -165,9 +164,9 @@ namespace BitFunnel
                 auto text = Primes::c_primesBelow10000Text[i];
 
                 termTable->OpenTerm();
-                termTable->AddRowId(RowId(shard, rank, explicitRowCount0++));
-                termTable->AddRowId(RowId(shard, rank + 1, explicitRowCount1++));
-                termTable->AddRowId(RowId(shard, rank + 2, explicitRowCount2++));
+                termTable->AddRowId(RowId(rank, explicitRowCount0++));
+                termTable->AddRowId(RowId(rank + 1, explicitRowCount1++));
+                termTable->AddRowId(RowId(rank + 2, explicitRowCount2++));
                 termTable->CloseTerm(Term::ComputeRawHash(text.c_str()));
             }
         }

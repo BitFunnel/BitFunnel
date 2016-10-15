@@ -81,7 +81,7 @@ namespace BitFunnel
             termTable->OpenTerm();
             for (size_t r = 0; r <= (i % 3); ++r)
             {
-                termTable->AddRowId(RowId(0, 0, r));
+                termTable->AddRowId(RowId(0, r));
             }
             termTable->CloseTerm(hash);
         }

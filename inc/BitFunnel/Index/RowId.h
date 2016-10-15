@@ -51,31 +51,17 @@ namespace BitFunnel
         // Constructor for primary use case.
         // TODO: Replace size_t with ShardID, Rank, RowIndex.
         // TODO: Why do we need shard?
-        RowId(ShardId shard, Rank rank, RowIndex index);
+        RowId(Rank rank, RowIndex index);
 
         // Constructs a new RowId by adding index to the RowIndex of an
         // existing RowId. Used by the TermTable::Seal().
         RowId(const RowId& other, RowIndex index);
-
-        // Constructs a RowId from a 32-bit packed representation.
-        // DESIGN NOTE: The packed representation provides more compact storage
-        // for the RowId fields than can be accomplished in the RowId class.
-        // The layout of the bit fields in RowId is compiler dependent and in
-        // the case of the compiler, the fields occupy 64 bits of space, even
-        // though only 32 bits are defined.
-        RowId(uint32_t packedRepresentation);
-
-        // Returns the 32-bit packed representation of the RowId.
-        uint32_t GetPackedRepresentation() const;
 
         // Return's the row's Rank.
         Rank GetRank() const;
 
         // Returns the row's Index.
         RowIndex GetIndex() const;
-
-        // Returns the row's ShardId.
-        ShardId GetShard() const;
 
         // Equality operators used in unit tests.
         bool operator==(const RowId& other) const;
@@ -85,28 +71,21 @@ namespace BitFunnel
         // Returns true if the row is considered valid.
         bool IsValid() const;
 
-        // Returns the number of significant bits in the packed representation
-        // of a RowId. Currently this method returns the value 32.
-        static unsigned GetPackedRepresentationBitCount();
-
     private:
-        static_assert(c_log2MaxShardIdValue + c_log2MaxRankValue + c_log2MaxRowIndexValue == 32ull,
-                      "Expect m_shard, m_rank, and m_index to use 32 bits.");
+        static_assert(c_log2MaxRankValue +
+                      c_log2MaxRowIndexValue <= 32ull,
+                      "Expect m_rank and m_index to use no more than 32 bits.");
 
         // DESIGN NOTE: members would normally be const, but we want this class
         // to be trivially_copyable to allow for binary serialization.
-
-        // ShardId number.
-        uint32_t m_shard: c_log2MaxShardIdValue;
 
         // Rank.
         uint32_t m_rank: c_log2MaxRankValue;
 
         // Index is the row number within a row table.
-        // We are limited to 8M rows because of the 32 bit size of RowId. At
-        // 10% bit density that means that bit funnel is limited to 800K
-        // postings per document per tier per rank or approximately 100K terms
-        // in a document
+        // We are limited to c^c_log2MaxRankValue rows, which at this time
+        // is 2^25 = 33M rows. At 10% bit density this means that BitFunnel
+        // isi limited to 3.3M postings per document.
         uint32_t m_index: c_log2MaxRowIndexValue;
     };
 
