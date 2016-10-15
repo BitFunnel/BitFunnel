@@ -37,7 +37,6 @@ set(PRIVATE_HFILES
     CompileNode.h
     MatchTreeRewriter.h
     MatchVerifier.h
-    QueryRunner.h
     RankDownCompiler.h
     RankZeroCompiler.h
     RegisterAllocator.h

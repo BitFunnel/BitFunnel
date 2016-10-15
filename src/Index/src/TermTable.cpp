@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 
+#include <iostream>     // TODO: Remove this.
 #include <math.h>
 #include <sstream>
 
@@ -171,6 +172,14 @@ namespace BitFunnel
         }
 
         RowIndex end = static_cast<RowIndex>(m_rowIds.size());
+
+        // TODO: Remove
+        //if (m_start == end)
+        //{
+        //    std::cout
+        //        << "Term " << std::hex << hash << std::dec
+        //        << " has zero rows." << std::endl;
+        //}
         m_termHashToRows.insert(
             std::make_pair(hash,
                            PackedRowIdSequence(

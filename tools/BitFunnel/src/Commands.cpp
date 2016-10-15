@@ -23,9 +23,12 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <istream>
+#include <string>
 #include <thread>       // sleep_for, this_thread
 
 #include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Data/Sonnets.h"
 #include "BitFunnel/Exceptions.h"
@@ -39,6 +42,7 @@
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IMatchVerifier.h"
 #include "BitFunnel/Plan/QueryPipeline.h"
+#include "BitFunnel/Plan/QueryRunner.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Term.h"
@@ -48,6 +52,23 @@
 
 namespace BitFunnel
 {
+    // TODO: This should be in Utilities.
+    // Returns a vector with one entry for each line in the file.
+    std::vector<std::string> ReadLines(IFileSystem & fileSystem,
+                                       char const * fileName)
+    {
+        auto input = fileSystem.OpenForRead(fileName, std::ios::in);
+
+        std::vector<std::string> lines;
+        std::string line;
+        while (std::getline(*input, line)) {
+            lines.push_back(std::move(line));
+        }
+
+        return lines;
+    }
+
+
     //*************************************************************************
     //
     // DelayedPrint
@@ -337,10 +358,8 @@ namespace BitFunnel
             m_isSingleQuery = false;
             if (command.compare("log") != 0)
             {
-                // TODO: Wire up query runner here.
-//                xyz;
-                RecoverableError error("Query expects \"one\" or \"log\".");
-                throw error;
+                std::cout << "expected log or one" << std::endl;
+                throw RecoverableError();
             }
             m_query = TaskFactory::GetNextToken(parameters);
         }
@@ -362,6 +381,19 @@ namespace BitFunnel
                 << "Processing queries from log at \""
                 << m_query
                 << "\"" << std::endl;
+
+            std::string const & filename = m_query;
+            auto fileSystem = Factories::CreateFileSystem();  // TODO: Use environment file system
+            auto queries = ReadLines(*fileSystem, filename.c_str());
+            const size_t c_threadCount = 4;
+            const size_t c_iterations = 1;
+            auto statistics =
+                QueryRunner::Run(GetEnvironment().GetSimpleIndex(),
+                                 c_threadCount,
+                                 queries,
+                                 c_iterations);
+            std::cout << "Results:" << std::endl;
+            statistics.Print(std::cout);
         }
         std::cout << "NOT IMPLEMENTED" << std::endl;
     }

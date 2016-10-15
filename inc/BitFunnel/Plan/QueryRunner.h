@@ -50,19 +50,9 @@ namespace BitFunnel
         };
 
 
-        //QueryRunner(ISimpleIndex const & index,
-        //            size_t threadCount);
-
         static Statistics Run(ISimpleIndex const & index,
                               size_t threadCount,
                               std::vector<std::string> const & queries,
                               size_t iterations);
-
-    //private:
-    //    //
-    //    // Constructor parameters
-    //    //
-    //    ISimpleIndex const & m_index;
-    //    const size_t m_threadCount;
     };
 }

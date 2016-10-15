@@ -27,11 +27,11 @@
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Plan/Factories.h"
+#include "BitFunnel/Plan/QueryRunner.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/ITaskDistributor.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "QueryParser.h"
-#include "QueryRunner.h"
 
 
 namespace BitFunnel
@@ -51,6 +51,13 @@ namespace BitFunnel
     void QueryRunner::Statistics::Print(std::ostream& out) const
     {
         out << "Print" << std::endl;
+        out
+            << "Thread count: " << m_threadCount << std::endl
+            << "Unique queries: " << m_uniqueQueryCount << std::endl
+            << "Queries processed: " << m_processedCount << std::endl
+            << "Elapsed time: " << m_elapsedTime << std::endl
+            << "QPS: " << m_processedCount / m_elapsedTime << std::endl;
+
     }
 
 
@@ -155,6 +162,9 @@ namespace BitFunnel
         Stopwatch stopwatch;
         distributor->WaitForCompletion();
 
-        return QueryRunner::Statistics(0, 0, 0, stopwatch.ElapsedTime());
+        return QueryRunner::Statistics(threadCount,
+                                       queries.size(),
+                                       queries.size() * iterations,
+                                       stopwatch.ElapsedTime());
     }
 }
