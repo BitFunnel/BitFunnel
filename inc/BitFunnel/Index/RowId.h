@@ -51,7 +51,7 @@ namespace BitFunnel
         // Constructor for primary use case.
         // TODO: Replace size_t with ShardID, Rank, RowIndex.
         // TODO: Why do we need shard?
-        RowId(Rank rank, RowIndex index);
+        RowId(Rank rank, RowIndex index, bool isAdhoc = false);
 
         // Constructs a new RowId by adding index to the RowIndex of an
         // existing RowId. Used by the TermTable::Seal().
@@ -63,6 +63,8 @@ namespace BitFunnel
         // Returns the row's Index.
         RowIndex GetIndex() const;
 
+        bool IsAdhoc() const;
+
         // Equality operators used in unit tests.
         bool operator==(const RowId& other) const;
         bool operator!=(const RowId& other) const;
@@ -73,7 +75,8 @@ namespace BitFunnel
 
     private:
         static_assert(c_log2MaxRankValue +
-                      c_log2MaxRowIndexValue <= 32ull,
+                      c_log2MaxRowIndexValue + 
+                      1 <= 32ull,
                       "Expect m_rank and m_index to use no more than 32 bits.");
 
         // DESIGN NOTE: members would normally be const, but we want this class
@@ -87,6 +90,8 @@ namespace BitFunnel
         // is 2^25 = 33M rows. At 10% bit density this means that BitFunnel
         // isi limited to 3.3M postings per document.
         uint32_t m_index: c_log2MaxRowIndexValue;
+
+        uint32_t m_isAdhoc : 1;
     };
 
     static_assert(sizeof(RowId) == 4,

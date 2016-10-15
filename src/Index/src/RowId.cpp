@@ -36,8 +36,10 @@ namespace BitFunnel
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #endif
-    RowId::RowId(Rank rank, RowIndex index)
-        : m_rank(rank), m_index(index)
+    RowId::RowId(Rank rank, RowIndex index, bool isAdhoc)
+      : m_rank(rank),
+        m_index(index),
+        m_isAdhoc(isAdhoc ? 1 : 0)
     {
         if (index > c_maxRowIndexValue)
         {
@@ -58,14 +60,16 @@ namespace BitFunnel
 
     RowId::RowId()
       : m_rank(0),
-        m_index(0)
+        m_index(0),
+        m_isAdhoc(0)
     {
     }
 
 
     RowId::RowId(const RowId& other, RowIndex index)
       : m_rank(other.m_rank),
-        m_index(static_cast<uint32_t>(other.m_index + index))
+        m_index(static_cast<uint32_t>(other.m_index + index)),
+        m_isAdhoc(other.m_isAdhoc)
     {
     }
 
@@ -82,10 +86,17 @@ namespace BitFunnel
     }
 
 
+    bool RowId::IsAdhoc() const
+    {
+        return m_isAdhoc == 1;
+    }
+
+
     bool RowId::operator==(const RowId& other) const
     {
         return m_index == other.GetIndex()
-            && m_rank == other.GetRank();
+            && m_rank == other.GetRank()
+            && m_isAdhoc == other.m_isAdhoc;
     }
 
 
@@ -102,7 +113,12 @@ namespace BitFunnel
             return m_rank < other.m_rank;
         }
 
-        return m_index < other.m_index;
+        if (m_index != other.m_index)
+        {
+            return m_index < other.m_index;
+        }
+
+        return m_isAdhoc < other.m_isAdhoc;
     }
 
 
