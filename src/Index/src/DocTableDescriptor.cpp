@@ -120,7 +120,7 @@ namespace BitFunnel
           m_bytesPerItem(GetItemByteCount(schema))
     {
         // Make sure offset of the DocTable is properly aligned.
-        CHECK_EQ(bufferOffset % c_docTableByteAlignment, 0UL)
+        CHECK_EQ(bufferOffset % static_cast<ptrdiff_t>(c_docTableByteAlignment), 0)
             << "incorrect buffer alignment.";
     }
 

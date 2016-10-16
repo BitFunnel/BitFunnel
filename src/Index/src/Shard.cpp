@@ -248,9 +248,12 @@ namespace BitFunnel
         currentOffset = RoundUp(currentOffset, DocTableDescriptor::c_docTableByteAlignment);
         if (shard != nullptr)
         {
+            // The cast of currentOffset is to avoid an implicit sign conversion
+            // warning. It's possible that we should just make currentOffset
+            // ptrdiff_t.
             shard->m_docTable.reset(new DocTableDescriptor(sliceCapacity,
                                                            docDataSchema,
-                                                           currentOffset));
+                                                           static_cast<ptrdiff_t>(currentOffset)));
         }
         currentOffset += DocTableDescriptor::GetBufferSize(sliceCapacity, docDataSchema);
 
