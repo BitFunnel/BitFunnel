@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
+#include <cmath>
 #include <limits>
 #include <memory>
 #include <vector>
@@ -195,7 +197,7 @@ namespace BitFunnel
         for (size_t i = 0; i < table.size(); ++i)
         {
             auto entry = table[i];
-            ++histogram[static_cast<size_t>(round(entry.GetFrequency() * docCount))];
+            ++histogram[static_cast<size_t>(std::round(entry.GetFrequency() * docCount))];
         }
         return histogram;
     }

@@ -230,7 +230,7 @@ namespace BitFunnel
 
         for (DocId docId = 0; docId <= maxDocId; ++docId)
         {
-            auto document = 
+            auto document =
                 Factories::CreatePrimeFactorsDocument(
                     index->GetConfiguration(),
                     docId,
