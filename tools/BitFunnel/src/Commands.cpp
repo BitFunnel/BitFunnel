@@ -752,9 +752,6 @@ namespace BitFunnel
                 auto observed = Factories::RunSimplePlanner(*tree, environment.GetSimpleIndex());
                 for (auto id : observed)
                 {
-                    // TODO: this happens to work for the sonnets example
-                    // because DocIds == DocIndex + 1. That's a bug that needs
-                    // to be fixed.
                     verifier->AddObserved(id);
                 }
 
