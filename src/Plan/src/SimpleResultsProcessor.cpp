@@ -2,10 +2,17 @@
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Index/DocumentHandle.h"
 #include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Plan/Factories.h"
 #include "SimpleResultsProcessor.h"
 
 namespace BitFunnel
 {
+    std::unique_ptr<IResultsProcessor> Factories::CreateSimpleResultsProcessor()
+    {
+        return std::unique_ptr<IResultsProcessor>(new SimpleResultsProcessor);
+    }
+
+
     void SimpleResultsProcessor::AddResult(uint64_t accumulator,
                                   size_t offset)
     {

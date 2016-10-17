@@ -33,6 +33,7 @@ namespace BitFunnel
     class IInputStream;
     class IMatchVerifier;
     class IPlanRows;
+    class IResultsProcessor;
     class ISimpleIndex;
     class TermMatchNode;
 
@@ -44,6 +45,8 @@ namespace BitFunnel
         IPlanRows& CreatePlanRows(IInputStream& input,
                                   const ISimpleIndex& index,
                                   IAllocator& allocator);
+
+        std::unique_ptr<IResultsProcessor> CreateSimpleResultsProcessor();
 
         std::vector<DocId> RunSimplePlanner(TermMatchNode const & tree, ISimpleIndex const & index);
     }

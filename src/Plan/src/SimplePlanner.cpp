@@ -55,7 +55,8 @@ namespace BitFunnel
     //*************************************************************************
     SimplePlanner::SimplePlanner(TermMatchNode const & tree,
                                  ISimpleIndex const & index)
-        : m_index(index)
+        : m_index(index),
+          m_resultsProcessor(Factories::CreateSimpleResultsProcessor())
 
     {
         ExtractRowIds(tree);
@@ -97,7 +98,7 @@ namespace BitFunnel
             }
 
             ByteCodeInterpreter intepreter(m_code,
-                                           *this,
+                                           *m_resultsProcessor,
                                            sliceCount,
                                            reinterpret_cast<char* const *>(sliceBuffers.data()),
                                            iterationsPerSlice,
@@ -113,52 +114,6 @@ namespace BitFunnel
     {
         return m_matches;
     }
-
-
-    //
-    // IResultProcessor methods
-    //
-
-    void SimplePlanner::AddResult(uint64_t accumulator,
-                                  size_t offset)
-    {
-        m_addResultValues.push_back(std::make_pair(accumulator, offset));
-    }
-
-
-    bool SimplePlanner::FinishIteration(void const * sliceBuffer)
-    {
-        for (auto const & result : m_addResultValues)
-        {
-            uint64_t acc = result.first;
-            size_t offset = result.second;
-
-            size_t bitPos = 0;
-            while (acc != 0)
-            {
-                if (acc & 1)
-                {
-                    DocIndex docIndex = offset * c_bitsPerQuadword + bitPos;
-                    DocumentHandle handle =
-                        Factories::CreateDocumentHandle(const_cast<void*>(sliceBuffer), docIndex);
-                    m_matches.push_back(handle.GetDocId());
-                }
-                acc >>= 1;
-                ++bitPos;
-            }
-        }
-        m_addResultValues.clear();
-
-        // TODO: don't always return false.
-        return false;
-    }
-
-
-    bool SimplePlanner::TerminatedEarly() const
-    {
-        return false;
-    }
-
 
     //
     // private methods
