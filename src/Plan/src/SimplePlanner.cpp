@@ -92,9 +92,9 @@ namespace BitFunnel
             // Get Row offsets.
             std::vector<ptrdiff_t> rowOffsets;
             for (auto row : m_rows)
-                {
-                    rowOffsets.push_back(shard.GetRowOffset(row));
-                }
+            {
+                rowOffsets.push_back(shard.GetRowOffset(row));
+            }
 
             ByteCodeInterpreter intepreter(m_code,
                                            *this,
