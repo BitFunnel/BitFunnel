@@ -184,8 +184,6 @@ namespace BitFunnel
         //                                  m_x64FunctionGeneratorWrapper,
         //                                  m_maxIterationsScannedBetweenTerminationChecks);
         // generator.GenerateX64Code(compileTree);
-
-
     }
 
 

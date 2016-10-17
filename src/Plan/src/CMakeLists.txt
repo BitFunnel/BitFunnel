@@ -19,6 +19,7 @@ set(CPPFILES
     RowMatchNode.cpp
     RowPlan.cpp
     SimplePlanner.cpp
+    SimpleResultsProcessor.cpp
     StringVector.cpp
     TermMatchNode.cpp
     TermMatchTreeConverter.cpp
@@ -38,6 +39,7 @@ set(PRIVATE_HFILES
     CompileNode.h
     MatchTreeRewriter.h
     MatchVerifier.h
+    QueryPlanner.h
     RankDownCompiler.h
     RankZeroCompiler.h
     RegisterAllocator.h
