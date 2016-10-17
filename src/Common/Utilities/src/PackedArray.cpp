@@ -149,9 +149,17 @@ namespace BitFunnel
                                                  MAP_ANON | MAP_PRIVATE,
                                                  -1,  // No file descriptor.
                                                  0));
+
+        // `MAP_FAILED` is implemented as an old-style cast on some old
+        // Unix-derived platforms. Note that issuing a `#pragma GCC` here is
+        // meant to cover both Clang and GCC, since the issue can manifest with
+        // either toolchain. See #233.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
             LogAssertB(buffer != MAP_FAILED,
                        "mmap failed %s",
                        std::strerror(errno));
+#pragma GCC diagnostic pop
 #endif
         }
         else
