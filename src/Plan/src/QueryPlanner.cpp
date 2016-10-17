@@ -25,17 +25,18 @@
 #include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Plan/IPlanRows.h"
 // #include "BitFunnel/IThreadResources.h"
-#include "BitFunnel/Plan/QueryPlanner.h"
 #include "BitFunnel/Plan/RowPlan.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Plan/TermPlan.h"
 #include "BitFunnel/Plan/TermPlanConverter.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/IObjectFormatter.h"
+#include "ByteCodeInterpreter.h"
 #include "CompileNode.h"
 #include "LoggerInterfaces/Logging.h"
 // #include "MatchTreeCodeGenerator.h"
 #include "MatchTreeRewriter.h"
+#include "QueryPlanner.h"
 #include "RankDownCompiler.h"
 #include "RegisterAllocator.h"
 
@@ -120,7 +121,7 @@ namespace BitFunnel
                 {
                     RowId row = m_planRows->PhysicalRow(shard, id);
 
-                    out 
+                    out
                         << "(" << shard << ", " << id << "): "
                         << "RowId(" << ", " << row.GetRank()
                         << ", " << row.GetIndex() << ")" << std::endl;
@@ -172,11 +173,14 @@ namespace BitFunnel
                                           c_registerCount,
                                           allocator);
 
+
         // Finally, translate compile tree to X64 machine code.
         // MatchTreeCodeGenerator generator(registers,
         //                                  m_x64FunctionGeneratorWrapper,
         //                                  m_maxIterationsScannedBetweenTerminationChecks);
         // generator.GenerateX64Code(compileTree);
+
+
     }
 
 

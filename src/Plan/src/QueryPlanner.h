@@ -23,7 +23,7 @@
 #pragma once
 
 #include "BitFunnel/NonCopyable.h"        // Inherits from NonCopyable.
-
+#include "ByteCodeInterpreter.h"
 
 // namespace X64
 // {
@@ -104,5 +104,7 @@ namespace BitFunnel
         // Row pointers stored in the eight registers R8..R15.
         // TODO: is this valid on all platforms or only on Windows?
         static const unsigned c_registerCount = 8;
+
+        ByteCodeGenerator m_code;
     };
 }
