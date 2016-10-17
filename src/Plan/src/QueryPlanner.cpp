@@ -166,13 +166,18 @@ namespace BitFunnel
             out << std::endl;
         }
 
-        // Perform register allocation on the compile tree.
-        RegisterAllocator const registers(compileTree,
-                                          rowPlan.GetPlanRows().GetRowCount(),
-                                          c_registerBase,
-                                          c_registerCount,
-                                          allocator);
+        // This has been ported, but doesn't seem necessary for the
+        // ByteCodeInterpreter?
+        //
+        // // Perform register allocation on the compile tree.
+        // RegisterAllocator const registers(compileTree,
+        //                                   rowPlan.GetPlanRows().GetRowCount(),
+        //                                   c_registerBase,
+        //                                   c_registerCount,
+        //                                   allocator);
 
+        compileTree.Compile(m_code);
+        m_code.Seal();
 
         // Finally, translate compile tree to X64 machine code.
         // MatchTreeCodeGenerator generator(registers,
