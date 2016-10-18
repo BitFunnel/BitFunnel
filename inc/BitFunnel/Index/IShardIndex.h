@@ -5,19 +5,14 @@
 
 #include "BitFunnel/BitFunnelTypes.h"     // ShardId and DocIndex parameter.
 #include "BitFunnel/IInterface.h"
-#include "BitFunnel/RowId.h"
-
+#include "BitFunnel/Index/RowId.h"
 
 namespace BitFunnel
 {
-    class IIngestionIndex;
-    class ITokenManager;
-    class Shard;
-
     //*************************************************************************
     //
-    // IShardIndex is a base abstract class or interface for classes that 
-    // maintain dynamic portion of the BitFunnel index for a particular shard. 
+    // IShardIndex is a base abstract class or interface for classes that
+    // maintain dynamic portion of the BitFunnel index for a particular shard.
     // This data is used in query serving.
     //
     //*************************************************************************
@@ -27,13 +22,13 @@ namespace BitFunnel
         // Returns the Id of the shard.
         virtual ShardId GetId() const = 0;
 
-        // Returns capacity of a single Slice in the Shard. All Slices in the 
+        // Returns capacity of a single Slice in the Shard. All Slices in the
         // Shard have the same capacity.
         virtual DocIndex GetSliceCapacity() const = 0;
 
         // Returns a vector of slice buffers for this shard.
         // The callers needs to obtain a Token from ITokenManager to protect
-        // the pointer to the list of slice buffers, as well as the buffers 
+        // the pointer to the list of slice buffers, as well as the buffers
         // themselves.
         virtual std::vector<void*> const & GetSliceBuffers() const = 0;
 

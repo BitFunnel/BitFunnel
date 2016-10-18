@@ -3,13 +3,15 @@
 #include <algorithm>
 
 #include "BitFunnel/Allocators/IAllocator.h"
+#include "BitFunnel/IIndexData.h"
+#include "BitFunnel/Index/IShardIndex.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IPlanRows.h"
 #include "BitFunnel/Plan/IRowSet.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RowSet.h"
 
-// #include "BitFunnel/IIndexData.h"
+
 // #include "BitFunnel/Plan/IRowsAvailable.h"
 
 namespace BitFunnel
@@ -37,8 +39,8 @@ namespace BitFunnel
                    IPlanRows const & planRows,
                    IAllocator& allocator)
         : m_planRows(planRows),
-          m_indexData(indexData),
-          m_allocator(allocator)
+          m_indexData(indexData)
+          // m_allocator(allocator)
     {
         // Allocate one entry for each shard.
         m_rows = new (allocator.Allocate(sizeof(ptrdiff_t) * m_planRows.GetShardCount()))
@@ -54,7 +56,7 @@ namespace BitFunnel
 
 
     void RowSet::LoadRows(// Context const & context,
-                          IRowsAvailable& rowsAvailable)
+                          IRowsAvailable& /*rowsAvailable*/)
     {
         // For each shard, allocate an array of Row.
         for (ShardId shardId = 0; shardId < m_planRows.GetShardCount(); ++shardId)

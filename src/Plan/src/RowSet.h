@@ -32,7 +32,7 @@ namespace BitFunnel
         //
         const IPlanRows& m_planRows;
         IIndexData const & m_indexData;
-        IAllocator& m_allocator;
+        // IAllocator& m_allocator;
 
         ptrdiff_t ** m_rows;
     };

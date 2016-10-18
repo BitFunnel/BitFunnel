@@ -18,7 +18,7 @@ set(CPPFILES
     RegisterAllocator.cpp
     RowMatchNode.cpp
     RowPlan.cpp
-    # RowSet.cpp
+    RowSet.cpp
     SimplePlanner.cpp
     SimpleResultsProcessor.cpp
     StringVector.cpp
