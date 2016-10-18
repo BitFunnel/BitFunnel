@@ -4,12 +4,13 @@
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/Plan/Factories.h"
-// #include "BitFunnel/IIndexData.h"
 #include "BitFunnel/Plan/IPlanRows.h"
-// #include "BitFunnel/Plan/IRowsAvailable.h"
+#include "BitFunnel/Plan/IRowSet.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RowSet.h"
 
+// #include "BitFunnel/IIndexData.h"
+// #include "BitFunnel/Plan/IRowsAvailable.h"
 
 namespace BitFunnel
 {

@@ -5,12 +5,11 @@
 #include <memory>                         // Uses ptrdiff_t.
 
 #include "BitFunnel/BitFunnelTypes.h"     // Row and ShardId parameters.
-#include "BitFunnel/Row.h"
+#include "BitFunnel/Index/Row.h"
 
 
 namespace BitFunnel
 {
-    class Context;
     class IRowsAvailable;
 
 
@@ -36,7 +35,7 @@ namespace BitFunnel
         // the first time, it will load the rows. For all subsequent calls, no rows
         // will be loaded again. However, The IRowAvailable callback function will
         // be called on either cases.
-        virtual void LoadRows(Context const & context,
+        virtual void LoadRows(// Context const & context,
                               IRowsAvailable& rowsAvailable) = 0;
 
         // Returns the number of Shards in the RowSet.

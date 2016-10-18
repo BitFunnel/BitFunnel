@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BitFunnel/IRowSet.h"
+#include "BitFunnel/Plan/IRowSet.h"
 #include "BitFunnel/NonCopyable.h"
 
 namespace BitFunnel
@@ -20,7 +20,7 @@ namespace BitFunnel
         // IRowSet API.
         //
         // In the current implementation, non-DDR rows are not supported
-        virtual void LoadRows(Context const & context,
+        virtual void LoadRows(//Context const & context,
                               IRowsAvailable& rowsAvailable) override;
         virtual ShardId GetShardCount() const override;
         virtual unsigned GetRowCount() const override;
