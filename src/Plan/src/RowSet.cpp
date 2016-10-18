@@ -1,14 +1,14 @@
+// TODO: should this file be in Index?
+
 #include <algorithm>
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/Plan/Factories.h"
 // #include "BitFunnel/IIndexData.h"
 #include "BitFunnel/Plan/IPlanRows.h"
-#include "BitFunnel/Plan/IRowsAvailable.h"
+// #include "BitFunnel/Plan/IRowsAvailable.h"
 #include "LoggerInterfaces/Logging.h"
-#include "RowTableDescriptor.h"
 #include "RowSet.h"
-#include "Shard.h"
 
 
 namespace BitFunnel
@@ -52,7 +52,7 @@ namespace BitFunnel
     }
 
 
-    void RowSet::LoadRows(Context const & context,
+    void RowSet::LoadRows(// Context const & context,
                           IRowsAvailable& rowsAvailable)
     {
         // For each shard, allocate an array of Row.
@@ -68,7 +68,7 @@ namespace BitFunnel
             }
         }
 
-        rowsAvailable.OnRowsAvailable(context, true);
+        // rowsAvailable.OnRowsAvailable(context, true);
     }
 
 

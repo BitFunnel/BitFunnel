@@ -3,7 +3,6 @@
 #include "BitFunnel/IRowSet.h"
 #include "BitFunnel/NonCopyable.h"
 
-
 namespace BitFunnel
 {
     class IAllocator;
