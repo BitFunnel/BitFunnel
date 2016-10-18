@@ -132,6 +132,7 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IngestChunks.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IRecycler.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IShard.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IShardIndex.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ISimpleIndex.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ISliceBufferAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTable.h
