@@ -6,20 +6,16 @@
 
 namespace BitFunnel
 {
-    namespace Allocators
-    {
-        class IAllocator;
-    }
-
+    class IAllocator;
     class Context;
     class IIndexData;
 
     class RowSet : public IRowSet, NonCopyable
     {
     public:
-        RowSet(IIndexData const & indexData, 
+        RowSet(IIndexData const & indexData,
                const IPlanRows& planRows,
-               Allocators::IAllocator& allocator);
+               IAllocator& allocator);
 
         //
         // IRowSet API.
@@ -37,7 +33,7 @@ namespace BitFunnel
         //
         const IPlanRows& m_planRows;
         IIndexData const & m_indexData;
-        Allocators::IAllocator& m_allocator;
+        IAllocator& m_allocator;
 
         ptrdiff_t ** m_rows;
     };

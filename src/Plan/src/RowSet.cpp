@@ -1,12 +1,10 @@
-#include "stdafx.h"
-
 #include <algorithm>
 
-#include "BitFunnelAllocatorInterfaces/IAllocator.h"
-#include "BitFunnel/Factories.h"
-#include "BitFunnel/IIndexData.h"
-#include "BitFunnel/IPlanRows.h"
-#include "BitFunnel/IRowsAvailable.h"
+#include "BitFunnel/Allocators/IAllocator.h"
+#include "BitFunnel/Plan/Factories.h"
+// #include "BitFunnel/IIndexData.h"
+#include "BitFunnel/Plan/IPlanRows.h"
+#include "BitFunnel/Plan/IRowsAvailable.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RowTableDescriptor.h"
 #include "RowSet.h"
@@ -22,7 +20,7 @@ namespace BitFunnel
     //*************************************************************************
     IRowSet& Factories::CreateRowSet(IIndexData const & indexData,
                                      IPlanRows const & planRows,
-                                     Allocators::IAllocator& allocator)
+                                     IAllocator& allocator)
     {
         return *new (allocator.Allocate(sizeof(RowSet)))
                     RowSet(indexData, planRows, allocator);
@@ -34,9 +32,9 @@ namespace BitFunnel
     // RowSet
     //
     //*************************************************************************
-    RowSet::RowSet(IIndexData const & indexData, 
+    RowSet::RowSet(IIndexData const & indexData,
                    IPlanRows const & planRows,
-                   Allocators::IAllocator& allocator)
+                   IAllocator& allocator)
         : m_planRows(planRows),
           m_indexData(indexData),
           m_allocator(allocator)
@@ -47,9 +45,9 @@ namespace BitFunnel
         // For each shard, allocate an array of Row.
         for (ShardId shard = 0; shard < m_planRows.GetShardCount(); ++shard)
         {
-            m_rows[shard] = reinterpret_cast<ptrdiff_t*>(allocator.Allocate(sizeof(ptrdiff_t) 
+            m_rows[shard] = reinterpret_cast<ptrdiff_t*>(allocator.Allocate(sizeof(ptrdiff_t)
                                                                             * m_planRows.GetRowCount()));
-                                 
+
         }
     }
 

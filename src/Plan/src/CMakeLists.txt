@@ -18,6 +18,7 @@ set(CPPFILES
     RegisterAllocator.cpp
     RowMatchNode.cpp
     RowPlan.cpp
+    # RowSet.cpp
     SimplePlanner.cpp
     SimpleResultsProcessor.cpp
     StringVector.cpp
@@ -40,6 +41,7 @@ set(PRIVATE_HFILES
     MatchTreeRewriter.h
     MatchVerifier.h
     QueryPlanner.h
+    RowSet.h
     RankDownCompiler.h
     RankZeroCompiler.h
     RegisterAllocator.h
