@@ -112,7 +112,7 @@ namespace BitFunnel
 
     std::vector<DocId> const & SimplePlanner::GetMatches() const
     {
-        return m_matches;
+        return m_resultsProcessor->GetMatches();
     }
 
     //

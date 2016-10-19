@@ -23,8 +23,8 @@
 #pragma once
 
 #include "BitFunnel/NonCopyable.h"        // Inherits from NonCopyable.
-#include "BitFunnel/Plan/IResultsProcessor.h"
 #include "ByteCodeInterpreter.h"
+#include "SimpleResultsProcessor.h"
 
 // namespace X64
 // {
@@ -107,6 +107,9 @@ namespace BitFunnel
         static const unsigned c_registerCount = 8;
 
         ByteCodeGenerator m_code;
-        std::unique_ptr<IResultsProcessor> m_resultsProcessor;
+
+        // TODO: should this be an IResultsProcessor? This isn't right now
+        // because IResultsProcessor doesn't have a method to pull matches out.
+        std::unique_ptr<SimpleResultsProcessor> m_resultsProcessor;
     };
 }

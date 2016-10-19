@@ -34,9 +34,9 @@ namespace BitFunnel
     class IInputStream;
     class IMatchVerifier;
     class IPlanRows;
-    class IResultsProcessor;
     class IRowSet;
     class ISimpleIndex;
+    class SimpleResultsProcessor;
     class TermMatchNode;
 
     namespace Factories
@@ -47,7 +47,7 @@ namespace BitFunnel
                                   const ISimpleIndex& index,
                                   IAllocator& allocator);
 
-        std::unique_ptr<IResultsProcessor> CreateSimpleResultsProcessor();
+        std::unique_ptr<SimpleResultsProcessor> CreateSimpleResultsProcessor();
 
         IRowSet& CreateRowSet(ISimpleIndex const & indexData,
                               IPlanRows const & planRows,

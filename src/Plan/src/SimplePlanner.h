@@ -27,7 +27,7 @@
 
 #include "ByteCodeInterpreter.h"
 #include "BitFunnel/Index/RowId.h"
-#include "BitFunnel/Plan/IResultsProcessor.h"
+#include "SimpleResultsProcessor.h"
 
 
 namespace BitFunnel
@@ -55,7 +55,9 @@ namespace BitFunnel
         std::vector<std::pair<uint64_t, size_t>> m_addResultValues;
         std::vector<size_t> m_matches;
 
-        std::unique_ptr<IResultsProcessor> m_resultsProcessor;
+        // TODO: should this be an IResultsProcessor? This isn't right now
+        // because IResultsProcessor doesn't have a method to pull matches out.
+        std::unique_ptr<SimpleResultsProcessor> m_resultsProcessor;
     };
 
 }

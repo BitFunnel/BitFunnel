@@ -9,6 +9,11 @@ namespace BitFunnel
     class SimpleResultsProcessor : public IResultsProcessor
     {
     public:
+        std::vector<DocId> const & GetMatches() const;
+
+        //
+        // IResultsProcessor
+        //
         virtual void AddResult(uint64_t accumulator,
                                size_t offset) override;
         virtual bool FinishIteration(void const * sliceBuffer) override;

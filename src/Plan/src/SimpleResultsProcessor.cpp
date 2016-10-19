@@ -7,9 +7,15 @@
 
 namespace BitFunnel
 {
-    std::unique_ptr<IResultsProcessor> Factories::CreateSimpleResultsProcessor()
+    std::unique_ptr<SimpleResultsProcessor> Factories::CreateSimpleResultsProcessor()
     {
-        return std::unique_ptr<IResultsProcessor>(new SimpleResultsProcessor);
+        return std::unique_ptr<SimpleResultsProcessor>(new SimpleResultsProcessor);
+    }
+
+
+    std::vector<DocId> const & SimpleResultsProcessor::GetMatches() const
+    {
+        return m_matches;
     }
 
 
