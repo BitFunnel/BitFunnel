@@ -32,13 +32,16 @@
 
 namespace BitFunnel
 {
+    class IDiagnosticStream;
     class TermMatchNode;
 
 
     class SimplePlanner
     {
     public:
-        SimplePlanner(TermMatchNode const & tree, ISimpleIndex const & index);
+        SimplePlanner(TermMatchNode const & tree,
+                      ISimpleIndex const & index,
+                      IDiagnosticStream& diagnosticStream);
 
         std::vector<DocId> const & GetMatches() const;
 

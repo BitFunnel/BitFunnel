@@ -32,6 +32,7 @@
 namespace BitFunnel
 {
     class IBlockAllocator;
+    class IDiagnosticStream;
     class IObjectFormatter;
     class ITaskProcessor;
     class ITokenManager;
@@ -40,6 +41,8 @@ namespace BitFunnel
     {
         std::unique_ptr<IBlockAllocator>
             CreateBlockAllocator(size_t blockSize, size_t totalBlockCount);
+
+        std::unique_ptr<IDiagnosticStream> CreateDiagnosticStream(std::ostream& stream);
 
         // TODO: return unique_ptr.
         IObjectFormatter* CreateObjectFormatter(std::ostream& output);

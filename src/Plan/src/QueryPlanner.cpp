@@ -54,7 +54,7 @@ namespace BitFunnel
     // way SimplePlanner is connected.
     std::vector<DocId> Factories::RunQueryPlanner(TermMatchNode const & tree,
                                                   ISimpleIndex const & index,
-                                                  IDiagnosticStream* diagnosticStream)
+                                                  IDiagnosticStream& diagnosticStream)
     {
         // TODO: this really shouldn't create its own allocator.
         Allocator allocator(4096*16);
@@ -92,18 +92,18 @@ namespace BitFunnel
                                ISimpleIndex const & index,
                                // IThreadResources& threadResources,
                                IAllocator& allocator,
-                               IDiagnosticStream* diagnosticStream)
+                               IDiagnosticStream& diagnosticStream)
                                // bool generateNonBodyPlan,
                                // unsigned maxIterationsScannedBetweenTerminationChecks)
         : m_resultsProcessor(Factories::CreateSimpleResultsProcessor())
     // : // m_x64FunctionGeneratorWrapper(threadResources),
     //   m_maxIterationsScannedBetweenTerminationChecks(maxIterationsScannedBetweenTerminationChecks)
     {
-        if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/term"))
+        if (diagnosticStream.IsEnabled("planning/term"))
         {
-            std::ostream& out = diagnosticStream->GetStream();
+            std::ostream& out = diagnosticStream.GetStream();
             std::unique_ptr<IObjectFormatter>
-                formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
+                formatter(Factories::CreateObjectFormatter(diagnosticStream.GetStream()));
 
             out << "--------------------" << std::endl;
             out << "Term Plan:" << std::endl;
@@ -117,11 +117,11 @@ namespace BitFunnel
                                             // generateNonBodyPlan,
                                             allocator);
 
-        if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/row"))
+        if (diagnosticStream.IsEnabled("planning/row"))
         {
-            std::ostream& out = diagnosticStream->GetStream();
+            std::ostream& out = diagnosticStream.GetStream();
             std::unique_ptr<IObjectFormatter>
-                formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
+                formatter(Factories::CreateObjectFormatter(diagnosticStream.GetStream()));
 
             out << "--------------------" << std::endl;
             out << "Row Plan:" << std::endl;
@@ -131,11 +131,11 @@ namespace BitFunnel
 
         m_planRows = &rowPlan.GetPlanRows();
 
-        if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/planrows"))
+        if (diagnosticStream.IsEnabled("planning/planrows"))
         {
-            std::ostream& out = diagnosticStream->GetStream();
+            std::ostream& out = diagnosticStream.GetStream();
             std::unique_ptr<IObjectFormatter>
-                formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
+                formatter(Factories::CreateObjectFormatter(diagnosticStream.GetStream()));
 
             out << "--------------------" << std::endl;
             out << "IPlanRows:" << std::endl;
@@ -161,11 +161,11 @@ namespace BitFunnel
                                        allocator);
 
 
-        if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/rewrite"))
+        if (diagnosticStream.IsEnabled("planning/rewrite"))
         {
-            std::ostream& out = diagnosticStream->GetStream();
+            std::ostream& out = diagnosticStream.GetStream();
             std::unique_ptr<IObjectFormatter>
-                formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
+                formatter(Factories::CreateObjectFormatter(diagnosticStream.GetStream()));
 
             out << "--------------------" << std::endl;
             out << "Rewritten Plan:" << std::endl;
@@ -178,11 +178,11 @@ namespace BitFunnel
         compiler.Compile(rewritten);
         CompileNode const & compileTree = compiler.CreateTree(c_maxRankValue);
 
-        if (diagnosticStream != nullptr && diagnosticStream->IsEnabled("planning/compile"))
+        if (diagnosticStream.IsEnabled("planning/compile"))
         {
-            std::ostream& out = diagnosticStream->GetStream();
+            std::ostream& out = diagnosticStream.GetStream();
             std::unique_ptr<IObjectFormatter>
-                formatter(Factories::CreateObjectFormatter(diagnosticStream->GetStream()));
+                formatter(Factories::CreateObjectFormatter(diagnosticStream.GetStream()));
 
             out << "--------------------" << std::endl;
             out << "Compile Nodes:" << std::endl;
@@ -223,14 +223,16 @@ namespace BitFunnel
             size_t sliceCount = sliceBuffers.size();
 
             // Iterations per slice calculation.
-            auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> c_maxRankValue;
+            const int c_horribleRankHack = 3;
+            auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> c_horribleRankHack;
 
             ByteCodeInterpreter intepreter(m_code,
                                            *m_resultsProcessor,
                                            sliceCount,
                                            reinterpret_cast<char* const *>(sliceBuffers.data()),
                                            iterationsPerSlice,
-                                           rowSet.GetRowOffsets(c_shardId));
+                                           rowSet.GetRowOffsets(c_shardId),
+                                           diagnosticStream);
 
             intepreter.Run();
 

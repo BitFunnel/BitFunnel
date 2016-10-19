@@ -23,6 +23,7 @@
 #include <algorithm>    // std::sort()
 #include <iostream>
 
+#include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IShard.h"
@@ -41,9 +42,10 @@
 namespace BitFunnel
 {
     std::vector<DocId> Factories::RunSimplePlanner(TermMatchNode const & tree,
-                                                   ISimpleIndex const & index)
+                                                   ISimpleIndex const & index,
+                                                   IDiagnosticStream& diagnosticStream)
     {
-        SimplePlanner simplePlanner(tree, index);
+        SimplePlanner simplePlanner(tree, index, diagnosticStream);
         return simplePlanner.GetMatches();
     }
 
@@ -54,7 +56,8 @@ namespace BitFunnel
     //
     //*************************************************************************
     SimplePlanner::SimplePlanner(TermMatchNode const & tree,
-                                 ISimpleIndex const & index)
+                                 ISimpleIndex const & index,
+                                 IDiagnosticStream& diagnosticStream)
         : m_index(index),
           m_resultsProcessor(Factories::CreateSimpleResultsProcessor())
 
@@ -102,7 +105,8 @@ namespace BitFunnel
                                            sliceCount,
                                            reinterpret_cast<char* const *>(sliceBuffers.data()),
                                            iterationsPerSlice,
-                                           rowOffsets.data());
+                                           rowOffsets.data(),
+                                           diagnosticStream);
 
             intepreter.Run();
 

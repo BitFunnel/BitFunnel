@@ -24,6 +24,7 @@
 #include <limits>
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Plan/IResultsProcessor.h"
 #include "ByteCodeInterpreter.h"
 #include "LoggerInterfaces/Check.h"
@@ -63,14 +64,16 @@ Decide on type of Slices
         size_t sliceCount,
         char * const * sliceBuffers,
         size_t iterationsPerSlice,
-        ptrdiff_t const * rowOffsets)
+        ptrdiff_t const * rowOffsets,
+        IDiagnosticStream& diagnosticStream)
       : m_code(code.GetCode()),
         m_jumpTable(code.GetJumpTable()),
         m_resultsProcessor(resultsProcessor),
         m_sliceCount(sliceCount),
         m_sliceBuffers(sliceBuffers),
         m_iterationsPerSlice(iterationsPerSlice),
-        m_rowOffsets(rowOffsets)
+        m_rowOffsets(rowOffsets),
+        m_diagnosticStream(diagnosticStream)
     {
     }
 
@@ -116,6 +119,13 @@ Decide on type of Slices
         m_ip = m_code.data();
         m_offset = iteration;
 
+        if (m_diagnosticStream.IsEnabled("bytecode/run"))
+        {
+            std::ostream& out = m_diagnosticStream.GetStream();
+            out << "--------------------" << std::endl;
+            out << "ByteCode RunOneIteration:" << std::endl;
+        }
+
         while (m_ip->GetOpcode() != Opcode::End)
         {
             const Opcode opcode = m_ip->GetOpcode();
@@ -123,6 +133,11 @@ Decide on type of Slices
             const unsigned delta = m_ip->GetDelta();
             const bool inverted = m_ip->IsInverted();
 
+            if (m_diagnosticStream.IsEnabled("bytecode/run"))
+            {
+                std::ostream& out = m_diagnosticStream.GetStream();
+                out << "Opcode: " << opcode << std::endl;
+            }
             switch (opcode)
             {
             case Opcode::AndRow:

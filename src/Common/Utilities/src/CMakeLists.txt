@@ -5,6 +5,7 @@ set(CPPFILES
     Allocator.cpp
     BlockAllocator.cpp
     ConsoleLogger.cpp
+    DiagnosticStream.cpp
     Exceptions.cpp
     FileHeader.cpp
     Logging.cpp

@@ -32,6 +32,8 @@
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Data/Sonnets.h"
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/IDiagnosticStream.h"
+#include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IChunkManifestIngestor.h"
 #include "BitFunnel/Index/IDocument.h"
@@ -749,10 +751,15 @@ namespace BitFunnel
                     << documentCount << " documents."
                     << std::endl;
 
-                //auto observed = Factories::RunSimplePlanner(*tree, environment.GetSimpleIndex());
-                auto observed = Factories::RunQueryPlanner(*tree,
-                                                           environment.GetSimpleIndex(),
-                                                           nullptr); // TODO: add diagnostics here.
+                auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
+                diagnosticStream->Enable("");
+
+                auto observed = Factories::RunSimplePlanner(*tree,
+                                                            environment.GetSimpleIndex(),
+                                                            *diagnosticStream);
+                // auto observed = Factories::RunQueryPlanner(*tree,
+                //                                            environment.GetSimpleIndex(),
+                //                                            *diagnosticStream); // TODO: add diagnostics here.
                 for (auto id : observed)
                 {
                     verifier->AddObserved(id);

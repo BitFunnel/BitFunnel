@@ -20,12 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream>  // Used for DiagnosticStream ref; not actually used.
+#include <memory>  // Used for std::unique_ptr of diagnosticStream. Probably temporary.
 #include <ostream>
 #include <sstream>
 
 #include "Allocator.h"
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
+#include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/QueryRunner.h"
 #include "BitFunnel/Utilities/Factories.h"
@@ -124,9 +127,13 @@ namespace BitFunnel
         QueryParser parser(s, m_config, *m_allocator);
         auto tree = parser.Parse();
 
+        // TODO: remove diagnosticStream and replace with nullable.
+        auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
         if (tree != nullptr)
         {
-            auto observed = Factories::RunSimplePlanner(*tree, m_index);
+            auto observed = Factories::RunSimplePlanner(*tree,
+                                                        m_index,
+                                                        *diagnosticStream);
         }
     }
 

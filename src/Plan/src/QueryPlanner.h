@@ -51,7 +51,7 @@ namespace BitFunnel
                      ISimpleIndex const & index,
                      // IThreadResources& threadResources,
                      IAllocator& allocator,
-                     IDiagnosticStream* diagnosticStream);
+                     IDiagnosticStream& diagnosticStream);
                      // bool generateNonBodyPlan,
                      // unsigned maxIterationsScannedBetweenTerminationChecks);
 

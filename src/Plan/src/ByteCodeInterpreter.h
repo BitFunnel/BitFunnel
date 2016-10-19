@@ -34,6 +34,7 @@
 namespace BitFunnel
 {
     class ByteCodeGenerator;
+    class IDiagnosticStream;
     class IResultsProcessor;
 
     //*************************************************************************
@@ -69,7 +70,8 @@ namespace BitFunnel
                             size_t sliceCount,
                             char * const * sliceBuffers,
                             size_t iterationsPerSlice,
-                            ptrdiff_t const * rowOffsets);
+                            ptrdiff_t const * rowOffsets,
+                            IDiagnosticStream & diagnosticStream);
 
         // Runs the instruction sequence for a specified number of iterations.
         // Each iteration processes a single quadword of row data at the
@@ -216,6 +218,8 @@ namespace BitFunnel
 
         // TODO: Formalize definition and usage of zero flag.
         bool m_zeroFlag;
+
+        IDiagnosticStream& m_diagnosticStream;
     };
 
     inline std::ostream& operator<<(std::ostream& out, const ByteCodeInterpreter::Opcode value)

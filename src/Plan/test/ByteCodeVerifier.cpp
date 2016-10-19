@@ -26,11 +26,13 @@
 #include "gtest/gtest.h"
 
 #include "Allocator.h"
+#include "BitFunnel/IDiagnosticStream.h" // TODO: remove.
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Term.h"
+#include "BitFunnel/Utilities/Factories.h"  // TODO: only for diagnosticStream. Remove.
 #include "ByteCodeInterpreter.h"
 #include "ByteCodeVerifier.h"
 #include "CompileNode.h"
@@ -268,13 +270,16 @@ namespace BitFunnel
         auto & sliceBuffers = shard.GetSliceBuffers();
         auto iterationsPerSlice = GetIterationsPerSlice();
 
+        // TODO: remove diagnosticStream and replace with nullable.
+        auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
         ByteCodeInterpreter interpreter(
             code,
             *this,
             sliceBuffers.size(),
             reinterpret_cast<char* const *>(sliceBuffers.data()),
             iterationsPerSlice,
-            m_rowOffsets.data());
+            m_rowOffsets.data(),
+            *diagnosticStream);
 
         interpreter.Run();
 
