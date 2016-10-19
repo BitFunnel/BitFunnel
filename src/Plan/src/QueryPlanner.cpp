@@ -23,6 +23,11 @@
 #include "BitFunnel/Allocators/IAllocator.h"
 // #include "BitFunnel/CompiledFunction.h"
 #include "BitFunnel/IDiagnosticStream.h"
+#include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Index/ISimpleIndex.h"
+#include "BitFunnel/Index/IShard.h"
+#include "BitFunnel/Index/Token.h"
+#include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IPlanRows.h"
 // #include "BitFunnel/IThreadResources.h"
 #include "BitFunnel/Plan/RowPlan.h"
@@ -39,6 +44,7 @@
 #include "QueryPlanner.h"
 #include "RankDownCompiler.h"
 #include "RegisterAllocator.h"
+#include "RowSet.h"
 
 
 namespace BitFunnel
@@ -72,6 +78,7 @@ namespace BitFunnel
                                IDiagnosticStream* diagnosticStream)
                                // bool generateNonBodyPlan,
                                // unsigned maxIterationsScannedBetweenTerminationChecks)
+        : m_resultsProcessor(Factories::CreateSimpleResultsProcessor())
     // : // m_x64FunctionGeneratorWrapper(threadResources),
     //   m_maxIterationsScannedBetweenTerminationChecks(maxIterationsScannedBetweenTerminationChecks)
     {
@@ -184,6 +191,33 @@ namespace BitFunnel
         //                                  m_x64FunctionGeneratorWrapper,
         //                                  m_maxIterationsScannedBetweenTerminationChecks);
         // generator.GenerateX64Code(compileTree);
+
+        RowSet rowSet(index, *m_planRows, allocator);
+        rowSet.LoadRows();
+
+        // TODO: Move all of this somewhere else.
+        // Get token before we GetSliceBuffers.
+        {
+            auto token = index.GetIngestor().GetTokenManager().RequestToken();
+
+            const size_t c_shardId = 0u;
+            auto & shard = index.GetIngestor().GetShard(c_shardId);
+            auto & sliceBuffers = shard.GetSliceBuffers();
+            size_t sliceCount = sliceBuffers.size();
+
+            // Iterations per slice calculation.
+            auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> c_maxRankValue;
+
+            ByteCodeInterpreter intepreter(m_code,
+                                           *m_resultsProcessor,
+                                           sliceCount,
+                                           reinterpret_cast<char* const *>(sliceBuffers.data()),
+                                           iterationsPerSlice,
+                                           rowSet.GetRowOffsets(c_shardId));
+
+            intepreter.Run();
+
+        } // End of token lifetime.
     }
 
 

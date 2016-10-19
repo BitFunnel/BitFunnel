@@ -22,7 +22,8 @@ namespace BitFunnel
         //
         // In the current implementation, non-DDR rows are not supported
         virtual void LoadRows(//Context const & context,
-                              IRowsAvailable& rowsAvailable) override;
+                              //IRowsAvailable& rowsAvailable
+                              ) override;
         virtual ShardId GetShardCount() const override;
         virtual unsigned GetRowCount() const override;
         virtual ptrdiff_t const * GetRowOffsets(ShardId shard) const override;

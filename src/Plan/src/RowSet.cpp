@@ -59,7 +59,8 @@ namespace BitFunnel
 
 
     void RowSet::LoadRows(// Context const & context,
-                          IRowsAvailable& /*rowsAvailable*/)
+                          //IRowsAvailable& rowsAvailable
+                          )
     {
         // For each shard, allocate an array of Row.
         for (ShardId shardId = 0; shardId < m_planRows.GetShardCount(); ++shardId)

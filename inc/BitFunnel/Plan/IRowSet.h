@@ -36,7 +36,8 @@ namespace BitFunnel
         // will be loaded again. However, The IRowAvailable callback function will
         // be called on either cases.
         virtual void LoadRows(// Context const & context,
-                              IRowsAvailable& rowsAvailable) = 0;
+                              //IRowsAvailable& rowsAvailable
+                              ) = 0;
 
         // Returns the number of Shards in the RowSet.
         virtual ShardId GetShardCount() const = 0;
