@@ -6,13 +6,14 @@
 namespace BitFunnel
 {
     class IAllocator;
-    class Context;
-    class IIndexData;
+    // class Context;
+    // class IIndexData;
+    class ISimpleIndex;
 
     class RowSet : public IRowSet, NonCopyable
     {
     public:
-        RowSet(IIndexData const & indexData,
+        RowSet(ISimpleIndex const & index,
                const IPlanRows& planRows,
                IAllocator& allocator);
 
@@ -31,7 +32,8 @@ namespace BitFunnel
         // Constructor parameters
         //
         const IPlanRows& m_planRows;
-        IIndexData const & m_indexData;
+        // IIndexData const & m_indexData;
+        ISimpleIndex const & m_index;
         // IAllocator& m_allocator;
 
         ptrdiff_t ** m_rows;

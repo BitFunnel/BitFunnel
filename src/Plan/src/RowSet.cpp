@@ -4,7 +4,10 @@
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/IIndexData.h"
-#include "BitFunnel/Index/IShardIndex.h"
+#include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Index/IShard.h"
+// #include "BitFunnel/Index/IShardIndex.h"
+#include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IPlanRows.h"
 #include "BitFunnel/Plan/IRowSet.h"
@@ -21,12 +24,12 @@ namespace BitFunnel
     // Factory methods.
     //
     //*************************************************************************
-    IRowSet& Factories::CreateRowSet(IIndexData const & indexData,
+    IRowSet& Factories::CreateRowSet(ISimpleIndex const & index,
                                      IPlanRows const & planRows,
                                      IAllocator& allocator)
     {
         return *new (allocator.Allocate(sizeof(RowSet)))
-                    RowSet(indexData, planRows, allocator);
+                    RowSet(index, planRows, allocator);
     }
 
 
@@ -35,11 +38,11 @@ namespace BitFunnel
     // RowSet
     //
     //*************************************************************************
-    RowSet::RowSet(IIndexData const & indexData,
+    RowSet::RowSet(ISimpleIndex const & index,
                    IPlanRows const & planRows,
                    IAllocator& allocator)
         : m_planRows(planRows),
-          m_indexData(indexData)
+          m_index(index)
           // m_allocator(allocator)
     {
         // Allocate one entry for each shard.
@@ -61,7 +64,8 @@ namespace BitFunnel
         // For each shard, allocate an array of Row.
         for (ShardId shardId = 0; shardId < m_planRows.GetShardCount(); ++shardId)
         {
-            IShardIndex const & shard = m_indexData.GetShardIndex(shardId);
+            // IShardIndex const & shard = m_indexData.GetShardIndex(shardId);
+            IShard const & shard = m_index.GetIngestor().GetShard(shardId);
             for (unsigned i = 0; i < m_planRows.GetRowCount(); ++i)
             {
                 const RowId rowId = m_planRows.PhysicalRow(shardId, i);

@@ -30,7 +30,7 @@
 namespace BitFunnel
 {
     class IAllocator;
-    class IIndexData;
+    // class IIndexData;
     class IInputStream;
     class IMatchVerifier;
     class IPlanRows;
@@ -49,7 +49,7 @@ namespace BitFunnel
 
         std::unique_ptr<IResultsProcessor> CreateSimpleResultsProcessor();
 
-        IRowSet& CreateRowSet(IIndexData const & indexData,
+        IRowSet& CreateRowSet(ISimpleIndex const & indexData,
                               IPlanRows const & planRows,
                               IAllocator& allocator);
 
