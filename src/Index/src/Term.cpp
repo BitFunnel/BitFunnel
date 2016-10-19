@@ -322,6 +322,8 @@ namespace BitFunnel
 
     Term::Hash Term::ComputeRawHash(char const * text)
     {
+        // TODO: Need some means to ensure that a term never gets the same hash
+        // as a system row or a fact.
         const int c_murmurHashSeedForText = 123456789;
 
         Hash hash = MurmurHash64A(text, strlen(text), c_murmurHashSeedForText);

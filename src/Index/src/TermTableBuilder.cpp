@@ -138,8 +138,8 @@ namespace BitFunnel
                 {
                     for (size_t i = 0; i < rcEntry.GetRowCount(); ++i)
                     {
-                        // TODO: figure out ShardId value here.
-                        m_termTable.AddRowId(RowId(rcEntry.GetRank(), 0u));
+                        // Third parameter of RowId() denotes adhoc row.
+                        m_termTable.AddRowId(RowId(rcEntry.GetRank(), 0u, true));
                     }
                 }
 
