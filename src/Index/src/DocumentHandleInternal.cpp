@@ -129,7 +129,7 @@ namespace BitFunnel
                     row.GetIndex(),
                     m_index);
 
-        return bit == 1ull;
+        return bit;
     }
 
 
