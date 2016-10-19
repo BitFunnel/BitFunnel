@@ -101,7 +101,6 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IFileManager.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IIndexData.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IInterface.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Term.h
@@ -132,7 +131,6 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IngestChunks.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IRecycler.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IShard.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IShardIndex.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ISimpleIndex.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ISliceBufferAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTable.h

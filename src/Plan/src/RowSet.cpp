@@ -3,7 +3,6 @@
 #include <algorithm>
 
 #include "BitFunnel/Allocators/IAllocator.h"
-#include "BitFunnel/IIndexData.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IShard.h"
 // #include "BitFunnel/Index/IShardIndex.h"
