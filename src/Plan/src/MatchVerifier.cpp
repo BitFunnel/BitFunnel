@@ -63,6 +63,9 @@ namespace BitFunnel
             {
                 m_falseNegatives.push_back(expected);
                 ++e;
+                // Force a test failure.
+                // TODO: consider doing something that will only fail tests.
+                throw;
             }
             else if (expected > observed)
             {
