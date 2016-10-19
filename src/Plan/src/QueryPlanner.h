@@ -38,14 +38,15 @@ namespace BitFunnel
     class IPlanRows;
     class ISimpleIndex;
     class IThreadResources;
-    class TermPlan;
+    // class TermPlan;
+    class TermMatchNode;
     // class X64::X64FunctionGenerator;
 
     class QueryPlanner : public NonCopyable
     {
     public:
         // Constructs a QueryPlanner with the specified resources.
-        QueryPlanner(TermPlan const & termPlan,
+        QueryPlanner(TermMatchNode const & tree,
                      unsigned targetRowCount,
                      ISimpleIndex const & index,
                      // IThreadResources& threadResources,
@@ -53,6 +54,9 @@ namespace BitFunnel
                      IDiagnosticStream* diagnosticStream);
                      // bool generateNonBodyPlan,
                      // unsigned maxIterationsScannedBetweenTerminationChecks);
+
+        // TODO: get rid of this convenience method.
+        std::vector<DocId> const & GetMatches() const;
 
         //
         // IQueryPlanner methods.

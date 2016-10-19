@@ -51,10 +51,6 @@ namespace BitFunnel
         ISimpleIndex const & m_index;
         ByteCodeGenerator m_code;
 
-        // accumulator:offset pair.
-        std::vector<std::pair<uint64_t, size_t>> m_addResultValues;
-        std::vector<size_t> m_matches;
-
         // TODO: should this be an IResultsProcessor? This isn't right now
         // because IResultsProcessor doesn't have a method to pull matches out.
         std::unique_ptr<SimpleResultsProcessor> m_resultsProcessor;

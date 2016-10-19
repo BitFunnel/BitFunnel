@@ -30,6 +30,7 @@
 namespace BitFunnel
 {
     class IAllocator;
+    class IDiagnosticStream;
     // class IIndexData;
     class IInputStream;
     class IMatchVerifier;
@@ -53,6 +54,13 @@ namespace BitFunnel
                               IPlanRows const & planRows,
                               IAllocator& allocator);
 
+        // TODO: get rid of these convenience methods?
+        std::vector<DocId> RunQueryPlanner(TermMatchNode const & tree,
+                                            ISimpleIndex const & index,
+                                            IAllocator& allocator,
+                                            IDiagnosticStream* diagnosticStream);
+
         std::vector<DocId> RunSimplePlanner(TermMatchNode const & tree, ISimpleIndex const & index);
+
     }
 }

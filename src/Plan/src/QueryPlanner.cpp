@@ -49,6 +49,19 @@
 
 namespace BitFunnel
 {
+    // TODO: remove. This is a quick shortcut to try to connect QueryPlanner the
+    // way SimplePlanner is connected.
+    std::vector<DocId> Factories::RunQueryPlanner(TermMatchNode const & tree,
+                                                  ISimpleIndex const & index,
+                                                  IAllocator& allocator,
+                                                  IDiagnosticStream* diagnosticStream)
+    {
+        const int c_arbitraryRowCount = 500;
+        QueryPlanner planner(tree, c_arbitraryRowCount, index, allocator, diagnosticStream);
+        return planner.GetMatches();
+    }
+
+
     // QueryPlanner::X64FunctionGeneratorWrapper::X64FunctionGeneratorWrapper(IThreadResources& threadResources)
     //     : m_code(threadResources.AllocateFunctionGenerator()),
     //       m_threadResources(threadResources)
@@ -70,7 +83,9 @@ namespace BitFunnel
 
     unsigned const c_targetCrossProductTermCount = 180;
 
-    QueryPlanner::QueryPlanner(TermPlan const & termPlan,
+    // TODO: this should take a TermPlan instead of a TermMatchNode when we have
+    // scoring and query preferences.
+    QueryPlanner::QueryPlanner(TermMatchNode const & tree,
                                unsigned targetRowCount,
                                ISimpleIndex const & index,
                                // IThreadResources& threadResources,
@@ -90,12 +105,12 @@ namespace BitFunnel
 
             out << "--------------------" << std::endl;
             out << "Term Plan:" << std::endl;
-            termPlan.GetMatchTree().Format(*formatter);
+            tree.Format(*formatter);
             out << std::endl;
         }
 
         RowPlan const & rowPlan =
-            TermPlanConverter::BuildRowPlan(termPlan.GetMatchTree(),
+            TermPlanConverter::BuildRowPlan(tree,
                                             index,
                                             // generateNonBodyPlan,
                                             allocator);
@@ -226,6 +241,11 @@ namespace BitFunnel
 //         // TODO: Don't like how call to GetMatchingFunction() finalizes jumps. This should be explicit.
 //         return CompiledFunction((X64::X64FunctionGenerator&)m_x64FunctionGeneratorWrapper);
 //     }
+
+    std::vector<DocId> const & QueryPlanner::GetMatches() const
+    {
+        return m_resultsProcessor->GetMatches();
+    }
 
 
     IPlanRows const & QueryPlanner::GetPlanRows() const
