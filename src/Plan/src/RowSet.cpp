@@ -71,8 +71,9 @@ namespace BitFunnel
             {
                 const RowId rowId = m_planRows.PhysicalRow(shardId, i);
 
-                // MatcherRunner expects row offsets to be in quadwords.
-                m_rows[shardId][i] = (shard.GetRowOffset(rowId) >> 3);
+                // // MatcherRunner expects row offsets to be in quadwords.
+                // m_rows[shardId][i] = (shard.GetRowOffset(rowId) >> 3);
+                m_rows[shardId][i] = shard.GetRowOffset(rowId);
             }
         }
 

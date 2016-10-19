@@ -759,7 +759,7 @@ namespace BitFunnel
                 //                                             *diagnosticStream);
                 auto observed = Factories::RunQueryPlanner(*tree,
                                                            environment.GetSimpleIndex(),
-                                                           *diagnosticStream); // TODO: add diagnostics here.
+                                                           *diagnosticStream);
                 for (auto id : observed)
                 {
                     verifier->AddObserved(id);
