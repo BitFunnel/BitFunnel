@@ -754,12 +754,12 @@ namespace BitFunnel
                 auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
                 diagnosticStream->Enable("");
 
-                auto observed = Factories::RunSimplePlanner(*tree,
-                                                            environment.GetSimpleIndex(),
-                                                            *diagnosticStream);
-                // auto observed = Factories::RunQueryPlanner(*tree,
-                //                                            environment.GetSimpleIndex(),
-                //                                            *diagnosticStream); // TODO: add diagnostics here.
+                // auto observed = Factories::RunSimplePlanner(*tree,
+                //                                             environment.GetSimpleIndex(),
+                //                                             *diagnosticStream);
+                auto observed = Factories::RunQueryPlanner(*tree,
+                                                           environment.GetSimpleIndex(),
+                                                           *diagnosticStream); // TODO: add diagnostics here.
                 for (auto id : observed)
                 {
                     verifier->AddObserved(id);

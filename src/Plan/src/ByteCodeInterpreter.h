@@ -82,6 +82,8 @@ namespace BitFunnel
         // Virtual machine opcodes. With the exception of the End opcode,
         // these values have a 1:1 correspondance with the ICodeGenerator
         // methods.
+        //
+        // DESIGN NOTE: this enum should be kept in sync with c_opcodeNames[].
         enum class Opcode
         {
             AndRow,
@@ -222,9 +224,37 @@ namespace BitFunnel
         IDiagnosticStream& m_diagnosticStream;
     };
 
+
+    // TODO: move this to .cpp file?
+    // These text constants correspond to the values of the enumeration
+    // ByteCodeInterpreter::Opcode.
+    static const char* const c_opcodeNames[] = {
+            "AndRow",
+            "LoadRow",
+            "LeftShiftOffset",
+            "RightShiftOffset",
+            "IncrementOffset",
+            "Push",
+            "Pop",
+            "AndStack",
+            "Constant",
+            "Not",
+            "OrStack",
+            "UpdateFlags",
+            "Report",
+            "Call",
+            "Jmp",
+            "Jnz",
+            "Jz",
+            "Return",
+            "End",
+            "Last"
+    };
+
+
     inline std::ostream& operator<<(std::ostream& out, const ByteCodeInterpreter::Opcode value)
     {
-        out << static_cast<unsigned>(value);
+        out << c_opcodeNames[static_cast<size_t>(value)];
         return out;
     }
 
