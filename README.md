@@ -65,6 +65,8 @@ If you want to create an Xcode project instead of using Makefiles, run:
 ./Configure_XCode.sh
 ~~~
 
+If you use XCode, you'll have to either re-run `Configure_XCode` or run the `ZERO_CHECK` target when the `CMakeLists` changes, e.g., when source files are added or removed.
+
 ### Windows
 
 Install the following tools:
