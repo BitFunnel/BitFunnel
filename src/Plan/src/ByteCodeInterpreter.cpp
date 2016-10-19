@@ -119,7 +119,7 @@ Decide on type of Slices
         m_ip = m_code.data();
         m_offset = iteration;
 
-        if (m_diagnosticStream.IsEnabled("bytecode/run"))
+        if (m_diagnosticStream.IsEnabled("bytecode/opcode"))
         {
             std::ostream& out = m_diagnosticStream.GetStream();
             out << "--------------------" << std::endl;
@@ -133,10 +133,13 @@ Decide on type of Slices
             const unsigned delta = m_ip->GetDelta();
             const bool inverted = m_ip->IsInverted();
 
-            if (m_diagnosticStream.IsEnabled("bytecode/run"))
+            if (m_diagnosticStream.IsEnabled("bytecode/opcode"))
             {
                 std::ostream& out = m_diagnosticStream.GetStream();
                 out << "Opcode: " << opcode << std::endl;
+                out << "Offset: " << m_offset << std::endl;
+                out << "Row: " << row << std::endl;
+                out << "RowOffset: " << m_rowOffsets[row] << std::endl;
             }
             switch (opcode)
             {
@@ -149,6 +152,13 @@ Decide on type of Slices
                     m_accumulator &= (inverted ? ~value : value);
                     m_zeroFlag = (m_accumulator == 0);
                     m_ip++;
+
+                    if (m_diagnosticStream.IsEnabled("bytecode/loadrow"))
+                    {
+                        std::ostream& out = m_diagnosticStream.GetStream();
+                        out << "AndRow: " << std::hex << m_accumulator
+                            << std::dec << std::endl;
+                    }
                 }
                 break;
             case Opcode::LoadRow:
@@ -160,6 +170,13 @@ Decide on type of Slices
                     m_accumulator = (inverted ? ~value : value);
                     m_zeroFlag = (m_accumulator == 0);
                     m_ip++;
+
+                    if (m_diagnosticStream.IsEnabled("bytecode/loadrow"))
+                    {
+                        std::ostream& out = m_diagnosticStream.GetStream();
+                        out << "LoadRow: " << std::hex << m_accumulator
+                            << std::dec << std::endl;
+                    }
                 }
                 break;
             case Opcode::LeftShiftOffset:
