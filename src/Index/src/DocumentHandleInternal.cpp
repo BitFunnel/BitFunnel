@@ -129,7 +129,9 @@ namespace BitFunnel
                     row.GetIndex(),
                     m_index);
 
-        return bit;
+        // This is written as != 0 instead of returning the value to avoid a
+        // warning on VC++.
+        return bit != 0;
     }
 
 
