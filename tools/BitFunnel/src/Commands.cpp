@@ -749,7 +749,10 @@ namespace BitFunnel
                     << documentCount << " documents."
                     << std::endl;
 
-                auto observed = Factories::RunSimplePlanner(*tree, environment.GetSimpleIndex());
+                //auto observed = Factories::RunSimplePlanner(*tree, environment.GetSimpleIndex());
+                auto observed = Factories::RunQueryPlanner(*tree,
+                                                           environment.GetSimpleIndex(),
+                                                           nullptr); // TODO: add diagnostics here.
                 for (auto id : observed)
                 {
                     verifier->AddObserved(id);

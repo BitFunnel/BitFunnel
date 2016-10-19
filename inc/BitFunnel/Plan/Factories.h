@@ -57,7 +57,6 @@ namespace BitFunnel
         // TODO: get rid of these convenience methods?
         std::vector<DocId> RunQueryPlanner(TermMatchNode const & tree,
                                             ISimpleIndex const & index,
-                                            IAllocator& allocator,
                                             IDiagnosticStream* diagnosticStream);
 
         std::vector<DocId> RunSimplePlanner(TermMatchNode const & tree, ISimpleIndex const & index);
