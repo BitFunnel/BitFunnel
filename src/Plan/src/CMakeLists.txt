@@ -5,7 +5,6 @@ set(CPPFILES
     AbstractRowEnumerator.cpp
     ByteCodeInterpreter.cpp
     CompileNode.cpp
-    # MatchTreeByteCodeGenerator.cpp
     MatchTreeRewriter.cpp
     MatchVerifier.cpp
     PlanRows.cpp
