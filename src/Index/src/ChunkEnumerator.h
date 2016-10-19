@@ -25,6 +25,7 @@
 #include <memory>       // std::unique_ptr member.
 #include <stddef.h>     // size_t parameter.
 #include <string>       // std::string template parameter.
+#include <vector>       // std::vector embedded.
 
 #include "BitFunnel/NonCopyable.h"                  // Inherits from NonCopyable.
 #include "BitFunnel/Utilities/ITaskDistributor.h"   // std::unqiue_ptr template parameter.
@@ -48,6 +49,7 @@ namespace BitFunnel
         void WaitForCompletion() const;
 
     private:
+        std::vector<std::unique_ptr<ITaskProcessor>> m_processors;
         std::unique_ptr<ITaskDistributor> m_distributor;
     };
 }

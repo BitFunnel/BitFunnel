@@ -33,22 +33,21 @@ namespace BitFunnel
         IChunkManifestIngestor const & manifest,
         size_t threadCount)
     {
-        std::vector<std::unique_ptr<ITaskProcessor>> processors;
         for (size_t i = 0; i < threadCount; ++i) {
-            processors.push_back(
+            m_processors.push_back(
                 std::unique_ptr<ITaskProcessor>(
                     new ChunkTaskProcessor(manifest)));
         }
 
         if (threadCount > 1)
         {
-            m_distributor = Factories::CreateTaskDistributor(processors, manifest.GetChunkCount());
+            m_distributor = Factories::CreateTaskDistributor(m_processors, manifest.GetChunkCount());
         }
         else
         {
             // The threadCount == 1 case is implemented to simplify debugging.
             for (size_t i = 0; i < manifest.GetChunkCount(); ++i) {
-                processors[0]->ProcessTask(i);
+                m_processors[0]->ProcessTask(i);
             }
         }
     }
