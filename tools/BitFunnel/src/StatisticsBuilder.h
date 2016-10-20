@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <string>
-#include <vector>
 
 #include "IExecutable.h"
 
@@ -44,8 +42,6 @@ namespace BitFunnel
                          char const *argv[]) override;
 
     private:
-        std::vector<std::string> ReadLines(char const * fileName) const;
-
         void LoadAndIngestChunkList(
             std::ostream& output,
             char const * intermediateDirectory,
@@ -57,4 +53,3 @@ namespace BitFunnel
         IFileSystem& m_fileSystem;
     };
 }
-

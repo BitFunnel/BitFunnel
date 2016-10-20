@@ -41,36 +41,20 @@
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/Index/ITermTable.h"
+#include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IMatchVerifier.h"
 #include "BitFunnel/Plan/QueryPipeline.h"
 #include "BitFunnel/Plan/QueryRunner.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
-#include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Term.h"
+#include "BitFunnel/Utilities/ReadLines.h"
 #include "Commands.h"
 #include "Environment.h"
 
 
 namespace BitFunnel
 {
-    // TODO: This should be in Utilities.
-    // Returns a vector with one entry for each line in the file.
-    std::vector<std::string> ReadLines(IFileSystem & fileSystem,
-                                       char const * fileName)
-    {
-        auto input = fileSystem.OpenForRead(fileName, std::ios::in);
-
-        std::vector<std::string> lines;
-        std::string line;
-        while (std::getline(*input, line)) {
-            lines.push_back(std::move(line));
-        }
-
-        return lines;
-    }
-
-
     //*************************************************************************
     //
     // DelayedPrint

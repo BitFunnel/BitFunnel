@@ -34,6 +34,7 @@
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
+#include "BitFunnel/Utilities/ReadLines.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "CmdLineParser/CmdLineParser.h"
 #include "StatisticsBuilder.h"
@@ -109,21 +110,6 @@ namespace BitFunnel
     }
 
 
-    // Returns a vector with one entry for each line in the file.
-    std::vector<std::string> StatisticsBuilder::ReadLines(char const * fileName) const
-    {
-        auto input = m_fileSystem.OpenForRead(fileName, std::ios::in);
-
-        std::vector<std::string> lines;
-        std::string line;
-        while (std::getline(*input, line)) {
-            lines.push_back(std::move(line));
-        }
-
-        return lines;
-    }
-
-
     void StatisticsBuilder::LoadAndIngestChunkList(
         std::ostream& output,
         char const * intermediateDirectory,
@@ -146,7 +132,7 @@ namespace BitFunnel
             << "Loading chunk list file '" << chunkListFileName << "'" << std::endl
             << "Temp dir: '" << intermediateDirectory << "'"<< std::endl;
 
-        std::vector<std::string> filePaths = ReadLines(chunkListFileName);
+        std::vector<std::string> filePaths = ReadLines(m_fileSystem, chunkListFileName);
 
         output << "Reading " << filePaths.size() << " files\n";
 

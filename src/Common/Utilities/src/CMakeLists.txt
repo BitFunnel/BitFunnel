@@ -13,6 +13,7 @@ set(CPPFILES
     MurmurHash2.cpp
     NullLogger.cpp
     PackedArray.cpp
+    ReadLines.cpp
     Rounding.cpp
     Row.cpp
     SimpleBuffer.cpp
