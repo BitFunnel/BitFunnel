@@ -71,7 +71,8 @@ namespace BitFunnel
             }
 
             auto script = fileSystem->OpenForWrite("testScript");
-            *script << "cache chunk sonnet0" << std::endl;
+            *script << "failOnException" << std::endl
+                    << "cache chunk sonnet0" << std::endl;
         }
 
         //

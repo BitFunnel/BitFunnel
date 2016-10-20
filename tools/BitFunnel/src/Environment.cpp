@@ -40,7 +40,8 @@ namespace BitFunnel
           m_taskFactory(new TaskFactory(*this)),
           // Start one extra thread for the Recycler.
           m_taskPool(new TaskPool(threadCount + 1)),
-          m_index(Factories::CreateSimpleIndex(fileSystem))
+          m_index(Factories::CreateSimpleIndex(fileSystem)),
+          m_failOnException(false)
     {
         m_index->ConfigureForServing(directory, gramSize, false);
         RegisterCommands();
@@ -51,6 +52,7 @@ namespace BitFunnel
     {
         m_taskFactory->RegisterCommand<DelayedPrint>();
         m_taskFactory->RegisterCommand<Exit>();
+        m_taskFactory->RegisterCommand<FailOnException>();
         m_taskFactory->RegisterCommand<Help>();
         m_taskFactory->RegisterCommand<Cache>();
         m_taskFactory->RegisterCommand<Load>();
@@ -71,6 +73,18 @@ namespace BitFunnel
     IFileSystem & Environment::GetFileSystem() const
     {
         return m_fileSystem;
+    }
+
+
+    bool Environment::GetFailOnException() const
+    {
+        return m_failOnException;
+    }
+
+
+    void Environment::SetFailOnException(bool mode)
+    {
+        m_failOnException = mode;
     }
 
 

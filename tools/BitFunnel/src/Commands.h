@@ -55,6 +55,20 @@ namespace BitFunnel
     };
 
 
+    class FailOnException : public TaskBase
+    {
+    public:
+        FailOnException(Environment & environment,
+                        Id id,
+                        char const * parameters);
+
+        virtual void Execute() override;
+        static ICommand::Documentation GetDocumentation();
+
+    private:
+    };
+
+
     class Help : public TaskBase
     {
     public:

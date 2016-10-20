@@ -231,6 +231,10 @@ namespace BitFunnel
             catch (RecoverableError e)
             {
                 output << "Error: " << e.what() << std::endl;
+                if (environment.GetFailOnException())
+                {
+                    throw e;
+                }
             }
             catch (...)
             {

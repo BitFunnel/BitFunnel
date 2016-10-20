@@ -115,9 +115,39 @@ namespace BitFunnel
     {
         return Documentation(
             "quit",
-            "waits for all current tasks to complete then exits.",
+            "Waits for all current tasks to complete then exits.",
             "quit\n"
             "  Waits for all current tasks to complete then exits."
+            );
+    }
+
+
+    //*************************************************************************
+    //
+    // FailOnException
+    //
+    //*************************************************************************
+    FailOnException::FailOnException(Environment & environment,
+               Id id,
+               char const * /*parameters*/)
+        : TaskBase(environment, id, Type::Synchronous)
+    {
+    }
+
+
+    void FailOnException::Execute()
+    {
+        GetEnvironment().SetFailOnException(true);
+    }
+
+
+    ICommand::Documentation FailOnException::GetDocumentation()
+    {
+        return Documentation(
+            "failOnException",
+            "Forces application failure when exceptions are thrown.",
+            "failOnException\n"
+            "  Forces application failure when exceptions are thrown."
             );
     }
 
