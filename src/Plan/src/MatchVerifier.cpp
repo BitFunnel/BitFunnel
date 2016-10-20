@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <ostream>
 
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "MatchVerifier.h"
 
@@ -65,7 +66,7 @@ namespace BitFunnel
                 ++e;
                 // Force a test failure.
                 // TODO: consider doing something that will only fail tests.
-                throw;
+                throw RecoverableError("MatchVerifier: false negative detected.");
             }
             else if (expected > observed)
             {
