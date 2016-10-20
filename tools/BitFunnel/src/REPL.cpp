@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Utilities/ReadLines.h"
 #include "CmdLineParser/CmdLineParser.h"
 #include "Environment.h"
 #include "REPL.h"
@@ -172,27 +173,41 @@ namespace BitFunnel
         TaskPool & taskPool = environment.GetTaskPool();
 
 
+        std::vector<std::string> lines;
         if (scriptFile != nullptr)
         {
             // Load commands into vector and then execute commands.
-
+            lines = ReadLines(m_fileSystem, scriptFile);
         }
+
+        auto it = lines.begin();
 
         for (;;)
         {
             try
             {
-                // Check for eof to handle the case where input is not cin.
-                if (input.eof())
-                {
-                    break;
-                }
-
                 output << factory.GetNextTaskId() << ": ";
                 output.flush();
 
+                // Handle case for script file vs. console.
                 std::string line;
-                std::getline(input, line);
+                if (it != lines.end())
+                {
+                    // Input coming from script file.
+                    line = *it++;
+                    output << line << std::endl;
+                }
+                else
+                {
+                    // Input coming from console.
+                    // Check for eof to handle the case where input is not cin.
+                    if (input.eof())
+                    {
+                        break;
+                    }
+
+                    std::getline(input, line);
+                }
 
                 if (line.length() != 0)
                 {
