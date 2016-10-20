@@ -69,6 +69,9 @@ namespace BitFunnel
                 // Add chunk file to manifest.
                 *manifest << name.str() << std::endl;
             }
+
+            auto script = fileSystem->OpenForWrite("testScript");
+            *script << "cache chunk sonnet0" << std::endl;
         }
 
         //
@@ -118,7 +121,11 @@ namespace BitFunnel
             std::vector<char const *> argv = {
                 "BitFunnel",
                 "repl",
-                "config"
+                "config",
+                // -script and testScript must be on seperate lines because
+                // tokens are delimited by whitespace.
+                "-script",
+                "testScript"
             };
 
             // Create an input stream with commands to
@@ -126,7 +133,8 @@ namespace BitFunnel
             // some rows.
             std::stringstream input;
             input
-                << "cache chunk sonnet0" << std::endl
+                // This first line is run via -script.
+                // << "cache chunk sonnet0" << std::endl
                 << "verify one blood" << std::endl
                 << "show rows blood" << std::endl;
 
