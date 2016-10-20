@@ -66,9 +66,15 @@ namespace BitFunnel
             "Set the thread count for ingestion and query processing.",
             1u);
 
+        CmdLine::OptionalParameter<char const *> scriptFile(
+            "script",
+            "File with commands to execute.",
+            nullptr);
+
         parser.AddParameter(path);
         parser.AddParameter(gramSize);
         parser.AddParameter(threadCount);
+        parser.AddParameter(scriptFile);
 
         int returnCode = 1;
 
@@ -82,7 +88,8 @@ namespace BitFunnel
                    output,
                    path,
                    static_cast<size_t>(gramSize),
-                   static_cast<size_t>(threadCount));
+                   static_cast<size_t>(threadCount),
+                   scriptFile);
                 returnCode = 0;
             }
             catch (RecoverableError e)
@@ -120,7 +127,8 @@ namespace BitFunnel
                   std::ostream& output,
                   char const * directory,
                   size_t gramSize,
-                  size_t threadCount) const
+                  size_t threadCount,
+                  char const * scriptFile) const
     {
         output
             << "Welcome to BitFunnel!" << std::endl
@@ -162,6 +170,13 @@ namespace BitFunnel
 
         TaskFactory & factory = environment.GetTaskFactory();
         TaskPool & taskPool = environment.GetTaskPool();
+
+
+        if (scriptFile != nullptr)
+        {
+            // Load commands into vector and then execute commands.
+
+        }
 
         for (;;)
         {

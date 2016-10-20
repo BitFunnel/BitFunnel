@@ -52,7 +52,8 @@ namespace BitFunnel
                 std::ostream& output,
                 char const * directory,
                 size_t gramSize,
-                size_t threadCount) const;
+                size_t threadCount,
+                char const * scriptFile) const;
 
         //
         // Constructor parameters.
