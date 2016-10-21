@@ -23,6 +23,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <string>
 #include <vector>
 
 #include "BitFunnel/Plan/IMatchVerifier.h"  // base class.
@@ -32,8 +33,23 @@ namespace BitFunnel
     class MatchVerifier : public IMatchVerifier
     {
     public:
+        MatchVerifier(std::string query);
+
         virtual void AddExpected(DocId) override;
         virtual void AddObserved(DocId) override;
+
+        virtual std::vector<DocId> GetExpected() const override;
+        virtual std::vector<DocId> GetObserved() const override;
+        virtual std::vector<DocId> GetTruePositives() const override;
+        virtual std::vector<DocId> GetFalsePositives() const override;
+        virtual std::vector<DocId> GetFalseNegatives() const override;
+
+        virtual size_t GetNumExpected() const override;
+        virtual size_t GetNumObserved() const override;
+        virtual size_t GetNumTruePositives() const override;
+        virtual size_t GetNumFalsePositives() const override;
+        virtual size_t GetNumFalseNegatives() const override;
+
         virtual void Verify() override;
         virtual void Print(std::ostream &) const override;
         virtual void Reset() override;
@@ -44,5 +60,7 @@ namespace BitFunnel
         std::vector<DocId> m_truePositives;
         std::vector<DocId> m_falsePositives;
         std::vector<DocId> m_falseNegatives;
+
+        std::string m_query;
     };
 }

@@ -23,6 +23,7 @@
 #pragma once
 
 #include <memory>  // std::unique_ptr return value.
+#include <string>
 #include <vector>  // std::vector return value.
 
 #include "BitFunnel/BitFunnelTypes.h"  // DocId.
@@ -42,7 +43,7 @@ namespace BitFunnel
 
     namespace Factories
     {
-        std::unique_ptr<IMatchVerifier> CreateMatchVerifier();
+        std::unique_ptr<IMatchVerifier> CreateMatchVerifier(std::string query);
 
         IPlanRows& CreatePlanRows(IInputStream& input,
                                   const ISimpleIndex& index,

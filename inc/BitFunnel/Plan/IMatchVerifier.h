@@ -23,6 +23,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <string>
 
 #include "BitFunnel/BitFunnelTypes.h"  // DocId parameter.
 #include "BitFunnel/IInterface.h"      // IInterface base class.
@@ -34,6 +35,19 @@ namespace BitFunnel
     public:
         virtual void AddExpected(DocId id) = 0;
         virtual void AddObserved(DocId id) = 0;
+
+        virtual std::vector<DocId> GetExpected() const = 0;
+        virtual std::vector<DocId> GetObserved() const = 0;
+        virtual std::vector<DocId> GetTruePositives() const = 0;
+        virtual std::vector<DocId> GetFalsePositives() const = 0;
+        virtual std::vector<DocId> GetFalseNegatives() const = 0;
+
+        virtual size_t GetNumExpected() const = 0;
+        virtual size_t GetNumObserved() const = 0;
+        virtual size_t GetNumTruePositives() const = 0;
+        virtual size_t GetNumFalsePositives() const = 0;
+        virtual size_t GetNumFalseNegatives() const = 0;
+
         virtual void Verify() = 0;
         virtual void Print(std::ostream & out) const = 0;
         virtual void Reset() = 0;

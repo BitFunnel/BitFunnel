@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <string>
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Plan/Factories.h"
@@ -29,10 +30,15 @@
 
 namespace BitFunnel
 {
-    std::unique_ptr<IMatchVerifier> Factories::CreateMatchVerifier()
+    std::unique_ptr<IMatchVerifier> Factories::CreateMatchVerifier(std::string query)
     {
-        return std::unique_ptr<IMatchVerifier>(new MatchVerifier);
+        return std::unique_ptr<IMatchVerifier>(new MatchVerifier(query));
     }
+
+
+    MatchVerifier::MatchVerifier(std::string query)
+        : m_query(query)
+    {}
 
 
     void MatchVerifier::AddExpected(DocId id)
@@ -44,6 +50,73 @@ namespace BitFunnel
     void MatchVerifier::AddObserved(DocId id)
     {
         m_observed.push_back(id);
+    }
+
+
+    //
+    // Vector getters
+    //
+    std::vector<DocId> MatchVerifier::GetExpected() const
+    {
+        return m_expected;
+    }
+
+
+    std::vector<DocId> MatchVerifier::GetObserved() const
+    {
+        return m_observed;
+    }
+
+
+    std::vector<DocId> MatchVerifier::GetTruePositives() const
+    {
+        return m_truePositives;
+    }
+
+
+    std::vector<DocId> MatchVerifier::GetFalsePositives() const
+    {
+        return m_falsePositives;
+    }
+
+
+    std::vector<DocId> MatchVerifier::GetFalseNegatives() const
+    {
+        return m_falseNegatives;
+    }
+
+
+    //
+    // Stats getters
+    //
+
+    size_t MatchVerifier::GetNumExpected() const
+    {
+        return m_expected.size();
+    }
+
+
+    size_t MatchVerifier::GetNumObserved() const
+    {
+        return m_observed.size();
+    }
+
+
+    size_t MatchVerifier::GetNumTruePositives() const
+    {
+        return m_truePositives.size();
+    }
+
+
+    size_t MatchVerifier::GetNumFalsePositives() const
+    {
+        return m_falsePositives.size();
+    }
+
+
+    size_t MatchVerifier::GetNumFalseNegatives() const
+    {
+        return m_falseNegatives.size();
     }
 
 
@@ -64,9 +137,6 @@ namespace BitFunnel
             {
                 m_falseNegatives.push_back(expected);
                 ++e;
-                // Force a test failure.
-                // TODO: consider doing something that will only fail tests.
-                throw RecoverableError("MatchVerifier: false negative detected.");
             }
             else if (expected > observed)
             {

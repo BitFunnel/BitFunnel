@@ -716,19 +716,23 @@ namespace BitFunnel
 
 
     // TODO: this should be somewhere else.
-    void VerifyOneQuery(Environment & environment, std::string query)
+    std::unique_ptr<IMatchVerifier> VerifyOneQuery
+        (Environment & environment,
+         std::string query)
     {
             auto streamConfiguration = Factories::CreateStreamConfiguration();
             QueryPipeline pipeline(*streamConfiguration);
             auto tree = pipeline.ParseQuery(query.c_str());
+
+            std::unique_ptr<IMatchVerifier> verifier =
+                Factories::CreateMatchVerifier(query);
+
             if (tree == nullptr)
             {
-                std::cout << "Empty query." << std::endl;
+                // std::cout << "Empty query." << std::endl;
             }
             else
             {
-                auto verifier = Factories::CreateMatchVerifier();
-
                 // auto & environment = GetEnvironment();
                 auto & cache = environment.GetIngestor().GetDocumentCache();
                 auto & config = environment.GetConfiguration();
@@ -753,10 +757,10 @@ namespace BitFunnel
                     }
                 }
 
-                std::cout
-                    << matchCount << " match(es) out of "
-                    << documentCount << " documents."
-                    << std::endl;
+                // std::cout
+                //     << matchCount << " match(es) out of "
+                //     << documentCount << " documents."
+                //     << std::endl;
 
                 auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
                 // diagnosticStream->Enable("");
@@ -773,8 +777,9 @@ namespace BitFunnel
                 }
 
                 verifier->Verify();
-                verifier->Print(std::cout);
+                // verifier->Print(std::cout);
             }
+            return verifier;
     }
 
 
@@ -786,7 +791,11 @@ namespace BitFunnel
                 << "Processing query \""
                 << m_query
                 << "\"" << std::endl;
-            VerifyOneQuery(GetEnvironment(), m_query);
+            auto verifier = VerifyOneQuery(GetEnvironment(), m_query);
+            if (verifier->GetNumFalseNegatives() > 0)
+            {
+                throw RecoverableError("MatchVerifier: false negative detected.");
+            }
         }
         else
         {
@@ -796,10 +805,23 @@ namespace BitFunnel
                 << "\"" << std::endl;
             auto fileSystem = Factories::CreateFileSystem();  // TODO: Use environment file system
             auto queries = ReadLines(*fileSystem, m_query.c_str());
+            std::vector<std::unique_ptr<IMatchVerifier>> verifiers;
             for (const auto & query : queries)
             {
-                VerifyOneQuery(GetEnvironment(), query);
+                verifiers.emplace_back(VerifyOneQuery(GetEnvironment(), query));
             }
+
+            for (const auto & verifier : verifiers)
+            {
+                if (verifier->GetNumFalseNegatives() > 0)
+                {
+                    // TODO: need to add info on query for this to be meaninful!
+                    verifier->Print(std::cout);
+                    throw RecoverableError("MatchVerifier: false negative detected.");
+                }
+            }
+
+
         }
     }
 
