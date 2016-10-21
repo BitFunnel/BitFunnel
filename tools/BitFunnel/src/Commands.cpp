@@ -759,7 +759,7 @@ namespace BitFunnel
                     << std::endl;
 
                 auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
-                diagnosticStream->Enable("");
+                // diagnosticStream->Enable("");
 
                 // auto observed = Factories::RunSimplePlanner(*tree,
                 //                                             environment.GetSimpleIndex(),
