@@ -419,7 +419,7 @@ namespace BitFunnel
     {
         return Documentation(
             "query",
-            "Process a single query or list of queries. (",
+            "Process a single query or list of queries.",
             "query (one <expression>) | (log <file>)\n"
             "  Processes a single query or a list of queries\n"
             "  specified by a file.\n"
