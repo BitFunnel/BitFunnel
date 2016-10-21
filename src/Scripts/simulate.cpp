@@ -69,7 +69,7 @@ int16_t draw_block(std::mt19937& gen,
         } else {
             return funny_draw(gen, funny_dist, uniform, bin_dividers);
         }
-        throw;
+        throw 0;
         return 0;
 }
 
