@@ -715,18 +715,12 @@ namespace BitFunnel
     }
 
 
-    void Verify::Execute()
+    // TODO: this should be somewhere else.
+    void VerifyOneQuery(Environment & environment, std::string query)
     {
-        if (m_isSingleQuery)
-        {
-            std::cout
-                << "Processing query \""
-                << m_query
-                << "\"" << std::endl;
-
             auto streamConfiguration = Factories::CreateStreamConfiguration();
             QueryPipeline pipeline(*streamConfiguration);
-            auto tree = pipeline.ParseQuery(m_query.c_str());
+            auto tree = pipeline.ParseQuery(query.c_str());
             if (tree == nullptr)
             {
                 std::cout << "Empty query." << std::endl;
@@ -735,7 +729,7 @@ namespace BitFunnel
             {
                 auto verifier = Factories::CreateMatchVerifier();
 
-                auto & environment = GetEnvironment();
+                // auto & environment = GetEnvironment();
                 auto & cache = environment.GetIngestor().GetDocumentCache();
                 auto & config = environment.GetConfiguration();
                 TermMatchTreeEvaluator evaluator(config);
@@ -781,6 +775,18 @@ namespace BitFunnel
                 verifier->Verify();
                 verifier->Print(std::cout);
             }
+    }
+
+
+    void Verify::Execute()
+    {
+        if (m_isSingleQuery)
+        {
+            std::cout
+                << "Processing query \""
+                << m_query
+                << "\"" << std::endl;
+            VerifyOneQuery(GetEnvironment(), m_query);
         }
         else
         {
@@ -788,7 +794,12 @@ namespace BitFunnel
                 << "Processing queries from log at \""
                 << m_query
                 << "\"" << std::endl;
-            std::cout << "NOT IMPLEMENTED" << std::endl;
+            auto fileSystem = Factories::CreateFileSystem();  // TODO: Use environment file system
+            auto queries = ReadLines(*fileSystem, m_query.c_str());
+            for (const auto & query : queries)
+            {
+                VerifyOneQuery(GetEnvironment(), query);
+            }
         }
     }
 
