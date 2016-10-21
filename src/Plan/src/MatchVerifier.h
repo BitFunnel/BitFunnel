@@ -38,6 +38,7 @@ namespace BitFunnel
         virtual void AddExpected(DocId) override;
         virtual void AddObserved(DocId) override;
 
+        virtual std::string GetQuery() const override;
         virtual std::vector<DocId> GetExpected() const override;
         virtual std::vector<DocId> GetObserved() const override;
         virtual std::vector<DocId> GetTruePositives() const override;

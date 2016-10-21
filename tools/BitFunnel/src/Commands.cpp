@@ -815,13 +815,10 @@ namespace BitFunnel
             {
                 if (verifier->GetNumFalseNegatives() > 0)
                 {
-                    // TODO: need to add info on query for this to be meaninful!
                     verifier->Print(std::cout);
                     throw RecoverableError("MatchVerifier: false negative detected.");
                 }
             }
-
-
         }
     }
 

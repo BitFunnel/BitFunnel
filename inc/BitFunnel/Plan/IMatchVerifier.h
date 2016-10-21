@@ -36,6 +36,7 @@ namespace BitFunnel
         virtual void AddExpected(DocId id) = 0;
         virtual void AddObserved(DocId id) = 0;
 
+        virtual std::string GetQuery() const = 0;
         virtual std::vector<DocId> GetExpected() const = 0;
         virtual std::vector<DocId> GetObserved() const = 0;
         virtual std::vector<DocId> GetTruePositives() const = 0;

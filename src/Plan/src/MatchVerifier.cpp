@@ -53,6 +53,13 @@ namespace BitFunnel
     }
 
 
+
+    std::string MatchVerifier::GetQuery() const
+    {
+        return m_query;
+    }
+
+
     //
     // Vector getters
     //
@@ -182,6 +189,8 @@ namespace BitFunnel
 
     void MatchVerifier::Print(std::ostream & out) const
     {
+        out << "query: " << m_query << std::endl;
+
         out << "False Positives: ";
         PrintDocIdVector(out, m_falsePositives);
         out << std::endl;
