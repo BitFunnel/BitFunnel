@@ -439,13 +439,10 @@ namespace BitFunnel
     {
         allocator.Reset();
 
-        std::stringstream s;
-        s << input;
-
         auto streamConfiguration = Factories::CreateStreamConfiguration();
         streamConfiguration->AddMapping("body", { 123 });
         streamConfiguration->AddMapping("stream", { 123 });
-        QueryParser parser(s, *streamConfiguration, allocator);
+        QueryParser parser(input.c_str(), *streamConfiguration, allocator);
 
         //std::cout << "input length: " << s.str().size() << std::endl;
         std::cout

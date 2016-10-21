@@ -36,7 +36,7 @@
 
 namespace BitFunnel
 {
-    QueryParser::QueryParser(std::istream& input,
+    QueryParser::QueryParser(char const * input,
                              IStreamConfiguration const & streamConfiguration,
                              IAllocator& allocator)
         : m_input(input),
@@ -293,15 +293,10 @@ namespace BitFunnel
     {
         if (!m_haveChar)
         {
-            int temp = m_input.get();
-            // See https://github.com/BitFunnel/BitFunnel/issues/189.
-            if (temp != -1)
+            m_nextChar = *m_input;
+            if (m_nextChar != '\0')
             {
-                m_nextChar = static_cast<char>(temp);
-            }
-            else
-            {
-                m_nextChar = '\0';
+                ++m_input;
             }
             m_haveChar = true;
         }

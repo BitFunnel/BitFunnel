@@ -23,7 +23,6 @@
 #include <iostream>  // Used for DiagnosticStream ref; not actually used.
 #include <memory>  // Used for std::unique_ptr of diagnosticStream. Probably temporary.
 #include <ostream>
-#include <sstream>
 
 #include "Allocator.h"
 #include "BitFunnel/Configuration/Factories.h"
@@ -123,8 +122,7 @@ namespace BitFunnel
 
         // TODO: Shouldn't use an std::stringstream here.
         // Just causes an extra copy and allocation per query.
-        std::stringstream s(m_queries[queryId]);
-        QueryParser parser(s, m_config, *m_allocator);
+        QueryParser parser(m_queries[queryId].c_str(), m_config, *m_allocator);
         auto tree = parser.Parse();
 
         // TODO: remove diagnosticStream and replace with nullable.
