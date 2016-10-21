@@ -411,7 +411,6 @@ namespace BitFunnel
             std::cout << "Results:" << std::endl;
             statistics.Print(std::cout);
         }
-        std::cout << "NOT IMPLEMENTED" << std::endl;
     }
 
 
@@ -419,11 +418,10 @@ namespace BitFunnel
     {
         return Documentation(
             "query",
-            "Process a single query or list of queries. (TODO)",
+            "Process a single query or list of queries.",
             "query (one <expression>) | (log <file>)\n"
             "  Processes a single query or a list of queries\n"
             "  specified by a file.\n"
-            "  NOT IMPLEMENTED"
             );
     }
 
