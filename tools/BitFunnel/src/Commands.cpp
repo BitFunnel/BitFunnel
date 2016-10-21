@@ -26,6 +26,7 @@
 #include <istream>
 #include <string>
 #include <thread>       // sleep_for, this_thread
+#include <unordered_map>  // For debugging.
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
@@ -811,6 +812,8 @@ namespace BitFunnel
                 verifiers.emplace_back(VerifyOneQuery(GetEnvironment(), query));
             }
 
+            // TODO: remove this temporary code.
+            std::unordered_map<DocId, uint64_t> falsePositiveHistogram;
             for (const auto & verifier : verifiers)
             {
                 if (verifier->GetNumFalseNegatives() > 0)
@@ -818,6 +821,16 @@ namespace BitFunnel
                     verifier->Print(std::cout);
                     throw RecoverableError("MatchVerifier: false negative detected.");
                 }
+                std::vector<DocId> falsePositives = verifier->GetFalsePositives();
+                // TODO: remove this temporary code.
+                for (size_t i = 0; i < falsePositives.size(); ++i)
+                {
+                    ++falsePositiveHistogram[falsePositives[i]];
+                }
+            }
+            for (const auto & p : falsePositiveHistogram)
+            {
+                std::cout << p.first << "," << p.second << std::endl;
             }
         }
     }
