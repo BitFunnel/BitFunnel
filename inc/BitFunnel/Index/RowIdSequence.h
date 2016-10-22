@@ -81,7 +81,7 @@ namespace BitFunnel
                 if (m_current == m_rowIds.m_rowIdCount)
                 {
                     // We're at the end.
-                    RecoverableError error("TermInfo2::operator++: no more RowIds.");
+                    RecoverableError error("RowIdSequence::operator++: no more RowIds.");
                     throw error;
                 }
                 ++m_current;
@@ -93,7 +93,7 @@ namespace BitFunnel
                 if (m_current == m_rowIds.m_rowIdCount)
                 {
                     // We're at the end.
-                    RecoverableError error("TermInfo2::operator++: no more RowIds.");
+                    RecoverableError error("RowIdSequence::operator++: no more RowIds.");
                     throw error;
                 }
                 return m_rowIds.GetRow(m_current);
