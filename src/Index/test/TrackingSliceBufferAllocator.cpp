@@ -63,7 +63,7 @@ namespace BitFunnel
         std::lock_guard<std::mutex> lock(m_lock);
 
         const auto it = m_allocatedBuffers.find(buffer);
-        EXPECT_NE(it, m_allocatedBuffers.end());
+        ASSERT_NE(it, m_allocatedBuffers.end());
 
         free(buffer);
 
