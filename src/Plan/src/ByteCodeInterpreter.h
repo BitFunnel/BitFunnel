@@ -257,7 +257,16 @@ namespace BitFunnel
 
     inline std::ostream& operator<<(std::ostream& out, const ByteCodeInterpreter::Opcode value)
     {
+        // Work-around for what is believed to be a bug in g++ v5.4.0 (among
+        // other versions). See detailed discussion in #225.
+#ifndef BITFUNNEL_PLATFORM_WINDOWS
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
         out << c_opcodeNames[static_cast<size_t>(value)];
+#ifndef BITFUNNEL_PLATFORM_WINDOWS
+#pragma GCC diagnostic pop
+#endif
         return out;
     }
 
