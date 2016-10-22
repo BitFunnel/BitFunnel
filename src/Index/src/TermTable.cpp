@@ -280,7 +280,7 @@ namespace BitFunnel
         // System term rows and fact rows are included in Rank 0, but not other
         // ranks.
         return m_sharedRowCounts[rank] +
-            ((rank == 0) ? (SystemTerm::Count + m_factRowCount) : 0);
+            ((rank == 0) ? (/*SystemTerm::Count +*/ m_factRowCount) : 0);
     }
 
 

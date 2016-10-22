@@ -73,7 +73,7 @@ namespace BitFunnel
         // time.
         void Initialize(void* sliceBuffer, ITermTable const & termTable) const;
 
-        // No cleanup method required.
+        RowIndex GetRowCount() const;
 
         // Gets a bit in the given row and column.
         uint64_t GetBit(void* sliceBuffer, RowIndex rowIndex, DocIndex docIndex) const;

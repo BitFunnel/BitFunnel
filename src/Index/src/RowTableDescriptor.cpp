@@ -110,6 +110,11 @@ namespace BitFunnel
     }
 
 
+    RowIndex RowTableDescriptor::GetRowCount() const
+    {
+        return m_rowCount;
+    }
+
     uint64_t RowTableDescriptor::GetBit(void* sliceBuffer,
                                     RowIndex rowIndex,
                                     DocIndex docIndex) const
