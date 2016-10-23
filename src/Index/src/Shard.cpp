@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
@@ -30,6 +29,7 @@
 #include "BitFunnel/Index/Token.h"
 #include "BitFunnel/Term.h"
 #include "IRecyclable.h"
+#include "LoggerInterfaces/Check.h"
 #include "LoggerInterfaces/Logging.h"
 #include "Recycler.h"
 #include "Rounding.h"
@@ -407,7 +407,7 @@ namespace BitFunnel
 
 
     void Shard::TemporaryWriteDocumentFrequencyTable(std::ostream& out,
-                                                     TermToText const * termToText) const
+                                                     ITermToText const * termToText) const
     {
         // TODO: 0.0 is the truncation frequency, which shouldn't be fixed at 0.
         m_docFrequencyTableBuilder->WriteFrequencies(out, 0.0, termToText);
@@ -424,6 +424,49 @@ namespace BitFunnel
     void Shard::TemporaryWriteCumulativeTermCounts(std::ostream& out) const
     {
         m_docFrequencyTableBuilder->WriteCumulativeTermCounts(out);
+    }
+
+
+    std::vector<double>
+        Shard::GetDensities(Rank rank) const
+    {
+        // TODO: Grab token
+        std::vector<void*> const & buffers = *m_sliceBuffers;
+        RowTableDescriptor const & rowTable = m_rowTables[rank];
+        RowTableDescriptor const & rowTable0 = m_rowTables[0];
+
+        RowIndex active = (*RowIdSequence(m_termTable.GetDocumentActiveTerm(),
+                                          m_termTable).begin()).GetIndex();
+
+        std::vector<double> densities;
+        for (RowIndex row = 0; row < rowTable.GetRowCount(); ++row)
+        {
+            size_t activeBitCount = 0;
+            size_t setBitCount = 0;
+            for (auto buffer : buffers)
+            {
+                for (DocIndex doc = 0; doc < GetSliceCapacity(); ++doc)
+                {
+                    // Only count bits for active documents.
+                    if (rowTable0.GetBit(buffer, active, doc) == 1)
+                    {
+                        // This document is active in the index.
+                        // Go ahead and include its bits in the density
+                        // calculation.
+                        ++activeBitCount;
+                        setBitCount += rowTable.GetBit(buffer, row, doc);
+                    }
+                }
+            }
+            double density =
+                (activeBitCount == 0) ?
+                0.0 :
+                static_cast<double>(setBitCount) / activeBitCount;
+
+            densities.push_back(density);
+        }
+
+        return densities;
     }
 
 

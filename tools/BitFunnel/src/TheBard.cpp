@@ -97,7 +97,8 @@ namespace BitFunnel
                 "BitFunnel",
                 "statistics",
                 "manifest.txt",
-                "config"
+                "config",
+                "-text"
             };
 
             std::stringstream ignore;

@@ -32,7 +32,7 @@
 
 namespace BitFunnel
 {
-    class TermToText;
+    class ITermToText;
 
     //*************************************************************************
     //
@@ -83,7 +83,7 @@ namespace BitFunnel
         // (ie. callers to OnDocumentEnter() and OnTerm()).
         void WriteFrequencies(std::ostream& output,
                               double truncateBelowFrequency,
-                              TermToText const * termToText) const;
+                              ITermToText const * termToText) const;
 
 
         // Writes the document frequency data to a stream in the binary format

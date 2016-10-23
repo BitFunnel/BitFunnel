@@ -48,8 +48,13 @@ namespace BitFunnel
         void StartIndex();
 
         IFileSystem & GetFileSystem() const;
+
         bool GetFailOnException() const;
         void SetFailOnException(bool mode);
+
+        std::string const & GetOutputDir() const;
+        void SetOutputDir(std::string dir);
+
         TaskFactory & GetTaskFactory() const;
         TaskPool & GetTaskPool() const;
         IConfiguration const & GetConfiguration() const;
@@ -67,5 +72,6 @@ namespace BitFunnel
         std::unique_ptr<ISimpleIndex> m_index;
 
         bool m_failOnException;
+        std::string m_outputDir;
     };
 }

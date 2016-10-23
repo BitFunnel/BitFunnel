@@ -27,6 +27,35 @@
 
 namespace BitFunnel
 {
+    class Analyze : public TaskBase
+    {
+    public:
+        Analyze(Environment & environment,
+                Id id,
+                char const * parameters);
+
+        virtual void Execute() override;
+        static ICommand::Documentation GetDocumentation();
+
+    private:
+    };
+
+
+    class Cd : public TaskBase
+    {
+    public:
+        Cd(Environment & environment,
+           Id id,
+           char const * parameters);
+
+        virtual void Execute() override;
+        static ICommand::Documentation GetDocumentation();
+
+    private:
+        std::string m_dir;
+    };
+
+
     class DelayedPrint : public TaskBase
     {
     public:

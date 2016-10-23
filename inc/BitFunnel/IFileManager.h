@@ -78,6 +78,8 @@ namespace BitFunnel
         //virtual FileDescriptor0 CommonNegatedTerms() = 0;
         //virtual FileDescriptor0 CommonPhrases() = 0;
         //virtual FileDescriptor0 DocFreqTable() = 0;
+        virtual FileDescriptor0 ColumnDensities() = 0;
+        virtual FileDescriptor0 ColumnDensitySummary() = 0;
         virtual FileDescriptor0 DocumentLengthHistogram() = 0;
         //virtual FileDescriptor0 L1RankerConfig() = 0;
         //virtual FileDescriptor0 Manifest() = 0;
@@ -106,6 +108,7 @@ namespace BitFunnel
         virtual FileDescriptor1 IndexedIdfTable(size_t shard) = 0;
         //virtual FileDescriptor1 DocTable(size_t shard) = 0;
         //virtual FileDescriptor1 ScoreTable(size_t shard) = 0;
+        virtual FileDescriptor1 RowDensities(size_t shard) = 0;
         virtual FileDescriptor1 TermTable(size_t shard) = 0;
 
         //virtual FileDescriptor2 IndexSlice(size_t shard,

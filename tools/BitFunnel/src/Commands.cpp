@@ -25,8 +25,8 @@
 #include <iostream>
 #include <istream>
 #include <string>
-#include <thread>       // sleep_for, this_thread
-#include <unordered_map>  // For debugging.
+#include <thread>           // sleep_for, this_thread
+#include <unordered_map>    // For debugging.
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
@@ -34,7 +34,6 @@
 #include "BitFunnel/Data/Sonnets.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IDiagnosticStream.h"
-#include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IChunkManifestIngestor.h"
 #include "BitFunnel/Index/IDocument.h"
@@ -49,13 +48,86 @@
 #include "BitFunnel/Plan/QueryRunner.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
 #include "BitFunnel/Term.h"
+#include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/ReadLines.h"
 #include "Commands.h"
 #include "Environment.h"
+#include "LoggerInterfaces/Check.h"
 
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // Analyze - analyze row table densities.
+    //
+    //*************************************************************************
+    Analyze::Analyze(Environment & environment,
+                     Id id,
+                     char const * /*parameters*/)
+        : TaskBase(environment, id, Type::Synchronous)
+    {
+    }
+
+
+    void Analyze::Execute()
+    {
+        CHECK_NE(*GetEnvironment().GetOutputDir().c_str(), '\0')
+            << "Output directory not set. "
+            << "Please use the 'cd' command to set an "
+            << "output directory";
+
+        Factories:: AnalyzeRowTables(GetEnvironment().GetSimpleIndex(),
+                                     GetEnvironment().GetOutputDir().c_str());
+    }
+
+
+    ICommand::Documentation Analyze::GetDocumentation()
+    {
+        return Documentation(
+            "analyze",
+            "Analyzes RowTables statistics (e.g. row and column densities).",
+            "analyze\n"
+            "  Analyzes RowTables statistics (e.g. row and column densities).\n"
+        );
+    }
+
+
+    //*************************************************************************
+    //
+    // Cd - change output directory
+    //
+    //*************************************************************************
+    Cd::Cd(Environment & environment,
+           Id id,
+           char const * parameters)
+        : TaskBase(environment, id, Type::Synchronous)
+    {
+        m_dir = TaskFactory::GetNextToken(parameters);
+    }
+
+
+    void Cd::Execute()
+    {
+        GetEnvironment().SetOutputDir(m_dir);
+        std::cout
+            << "output directory is now \""
+            << m_dir
+            << "\"." << std::endl;
+    }
+
+
+    ICommand::Documentation Cd::GetDocumentation()
+    {
+        return Documentation(
+            "cd",
+            "Change the output directory",
+            "cd <path>\n"
+            "  Changes the output directory to the specified path.\n"
+        );
+    }
+
+
     //*************************************************************************
     //
     // DelayedPrint
@@ -86,7 +158,7 @@ namespace BitFunnel
             "delay <message>\n"
             "  Sample command to test multi-threading architecture.\n"
             "  Waits for 5 seconds then prints <message> to the console."
-            );
+        );
     }
 
 

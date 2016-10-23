@@ -28,8 +28,8 @@ set(CPPFILES
     RowId.cpp
     RowIdSequence.cpp
     RowConfiguration.cpp
+    RowTableAnalyzer.cpp
     RowTableDescriptor.cpp
-    RowTableStatistics.cpp
     Shard.cpp
     SimpleIndex.cpp
     Slice.cpp
@@ -72,7 +72,7 @@ set(PRIVATE_HFILES
     IRecyclable.h
     Recycler.h
     RowTableDescriptor.h
-    RowTableStatistics.h
+    RowTableAnalyzer.h
     Shard.h
     SimpleIndex.h
     Slice.h

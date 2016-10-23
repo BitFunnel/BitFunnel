@@ -42,11 +42,11 @@ namespace BitFunnel
     //class IDocumentDataSchema;
     class ISliceBufferAllocator;
     class ITermTable;
+    class ITermToText;
     class ITokenManager;
     class IRecycler;
     class Slice;
     class Term;     // TODO: Remove this temporary declaration.
-    class TermToText;
 
 
     //*************************************************************************
@@ -80,14 +80,12 @@ namespace BitFunnel
         void AssertFact(FactHandle fact, bool value, DocIndex index, void* sliceBuffer);
 
         void TemporaryRecordDocument();
-        void TemporaryWriteDocumentFrequencyTable(std::ostream& out,
-                                                  TermToText const * termToText) const;
         void TemporaryWriteIndexedIdfTable(std::ostream& out) const;
         void TemporaryWriteCumulativeTermCounts(std::ostream& out) const;
 
 
         //
-        // IShardIndex APIs.
+        // IShard APIs.
         //
 
         // Returns the Id of the shard.
@@ -95,16 +93,26 @@ namespace BitFunnel
 
         // Returns capacity of a single Slice in the Shard. All Slices in the
         // Shard have the same capacity.
-        virtual DocIndex GetSliceCapacity() const;
+        virtual DocIndex GetSliceCapacity() const override;
 
         // Returns a vector of slice buffers for this shard.  The callers needs
         // to obtain a Token from ITokenManager to protect the pointer to the
         // list of slice buffers, as well as the buffers themselves.
-        virtual std::vector<void*> const & GetSliceBuffers() const;
+        virtual std::vector<void*> const & GetSliceBuffers() const override;
 
         // Returns the offset of the row in the slice buffer in a shard.
-        virtual ptrdiff_t GetRowOffset(RowId rowId) const;
+        virtual ptrdiff_t GetRowOffset(RowId rowId) const override;
 
+        virtual void TemporaryWriteDocumentFrequencyTable(
+            std::ostream& out,
+            ITermToText const * termToText) const override;
+
+        // Returns an std::vector containing the bit densities for each row in
+        // the RowTable with the specified rank. Bit densities are computed
+        // over all slices, for those columns that correspond to active
+        // documents.
+        virtual std::vector<double>
+            GetDensities(Rank rank) const override;
         //
         // Shard exclusive members.
         //

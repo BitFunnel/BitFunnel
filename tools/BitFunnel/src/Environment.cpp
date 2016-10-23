@@ -50,6 +50,8 @@ namespace BitFunnel
 
     void Environment::RegisterCommands()
     {
+        m_taskFactory->RegisterCommand<Analyze>();
+        m_taskFactory->RegisterCommand<Cd>();
         m_taskFactory->RegisterCommand<DelayedPrint>();
         m_taskFactory->RegisterCommand<Exit>();
         m_taskFactory->RegisterCommand<FailOnException>();
@@ -85,6 +87,18 @@ namespace BitFunnel
     void Environment::SetFailOnException(bool mode)
     {
         m_failOnException = mode;
+    }
+
+
+    std::string const & Environment::GetOutputDir() const
+    {
+        return m_outputDir;
+    }
+
+
+    void Environment::SetOutputDir(std::string dir)
+    {
+        m_outputDir = dir;
     }
 
 

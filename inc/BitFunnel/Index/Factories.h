@@ -56,6 +56,9 @@ namespace BitFunnel
 
     namespace Factories
     {
+        void AnalyzeRowTables(ISimpleIndex const & index,
+                              char const * outDir);
+
         std::unique_ptr<IChunkManifestIngestor>
             CreateBuiltinChunkManifest(
                 std::vector<std::pair<size_t, char const *>> const & chunks,

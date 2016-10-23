@@ -48,7 +48,16 @@ namespace BitFunnel
                              char const * statisticsDirectory,
                              char const * indexDirectory,
                              IFileSystem & fileSystem)
-        : m_cumulativeTermCounts(new ParameterizedFile1(fileSystem,
+        : m_columnDensities(new ParameterizedFile0(fileSystem,
+                                                   statisticsDirectory,
+                                                   "ColumnDensities",
+                                                   ".csv")),
+          m_columnDensitySummary(
+              new ParameterizedFile0(fileSystem,
+                                     statisticsDirectory,
+                                     "ColumnDensitySummary",
+                                     ".txt")),
+          m_cumulativeTermCounts(new ParameterizedFile1(fileSystem,
                                                         statisticsDirectory,
                                                         "CumulativeTermCounts",
                                                         ".csv")),
@@ -63,6 +72,11 @@ namespace BitFunnel
                                                    indexDirectory,
                                                    "IndexedIdfTable",
                                                    ".bin")),
+          m_rowDensities(
+              new ParameterizedFile1(fileSystem,
+                                     statisticsDirectory,
+                                     "RowDensities",
+                                     ".csv")),
           m_termTable(new ParameterizedFile1(fileSystem,
                                              indexDirectory,
                                              "TermTable",
@@ -78,6 +92,18 @@ namespace BitFunnel
     //
     // FileDescriptor0 files.
     //
+
+    FileDescriptor0 FileManager::ColumnDensities()
+    {
+        return FileDescriptor0(*m_columnDensities);
+    }
+
+
+    FileDescriptor0 FileManager::ColumnDensitySummary()
+    {
+        return FileDescriptor0(*m_columnDensitySummary);
+    }
+
 
     FileDescriptor0 FileManager::DocumentLengthHistogram()
     {
@@ -110,6 +136,12 @@ namespace BitFunnel
     FileDescriptor1 FileManager::IndexedIdfTable(size_t shard)
     {
         return FileDescriptor1(*m_indexedIdfTable, shard);
+    }
+
+
+    FileDescriptor1 FileManager::RowDensities(size_t shard)
+    {
+        return FileDescriptor1(*m_rowDensities, shard);
     }
 
 

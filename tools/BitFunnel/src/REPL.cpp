@@ -26,6 +26,7 @@
 #include "BitFunnel/Utilities/ReadLines.h"
 #include "CmdLineParser/CmdLineParser.h"
 #include "Environment.h"
+#include "LoggerInterfaces/Check.h"
 #include "REPL.h"
 #include "TaskFactory.h"
 #include "TaskPool.h"
@@ -231,6 +232,22 @@ namespace BitFunnel
             catch (RecoverableError e)
             {
                 output << "Error: " << e.what() << std::endl;
+                if (environment.GetFailOnException())
+                {
+                    throw e;
+                }
+            }
+            catch (FatalError e)
+            {
+                output << "Fatal Error: " << e.what() << std::endl;
+                throw e;
+            }
+            catch (Logging::CheckException e)
+            {
+                output
+                    << "Error: "
+                    << e.GetMessage()
+                    << std::endl;
                 if (environment.GetFailOnException())
                 {
                     throw e;

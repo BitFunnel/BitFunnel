@@ -48,6 +48,8 @@ namespace BitFunnel
         //virtual FileDescriptor0 CommonNegatedTerms() override;
         //virtual FileDescriptor0 CommonPhrases() override;
         //virtual FileDescriptor0 DocFreqTable() override;
+        virtual FileDescriptor0 ColumnDensities() override;
+        virtual FileDescriptor0 ColumnDensitySummary() override;
         virtual FileDescriptor0 DocumentLengthHistogram() override;
         //virtual FileDescriptor0 L1RankerConfig() override;
         //virtual FileDescriptor0 Manifest() override;
@@ -73,15 +75,19 @@ namespace BitFunnel
         virtual FileDescriptor1 IndexedIdfTable(size_t shard) override;
         //virtual FileDescriptor1 DocTable(size_t shard) override;
         //virtual FileDescriptor1 ScoreTable(size_t shard) override;
+        virtual FileDescriptor1 RowDensities(size_t shard) override;
         virtual FileDescriptor1 TermTable(size_t shard) override;
 
         //virtual FileDescriptor2 IndexSlice(size_t shard, size_t slice) override;
 
     private:
+        std::unique_ptr<IParameterizedFile0> m_columnDensities;
+        std::unique_ptr<IParameterizedFile0> m_columnDensitySummary;
         std::unique_ptr<IParameterizedFile1> m_cumulativeTermCounts;
         std::unique_ptr<IParameterizedFile1> m_docFreqTable;
         std::unique_ptr<IParameterizedFile0> m_documentLengthHistogram;
         std::unique_ptr<IParameterizedFile1> m_indexedIdfTable;
+        std::unique_ptr<IParameterizedFile1> m_rowDensities;
         std::unique_ptr<IParameterizedFile1> m_termTable;
         std::unique_ptr<IParameterizedFile0> m_termToText;
     };

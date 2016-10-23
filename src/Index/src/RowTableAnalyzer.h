@@ -22,26 +22,35 @@
 
 #pragma once
 
-#include <array>                            // std::arrray embedded.
-#include <iosfwd>                           // std::ostream paramter.
-#include <vector>                           // std::vector embedded.
+#include <array>                                // std::arrray embedded.
+#include <iosfwd>                               // std::ostream paramter.
+#include <vector>                               // std::vector embedded.
 
-#include "BitFunnel/BitFunnelTypes.h"       // DocId embedded.
+#include "BitFunnel/BitFunnelTypes.h"           // DocId embedded.
+#include "BitFunnel/Utilities/Accumulator.h"    // Accumulator embedded.
 
 
 namespace BitFunnel
 {
+    class IFileManager;
     class ISimpleIndex;
+    class ITermToText;
 
-    class RowTableStatistics
+    class RowTableAnalyzer
     {
     public:
-        RowTableStatistics(ISimpleIndex & index);
+        RowTableAnalyzer(ISimpleIndex const & index);
 
-        void Write(std::ostream& out) const;
-        void Summarize(std::ostream& out) const;
+        void AnalyzeRows(char const * outDir) const;
+        void AnalyzeColumns(char const * outDir) const;
 
     private:
+        void AnalyzeRowsInOneShard(
+            ShardId const & shardId,
+            ITermToText const & termToText,
+            std::ostream& out) const;
+
+
         class Column
         {
         public:
@@ -50,15 +59,16 @@ namespace BitFunnel
             void SetCount(Rank rank, size_t bitCount);
             void SetDensity(Rank rank, double density);
 
+            static void WriteHeader(std::ostream& out);
             void Write(std::ostream& out);
 
             DocId m_id;
             size_t m_postings;
             ShardId m_shard;
-            std::array<size_t, c_maxRankValue> m_bits;
-            std::array<double, c_maxRankValue> m_densities;
+            std::array<size_t, c_maxRankValue + 1> m_bits;
+            std::array<double, c_maxRankValue + 1> m_densities;
         };
 
-        std::vector<Column> m_columns;
+        ISimpleIndex const & m_index;
     };
 }

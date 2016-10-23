@@ -23,6 +23,7 @@
 #pragma once
 
 #include <cstddef>                      // ptrdiff_t return value.
+#include <iosfwd>                       // std::ostream parameter.
 
 #include "BitFunnel/BitFunnelTypes.h"   // DocIndex return value.
 #include "BitFunnel/IInterface.h"       // Base class.
@@ -31,8 +32,7 @@
 
 namespace BitFunnel
 {
-
-    class TermToText;
+    class ITermToText;
 
     class IShard : public IInterface
     {
@@ -52,8 +52,15 @@ namespace BitFunnel
         // Returns the offset of the row in the slice buffer in a shard.
         virtual ptrdiff_t GetRowOffset(RowId rowId) const = 0;
 
-        virtual void TemporaryWriteDocumentFrequencyTable(std::ostream& out,
-                                                  TermToText const * termToText) const = 0;
+        virtual void TemporaryWriteDocumentFrequencyTable(
+            std::ostream& out,
+            ITermToText const * termToText) const = 0;
 
+        // Returns an std::vector containing the bit densities for each row in
+        // the RowTable with the specified rank. Bit densities are computed
+        // over all slices, for those columns that correspond to active
+        // documents.
+        virtual std::vector<double>
+            GetDensities(Rank rank) const = 0;
     };
 }
