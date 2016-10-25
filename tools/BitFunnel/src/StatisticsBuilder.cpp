@@ -167,7 +167,7 @@ namespace BitFunnel
 
         if (generateStatistics)
         {
-            TermToText const * termToText = nullptr;
+            ITermToText const * termToText = nullptr;
             if (configuration.KeepTermText())
             {
                 termToText = &configuration.GetTermToText();

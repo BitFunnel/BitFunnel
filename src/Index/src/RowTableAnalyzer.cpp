@@ -168,9 +168,7 @@ namespace BitFunnel
             const DocumentHandleInternal
                 handle(ingestor.GetHandle(doc.second));
 
-            // TODO: GetSlice() should return Slice&, not Slice*
             Slice const & slice = handle.GetSlice();
-
             const ShardId shard = slice.GetShard().GetId();
 
             columns.emplace_back(doc.second,

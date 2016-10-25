@@ -40,11 +40,7 @@
 
 namespace BitFunnel
 {
-    class IDocument;
     class IDocumentDataSchema;
-    class IFileManager;
-    class IIndexedIdfTable;
-    class IRecycler;
     class IShardDefinition;
     class ISliceBufferAllocator;
     class ITermTableCollection;
@@ -74,7 +70,7 @@ namespace BitFunnel
         //      DocumentFrequencyTable (with term text if termToText provided)
         //      IndexedIdfTable
         virtual void WriteStatistics(IFileManager & fileManager,
-                                     TermToText const * termToText) const override;
+                                     ITermToText const * termToText) const override;
 
 
         // Returns a reference to the IDocument cache. This cache holds ingested

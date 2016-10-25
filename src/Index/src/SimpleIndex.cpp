@@ -78,6 +78,16 @@ namespace BitFunnel
     }
 
 
+    void SimpleIndex::SetFactSet(
+        std::unique_ptr<IFactSet> facts)
+    {
+        EnsureStarted(false);
+        CHECK_EQ(m_facts.get(), nullptr)
+            << "Attempting to overwrite existing FactSet.";
+        m_facts = std::move(facts);
+    }
+
+
     void SimpleIndex::SetFileManager(
         std::unique_ptr<IFileManager> fileManager)
     {
@@ -208,12 +218,18 @@ namespace BitFunnel
             m_idfTable = Factories::CreateIndexedIdfTable();
         }
 
+        if (m_facts.get() == nullptr)
+        {
+            m_facts = Factories::CreateFactSet();
+        }
+
         if (m_configuration.get() == nullptr)
         {
             m_configuration =
                 Factories::CreateConfiguration(gramSize,
                                                generateTermToText,
-                                               *m_idfTable);
+                                               *m_idfTable,
+                                               *m_facts);
         }
     }
 
@@ -265,12 +281,18 @@ namespace BitFunnel
             m_idfTable = Factories::CreateIndexedIdfTable(*input, defaultIdf);
         }
 
+        if (m_facts.get() == nullptr)
+        {
+            m_facts = Factories::CreateFactSet();
+        }
+
         if (m_configuration.get() == nullptr)
         {
             m_configuration =
                 Factories::CreateConfiguration(gramSize,
                                                generateTermToText,
-                                               *m_idfTable);
+                                               *m_idfTable,
+                                               *m_facts);
         }
     }
 
@@ -305,12 +327,18 @@ namespace BitFunnel
             m_idfTable = Factories::CreateIndexedIdfTable();
         }
 
+        if (m_facts.get() == nullptr)
+        {
+            m_facts = Factories::CreateFactSet();
+        }
+
         if (m_configuration.get() == nullptr)
         {
             m_configuration =
                 Factories::CreateConfiguration(gramSize,
                                                generateTermToText,
-                                               *m_idfTable);
+                                               *m_idfTable,
+                                               *m_facts);
         }
     }
 

@@ -31,6 +31,7 @@ namespace BitFunnel
 {
     class IConfiguration;
     class IDocumentDataSchema;
+    class IFactSet;
     class IFileManager;
     class IFileSystem;
     class IIndexedIdfTable;
@@ -57,6 +58,8 @@ namespace BitFunnel
 
         virtual void SetConfiguration(
             std::unique_ptr<IConfiguration> config) = 0;
+        virtual void SetFactSet(
+            std::unique_ptr<IFactSet> facts) = 0;
         virtual void SetFileManager(
             std::unique_ptr<IFileManager> fileManager) = 0;
         //virtual void SetFileSystem(

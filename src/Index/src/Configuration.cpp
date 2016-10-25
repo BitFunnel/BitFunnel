@@ -30,19 +30,23 @@ namespace BitFunnel
     std::unique_ptr<IConfiguration>
         Factories::CreateConfiguration(size_t maxGramSize,
                                        bool keepTermText,
-                                       IIndexedIdfTable const & idfTable)
+                                       IIndexedIdfTable const & idfTable,
+                                       IFactSet const & facts)
     {
         return std::unique_ptr<IConfiguration>(new Configuration(maxGramSize,
                                                                  keepTermText,
-                                                                 idfTable));
+                                                                 idfTable,
+                                                                 facts));
     }
 
 
     Configuration::Configuration(size_t maxGramSize,
                                  bool keepTermText,
-                                 IIndexedIdfTable const & idfTable)
-        : m_maxGramSize(maxGramSize),
-          m_idfTable(idfTable)
+                                 IIndexedIdfTable const & idfTable,
+                                 IFactSet const & facts)
+      : m_maxGramSize(maxGramSize),
+        m_idfTable(idfTable),
+        m_facts(facts)
     {
         if (keepTermText)
         {
@@ -63,7 +67,7 @@ namespace BitFunnel
     }
 
 
-    TermToText & Configuration::GetTermToText() const
+    ITermToText & Configuration::GetTermToText() const
     {
         return *(m_termToText.get());
     }
@@ -72,5 +76,11 @@ namespace BitFunnel
     IIndexedIdfTable const & Configuration::GetIdfTable() const
     {
         return m_idfTable;
+    }
+
+
+    IFactSet const & Configuration::GetFactSet() const
+    {
+        return m_facts;
     }
 }

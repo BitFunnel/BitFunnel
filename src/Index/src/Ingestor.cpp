@@ -106,7 +106,7 @@ namespace BitFunnel
 
 
     void Ingestor::WriteStatistics(IFileManager & fileManager,
-                                   TermToText const * termToText) const
+                                   ITermToText const * termToText) const
     {
         if (termToText != nullptr)
         {

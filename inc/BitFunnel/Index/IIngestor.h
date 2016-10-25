@@ -39,7 +39,7 @@ namespace BitFunnel
     class IRecycler;
     class ITokenManager;
     class IShard;
-    class TermToText;
+    class ITermToText;
 
     // BITFUNNELTYPES
     // The documents in the BitFunnel index can be grouped into conceptual
@@ -77,7 +77,7 @@ namespace BitFunnel
         //      DocumentFrequencyTable (with term text if termToText provided)
         //      IndexedIdfTable
         virtual void WriteStatistics(IFileManager & fileManager,
-                                     TermToText const * termToText) const = 0;
+                                     ITermToText const * termToText) const = 0;
 
 
         // Returns a reference to the IDocument cache. This cache holds ingested

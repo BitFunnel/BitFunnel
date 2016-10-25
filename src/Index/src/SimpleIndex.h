@@ -57,6 +57,8 @@ namespace BitFunnel
         //
         virtual void SetConfiguration(
             std::unique_ptr<IConfiguration> config) override;
+        virtual void SetFactSet(
+            std::unique_ptr<IFactSet> facts) override;
         virtual void SetFileManager(
             std::unique_ptr<IFileManager> fileManager) override;
         //virtual void SetFileSystem(
@@ -114,6 +116,7 @@ namespace BitFunnel
         //
 
 //        std::unique_ptr<IFileSystem> m_fileSystem;
+        std::unique_ptr<IFactSet> m_facts;
         std::unique_ptr<IFileManager> m_fileManager;
         std::unique_ptr<IDocumentDataSchema> m_schema;
         std::unique_ptr<IRecycler> m_recycler;

@@ -77,7 +77,8 @@ namespace BitFunnel
         std::unique_ptr<IConfiguration>
             CreateConfiguration(size_t maxGramSize,
                                 bool keepTermText,
-                                IIndexedIdfTable const & idfTable);
+                                IIndexedIdfTable const & idfTable,
+                                IFactSet const & facts);
 
         std::unique_ptr<IDocument>
             CreateDocument(IConfiguration const & configuration, DocId id);

@@ -23,8 +23,8 @@
 #pragma once
 
 #include <iosfwd>                           // std::istream parameter.
-#include <memory>                           // std::unique_ptr
-#include <string>                           // std::string template parameter.
+//#include <memory>                           // std::unique_ptr
+#include <string>                           // std::string embedded, template parameter.
 #include <unordered_map>                    // std::unordered_map embedded.
 
 #include "BitFunnel/Index/ITermToText.h"    // Base class.
@@ -52,21 +52,25 @@ namespace BitFunnel
         // Constructs a map from data previously persisted via Write().
         TermToText(std::istream & input);
 
+        //
+        // ITermToText methods.
+        //
+
+        // Adds a (Term::Hash, std::string) mapping. Note that only the first
+        // mapping for a particular Term::Hash will be recorded. Subsequent
+        // additions for the same Term::Hash will be ignored.
+        virtual void AddTerm(Term::Hash hash, std::string const & text) override;
+
+        // Returns the text for a particular Term::Hash, if that hash is in the
+        // map. Otherwise returns an empty string.
+        virtual std::string const & Lookup(Term::Hash hash) const override;
+
         // Persists the map to a stream. Data format is .csv with the following
         // columns:
         //   hash: Hexidecimal representation of the term hash
         //   text: Unquoted term text. May contain spaces if term's ngram size
         //         is greater than 1.
-        void Write(std::ostream& output) const;
-
-        // Adds a (Term::Hash, std::string) mapping. Note that only the first
-        // mapping for a particular Term::Hash will be recorded. Subsequent
-        // additions for the same Term::Hash will be ignored.
-        void AddTerm(Term::Hash hash, std::string const & text);
-
-        // Returns the text for a particular Term::Hash, if that hash is in the
-        // map. Otherwise returns an empty string.
-        virtual std::string const & Lookup(Term::Hash hash) const override;
+        virtual void Write(std::ostream& output) const override;
 
     private:
         // Empty string returned by Lookup() when hash is not in the map.

@@ -42,8 +42,20 @@ namespace BitFunnel
     class ITermToText : public IInterface
     {
     public:
+        // Adds a (Term::Hash, std::string) mapping. Note that only the first
+        // mapping for a particular Term::Hash will be recorded. Subsequent
+        // additions for the same Term::Hash will be ignored.
+        virtual void AddTerm(Term::Hash hash, std::string const & text) = 0;
+
         // Returns the text for a particular Term::Hash, if that hash is in the
         // map. Otherwise returns an empty string.
         virtual std::string const & Lookup(Term::Hash hash) const = 0;
+
+        // Persists the map to a stream. Data format is .csv with the following
+        // columns:
+        //   hash: Hexidecimal representation of the term hash
+        //   text: Unquoted term text. May contain spaces if term's ngram size
+        //         is greater than 1.
+        virtual void Write(std::ostream& output) const = 0;
     };
 }
