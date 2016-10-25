@@ -35,6 +35,7 @@
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
+#include "BitFunnel/Index/Token.h"
 #include "CsvTsv/Csv.h"
 #include "DocumentHandleInternal.h"
 #include "LoggerInterfaces/Check.h"
@@ -124,7 +125,7 @@ namespace BitFunnel
         for (auto dfEntry : *terms)
         {
             Term term = dfEntry.GetTerm();
-            RowIdSequence rows(term, m_index.GetTermTable()); // TODO: pass shard.
+            RowIdSequence rows(term, m_index.GetTermTable());
 
             formatter.WriteField(termToText.Lookup(term.GetRawHash()));
             formatter.WriteField(dfEntry.GetFrequency());

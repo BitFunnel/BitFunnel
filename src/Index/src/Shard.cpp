@@ -435,11 +435,18 @@ namespace BitFunnel
     }
 
 
-    std::vector<double>
-        Shard::GetDensities(Rank rank) const
+    std::vector<double> Shard::GetDensities(Rank rank) const
     {
-        // TODO: Grab token
+        // Hold a token to ensure that m_sliceBuffers won't be recycled.
+        auto token = m_tokenManager.RequestToken();
+
+        // m_sliceBuffers can change at any time, but we can safely grab a copy
+        // because
+        //   1. m_sliceBuffers is std::atomic.
+        //   2. no m_sliceBuffers value observed while holding token can be
+        //      recycled.
         std::vector<void*> const & buffers = *m_sliceBuffers;
+
         RowTableDescriptor const & rowTable = m_rowTables[rank];
         RowTableDescriptor const & rowTable0 = m_rowTables[0];
 
