@@ -158,7 +158,7 @@ namespace BitFunnel
                                                    DocId id)
         : DocumentHandle(slice, index)
     {
-        m_slice->GetDocTable().SetDocId(GetSlice()->GetSliceBuffer(),
+        m_slice->GetDocTable().SetDocId(GetSlice().GetSliceBuffer(),
                                         GetIndex(),
                                         id);
     }
@@ -170,9 +170,9 @@ namespace BitFunnel
     }
 
 
-    Slice* DocumentHandleInternal::GetSlice() const
+    Slice& DocumentHandleInternal::GetSlice() const
     {
-        return m_slice;
+        return *m_slice;
     }
 
 

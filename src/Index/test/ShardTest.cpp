@@ -79,10 +79,10 @@ namespace BitFunnel
                 const DocumentHandleInternal h = shard.AllocateDocument(i);
                 if (i % sliceCapacity == 0)
                 {
-                    EXPECT_NE(h.GetSlice(), currentSlice);
-                    slices.push_back(h.GetSlice());
+                    EXPECT_NE(&h.GetSlice(), currentSlice);
+                    slices.push_back(&h.GetSlice());
                 }
-                currentSlice = h.GetSlice();
+                currentSlice = &h.GetSlice();
             }
 
             EXPECT_EQ(trackingAllocator->GetInUseBuffersCount(),

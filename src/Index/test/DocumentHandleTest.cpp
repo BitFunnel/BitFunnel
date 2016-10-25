@@ -124,10 +124,10 @@ namespace BitFunnel
                 handles.push_back(h);
                 if (i % sliceCapacity == 0)
                 {
-                    EXPECT_NE(h.GetSlice(), currentSlice);
-                    slices.push_back(h.GetSlice());
+                    EXPECT_NE(&h.GetSlice(), currentSlice);
+                    slices.push_back(&h.GetSlice());
                 }
-                currentSlice = h.GetSlice();
+                currentSlice = &h.GetSlice();
         }
 
 

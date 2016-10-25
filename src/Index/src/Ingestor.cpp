@@ -167,7 +167,7 @@ namespace BitFunnel
 
         // TODO: REVIEW: Why are Activate() and CommitDocument() separate operations?
         handle.Activate();
-        handle.GetSlice()->CommitDocument();
+        handle.GetSlice().CommitDocument();
 
         // TODO: schedule for backup if Slice is full.
         // Consider if Slice::CommitDocument itself may schedule a backup when full.

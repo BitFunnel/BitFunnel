@@ -169,20 +169,20 @@ namespace BitFunnel
                 handle(ingestor.GetHandle(doc.second));
 
             // TODO: GetSlice() should return Slice&, not Slice*
-            Slice const * slice = handle.GetSlice();
+            Slice const & slice = handle.GetSlice();
 
-            const ShardId shard = slice->GetShard().GetId();
+            const ShardId shard = slice.GetShard().GetId();
 
             columns.emplace_back(doc.second,
                                  shard,
                                  doc.first.GetPostingCount());
 
-            void const * buffer = slice->GetSliceBuffer();
+            void const * buffer = slice.GetSliceBuffer();
             const DocIndex column = handle.GetIndex();
 
             for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
             {
-                RowTableDescriptor rowTable = slice->GetRowTable(rank);
+                RowTableDescriptor rowTable = slice.GetRowTable(rank);
 
                 size_t bitCount = 0;
                 const size_t rowCount = rowTable.GetRowCount();

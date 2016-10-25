@@ -64,7 +64,7 @@ namespace BitFunnel
         DocumentHandleInternal(DocumentHandle const &);
 
         // Returns the slice where the document resides.
-        Slice* GetSlice() const;
+        Slice& GetSlice() const;
 
         // Returns the column in the slice where the document resides.
         DocIndex GetIndex() const;
