@@ -63,7 +63,7 @@ namespace BitFunnel
         m_explicitRowCounts(c_maxRankValue + 1, 0),
         m_adhocRowCounts(c_maxRankValue + 1, 0),
         m_sharedRowCounts(c_maxRankValue + 1, 0),
-        m_factRowCount(0)                               // TODO: What about system terms?
+        m_factRowCount(SystemTerm::Count)
     {
         // Make an entry for the system rows.
         // TODO: Comment explaining why system rows are added first (rather than last).
@@ -224,6 +224,9 @@ namespace BitFunnel
         // Fact rows include the SystemTerm rows and one row for each user
         // defined fact.
         m_factRowCount = factCount + SystemTerm::Count;
+        std::cout << "SetFactCount(" << factCount << "):"
+                  << m_factRowCount << std::endl;
+        // m_factRowCount = factCount;
     }
 
 
@@ -279,8 +282,11 @@ namespace BitFunnel
     {
         // System term rows and fact rows are included in Rank 0, but not other
         // ranks.
-        return m_sharedRowCounts[rank] +
-            ((rank == 0) ? (SystemTerm::Count + m_factRowCount) : 0);
+        auto totalRowCount = m_sharedRowCounts[rank] +
+            ((rank == 0) ? (m_factRowCount + 3) : 0); // TODO: fix.
+        std::cout << "GetTotalRowCount(" << rank << "): "
+                  << totalRowCount << std::endl;
+        return totalRowCount;
     }
 
 
@@ -402,7 +408,7 @@ namespace BitFunnel
         // the first SystemTerm::Count rows after the adhoc and explicit rows.
         // Another way of saying this is that the system terms are associated
         // with FactHandles 0..SystemTerm::Last.
-        index += m_adhocRowCounts[0] + m_explicitRowCounts[0];
+        index += m_adhocRowCounts[0] + m_explicitRowCounts[0] - m_factRowCount;
 
         // Soft-deleted document row is the first one after all regular
         // rows. The caller specifies rowOffset = 0 in this case. The rationale

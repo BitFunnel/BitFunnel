@@ -320,9 +320,11 @@ namespace BitFunnel
             // Configurate row counts.
             const size_t explicitRowCount = 100;
             const size_t adhocRowCount = 200;
-            const size_t systemRowStart = explicitRowCount + adhocRowCount;
+            const size_t factCount = 7;
+            // System rows and additional facts live at the end of the explicitRow space and are explicit rows.
+            const size_t systemRowStart = adhocRowCount + explicitRowCount - factCount - 3;
             termTable.SetRowCounts(0, explicitRowCount, adhocRowCount);
-            termTable.SetFactCount(7);
+            termTable.SetFactCount(factCount);
             termTable.Seal();
 
 
