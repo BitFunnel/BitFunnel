@@ -94,7 +94,7 @@ namespace BitFunnel
                                              *fileSystem);
 
             AnalyzeRowsInOneShard(shardId,
-                                  termToText, 
+                                  termToText,
                                   *outFileManager->RowDensities(shardId).OpenForWrite());
         }
     }
@@ -247,8 +247,8 @@ namespace BitFunnel
 
     RowTableAnalyzer::Column::Column(DocId id, ShardId shard, size_t postings)
       : m_id(id),
-        m_shard(shard),
         m_postings(postings),
+        m_shard(shard),
         m_bits{}
     {
     }
