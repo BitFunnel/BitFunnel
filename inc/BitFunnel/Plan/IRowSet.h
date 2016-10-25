@@ -45,7 +45,7 @@ namespace BitFunnel
     class IRowSet
     {
     public:
-        virtual ~IRowSet() {};
+        virtual ~IRowSet() {}
 
         // Instructs the IRowSet to load into memory those rows that reside on
         // secondary storage such as SSD and HDD. Some implementations of the
