@@ -76,13 +76,19 @@ namespace BitFunnel
         RowIndex GetRowCount() const;
 
         // Gets a bit in the given row and column.
-        uint64_t GetBit(void* sliceBuffer, RowIndex rowIndex, DocIndex docIndex) const;
+        uint64_t GetBit(void const * sliceBuffer,
+                        RowIndex rowIndex,
+                        DocIndex docIndex) const;
 
         // Sets a bit in the given row and column.
-        void SetBit(void* sliceBuffer, RowIndex rowIndex, DocIndex docIndex) const;
+        void SetBit(void* sliceBuffer,
+                    RowIndex rowIndex,
+                    DocIndex docIndex) const;
 
         // Clears a bit in the given row and column.
-        void ClearBit(void* sliceBuffer, RowIndex rowIndex, DocIndex docIndex) const;
+        void ClearBit(void* sliceBuffer,
+                      RowIndex rowIndex,
+                      DocIndex docIndex) const;
 
         // Returns the offset of a row with the given index, relative to the
         // start of the sliceBuffer.
@@ -112,7 +118,10 @@ namespace BitFunnel
 
         // Helper method to seek to the data for the row with the given
         // RowIndex.
-        uint64_t* GetRowData(void* sliceBuffer, RowIndex rowIndex) const;
+        uint64_t* GetRowData(void* sliceBuffer,
+                             RowIndex rowIndex) const;
+        uint64_t const * GetRowData(void const * sliceBuffer,
+                                    RowIndex rowIndex) const;
 
         // Returns the QWORD number for the given DocIndex.
         size_t QwordPositionFromDocIndex(DocIndex docIndex) const;

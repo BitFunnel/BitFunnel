@@ -115,11 +115,11 @@ namespace BitFunnel
     }
 
 
-    uint64_t RowTableDescriptor::GetBit(void* sliceBuffer,
-                                    RowIndex rowIndex,
-                                    DocIndex docIndex) const
+    uint64_t RowTableDescriptor::GetBit(void const * sliceBuffer,
+                                        RowIndex rowIndex,
+                                        DocIndex docIndex) const
     {
-        uint64_t* const row = GetRowData(sliceBuffer, rowIndex);
+        uint64_t const * row = GetRowData(sliceBuffer, rowIndex);
         const size_t offset = QwordPositionFromDocIndex(docIndex);
         uint64_t bitPos = docIndex & 0x3F;
 
@@ -201,10 +201,23 @@ namespace BitFunnel
 
 
     uint64_t* RowTableDescriptor::GetRowData(void* sliceBuffer,
-                                            RowIndex rowIndex) const
+                                             RowIndex rowIndex) const
     {
-        char* rowData = reinterpret_cast<char*>(sliceBuffer) + GetRowOffset(rowIndex);
+        char* rowData =
+            reinterpret_cast<char*>(sliceBuffer) +
+            GetRowOffset(rowIndex);
         return reinterpret_cast<uint64_t*>(rowData);
+    }
+
+
+    uint64_t const *
+        RowTableDescriptor::GetRowData(void const * sliceBuffer,
+                                       RowIndex rowIndex) const
+    {
+        char const * rowData = 
+            reinterpret_cast<char const *>(sliceBuffer) +
+            GetRowOffset(rowIndex);
+        return reinterpret_cast<uint64_t const *>(rowData);
     }
 
 

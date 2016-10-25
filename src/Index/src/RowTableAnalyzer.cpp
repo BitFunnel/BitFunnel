@@ -177,7 +177,7 @@ namespace BitFunnel
                                  shard,
                                  doc.first.GetPostingCount());
 
-            void * buffer = slice->GetSliceBuffer();
+            void const * buffer = slice->GetSliceBuffer();
             const DocIndex column = handle.GetIndex();
 
             for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
@@ -188,8 +188,6 @@ namespace BitFunnel
                 const size_t rowCount = rowTable.GetRowCount();
                 for (RowIndex row = 0; row < rowCount; ++row)
                 {
-                    // TODO: GetBit should take void const *.
-                    // TODO: buffer should be void const *
                     bitCount +=
                         rowTable.GetBit(buffer, row, column);
                 }
