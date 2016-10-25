@@ -36,6 +36,7 @@
 #include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
+#include "CsvTsv/Csv.h"
 #include "DocumentHandleInternal.h"
 #include "LoggerInterfaces/Check.h"
 #include "RowTableAnalyzer.h"
@@ -117,13 +118,16 @@ namespace BitFunnel
             densities[rank] = shard.GetDensities(rank);
         }
 
+        // Use CsvTableFormatter to escape terms that contain commas and quotes.
+        CsvTsv::CsvTableFormatter formatter(out);
+
         for (auto dfEntry : *terms)
         {
             Term term = dfEntry.GetTerm();
             RowIdSequence rows(term, m_index.GetTermTable()); // TODO: pass shard.
 
-            out << termToText.Lookup(term.GetRawHash())
-                << "," << dfEntry.GetFrequency();
+            formatter.WriteField(termToText.Lookup(term.GetRawHash()));
+            formatter.WriteField(dfEntry.GetFrequency());
 
             std::stack<RowId> rowsReversed;
             for (auto row : rows)
@@ -134,12 +138,14 @@ namespace BitFunnel
             while (!rowsReversed.empty())
             {
                 auto row = rowsReversed.top();
-                out << ",r" << row.GetRank()
-                    << "," << row.GetIndex()
-                    << "," << densities[row.GetRank()][row.GetIndex()];
+                formatter.WriteField("r");
+                out << row.GetRank();
+                formatter.WriteField(row.GetIndex());
+                formatter.WriteField(densities[row.GetRank()][row.GetIndex()]);
+
                 rowsReversed.pop();
             }
-            out << std::endl;
+            formatter.WriteRowEnd();
         }
     }
 
@@ -207,6 +213,8 @@ namespace BitFunnel
         // Write out raw column data.
         //
         {
+            // No need to use CsvTableFormatter for escaping because all values
+            // are numbers.
             auto out = outFileManager->ColumnDensities().OpenForWrite();
             Column::WriteHeader(*out);
             for (auto column : columns)
