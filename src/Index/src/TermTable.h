@@ -176,6 +176,10 @@ namespace BitFunnel
 
         std::vector<RowId> m_rowIds;
 
+        // DESIGN NOTE: m_explicitRowCounts includes facts. Facts includes
+        // system terms. This is mixing together two concepts, which means that
+        // some uses of m_explicitRowCounts require subtracting off
+        // m_factRowCount and some don't.
         std::vector<RowIndex> m_explicitRowCounts;
         std::vector<RowIndex> m_adhocRowCounts;
         std::vector<RowIndex> m_sharedRowCounts;

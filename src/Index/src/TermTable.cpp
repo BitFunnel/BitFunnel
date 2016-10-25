@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 
-#include <iostream>     // TODO: Remove this.
 #include <math.h>
 #include <sstream>
 
@@ -170,13 +169,6 @@ namespace BitFunnel
 
         RowIndex end = static_cast<RowIndex>(m_rowIds.size());
 
-        // TODO: Remove
-        //if (m_start == end)
-        //{
-        //    std::cout
-        //        << "Term " << std::hex << hash << std::dec
-        //        << " has zero rows." << std::endl;
-        //}
         m_termHashToRows.insert(
             std::make_pair(hash,
                            PackedRowIdSequence(
@@ -224,9 +216,6 @@ namespace BitFunnel
         // Fact rows include the SystemTerm rows and one row for each user
         // defined fact.
         m_factRowCount = factCount + SystemTerm::Count;
-        std::cout << "SetFactCount(" << factCount << "):"
-                  << m_factRowCount << std::endl;
-        // m_factRowCount = factCount;
     }
 
 
@@ -283,9 +272,7 @@ namespace BitFunnel
         // System term rows and fact rows are included in Rank 0, but not other
         // ranks.
         auto totalRowCount = m_sharedRowCounts[rank] +
-            ((rank == 0) ? (m_factRowCount + 3) : 0); // TODO: fix.
-        std::cout << "GetTotalRowCount(" << rank << "): "
-                  << totalRowCount << std::endl;
+            ((rank == 0) ? m_factRowCount : 0);
         return totalRowCount;
     }
 

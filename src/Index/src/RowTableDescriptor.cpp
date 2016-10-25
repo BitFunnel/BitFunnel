@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>  // TODO: remove.
-
 #include <cstring>
 
 #include "BitFunnel/Index/ITermTable.h"
@@ -106,15 +104,6 @@ namespace BitFunnel
         {
             // Fill up the match-all row with all ones.
             uint64_t * rowData = GetRowData(sliceBuffer, row.GetIndex());
-
-            std::cout << "MatchAllTerm memset rank " << row.GetRank() << std::endl
-                      << std::hex << sliceBuffer << ":" << rowData
-                      << std::dec << std::endl
-                      << "offset: "
-                      << (rowData - static_cast<uint64_t*>(sliceBuffer)) * sizeof(uint64_t)
-                      << std::endl
-                      << "m_bufferOffset: " << m_bufferOffset << std::endl;
-
             memset(rowData, 0xFF, m_bytesPerRow);
         }
     }
@@ -149,9 +138,6 @@ namespace BitFunnel
                                     RowIndex rowIndex,
                                     DocIndex docIndex) const
     {
-        std::cout << "SetBit " << rowIndex << "/"
-                  << m_rowCount << std::endl;
-
         CHECK_LT(rowIndex, m_rowCount)
             << "rowIndex out of range.";
         uint64_t* const row = GetRowData(sliceBuffer, rowIndex);

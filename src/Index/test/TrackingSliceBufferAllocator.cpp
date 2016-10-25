@@ -21,8 +21,6 @@
 // THE SOFTWARE.
 
 
-#include <iostream>  // TODO: remove.
-
 #include <mutex>
 #include <unordered_set>
 
@@ -55,10 +53,6 @@ namespace BitFunnel
 
         void* sliceBuffer = malloc(byteSize);
         m_allocatedBuffers.insert(sliceBuffer);
-
-        std::cout << "Allocating " << byteSize << " bytes at "
-                  << std::hex << sliceBuffer
-                  << std::dec << std::endl;
 
         return sliceBuffer;
     }
