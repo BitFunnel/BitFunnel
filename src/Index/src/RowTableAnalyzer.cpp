@@ -33,7 +33,6 @@
 #include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IDocumentFrequencyTable.h"
 #include "BitFunnel/Index/IIngestor.h"
-#include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "CsvTsv/Csv.h"
@@ -41,6 +40,7 @@
 #include "LoggerInterfaces/Check.h"
 #include "RowTableAnalyzer.h"
 #include "RowTableDescriptor.h"
+#include "Shard.h"
 #include "Slice.h"
 #include "TermToText.h"
 
@@ -170,8 +170,7 @@ namespace BitFunnel
             // TODO: GetSlice() should return Slice&, not Slice*
             Slice const * slice = handle.GetSlice();
 
-            // TODO: Implement slice->GetShard().GetId().
-            const ShardId shard = 0;
+            const ShardId shard = slice->GetShard().GetId();
 
             columns.emplace_back(doc.second,
                                  shard,

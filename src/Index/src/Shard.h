@@ -27,9 +27,10 @@
 #include <ostream>                          // TODO: Remove this temporary include.
 #include <vector>
 
+#include "BitFunnel/BitFunnelTypes.h"       // ShardId parameter, embedded.
 #include "BitFunnel/Index/IShard.h"         // Base class.
 #include "BitFunnel/NonCopyable.h"          // Base class.
-#include "BitFunnel/Term.h"
+#include "BitFunnel/Term.h"                 // Term parameter.
 #include "DocTableDescriptor.h"             // Required for embedded std::unique_ptr.
 #include "DocumentFrequencyTableBuilder.h"  // std::unique_ptr to this.
 #include "DocumentHandleInternal.h"         // Return value.
@@ -67,7 +68,8 @@ namespace BitFunnel
         // Constructs an empty Shard with no slices. sliceBufferSize must be
         // sufficient to hold the minimum capacity Slice. The minimum capacity
         // is determined by a value returned by Row::DocumentsInRank0Row(1).
-        Shard(IRecycler& recycler,
+        Shard(ShardId id,
+              IRecycler& recycler,
               ITokenManager& tokenManager,
               ITermTable const & termTable,
               IDocumentDataSchema const & docDataSchema,
@@ -89,7 +91,7 @@ namespace BitFunnel
         //
 
         // Returns the Id of the shard.
-        //virtual ShardId GetId() const override;
+        virtual ShardId GetId() const override;
 
         // Returns capacity of a single Slice in the Shard. All Slices in the
         // Shard have the same capacity.
@@ -222,7 +224,11 @@ namespace BitFunnel
         //   swap newSlices and m_sliceBuffers, schedule newSlices for recycling.
         void CreateNewActiveSlice();
 
+        //
         // Constructor parameters.
+        //
+
+        const ShardId m_shardId;
 
         IRecycler& m_recycler;
 

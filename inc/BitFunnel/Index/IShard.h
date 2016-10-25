@@ -38,7 +38,7 @@ namespace BitFunnel
     {
     public:
         // Returns the Id of the shard.
-        //virtual ShardId GetId() const = 0;
+        virtual ShardId GetId() const = 0;
 
         // Returns capacity of a single Slice in the Shard. All Slices in the
         // Shard have the same capacity.

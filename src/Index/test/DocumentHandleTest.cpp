@@ -103,7 +103,14 @@ namespace BitFunnel
         std::unique_ptr<TrackingSliceBufferAllocator>
             trackingAllocator(new TrackingSliceBufferAllocator(blockSize));
 
-        Shard shard(*recycler, *tokenManager, *termTable, docDataSchema, *trackingAllocator, blockSize);
+        ShardId anyShardId = 0;
+        Shard shard(anyShardId,
+                    *recycler,
+                    *tokenManager,
+                    *termTable,
+                    docDataSchema,
+                    *trackingAllocator,
+                    blockSize);
         auto sliceCapacity = shard.GetSliceCapacity();
         Slice* currentSlice = nullptr;
         std::vector<Slice*> slices;

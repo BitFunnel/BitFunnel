@@ -69,13 +69,15 @@ namespace BitFunnel
     }
 
 
-    Shard::Shard(IRecycler& recycler,
+    Shard::Shard(ShardId id,
+                 IRecycler& recycler,
                  ITokenManager& tokenManager,
                  ITermTable const & termTable,
                  IDocumentDataSchema const & docDataSchema,
                  ISliceBufferAllocator& sliceBufferAllocator,
                  size_t sliceBufferSize)
-        : m_recycler(recycler),
+        : m_shardId(id),
+          m_recycler(recycler),
           m_tokenManager(tokenManager),
           m_termTable(termTable),
           m_sliceBufferAllocator(sliceBufferAllocator),
@@ -200,6 +202,12 @@ namespace BitFunnel
     std::vector<void*> const & Shard::GetSliceBuffers() const
     {
         return *m_sliceBuffers;
+    }
+
+
+    ShardId Shard::GetId() const
+    {
+        return m_shardId;
     }
 
 
