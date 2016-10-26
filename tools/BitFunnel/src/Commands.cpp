@@ -298,10 +298,8 @@ namespace BitFunnel
 
     void Ingest::Execute()
     {
-        if (m_manifest)
+        if (m_manifest && m_path.compare("sonnets") == 0)
         {
-            if (m_path.compare("sonnets") == 0)
-            {
                 Environment & environment = GetEnvironment();
                 IConfiguration const & configuration =
                     environment.GetConfiguration();
@@ -317,20 +315,30 @@ namespace BitFunnel
                 IngestChunks(*manifest, threadCount);
 
                 std::cout << "Ingestion complete." << std::endl;
-            }
-            else
-            {
-                std::cout << "Ingest manifest only implemented for sonnets." << std::endl;
-            }
         }
         else
         {
             std::vector<std::string> filePaths;
-            filePaths.push_back(m_path);
-            std::cout
-                << "Ingesting chunk file \""
-                << filePaths.back()
-                << "\"" << std::endl;
+
+            if (m_manifest)
+            {
+                std::cout
+                    << "Ingesting manifest \""
+                    << m_path
+                    << "\"" << std::endl;
+
+                filePaths = ReadLines(GetEnvironment().GetFileSystem(),
+                                      m_path.c_str());
+
+            }
+            else
+            {
+                filePaths.push_back(m_path);
+                std::cout
+                    << "Ingesting chunk file \""
+                    << filePaths.back()
+                    << "\"" << std::endl;
+            }
 
             if (m_cacheDocuments)
             {
@@ -711,9 +719,11 @@ namespace BitFunnel
     {
         std::cout
             << "Printing system status ..."
-            << std::endl
-            << "NOT IMPLEMENTED"
             << std::endl;
+
+        GetEnvironment().GetIngestor().PrintStatistics(std::cout);
+
+        std::cout << std::endl;
 
         double bytesPerDocument = 0;
         for (Rank rank = 0; rank < c_maxRankValue; ++rank)
@@ -850,7 +860,7 @@ namespace BitFunnel
                 }
 
                 verifier->Verify();
-                // verifier->Print(std::cout);
+                //verifier->Print(std::cout);
             }
             return verifier;
     }
