@@ -38,6 +38,17 @@ namespace BitFunnel
         std::vector<std::string> lines;
         std::string line;
         while (std::getline(*input, line)) {
+            // Trim whitespace from right side. If we're reading in a file from
+            // Windows BitFunnel, we can have a stray \r character.
+            line.erase(std::find_if(line.rbegin(),
+                                    line.rend(),
+                                    std::not1(std::ptr_fun<int, int>(std::isspace))).base(),
+                                    line.end());
+            // Trim leading whitespace.
+            line.erase(line.begin(),
+                       std::find_if(line.begin(),
+                                    line.end(),
+                                    std::not1(std::ptr_fun<int, int>(std::isspace))));
             lines.push_back(std::move(line));
         }
 
