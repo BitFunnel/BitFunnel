@@ -100,7 +100,7 @@ namespace BitFunnel
 
         std::unique_ptr<IAllocator> m_allocator;
 
-        static const size_t c_allocatorSize = 4096;
+        static const size_t c_allocatorSize = 16384;
     };
 
     QueryProcessor::QueryProcessor(ISimpleIndex const & index,

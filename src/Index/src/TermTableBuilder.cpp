@@ -99,25 +99,38 @@ namespace BitFunnel
             //dfEntry.GetTerm().Print(std::cout);
             //std::cout << "; frequency = " << dfEntry.GetFrequency() << std::endl;
 
-            m_termTable.OpenTerm();
-
             // Get the term's RowConfiguration.
             auto configuration = treatment.GetTreatment(dfEntry.GetTerm());
 
-            //std::cout << "  Configuration: ";
-            //configuration.Write(std::cout);
-            //std::cout << std::endl;
-
-            // For each rank entry in the RowConfiguration.
-            for (auto rcEntry : configuration)
+            if (dfEntry.GetFrequency() < adhocFrequency)
             {
-                // Assign the appropriate rows.
-                m_rowAssigners[rcEntry.GetRank()]->Assign(dfEntry.GetFrequency(),
-                                                          rcEntry.GetRowCount(),
-                                                          rcEntry.IsPrivate());
+                // For each rank entry in the RowConfiguration.
+                for (auto rcEntry : configuration)
+                {
+                    // Assign the appropriate rows.
+                    m_rowAssigners[rcEntry.GetRank()]->AssignAdhoc(dfEntry.GetFrequency(),
+                                                                   rcEntry.GetRowCount());
+                }
             }
+            else
+            {
+                m_termTable.OpenTerm();
 
-            m_termTable.CloseTerm(dfEntry.GetTerm().GetRawHash());
+                //std::cout << "  Configuration: ";
+                //configuration.Write(std::cout);
+                //std::cout << std::endl;
+
+                // For each rank entry in the RowConfiguration.
+                for (auto rcEntry : configuration)
+                {
+                    // Assign the appropriate rows.
+                    m_rowAssigners[rcEntry.GetRank()]->AssignExplicit(dfEntry.GetFrequency(),
+                                                                      rcEntry.GetRowCount(),
+                                                                      rcEntry.IsPrivate());
+                }
+
+                m_termTable.CloseTerm(dfEntry.GetTerm().GetRawHash());
+            }
         }
 
         // TODO: make entries for facts.
@@ -258,9 +271,9 @@ namespace BitFunnel
     }
 
 
-    void TermTableBuilder::RowAssigner::Assign(double frequency,
-                                               RowIndex count,
-                                               bool isPrivate)
+    void TermTableBuilder::RowAssigner::AssignExplicit(double frequency,
+                                                       RowIndex count,
+                                                       bool isPrivate)
     {
         // Compute the frequency at rank.
         double f = Term::FrequencyAtRank(frequency, m_rank);
@@ -278,16 +291,6 @@ namespace BitFunnel
             // Just reserve the RowIndex and then add the appropriate RowID to
             // the TermTableBuilder.
             m_termTable.AddRowId(RowId(m_rank, m_currentRow++));
-        }
-        else if (f < m_adhocFrequency)
-        {
-            // This is an adhoc term whose location is defined by a set of
-            // hash functions.
-            ++m_adhocTermCount;
-
-            // Update m_adhocTotal with this term's contribution to the total
-            // number of bits.
-            m_adhocTotal += frequency * count;
         }
         else
         {
@@ -344,6 +347,19 @@ namespace BitFunnel
             // Reinsert the bins into m_bins.
             m_bins.insert(currentBins.begin(), currentBins.end());
         }
+    }
+
+
+    void TermTableBuilder::RowAssigner::AssignAdhoc(double frequency,
+                                                    RowIndex count)
+    {
+        // This is an adhoc term whose location is defined by a set of
+        // hash functions.
+        ++m_adhocTermCount;
+
+        // Update m_adhocTotal with this term's contribution to the total
+        // number of bits.
+        m_adhocTotal += frequency * count;
     }
 
 

@@ -119,7 +119,8 @@ namespace BitFunnel
                         double adhocFrequency,
                         ITermTable & termTable);
 
-            void Assign(double frequency, RowIndex count, bool isPrivate);
+            void AssignExplicit(double frequency, RowIndex count, bool isPrivate);
+            void AssignAdhoc(double frequency, RowIndex count);
 
             RowIndex GetExplicitRowCount() const;
             RowIndex GetAdhocRowCount() const;
