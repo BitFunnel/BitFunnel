@@ -188,6 +188,14 @@ set(UTILITIES_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Version.h
 )
 
+set(CSVTSV_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/CsvTsv/Csv.h
+  ${CMAKE_SOURCE_DIR}/inc/CsvTsv/DelimitedTable.h
+  ${CMAKE_SOURCE_DIR}/inc/CsvTsv/ParseError.h
+  ${CMAKE_SOURCE_DIR}/inc/CsvTsv/Table.h
+  ${CMAKE_SOURCE_DIR}/inc/CsvTsv/Tsv.h
+)
+
 set(LOGGER_HFILES
   ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/Check.h
   ${CMAKE_SOURCE_DIR}/inc/LoggerInterfaces/ConsoleLogger.h
@@ -204,6 +212,7 @@ set(PUBLIC_HFILES
   ${MOCKS_HFILES}
   ${PLAN_HFILES}
   ${UTILITIES_HFILES}
+  ${CSVTSV_HFILES}
   ${LOGGER_HFILES}
 )
 
