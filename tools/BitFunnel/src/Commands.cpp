@@ -51,6 +51,8 @@
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/ReadLines.h"
 #include "Commands.h"
+#include "CsvTsv/Csv.h"
+#include "CsvTsv/Table.h"
 #include "Environment.h"
 #include "LoggerInterfaces/Check.h"
 
@@ -894,26 +896,53 @@ namespace BitFunnel
                 verifiers.emplace_back(VerifyOneQuery(GetEnvironment(), query));
             }
 
-            // TODO: remove this temporary code.
-            std::unordered_map<DocId, uint64_t> falsePositiveHistogram;
+            // TODO: write to file.
+            CsvTsv::CsvTableFormatter formatter(std::cout);
+            CsvTsv::TableWriter writer(formatter);
+            CsvTsv::OutputColumn<std::string>
+                queryString("query",
+                            "Query text");
+            CsvTsv::OutputColumn<uint64_t>
+                docId("Document",
+                      "ID of document.");
+            CsvTsv::OutputColumn<uint64_t>
+                type("Type",
+                     "0: true positive. 1: false positive. 2: false negative. TODO: fix this");
+
+            writer.DefineColumn(queryString);
+            writer.DefineColumn(docId);
+            writer.DefineColumn(type);
+            writer.WritePrologue();
+
             for (const auto & verifier : verifiers)
             {
-                if (verifier->GetNumFalseNegatives() > 0)
+                queryString = verifier->GetQuery();
+                std::vector<DocId> results = verifier->GetTruePositives();
+                type = 0;
+                for (const auto id : results)
                 {
-                    verifier->Print(std::cout);
-                    throw RecoverableError("MatchVerifier: false negative detected.");
+                    docId = id;
+                    writer.WriteDataRow();
                 }
-                std::vector<DocId> falsePositives = verifier->GetFalsePositives();
-                // TODO: remove this temporary code.
-                for (size_t i = 0; i < falsePositives.size(); ++i)
+
+                results = verifier->GetFalsePositives();
+                type = 1;
+                for (const auto id : results)
                 {
-                    ++falsePositiveHistogram[falsePositives[i]];
+                    docId = id;
+                    writer.WriteDataRow();
+                }
+
+                results = verifier->GetFalseNegatives();
+                type = 2;
+                for (const auto id : results)
+                {
+                    docId = id;
+                    writer.WriteDataRow();
                 }
             }
-            for (const auto & p : falsePositiveHistogram)
-            {
-                std::cout << p.first << "," << p.second << std::endl;
-            }
+
+            writer.WriteEpilogue();
         }
     }
 
