@@ -99,6 +99,8 @@ namespace BitFunnel
         //virtual FileDescriptor0 TermTableStats() = 0;
         //virtual FileDescriptor0 PostingAndBitStats() = 0;
         //virtual FileDescriptor0 StrengtheningMetawords() = 0;
+        // TODO: consider adding shard parameter.
+        // virtual FileDescriptor0 VerificationResults() = 0;
 
         // These methods return descriptors for files that are parameterized
         // by a shard number.  The returned FileDescriptor1 objects provide
