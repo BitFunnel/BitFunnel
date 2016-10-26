@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #include <algorithm>
+#include <functional>
 #include <cctype>
 #include <istream>
 
