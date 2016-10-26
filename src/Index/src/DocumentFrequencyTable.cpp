@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #include <algorithm>    // std::sort()
-#include <cctype>       // For isspace.
 #include <istream>
 
 #include "BitFunnel/Exceptions.h"

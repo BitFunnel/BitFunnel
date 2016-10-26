@@ -20,44 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "BitFunnel/Utilities/IsSpace.h"
-#include "SameExceptForWhitespace.h"
+#pragma once
+
+#include <cctype>   // Inline call to isspace.
 
 
 namespace BitFunnel
 {
-    static void SkipWhite(char const * & s)
+    // Version of isspace that works correctly with UTF-8.
+    inline bool IsSpace(int ch)
     {
-        while (IsSpace(*s))
-        {
-            s++;
-        }
-    }
-
-
-    bool SameExceptForWhitespace(const char* a, const char* b)
-    {
-        while (*a != 0 && *b != 0)
-        {
-            SkipWhite(a);
-            SkipWhite(b);
-
-            if (*a == 0 || *b == 0)
-            {
-                break;
-            }
-
-            if (*a != *b)
-            {
-                return false;
-            }
-
-            ++a;
-            ++b;
-        }
-
-        SkipWhite(a);
-        SkipWhite(b);
-        return (*a == 0 && *b == 0);
+        return (ch >= 0) && isspace(ch);
     }
 }

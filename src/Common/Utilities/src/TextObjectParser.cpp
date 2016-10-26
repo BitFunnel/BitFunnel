@@ -26,6 +26,7 @@
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "LoggerInterfaces/Logging.h"
 #include "BitFunnel/Term.h"
+#include "BitFunnel/Utilities/IsSpace.h"
 #include "TextObjectParser.h"
 
 namespace BitFunnel
@@ -256,7 +257,7 @@ namespace BitFunnel
 
     void TextObjectParser::SkipWhite()
     {
-        while (isspace(m_input.peek()))
+        while (IsSpace(m_input.peek()))
         {
             m_input.get();
         }

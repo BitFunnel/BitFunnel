@@ -29,6 +29,7 @@
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
+#include "BitFunnel/Utilities/IsSpace.h"
 #include "BitFunnel/Utilities/StringBuilder.h"
 #include "QueryParser.h"
 #include "StringVector.h"
@@ -210,7 +211,7 @@ namespace BitFunnel
         char const * c_endOfToken = "&|():-\"";
         StringBuilder builder(m_allocator);
 
-        while (!isspace(PeekChar()) && strchr(c_endOfToken, PeekChar()) == nullptr)
+        while (!IsSpace(PeekChar()) && strchr(c_endOfToken, PeekChar()) == nullptr)
         {
             char temp = GetWithEscape();
             builder.push_back(temp);
@@ -243,7 +244,7 @@ namespace BitFunnel
 
     void QueryParser::SkipWhite()
     {
-        while (isspace(PeekChar()))
+        while (IsSpace(PeekChar()))
         {
             GetChar();
         }

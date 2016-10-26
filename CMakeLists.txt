@@ -174,6 +174,7 @@ set(UTILITIES_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IObjectFormatter.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IObjectParser.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IPersistableObject.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IsSpace.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskDistributor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskProcessor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IThreadManager.h

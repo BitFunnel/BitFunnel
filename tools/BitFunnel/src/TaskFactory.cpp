@@ -29,6 +29,7 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Utilities/Factories.h"
+#include "BitFunnel/Utilities/IsSpace.h"
 #include "TaskBase.h"
 #include "TaskFactory.h"
 
@@ -138,7 +139,7 @@ namespace BitFunnel
 
     static void SkipWhite(char const * & text)
     {
-        while (isspace(*text))
+        while (IsSpace(*text))
         {
             ++text;
             if (*text == '\0')
@@ -193,7 +194,7 @@ namespace BitFunnel
             {
                 // Non-quoted literal.
                 std::string s;
-                while (!isspace(*text) && *text != '\0')
+                while (!IsSpace(*text) && *text != '\0')
                 {
                     s.push_back(*text);
                     ++text;
@@ -232,7 +233,7 @@ namespace BitFunnel
         {
             // Non-quoted literal.
             std::string s;
-            while (!isspace(*text) && *text != '\0')
+            while (!IsSpace(*text) && *text != '\0')
             {
                 token.push_back(*text);
                 ++text;

@@ -46,7 +46,13 @@ namespace BitFunnel
     const ExpectedAndInputs c_testData[] =
     {
         // UNIGRAM.
-        {"Unigram(\"wat\", 0)", "wat"},
+
+        // This case came from an actual bug involving utf-8 characters passed
+        // to isspace. In this case a value of -61 was passed to isspace(),
+        // triggering an exception. isspace() was subsequently replaced with
+        // BitFunnel::IsSpace().
+        { "Unigram(\"françois\", 0)", "françois" },
+        { "Unigram(\"wat\", 0)", "wat" },
 
         // STREAM:UNIGRAM.
         {"Unigram(\"wat\", 1)", "stream:wat"},
