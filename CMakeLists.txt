@@ -249,6 +249,7 @@ add_subdirectory(examples/QueryParser)
 add_subdirectory(src)
 add_subdirectory(test/Shared)
 add_subdirectory(tools/BitFunnel)
+add_subdirectory(tools/CsvExtract)
 
 add_custom_target(TOPLEVEL SOURCES
 #  Configure_Make.bat
