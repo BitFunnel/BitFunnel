@@ -84,7 +84,6 @@ namespace BitFunnel
                 std::unique_ptr<RowAssigner>(
                     new RowAssigner(rank,
                                     density,
-                                    adhocFrequency,
                                     termTable)));
         }
 
@@ -247,11 +246,9 @@ namespace BitFunnel
     TermTableBuilder::RowAssigner::RowAssigner(
         Rank rank,
         double density,
-        double adhocFrequency,
         ITermTable & termTable)
         : m_rank(rank),
           m_density(density),
-          m_adhocFrequency(adhocFrequency),
           m_termTable(termTable),
           m_adhocTotal(0),
           m_currentRow(0),

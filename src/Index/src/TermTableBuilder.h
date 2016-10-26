@@ -116,7 +116,6 @@ namespace BitFunnel
         public:
             RowAssigner(Rank rank,
                         double density,
-                        double adhocFrequency,
                         ITermTable & termTable);
 
             void AssignExplicit(double frequency, RowIndex count, bool isPrivate);
@@ -131,7 +130,6 @@ namespace BitFunnel
             // Constructor parameters.
             Rank m_rank;
             double m_density;
-            double m_adhocFrequency;
             ITermTable & m_termTable;
 
             // Sum of frequencies of all adhoc terms. Used to compute the
