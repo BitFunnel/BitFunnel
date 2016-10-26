@@ -69,6 +69,7 @@ namespace BitFunnel
         //virtual FileDescriptor0 TermTableStats() override;
         //virtual FileDescriptor0 PostingAndBitStats() override;
         //virtual FileDescriptor0 StrengtheningMetawords() override;
+        virtual FileDescriptor0 VerificationResults() override;
 
         virtual FileDescriptor1 CumulativeTermCounts(size_t shard) override;
         virtual FileDescriptor1 DocFreqTable(size_t shard) override;
@@ -90,5 +91,6 @@ namespace BitFunnel
         std::unique_ptr<IParameterizedFile1> m_rowDensities;
         std::unique_ptr<IParameterizedFile1> m_termTable;
         std::unique_ptr<IParameterizedFile0> m_termToText;
+        std::unique_ptr<IParameterizedFile0> m_verificationResults;
     };
 }

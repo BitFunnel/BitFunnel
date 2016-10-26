@@ -896,8 +896,11 @@ namespace BitFunnel
                 verifiers.emplace_back(VerifyOneQuery(GetEnvironment(), query));
             }
 
-            // TODO: write to file.
-            CsvTsv::CsvTableFormatter formatter(std::cout);
+            // TODO: use FileManager.
+            auto verificationOut = GetEnvironment().
+                GetFileSystem().
+                OpenForWrite("verificationOutput.csv");
+            CsvTsv::CsvTableFormatter formatter(*verificationOut);
             CsvTsv::TableWriter writer(formatter);
             CsvTsv::OutputColumn<std::string>
                 queryString("query",

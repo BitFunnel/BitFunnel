@@ -84,7 +84,11 @@ namespace BitFunnel
           m_termToText(new ParameterizedFile0(fileSystem,
                                               statisticsDirectory,
                                               "TermToText",
-                                              ".bin"))
+                                              ".bin")),
+          m_verificationResults(new ParameterizedFile0(fileSystem,
+                                                       statisticsDirectory,
+                                                       "VerificationResults",
+                                                       ".csv"))
     {
     }
 
@@ -114,6 +118,12 @@ namespace BitFunnel
     FileDescriptor0 FileManager::TermToText()
     {
         return FileDescriptor0(*m_termToText);
+    }
+
+
+    FileDescriptor0 FileManager::VerificationResults()
+    {
+        return FileDescriptor0(*m_verificationResults);
     }
 
 
