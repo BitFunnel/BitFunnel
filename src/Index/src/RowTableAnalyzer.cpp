@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 
+#include <iostream>     // TODO: Temporary
 #include <ostream>
 #include <stack>
 
@@ -122,6 +123,11 @@ namespace BitFunnel
         // Use CsvTableFormatter to escape terms that contain commas and quotes.
         CsvTsv::CsvTableFormatter formatter(out);
 
+        const RowIndex specialRow = 2353;
+        size_t specialTermCount = 0;
+        CsvTsv::CsvTableFormatter specialFormatter(std::cout);
+        std::cout << "Special row is " << specialRow << std::endl;
+
         for (auto dfEntry : *terms)
         {
             Term term = dfEntry.GetTerm();
@@ -143,6 +149,19 @@ namespace BitFunnel
                 out << row.GetRank();
                 formatter.WriteField(row.GetIndex());
                 formatter.WriteField(densities[row.GetRank()][row.GetIndex()]);
+
+                if (row.GetRank() == 3 && row.GetIndex() == specialRow)
+                {
+                    std::cout
+                        << specialTermCount++
+                        << ",";
+                    specialFormatter.WriteField(termToText.Lookup(term.GetRawHash()));
+                    std::cout
+                        << ","
+                        << dfEntry.GetFrequency();
+                    specialFormatter.WriteRowEnd();
+                }
+
 
                 rowsReversed.pop();
             }
