@@ -44,6 +44,7 @@
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IMatchVerifier.h"
+#include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryPipeline.h"
 #include "BitFunnel/Plan/QueryRunner.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
@@ -850,12 +851,15 @@ namespace BitFunnel
                 auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
                 // diagnosticStream->Enable("");
 
+                QueryInstrumentation instrumentation;
+
                 // auto observed = Factories::RunSimplePlanner(*tree,
                 //                                             environment.GetSimpleIndex(),
                 //                                             *diagnosticStream);
                 auto observed = Factories::RunQueryPlanner(*tree,
                                                            environment.GetSimpleIndex(),
-                                                           *diagnosticStream);
+                                                           *diagnosticStream,
+                                                           instrumentation);
                 for (auto id : observed)
                 {
                     verifier->AddObserved(id);

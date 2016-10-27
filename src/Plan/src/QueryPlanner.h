@@ -38,6 +38,7 @@ namespace BitFunnel
     class IPlanRows;
     class ISimpleIndex;
     class IThreadResources;
+    class QueryInstrumentation;
     // class TermPlan;
     class TermMatchNode;
     // class X64::X64FunctionGenerator;
@@ -51,7 +52,8 @@ namespace BitFunnel
                      ISimpleIndex const & index,
                      // IThreadResources& threadResources,
                      IAllocator& allocator,
-                     IDiagnosticStream& diagnosticStream);
+                     IDiagnosticStream& diagnosticStream,
+                     QueryInstrumentation & instrumentation);
                      // bool generateNonBodyPlan,
                      // unsigned maxIterationsScannedBetweenTerminationChecks);
 

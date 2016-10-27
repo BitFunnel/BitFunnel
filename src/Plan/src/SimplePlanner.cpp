@@ -33,6 +33,7 @@
 #include "BitFunnel/Index/Token.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IResultsProcessor.h"
+#include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Term.h"
 #include "LoggerInterfaces/Check.h"
@@ -41,11 +42,16 @@
 
 namespace BitFunnel
 {
-    std::vector<DocId> Factories::RunSimplePlanner(TermMatchNode const & tree,
-                                                   ISimpleIndex const & index,
-                                                   IDiagnosticStream& diagnosticStream)
+    std::vector<DocId>
+        Factories::RunSimplePlanner(TermMatchNode const & tree,
+                                    ISimpleIndex const & index,
+                                    IDiagnosticStream & diagnosticStream,
+                                    QueryInstrumentation & instrumentation)
     {
-        SimplePlanner simplePlanner(tree, index, diagnosticStream);
+        SimplePlanner simplePlanner(tree,
+                                    index,
+                                    diagnosticStream,
+                                    instrumentation);
         return simplePlanner.GetMatches();
     }
 
@@ -57,7 +63,8 @@ namespace BitFunnel
     //*************************************************************************
     SimplePlanner::SimplePlanner(TermMatchNode const & tree,
                                  ISimpleIndex const & index,
-                                 IDiagnosticStream& diagnosticStream)
+                                 IDiagnosticStream& diagnosticStream,
+                                 QueryInstrumentation & instrumentation)
         : m_index(index),
           m_resultsProcessor(Factories::CreateSimpleResultsProcessor())
 
@@ -99,6 +106,7 @@ namespace BitFunnel
             {
                 rowOffsets.push_back(shard.GetRowOffset(row));
             }
+            instrumentation.SetRowCount(rowOffsets.size());
 
             ByteCodeInterpreter intepreter(m_code,
                                            *m_resultsProcessor,
@@ -106,10 +114,15 @@ namespace BitFunnel
                                            reinterpret_cast<char* const *>(sliceBuffers.data()),
                                            iterationsPerSlice,
                                            rowOffsets.data(),
-                                           diagnosticStream);
+                                           diagnosticStream,
+                                           instrumentation);
+
+            instrumentation.FinishPlanning();
 
             intepreter.Run();
 
+            instrumentation.FinishMatching();
+            instrumentation.SetMatchCount(m_resultsProcessor->GetMatches().size());
         } // End of token lifetime.
     }
 

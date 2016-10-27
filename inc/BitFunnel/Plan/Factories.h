@@ -28,6 +28,7 @@
 
 #include "BitFunnel/BitFunnelTypes.h"  // DocId.
 
+
 namespace BitFunnel
 {
     class IAllocator;
@@ -38,6 +39,7 @@ namespace BitFunnel
     class IPlanRows;
     class IRowSet;
     class ISimpleIndex;
+    class QueryInstrumentation;
     class SimpleResultsProcessor;
     class TermMatchNode;
 
@@ -58,11 +60,12 @@ namespace BitFunnel
         // TODO: get rid of these convenience methods?
         std::vector<DocId> RunQueryPlanner(TermMatchNode const & tree,
                                            ISimpleIndex const & index,
-                                           IDiagnosticStream & diagnosticStream);
+                                           IDiagnosticStream & diagnosticStream,
+                                           QueryInstrumentation & instrumentation);
 
         std::vector<DocId> RunSimplePlanner(TermMatchNode const & tree,
                                             ISimpleIndex const & index,
-                                            IDiagnosticStream & diagnosticStream);
-
+                                            IDiagnosticStream & diagnosticStream,
+                                            QueryInstrumentation & instrumentation);
     }
 }

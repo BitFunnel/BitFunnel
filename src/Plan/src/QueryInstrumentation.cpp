@@ -20,44 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
-
-#include <memory>
-#include <vector>
-
-#include "ByteCodeInterpreter.h"
-#include "BitFunnel/Index/RowId.h"
-#include "SimpleResultsProcessor.h"
+#include "BitFunnel/Plan/QueryInstrumentation.h"
+#include "CsvTsv/Csv.h"
 
 
 namespace BitFunnel
 {
-    class IDiagnosticStream;
-    class TermMatchNode;
-
-
-    class SimplePlanner
+    // static
+    void QueryInstrumentation::Data::FormatHeader(
+        CsvTsv::CsvTableFormatter & formatter)
     {
-    public:
-        SimplePlanner(TermMatchNode const & tree,
-                      ISimpleIndex const & index,
-                      IDiagnosticStream& diagnosticStream,
-                      QueryInstrumentation & instrumentation);
+        formatter.WriteField("rows");
+        formatter.WriteField("matches");
+        formatter.WriteField("quadwords");
+        formatter.WriteField("parse");
+        formatter.WriteField("plan");
+        formatter.WriteField("match");
+        formatter.WriteRowEnd();
+    }
 
-        std::vector<DocId> const & GetMatches() const;
 
-    private:
-        void Compile(size_t pos, Rank rank);
-        void RankDown(size_t pos, Rank rank);
-        void ExtractRowIds(TermMatchNode const & node);
-
-        std::vector<RowId> m_rows;
-        ISimpleIndex const & m_index;
-        ByteCodeGenerator m_code;
-
-        // TODO: should this be an IResultsProcessor? This isn't right now
-        // because IResultsProcessor doesn't have a method to pull matches out.
-        std::unique_ptr<SimpleResultsProcessor> m_resultsProcessor;
-    };
-
+    void QueryInstrumentation::Data::Format(
+        CsvTsv::CsvTableFormatter & formatter) const
+    {
+        formatter.WriteField(m_rowCount);
+        formatter.WriteField(m_matchCount);
+        formatter.WriteField(m_quadwordCount);
+        formatter.WriteField(m_parsingTime);
+        formatter.WriteField(m_planningTime);
+        formatter.WriteField(m_matchingTime);
+        formatter.WriteRowEnd();
+    }
 }

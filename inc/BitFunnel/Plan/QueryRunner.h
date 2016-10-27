@@ -49,7 +49,6 @@ namespace BitFunnel
             double m_elapsedTime;
         };
 
-
         static Statistics Run(ISimpleIndex const & index,
                               size_t threadCount,
                               std::vector<std::string> const & queries,

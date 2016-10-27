@@ -31,6 +31,7 @@
 #include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
+#include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Term.h"
 #include "BitFunnel/Utilities/Factories.h"  // TODO: only for diagnosticStream. Remove.
 #include "ByteCodeInterpreter.h"
@@ -272,6 +273,7 @@ namespace BitFunnel
 
         // TODO: remove diagnosticStream and replace with nullable.
         auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
+        QueryInstrumentation instrumentation;
         ByteCodeInterpreter interpreter(
             code,
             *this,
@@ -279,7 +281,8 @@ namespace BitFunnel
             reinterpret_cast<char* const *>(sliceBuffers.data()),
             iterationsPerSlice,
             m_rowOffsets.data(),
-            *diagnosticStream);
+            *diagnosticStream,
+            instrumentation);
 
         interpreter.Run();
 

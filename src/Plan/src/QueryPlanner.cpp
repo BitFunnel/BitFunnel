@@ -31,6 +31,7 @@
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IPlanRows.h"
 // #include "BitFunnel/IThreadResources.h"
+#include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/RowPlan.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Plan/TermPlan.h"
@@ -54,12 +55,18 @@ namespace BitFunnel
     // way SimplePlanner is connected.
     std::vector<DocId> Factories::RunQueryPlanner(TermMatchNode const & tree,
                                                   ISimpleIndex const & index,
-                                                  IDiagnosticStream& diagnosticStream)
+                                                  IDiagnosticStream& diagnosticStream,
+                                                  QueryInstrumentation & instrumentation)
     {
         // TODO: this really shouldn't create its own allocator.
         Allocator allocator(4096*16);
         const int c_arbitraryRowCount = 500;
-        QueryPlanner planner(tree, c_arbitraryRowCount, index, allocator, diagnosticStream);
+        QueryPlanner planner(tree,
+                             c_arbitraryRowCount,
+                             index,
+                             allocator,
+                             diagnosticStream,
+                             instrumentation);
         return planner.GetMatches();
     }
 
@@ -91,8 +98,9 @@ namespace BitFunnel
                                unsigned targetRowCount,
                                ISimpleIndex const & index,
                                // IThreadResources& threadResources,
-                               IAllocator& allocator,
-                               IDiagnosticStream& diagnosticStream)
+                               IAllocator & allocator,
+                               IDiagnosticStream & diagnosticStream,
+                               QueryInstrumentation & instrumentation)
                                // bool generateNonBodyPlan,
                                // unsigned maxIterationsScannedBetweenTerminationChecks)
         : m_resultsProcessor(Factories::CreateSimpleResultsProcessor())
@@ -213,6 +221,7 @@ namespace BitFunnel
 
         RowSet rowSet(index, *m_planRows, allocator);
         rowSet.LoadRows();
+        instrumentation.SetRowCount(rowSet.GetRowCount());
 
         // TODO: Move all of this somewhere else.
         // Get token before we GetSliceBuffers.
@@ -227,16 +236,21 @@ namespace BitFunnel
             // Iterations per slice calculation.
             auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> c_horribleRankHack;
 
+            instrumentation.FinishPlanning();
+
             ByteCodeInterpreter intepreter(m_code,
                                            *m_resultsProcessor,
                                            sliceCount,
                                            reinterpret_cast<char* const *>(sliceBuffers.data()),
                                            iterationsPerSlice,
                                            rowSet.GetRowOffsets(c_shardId),
-                                           diagnosticStream);
+                                           diagnosticStream,
+                                           instrumentation);
 
             intepreter.Run();
 
+            instrumentation.FinishMatching();
+            instrumentation.SetMatchCount(m_resultsProcessor->GetMatches().size());
         } // End of token lifetime.
     }
 

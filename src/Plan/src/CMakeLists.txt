@@ -8,6 +8,7 @@ set(CPPFILES
     MatchTreeRewriter.cpp
     MatchVerifier.cpp
     PlanRows.cpp
+    QueryInstrumentation.cpp
     QueryParser.cpp
     QueryPipeline.cpp
     QueryPlanner.cpp

@@ -29,10 +29,12 @@
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Plan/Factories.h"
+#include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryRunner.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/ITaskDistributor.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
+#include "CsvTsv/Csv.h"
 #include "QueryParser.h"
 
 
@@ -59,16 +61,7 @@ namespace BitFunnel
             << "Queries processed: " << m_processedCount << std::endl
             << "Elapsed time: " << m_elapsedTime << std::endl
             << "QPS: " << m_processedCount / m_elapsedTime << std::endl;
-
     }
-
-
-    //QueryRunner::QueryRunner(ISimpleIndex const & index,
-    //                         size_t threadCount)
-    //    : m_index(index),
-    //      m_threadCount(threadCount)
-    //{
-    //}
 
 
     //*************************************************************************
@@ -81,7 +74,8 @@ namespace BitFunnel
     public:
         QueryProcessor(ISimpleIndex const & index,
                        IStreamConfiguration const & config,
-                       std::vector<std::string> const & queries);
+                       std::vector<std::string> const & queries,
+                       std::vector<QueryInstrumentation::Data> & results);
 
         //
         // ITaskProcessor methods
@@ -97,18 +91,22 @@ namespace BitFunnel
         ISimpleIndex const & m_index;
         IStreamConfiguration const & m_config;
         std::vector<std::string> const & m_queries;
+        std::vector<QueryInstrumentation::Data> & m_results;
 
         std::unique_ptr<IAllocator> m_allocator;
 
         static const size_t c_allocatorSize = 16384;
     };
 
+
     QueryProcessor::QueryProcessor(ISimpleIndex const & index,
                                    IStreamConfiguration const & config,
-                                   std::vector<std::string> const & queries)
+                                   std::vector<std::string> const & queries,
+                                   std::vector<QueryInstrumentation::Data> & results)
       : m_index(index),
         m_config(config),
         m_queries(queries),
+        m_results(results),
         m_allocator(new Allocator(c_allocatorSize))
     {
     }
@@ -116,14 +114,15 @@ namespace BitFunnel
 
     void QueryProcessor::ProcessTask(size_t taskId)
     {
+        QueryInstrumentation instrumentation;
         m_allocator->Reset();
 
         size_t queryId = taskId % m_queries.size();
 
-        // TODO: Shouldn't use an std::stringstream here.
         // Just causes an extra copy and allocation per query.
         QueryParser parser(m_queries[queryId].c_str(), m_config, *m_allocator);
         auto tree = parser.Parse();
+        instrumentation.FinishParsing();
 
         // TODO: remove diagnosticStream and replace with nullable.
         auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
@@ -131,8 +130,11 @@ namespace BitFunnel
         {
             auto observed = Factories::RunSimplePlanner(*tree,
                                                         m_index,
-                                                        *diagnosticStream);
+                                                        *diagnosticStream,
+                                                        instrumentation);
         }
+
+        m_results[taskId] = instrumentation.GetData();
     }
 
 
@@ -151,13 +153,15 @@ namespace BitFunnel
         std::vector<std::string> const & queries,
         size_t iterations)
     {
+        std::vector<QueryInstrumentation::Data> results(queries.size());
+
         auto config = Factories::CreateStreamConfiguration();
 
         std::vector<std::unique_ptr<ITaskProcessor>> processors;
         for (size_t i = 0; i < threadCount; ++i) {
             processors.push_back(
                 std::unique_ptr<ITaskProcessor>(
-                    new QueryProcessor(index, *config, queries)));
+                    new QueryProcessor(index, *config, queries, results)));
         }
 
         auto distributor =
@@ -166,6 +170,18 @@ namespace BitFunnel
 
         Stopwatch stopwatch;
         distributor->WaitForCompletion();
+
+#if QUERY_RUNNER_WIP
+        CsvTsv::CsvTableFormatter formatter(std::cout);
+
+        formatter.WriteField("query");
+        QueryInstrumentation::Data::FormatHeader(formatter);
+        for (size_t i = 0; i < results.size(); ++i)
+        {
+            formatter.WriteField(queries[i]);
+            results[i].Format(formatter);
+        }
+#endif
 
         return QueryRunner::Statistics(threadCount,
                                        queries.size(),

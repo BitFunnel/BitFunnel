@@ -26,6 +26,7 @@
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Plan/IResultsProcessor.h"
+#include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "ByteCodeInterpreter.h"
 #include "LoggerInterfaces/Check.h"
 
@@ -65,7 +66,8 @@ Decide on type of Slices
         char * const * sliceBuffers,
         size_t iterationsPerSlice,
         ptrdiff_t const * rowOffsets,
-        IDiagnosticStream& diagnosticStream)
+        IDiagnosticStream& diagnosticStream,
+        QueryInstrumentation& instrumentation)
       : m_code(code.GetCode()),
         m_jumpTable(code.GetJumpTable()),
         m_resultsProcessor(resultsProcessor),
@@ -73,7 +75,8 @@ Decide on type of Slices
         m_sliceBuffers(sliceBuffers),
         m_iterationsPerSlice(iterationsPerSlice),
         m_rowOffsets(rowOffsets),
-        m_diagnosticStream(diagnosticStream)
+        m_diagnosticStream(diagnosticStream),
+        m_instrumentation(instrumentation)
     {
     }
 
@@ -145,6 +148,7 @@ Decide on type of Slices
             {
             case Opcode::AndRow:
                 {
+                m_instrumentation.IncrementQuadwordCount();
                     uint64_t const * rowPtr =
                         reinterpret_cast<uint64_t const *>(
                             sliceBuffer + m_rowOffsets[row]);
@@ -163,6 +167,7 @@ Decide on type of Slices
                 break;
             case Opcode::LoadRow:
                 {
+                    m_instrumentation.IncrementQuadwordCount();
                     uint64_t const * rowPtr =
                         reinterpret_cast<uint64_t const *>(
                             sliceBuffer + m_rowOffsets[row]);
