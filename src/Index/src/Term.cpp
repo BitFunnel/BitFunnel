@@ -296,7 +296,8 @@ namespace BitFunnel
 
     double Term::FrequencyAtRank(double frequency, Rank rank)
     {
-        return 1.0 - pow(1.0 - frequency, rank + 1.0);
+        size_t rowCount = (1ull << rank);
+        return 1.0 - pow(1.0 - frequency, rowCount);
     }
 
 
