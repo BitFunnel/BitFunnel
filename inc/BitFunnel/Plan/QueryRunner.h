@@ -50,6 +50,7 @@ namespace BitFunnel
         };
 
         static Statistics Run(ISimpleIndex const & index,
+                              char const * outputDir,
                               size_t threadCount,
                               std::vector<std::string> const & queries,
                               size_t iterations);

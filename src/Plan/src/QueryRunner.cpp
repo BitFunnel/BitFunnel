@@ -28,6 +28,7 @@
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/IDiagnosticStream.h"
+#include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryRunner.h"
@@ -149,6 +150,7 @@ namespace BitFunnel
     //*************************************************************************
     QueryRunner::Statistics QueryRunner::Run(
         ISimpleIndex const & index,
+        char const * outDir,
         size_t threadCount,
         std::vector<std::string> const & queries,
         size_t iterations)
@@ -171,21 +173,31 @@ namespace BitFunnel
         Stopwatch stopwatch;
         distributor->WaitForCompletion();
 
-#if QUERY_RUNNER_WIP
-        CsvTsv::CsvTableFormatter formatter(std::cout);
+        auto statistics(QueryRunner::Statistics(threadCount,
+                                                queries.size(),
+                                                queries.size() * iterations,
+                                                stopwatch.ElapsedTime()));
 
-        formatter.WriteField("query");
-        QueryInstrumentation::Data::FormatHeader(formatter);
-        for (size_t i = 0; i < results.size(); ++i)
         {
-            formatter.WriteField(queries[i]);
-            results[i].Format(formatter);
-        }
-#endif
+            std::cout << "Writing results ..." << std::endl;
+            auto outFileManager =
+                Factories::CreateFileManager(outDir,
+                                             outDir,
+                                             outDir,
+                                             index.GetFileSystem());
 
-        return QueryRunner::Statistics(threadCount,
-                                       queries.size(),
-                                       queries.size() * iterations,
-                                       stopwatch.ElapsedTime());
+            auto out = outFileManager->QueryPipelineStatistics().OpenForWrite();
+            CsvTsv::CsvTableFormatter formatter(*out);
+
+            formatter.WriteField("query");
+            QueryInstrumentation::Data::FormatHeader(formatter);
+            for (size_t i = 0; i < results.size(); ++i)
+            {
+                formatter.WriteField(queries[i]);
+                results[i].Format(formatter);
+            }
+        }
+
+        return statistics;
     }
 }

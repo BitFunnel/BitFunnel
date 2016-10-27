@@ -478,6 +478,11 @@ namespace BitFunnel
         }
         else
         {
+            CHECK_NE(*GetEnvironment().GetOutputDir().c_str(), '\0')
+                << "Output directory not set. "
+                << "Please use the 'cd' command to set an "
+                << "output directory";
+
             std::cout
                 << "Processing queries from log at \""
                 << m_query
@@ -490,6 +495,7 @@ namespace BitFunnel
             const size_t c_iterations = 1;
             auto statistics =
                 QueryRunner::Run(GetEnvironment().GetSimpleIndex(),
+                                 GetEnvironment().GetOutputDir().c_str(),
                                  c_threadCount,
                                  queries,
                                  c_iterations);

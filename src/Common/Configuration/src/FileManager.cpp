@@ -72,6 +72,10 @@ namespace BitFunnel
                                                    indexDirectory,
                                                    "IndexedIdfTable",
                                                    ".bin")),
+          m_queryPipelineStatistics(new ParameterizedFile0(fileSystem,
+                                                           statisticsDirectory,
+                                                           "QueryPipelineStatistics",
+                                                           ".csv" )),
           m_rowDensities(
               new ParameterizedFile1(fileSystem,
                                      statisticsDirectory,
@@ -112,6 +116,12 @@ namespace BitFunnel
     FileDescriptor0 FileManager::DocumentLengthHistogram()
     {
         return FileDescriptor0(*m_documentLengthHistogram);
+    }
+
+
+    FileDescriptor0 FileManager::QueryPipelineStatistics()
+    {
+        return FileDescriptor0(*m_queryPipelineStatistics);
     }
 
 
