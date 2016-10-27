@@ -79,12 +79,12 @@ namespace BitFunnel
         {
         public:
             inline Data()
-              : m_parsingTime(0.0),
-                m_planningTime(0.0),
-                m_matchingTime(0.0),
+              : m_rowCount(0ull),
+                m_matchCount(0ull),
                 m_quadwordCount(0ull),
-                m_rowCount(0ull),
-                m_matchCount(0ull)
+                m_parsingTime(0.0),
+                m_planningTime(0.0),
+                m_matchingTime(0.0)
             {
             }
 
