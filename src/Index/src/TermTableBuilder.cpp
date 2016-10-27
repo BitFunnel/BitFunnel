@@ -356,7 +356,8 @@ namespace BitFunnel
 
         // Update m_adhocTotal with this term's contribution to the total
         // number of bits.
-        m_adhocTotal += frequency * count;
+        double f = Term::FrequencyAtRank(frequency, m_rank);
+        m_adhocTotal += f * count;
     }
 
 
