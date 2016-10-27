@@ -900,11 +900,6 @@ namespace BitFunnel
                 << "\"" << std::endl;
             auto fileSystem = Factories::CreateFileSystem();  // TODO: Use environment file system
             auto queries = ReadLines(*fileSystem, m_query.c_str());
-            std::vector<std::unique_ptr<IMatchVerifier>> verifiers;
-            for (const auto & query : queries)
-            {
-                verifiers.emplace_back(VerifyOneQuery(GetEnvironment(), query));
-            }
 
             // TODO: use FileManager.
             auto verificationOut = GetEnvironment().
@@ -956,10 +951,10 @@ namespace BitFunnel
             summary.DefineColumn(numFalseNeg);
             summary.DefineColumn(falseRate);
 
-
             uint64_t position = 0;
-            for (const auto & verifier : verifiers)
+            for (const auto & query : queries)
             {
+                auto verifier = VerifyOneQuery(GetEnvironment(), query);
                 queryString = verifier->GetQuery();
                 std::vector<DocId> results = verifier->GetTruePositives();
                 numTruePos = results.size();
