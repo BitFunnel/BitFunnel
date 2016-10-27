@@ -910,8 +910,8 @@ namespace BitFunnel
             auto verificationOut = GetEnvironment().
                 GetFileSystem().
                 OpenForWrite("verificationOutput.csv");
-            CsvTsv::CsvTableFormatter formatter(*verificationOut);
-            CsvTsv::TableWriter writer(formatter);
+            CsvTsv::CsvTableFormatter verificationFormatter(*verificationOut);
+            CsvTsv::TableWriter writer(verificationFormatter);
             CsvTsv::OutputColumn<std::string>
                 queryString("query",
                             "Query text");
@@ -927,10 +927,42 @@ namespace BitFunnel
             writer.DefineColumn(type);
             writer.WritePrologue();
 
+            auto verificationSummary = GetEnvironment().
+                GetFileSystem().
+                OpenForWrite("verificationSummary.csv");
+            CsvTsv::CsvTableFormatter summaryFormatter(*verificationSummary);
+            CsvTsv::TableWriter summary(summaryFormatter);
+            CsvTsv::OutputColumn<uint64_t>
+                termPos("TermPos",
+                        "Term position.");
+            CsvTsv::OutputColumn<uint64_t>
+                numTruePos("TruePositives",
+                           "Number of true positives.");
+            CsvTsv::OutputColumn<uint64_t>
+                numFalsePos("FalsePositives",
+                            "Number of false positives.");
+            CsvTsv::OutputColumn<uint64_t>
+                numFalseNeg("FalseNegatives",
+                           "Number of true negatives.");
+            CsvTsv::OutputColumn<double>
+                falseRate("FalseRate",
+                          "(Num false positives) / (Num total matches).");
+
+
+            summary.DefineColumn(queryString);
+            summary.DefineColumn(termPos);
+            summary.DefineColumn(numTruePos);
+            summary.DefineColumn(numFalsePos);
+            summary.DefineColumn(numFalseNeg);
+            summary.DefineColumn(falseRate);
+
+
+            uint64_t position = 0;
             for (const auto & verifier : verifiers)
             {
                 queryString = verifier->GetQuery();
                 std::vector<DocId> results = verifier->GetTruePositives();
+                numTruePos = results.size();
                 type = 0;
                 for (const auto id : results)
                 {
@@ -939,6 +971,7 @@ namespace BitFunnel
                 }
 
                 results = verifier->GetFalsePositives();
+                numFalsePos = results.size();
                 type = 1;
                 for (const auto id : results)
                 {
@@ -947,15 +980,25 @@ namespace BitFunnel
                 }
 
                 results = verifier->GetFalseNegatives();
+                numFalseNeg = results.size();
                 type = 2;
                 for (const auto id : results)
                 {
                     docId = id;
                     writer.WriteDataRow();
                 }
+
+                falseRate = static_cast<double>(numFalsePos) /
+                    (static_cast<double>(numFalsePos) +
+                     static_cast<double>(numTruePos));
+
+                summary.WriteDataRow();
+                ++position;
+                termPos = position;
             }
 
             writer.WriteEpilogue();
+            summary.WriteEpilogue();
         }
     }
 
