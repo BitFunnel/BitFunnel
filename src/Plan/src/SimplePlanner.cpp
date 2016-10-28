@@ -85,7 +85,10 @@ namespace BitFunnel
         CHECK_GT(m_rows.size(), 0u);
         Rank rank = m_rows[0].GetRank();
         m_code.LoadRow(0u, false, 0u);
+        ICodeGenerator::Label label = m_code.AllocateLabel();
+        m_code.Jz(label);
         Compile(1u, rank);
+        m_code.PlaceLabel(label);
         m_code.Seal();
 
         // Get token before we GetSliceBuffers.
@@ -153,7 +156,10 @@ namespace BitFunnel
             else
             {
                 m_code.AndRow(pos, false, 0);
+                ICodeGenerator::Label label = m_code.AllocateLabel();
+                m_code.Jz(label);
                 Compile(pos + 1, rank);
+                m_code.PlaceLabel(label);
             }
         }
     }
