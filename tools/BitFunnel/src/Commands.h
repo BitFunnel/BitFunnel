@@ -22,40 +22,16 @@
 
 #pragma once
 
-#include "TaskBase.h"   // TaskBase base class.
+#include "AnalyzeCommand.h"
+#include "CdCommand.h"
+#include "ExitCommand.h"
+#include "FailOnExceptionCommand.h"
+#include "HelpCommand.h"
+#include "TaskBase.h"          // TaskBase base class.
 
 
 namespace BitFunnel
 {
-    class Analyze : public TaskBase
-    {
-    public:
-        Analyze(Environment & environment,
-                Id id,
-                char const * parameters);
-
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
-
-    private:
-    };
-
-
-    class Cd : public TaskBase
-    {
-    public:
-        Cd(Environment & environment,
-           Id id,
-           char const * parameters);
-
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
-
-    private:
-        std::string m_dir;
-    };
-
-
     class DelayedPrint : public TaskBase
     {
     public:
@@ -69,47 +45,6 @@ namespace BitFunnel
     private:
         size_t m_sleepTime;
         std::string m_message;
-    };
-
-
-    class Exit : public TaskBase
-    {
-    public:
-        Exit(Environment & environment,
-             Id id,
-             char const * parameters);
-
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
-    };
-
-
-    class FailOnException : public TaskBase
-    {
-    public:
-        FailOnException(Environment & environment,
-                        Id id,
-                        char const * parameters);
-
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
-
-    private:
-    };
-
-
-    class Help : public TaskBase
-    {
-    public:
-        Help(Environment & environment,
-             Id id,
-             char const * parameters);
-
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
-
-    private:
-        std::string m_command;
     };
 
 

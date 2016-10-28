@@ -1,9 +1,14 @@
 # BitFunnel/tools/BitFunnel/src
 
 set(CPPFILES
+    AnalyzeCommand.cpp
     BitFunnelTool.cpp
+    CdCommand.cpp
     Commands.cpp
     Environment.cpp
+    ExitCommand.cpp
+    FailOnExceptionCommand.cpp
+    HelpCommand.cpp
     REPL.cpp
     StatisticsBuilder.cpp
     TaskFactory.cpp
@@ -18,15 +23,20 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    AnalyzeCommand.h
     BitFunnelTool.h
+    CdCommand.cpp
     Commands.h
+    ExitCommand.cpp
+    FailOnExceptionCommand.cpp
     Environment.h
+    HelpCommand.cpp
     ICommand.h
     ITask.h
-    REPL.h
-    StatisticsBuilder.h
     TaskBase.h
     TaskFactory.h
+    REPL.h
+    StatisticsBuilder.h
     TaskPool.h
     TermTableBuilderTool.h
 )
