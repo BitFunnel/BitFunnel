@@ -22,7 +22,7 @@
 
 
 #include "AnalyzeCommand.h"
-#include "BitFunnel/Plan/Factories.h"
+#include "BitFunnel/Index/Factories.h"
 #include "Environment.h"
 #include "LoggerInterfaces/Check.h"
 
