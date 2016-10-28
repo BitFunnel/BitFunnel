@@ -26,7 +26,9 @@
 #include <istream>
 
 #include "BitFunnel/Configuration/IFileSystem.h"
+#include "BitFunnel/Utilities/IsSpace.h"
 #include "BitFunnel/Utilities/ReadLines.h"
+
 
 namespace BitFunnel
 {
@@ -44,13 +46,13 @@ namespace BitFunnel
             // Windows BitFunnel, we can have a stray \r character.
             line.erase(std::find_if(line.rbegin(),
                                     line.rend(),
-                                    std::not1(std::ptr_fun<int, int>(std::isspace))).base(),
+                                    std::not1(std::ptr_fun<int, bool>(IsSpace))).base(),
                                     line.end());
             // Trim leading whitespace.
             line.erase(line.begin(),
                        std::find_if(line.begin(),
                                     line.end(),
-                                    std::not1(std::ptr_fun<int, int>(std::isspace))));
+                                    std::not1(std::ptr_fun<int, bool>(IsSpace))));
             lines.push_back(std::move(line));
         }
 
