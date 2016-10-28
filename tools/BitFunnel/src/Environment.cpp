@@ -22,10 +22,21 @@
 
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IRecycler.h"
-#include "Commands.h"
+#include "AnalyzeCommand.h"
+#include "CdCommand.h"
 #include "Environment.h"
+#include "ExitCommand.h"
+#include "FailOnExceptionCommand.h"
+#include "HelpCommand.h"
+#include "IngestCommands.h"
+#include "QueryCommand.h"
+#include "ScriptCommand.h"
+#include "ShowCommand.h"
+#include "StatusCommand.h"
+#include "TaskBase.h"          // TaskBase base class.
 #include "TaskFactory.h"
 #include "TaskPool.h"
+#include "VerifyCommand.h"
 
 
 namespace BitFunnel
@@ -52,7 +63,6 @@ namespace BitFunnel
     {
         m_taskFactory->RegisterCommand<Analyze>();
         m_taskFactory->RegisterCommand<Cd>();
-        m_taskFactory->RegisterCommand<DelayedPrint>();
         m_taskFactory->RegisterCommand<Exit>();
         m_taskFactory->RegisterCommand<FailOnException>();
         m_taskFactory->RegisterCommand<Help>();

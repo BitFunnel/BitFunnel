@@ -4,7 +4,6 @@ set(CPPFILES
     AnalyzeCommand.cpp
     BitFunnelTool.cpp
     CdCommand.cpp
-    Commands.cpp
     Environment.cpp
     ExitCommand.cpp
     FailOnExceptionCommand.cpp
@@ -32,7 +31,6 @@ set(PRIVATE_HFILES
     AnalyzeCommand.h
     BitFunnelTool.h
     CdCommand.h
-    Commands.h
     ExitCommand.h
     FailOnExceptionCommand.h
     Environment.h
