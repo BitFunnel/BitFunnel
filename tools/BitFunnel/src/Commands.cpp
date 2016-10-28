@@ -475,7 +475,14 @@ namespace BitFunnel
                 << "Processing query \""
                 << m_query
                 << "\"" << std::endl;
-            std::cout << "NOT IMPLEMENTED" << std::endl;
+            auto instrumentation =
+                QueryRunner::Run(m_query.c_str(),
+                                 GetEnvironment().GetSimpleIndex());
+
+            std::cout << "Results:" << std::endl;
+            CsvTsv::CsvTableFormatter formatter(std::cout);
+            QueryInstrumentation::Data::FormatHeader(formatter);
+            instrumentation.Format(formatter);
         }
         else
         {

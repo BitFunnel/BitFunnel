@@ -78,6 +78,13 @@ namespace BitFunnel
                        std::vector<std::string> const & queries,
                        std::vector<QueryInstrumentation::Data> & results);
 
+        static QueryInstrumentation QueryProcessor::ProcessOneQuery(
+            char const * query,
+            ISimpleIndex const & index,
+            IStreamConfiguration const & config,
+            IAllocator & allocator,
+            IDiagnosticStream & diagnosticStream);
+
         //
         // ITaskProcessor methods
         //
@@ -120,7 +127,6 @@ namespace BitFunnel
 
         size_t queryId = taskId % m_queries.size();
 
-        // Just causes an extra copy and allocation per query.
         QueryParser parser(m_queries[queryId].c_str(), m_config, *m_allocator);
         auto tree = parser.Parse();
         instrumentation.FinishParsing();
@@ -148,6 +154,25 @@ namespace BitFunnel
     // QueryRunner
     //
     //*************************************************************************
+    QueryInstrumentation::Data QueryRunner::Run(
+        char const * query,
+        ISimpleIndex const & index)
+    {
+        std::vector<std::string> queries;
+        queries.push_back(std::string(query));
+
+        std::vector<QueryInstrumentation::Data> results(queries.size());
+
+        auto config = Factories::CreateStreamConfiguration();
+
+        QueryProcessor processor(index, *config, queries, results);
+        processor.ProcessTask(0);
+        processor.Finished();
+
+        return results[0];
+    }
+
+
     QueryRunner::Statistics QueryRunner::Run(
         ISimpleIndex const & index,
         char const * outDir,

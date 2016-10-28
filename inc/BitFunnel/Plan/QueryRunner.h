@@ -49,6 +49,10 @@ namespace BitFunnel
             double m_elapsedTime;
         };
 
+        static QueryInstrumentation::Data Run(
+            char const * query,
+            ISimpleIndex const & index);
+
         static Statistics Run(ISimpleIndex const & index,
                               char const * outputDir,
                               size_t threadCount,
