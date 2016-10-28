@@ -31,7 +31,9 @@
 #include "QueryCommand.h"
 #include "ScriptCommand.h"
 #include "ShowCommand.h"
+#include "StatusCommand.h"
 #include "TaskBase.h"          // TaskBase base class.
+#include "VerifyCommand.h"
 
 
 namespace BitFunnel
@@ -146,30 +148,30 @@ namespace BitFunnel
     //};
 
 
-    class Status : public TaskBase
-    {
-    public:
-        Status(Environment & environment,
-               Id id,
-               char const * parameters);
+    //class Status : public TaskBase
+    //{
+    //public:
+    //    Status(Environment & environment,
+    //           Id id,
+    //           char const * parameters);
 
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
-    };
+    //    virtual void Execute() override;
+    //    static ICommand::Documentation GetDocumentation();
+    //};
 
 
-    class Verify : public TaskBase
-    {
-    public:
-        Verify(Environment & environment,
-               Id id,
-               char const * parameters);
+    //class Verify : public TaskBase
+    //{
+    //public:
+    //    Verify(Environment & environment,
+    //           Id id,
+    //           char const * parameters);
 
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
+    //    virtual void Execute() override;
+    //    static ICommand::Documentation GetDocumentation();
 
-    private:
-        bool m_isSingleQuery;
-        std::string m_query;
-    };
+    //private:
+    //    bool m_isSingleQuery;
+    //    std::string m_query;
+    //};
 }

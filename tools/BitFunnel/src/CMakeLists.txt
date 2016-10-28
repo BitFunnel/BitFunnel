@@ -15,9 +15,11 @@ set(CPPFILES
     ScriptCommand.cpp
     ShowCommand.cpp
     StatisticsBuilder.cpp
+    StatusCommand.cpp
     TaskFactory.cpp
     TaskPool.cpp
     TermTableBuilderTool.cpp
+    VerifyCommand.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -38,15 +40,17 @@ set(PRIVATE_HFILES
     IngestCommands.h
     ICommand.h
     ITask.h
-    ScriptCommand.h
-    ShowCommand.h
-    TaskBase.h
-    TaskFactory.h
     QueryCommand.h
     REPL.h
+    ScriptCommand.h
+    ShowCommand.h
     StatisticsBuilder.h
+    StatusCommand.h
+    TaskBase.h
     TaskPool.h
+    TaskFactory.h
     TermTableBuilderTool.h
+    VerifyCommand.h
 )
 
 set(WINDOWS_PRIVATE_HFILES
