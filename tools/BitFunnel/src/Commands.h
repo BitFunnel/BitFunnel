@@ -27,6 +27,10 @@
 #include "ExitCommand.h"
 #include "FailOnExceptionCommand.h"
 #include "HelpCommand.h"
+#include "IngestCommands.h"
+#include "QueryCommand.h"
+#include "ScriptCommand.h"
+#include "ShowCommand.h"
 #include "TaskBase.h"          // TaskBase base class.
 
 
@@ -48,98 +52,98 @@ namespace BitFunnel
     };
 
 
-    class Ingest : public TaskBase
-    {
-    public:
-        Ingest(Environment & environment,
-               Id id,
-               char const * parameters,
-               bool cache);
+    //class Ingest : public TaskBase
+    //{
+    //public:
+    //    Ingest(Environment & environment,
+    //           Id id,
+    //           char const * parameters,
+    //           bool cache);
 
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
+    //    virtual void Execute() override;
+    //    static ICommand::Documentation GetDocumentation();
 
-    private:
-        bool m_manifest;
-        std::string m_path;
-        bool m_cacheDocuments;
-    };
-
-
-    class Cache : public Ingest
-    {
-    public:
-        Cache(Environment & environment,
-              Id id,
-              char const * parameters);
-
-        static ICommand::Documentation GetDocumentation();
-    };
+    //private:
+    //    bool m_manifest;
+    //    std::string m_path;
+    //    bool m_cacheDocuments;
+    //};
 
 
-    class Load : public Ingest
-    {
-    public:
-        Load(Environment & environment,
-             Id id,
-             char const * parameters);
+    //class Cache : public Ingest
+    //{
+    //public:
+    //    Cache(Environment & environment,
+    //          Id id,
+    //          char const * parameters);
 
-        static ICommand::Documentation GetDocumentation();
-    };
-
-
-    class Query : public TaskBase
-    {
-    public:
-        Query(Environment & environment,
-              Id id,
-              char const * parameters);
-
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
-
-    private:
-        bool m_isSingleQuery;
-        std::string m_query;
-    };
+    //    static ICommand::Documentation GetDocumentation();
+    //};
 
 
-    class Script : public TaskBase
-    {
-    public:
-        Script(Environment & environment,
-               Id id,
-               char const * parameters);
+    //class Load : public Ingest
+    //{
+    //public:
+    //    Load(Environment & environment,
+    //         Id id,
+    //         char const * parameters);
 
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
-
-    private:
-        std::vector<std::string> m_script;
-    };
+    //    static ICommand::Documentation GetDocumentation();
+    //};
 
 
-    class Show : public TaskBase
-    {
-    public:
-        Show(Environment & environment,
-             Id id,
-             char const * parameters);
+    //class Query : public TaskBase
+    //{
+    //public:
+    //    Query(Environment & environment,
+    //          Id id,
+    //          char const * parameters);
 
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
+    //    virtual void Execute() override;
+    //    static ICommand::Documentation GetDocumentation();
 
-        enum class Mode
-        {
-            Cache,
-            Rows,
-            Term
-        };
+    //private:
+    //    bool m_isSingleQuery;
+    //    std::string m_query;
+    //};
 
-    private:
-        Mode m_mode;
-        std::string m_term;
-    };
+
+    //class Script : public TaskBase
+    //{
+    //public:
+    //    Script(Environment & environment,
+    //           Id id,
+    //           char const * parameters);
+
+    //    virtual void Execute() override;
+    //    static ICommand::Documentation GetDocumentation();
+
+    //private:
+    //    std::vector<std::string> m_script;
+    //};
+
+
+    //class Show : public TaskBase
+    //{
+    //public:
+    //    Show(Environment & environment,
+    //         Id id,
+    //         char const * parameters);
+
+    //    virtual void Execute() override;
+    //    static ICommand::Documentation GetDocumentation();
+
+    //    enum class Mode
+    //    {
+    //        Cache,
+    //        Rows,
+    //        Term
+    //    };
+
+    //private:
+    //    Mode m_mode;
+    //    std::string m_term;
+    //};
 
 
     class Status : public TaskBase

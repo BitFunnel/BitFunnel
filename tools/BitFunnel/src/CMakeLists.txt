@@ -9,7 +9,11 @@ set(CPPFILES
     ExitCommand.cpp
     FailOnExceptionCommand.cpp
     HelpCommand.cpp
+    IngestCommands.cpp
+    QueryCommand.cpp
     REPL.cpp
+    ScriptCommand.cpp
+    ShowCommand.cpp
     StatisticsBuilder.cpp
     TaskFactory.cpp
     TaskPool.cpp
@@ -25,16 +29,20 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     AnalyzeCommand.h
     BitFunnelTool.h
-    CdCommand.cpp
+    CdCommand.h
     Commands.h
-    ExitCommand.cpp
-    FailOnExceptionCommand.cpp
+    ExitCommand.h
+    FailOnExceptionCommand.h
     Environment.h
-    HelpCommand.cpp
+    HelpCommand.h
+    IngestCommands.h
     ICommand.h
     ITask.h
+    ScriptCommand.h
+    ShowCommand.h
     TaskBase.h
     TaskFactory.h
+    QueryCommand.h
     REPL.h
     StatisticsBuilder.h
     TaskPool.h

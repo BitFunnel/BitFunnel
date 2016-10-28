@@ -93,454 +93,456 @@ namespace BitFunnel
             "  Waits for 5 seconds then prints <message> to the console."
         );
     }
-    //*************************************************************************
-    //
-    // Ingest
-    //
-    //*************************************************************************
-    Ingest::Ingest(Environment & environment,
-                   Id id,
-                   char const * parameters,
-                   bool cacheDocuments)
-        : TaskBase(environment, id, Type::Synchronous),
-          m_cacheDocuments(cacheDocuments)
-    {
-        auto command = TaskFactory::GetNextToken(parameters);
-        if (command.compare("manifest") == 0)
-        {
-            m_manifest = true;
-        }
-        else if (command.compare("chunk") == 0)
-        {
-            m_manifest = false;
-        }
-        else
-        {
-            RecoverableError error("Ingest expects \"chunk\" or \"manifest\".");
-            throw error;
-        }
-
-        m_path = TaskFactory::GetNextToken(parameters);
-    }
 
 
-    void Ingest::Execute()
-    {
-        if (m_manifest && m_path.compare("sonnets") == 0)
-        {
-                Environment & environment = GetEnvironment();
-                IConfiguration const & configuration =
-                    environment.GetConfiguration();
-                IIngestor & ingestor = environment.GetIngestor();
-                size_t threadCount = 1;
+    ////*************************************************************************
+    ////
+    //// Ingest
+    ////
+    ////*************************************************************************
+    //Ingest::Ingest(Environment & environment,
+    //               Id id,
+    //               char const * parameters,
+    //               bool cacheDocuments)
+    //    : TaskBase(environment, id, Type::Synchronous),
+    //      m_cacheDocuments(cacheDocuments)
+    //{
+    //    auto command = TaskFactory::GetNextToken(parameters);
+    //    if (command.compare("manifest") == 0)
+    //    {
+    //        m_manifest = true;
+    //    }
+    //    else if (command.compare("chunk") == 0)
+    //    {
+    //        m_manifest = false;
+    //    }
+    //    else
+    //    {
+    //        RecoverableError error("Ingest expects \"chunk\" or \"manifest\".");
+    //        throw error;
+    //    }
 
-                auto manifest = Factories::CreateBuiltinChunkManifest(
-                    Sonnets::chunks,
-                    configuration,
-                    ingestor,
-                    m_cacheDocuments);
-
-                IngestChunks(*manifest, threadCount);
-
-                std::cout << "Ingestion complete." << std::endl;
-        }
-        else
-        {
-            std::vector<std::string> filePaths;
-
-            if (m_manifest)
-            {
-                std::cout
-                    << "Ingesting manifest \""
-                    << m_path
-                    << "\"" << std::endl;
-
-                filePaths = ReadLines(GetEnvironment().GetFileSystem(),
-                                      m_path.c_str());
-
-            }
-            else
-            {
-                filePaths.push_back(m_path);
-                std::cout
-                    << "Ingesting chunk file \""
-                    << filePaths.back()
-                    << "\"" << std::endl;
-            }
-
-            if (m_cacheDocuments)
-            {
-                std::cout
-                    << "Caching IDocuments for query verification."
-                    << std::endl;
-            }
-
-            Environment & environment = GetEnvironment();
-            IFileSystem & fileSystem =
-                environment.GetFileSystem();
-            IConfiguration const & configuration =
-                environment.GetConfiguration();
-            IIngestor & ingestor = environment.GetIngestor();
-            size_t threadCount = 1;
-
-            auto manifest = Factories::CreateChunkManifestIngestor(
-                fileSystem,
-                filePaths,
-                configuration,
-                ingestor,
-                m_cacheDocuments);
-
-            IngestChunks(*manifest, threadCount);
-
-            std::cout << "Ingestion complete." << std::endl;
-        }
-    }
+    //    m_path = TaskFactory::GetNextToken(parameters);
+    //}
 
 
-    ICommand::Documentation Ingest::GetDocumentation()
-    {
-        return Documentation(
-            "ingest",
-            "Ingests documents into the index. (TODO)",
-            "ingest (manifest | chunk) <path>\n"
-            "  Ingests a single chunk file or a list of chunk\n"
-            "  files specified by a manifest.\n"
-            "  NOT IMPLEMENTED"
-            );
-    }
+    //void Ingest::Execute()
+    //{
+    //    if (m_manifest && m_path.compare("sonnets") == 0)
+    //    {
+    //            Environment & environment = GetEnvironment();
+    //            IConfiguration const & configuration =
+    //                environment.GetConfiguration();
+    //            IIngestor & ingestor = environment.GetIngestor();
+    //            size_t threadCount = 1;
+
+    //            auto manifest = Factories::CreateBuiltinChunkManifest(
+    //                Sonnets::chunks,
+    //                configuration,
+    //                ingestor,
+    //                m_cacheDocuments);
+
+    //            IngestChunks(*manifest, threadCount);
+
+    //            std::cout << "Ingestion complete." << std::endl;
+    //    }
+    //    else
+    //    {
+    //        std::vector<std::string> filePaths;
+
+    //        if (m_manifest)
+    //        {
+    //            std::cout
+    //                << "Ingesting manifest \""
+    //                << m_path
+    //                << "\"" << std::endl;
+
+    //            filePaths = ReadLines(GetEnvironment().GetFileSystem(),
+    //                                  m_path.c_str());
+
+    //        }
+    //        else
+    //        {
+    //            filePaths.push_back(m_path);
+    //            std::cout
+    //                << "Ingesting chunk file \""
+    //                << filePaths.back()
+    //                << "\"" << std::endl;
+    //        }
+
+    //        if (m_cacheDocuments)
+    //        {
+    //            std::cout
+    //                << "Caching IDocuments for query verification."
+    //                << std::endl;
+    //        }
+
+    //        Environment & environment = GetEnvironment();
+    //        IFileSystem & fileSystem =
+    //            environment.GetFileSystem();
+    //        IConfiguration const & configuration =
+    //            environment.GetConfiguration();
+    //        IIngestor & ingestor = environment.GetIngestor();
+    //        size_t threadCount = 1;
+
+    //        auto manifest = Factories::CreateChunkManifestIngestor(
+    //            fileSystem,
+    //            filePaths,
+    //            configuration,
+    //            ingestor,
+    //            m_cacheDocuments);
+
+    //        IngestChunks(*manifest, threadCount);
+
+    //        std::cout << "Ingestion complete." << std::endl;
+    //    }
+    //}
 
 
-    //*************************************************************************
-    //
-    // Cache
-    //
-    //*************************************************************************
-    Cache::Cache(Environment & environment,
-                 Id id,
-                 char const * parameters)
-        : Ingest(environment, id, parameters, true)
-    {
-    }
+    //ICommand::Documentation Ingest::GetDocumentation()
+    //{
+    //    return Documentation(
+    //        "ingest",
+    //        "Ingests documents into the index. (TODO)",
+    //        "ingest (manifest | chunk) <path>\n"
+    //        "  Ingests a single chunk file or a list of chunk\n"
+    //        "  files specified by a manifest.\n"
+    //        "  NOT IMPLEMENTED"
+    //        );
+    //}
 
 
-    ICommand::Documentation Cache::GetDocumentation()
-    {
-        return Documentation(
-            "cache",
-            "Ingests documents into the index and also stores them in a cache\n"
-            "for query verification purposes.",
-            "cache (manifest | chunk) <path>\n"
-            "  Ingests a single chunk file or a list of chunk\n"
-            "  files specified by a manifest.\n"
-            "  Also caches IDocuments for query verification.\n"
-            );
-    }
+    ////*************************************************************************
+    ////
+    //// Cache
+    ////
+    ////*************************************************************************
+    //Cache::Cache(Environment & environment,
+    //             Id id,
+    //             char const * parameters)
+    //    : Ingest(environment, id, parameters, true)
+    //{
+    //}
 
 
-    //*************************************************************************
-    //
-    // Load
-    //
-    //*************************************************************************
-    Load::Load(Environment & environment,
-               Id id,
-               char const * parameters)
-        : Ingest(environment, id, parameters, false)
-    {
-    }
+    //ICommand::Documentation Cache::GetDocumentation()
+    //{
+    //    return Documentation(
+    //        "cache",
+    //        "Ingests documents into the index and also stores them in a cache\n"
+    //        "for query verification purposes.",
+    //        "cache (manifest | chunk) <path>\n"
+    //        "  Ingests a single chunk file or a list of chunk\n"
+    //        "  files specified by a manifest.\n"
+    //        "  Also caches IDocuments for query verification.\n"
+    //        );
+    //}
 
 
-    ICommand::Documentation Load::GetDocumentation()
-    {
-        return Documentation(
-            "load",
-            "Ingests documents into the index",
-            "load (manifest | chunk) <path>\n"
-            "  Ingests a single chunk file or a list of chunk\n"
-            "  files specified by a manifest.\n"
-            );
-    }
+    ////*************************************************************************
+    ////
+    //// Load
+    ////
+    ////*************************************************************************
+    //Load::Load(Environment & environment,
+    //           Id id,
+    //           char const * parameters)
+    //    : Ingest(environment, id, parameters, false)
+    //{
+    //}
 
 
-    //*************************************************************************
-    //
-    // Query
-    //
-    //*************************************************************************
-    Query::Query(Environment & environment,
-                 Id id,
-                 char const * parameters)
-        : TaskBase(environment, id, Type::Synchronous)
-    {
-        auto command = TaskFactory::GetNextToken(parameters);
-        if (command.compare("one") == 0)
-        {
-            m_isSingleQuery = true;
-            m_query = parameters;
-        }
-        else
-        {
-            m_isSingleQuery = false;
-            if (command.compare("log") != 0)
-            {
-                std::cout << "expected log or one" << std::endl;
-                throw RecoverableError();
-            }
-            m_query = TaskFactory::GetNextToken(parameters);
-        }
-    }
+    //ICommand::Documentation Load::GetDocumentation()
+    //{
+    //    return Documentation(
+    //        "load",
+    //        "Ingests documents into the index",
+    //        "load (manifest | chunk) <path>\n"
+    //        "  Ingests a single chunk file or a list of chunk\n"
+    //        "  files specified by a manifest.\n"
+    //        );
+    //}
 
 
-    void Query::Execute()
-    {
-        if (m_isSingleQuery)
-        {
-            std::cout
-                << "Processing query \""
-                << m_query
-                << "\"" << std::endl;
-            auto instrumentation =
-                QueryRunner::Run(m_query.c_str(),
-                                 GetEnvironment().GetSimpleIndex());
-
-            std::cout << "Results:" << std::endl;
-            CsvTsv::CsvTableFormatter formatter(std::cout);
-            QueryInstrumentation::Data::FormatHeader(formatter);
-            instrumentation.Format(formatter);
-        }
-        else
-        {
-            CHECK_NE(*GetEnvironment().GetOutputDir().c_str(), '\0')
-                << "Output directory not set. "
-                << "Please use the 'cd' command to set an "
-                << "output directory";
-
-            std::cout
-                << "Processing queries from log at \""
-                << m_query
-                << "\"" << std::endl;
-
-            std::string const & filename = m_query;
-            auto fileSystem = Factories::CreateFileSystem();  // TODO: Use environment file system
-            auto queries = ReadLines(*fileSystem, filename.c_str());
-            const size_t c_threadCount = 8;
-            const size_t c_iterations = 1;
-            auto statistics =
-                QueryRunner::Run(GetEnvironment().GetSimpleIndex(),
-                                 GetEnvironment().GetOutputDir().c_str(),
-                                 c_threadCount,
-                                 queries,
-                                 c_iterations);
-            std::cout << "Results:" << std::endl;
-            statistics.Print(std::cout);
-        }
-    }
+    ////*************************************************************************
+    ////
+    //// Query
+    ////
+    ////*************************************************************************
+    //Query::Query(Environment & environment,
+    //             Id id,
+    //             char const * parameters)
+    //    : TaskBase(environment, id, Type::Synchronous)
+    //{
+    //    auto command = TaskFactory::GetNextToken(parameters);
+    //    if (command.compare("one") == 0)
+    //    {
+    //        m_isSingleQuery = true;
+    //        m_query = parameters;
+    //    }
+    //    else
+    //    {
+    //        m_isSingleQuery = false;
+    //        if (command.compare("log") != 0)
+    //        {
+    //            std::cout << "expected log or one" << std::endl;
+    //            throw RecoverableError();
+    //        }
+    //        m_query = TaskFactory::GetNextToken(parameters);
+    //    }
+    //}
 
 
-    ICommand::Documentation Query::GetDocumentation()
-    {
-        return Documentation(
-            "query",
-            "Process a single query or list of queries.",
-            "query (one <expression>) | (log <file>)\n"
-            "  Processes a single query or a list of queries\n"
-            "  specified by a file.\n"
-            );
-    }
+    //void Query::Execute()
+    //{
+    //    if (m_isSingleQuery)
+    //    {
+    //        std::cout
+    //            << "Processing query \""
+    //            << m_query
+    //            << "\"" << std::endl;
+    //        auto instrumentation =
+    //            QueryRunner::Run(m_query.c_str(),
+    //                             GetEnvironment().GetSimpleIndex());
+
+    //        std::cout << "Results:" << std::endl;
+    //        CsvTsv::CsvTableFormatter formatter(std::cout);
+    //        QueryInstrumentation::Data::FormatHeader(formatter);
+    //        instrumentation.Format(formatter);
+    //    }
+    //    else
+    //    {
+    //        CHECK_NE(*GetEnvironment().GetOutputDir().c_str(), '\0')
+    //            << "Output directory not set. "
+    //            << "Please use the 'cd' command to set an "
+    //            << "output directory";
+
+    //        std::cout
+    //            << "Processing queries from log at \""
+    //            << m_query
+    //            << "\"" << std::endl;
+
+    //        std::string const & filename = m_query;
+    //        auto fileSystem = Factories::CreateFileSystem();  // TODO: Use environment file system
+    //        auto queries = ReadLines(*fileSystem, filename.c_str());
+    //        const size_t c_threadCount = 8;
+    //        const size_t c_iterations = 1;
+    //        auto statistics =
+    //            QueryRunner::Run(GetEnvironment().GetSimpleIndex(),
+    //                             GetEnvironment().GetOutputDir().c_str(),
+    //                             c_threadCount,
+    //                             queries,
+    //                             c_iterations);
+    //        std::cout << "Results:" << std::endl;
+    //        statistics.Print(std::cout);
+    //    }
+    //}
 
 
-    //*************************************************************************
-    //
-    // Script
-    //
-    //*************************************************************************
-    Script::Script(Environment & environment,
-                   Id id,
-                   char const * /*parameters*/)
-        : TaskBase(environment, id, Type::Synchronous)
-    {
-    }
+    //ICommand::Documentation Query::GetDocumentation()
+    //{
+    //    return Documentation(
+    //        "query",
+    //        "Process a single query or list of queries.",
+    //        "query (one <expression>) | (log <file>)\n"
+    //        "  Processes a single query or a list of queries\n"
+    //        "  specified by a file.\n"
+    //        );
+    //}
 
 
-    void Script::Execute()
-    {
-        std::cout
-            << "Running script ..." << std::endl
-            << "NOT IMPLEMENTED" << std::endl
-            << std::endl;
-    }
+    ////*************************************************************************
+    ////
+    //// Script
+    ////
+    ////*************************************************************************
+    //Script::Script(Environment & environment,
+    //               Id id,
+    //               char const * /*parameters*/)
+    //    : TaskBase(environment, id, Type::Synchronous)
+    //{
+    //}
 
 
-    ICommand::Documentation Script::GetDocumentation()
-    {
-        return Documentation(
-            "script",
-            "Runs commands from a file.(TODO)",
-            "script <filename>\n"
-            "  Runs commands from a file.\n"
-            "  NOT IMPLEMENTED"
-            );
-    }
+    //void Script::Execute()
+    //{
+    //    std::cout
+    //        << "Running script ..." << std::endl
+    //        << "NOT IMPLEMENTED" << std::endl
+    //        << std::endl;
+    //}
 
 
-    //*************************************************************************
-    //
-    // Show
-    //
-    //*************************************************************************
-    Show::Show(Environment & environment,
-               Id id,
-               char const * parameters)
-        : TaskBase(environment, id, Type::Synchronous)
-    {
-        auto command = TaskFactory::GetNextToken(parameters);
-        if (command.compare("cache") == 0)
-        {
-            m_mode = Mode::Cache;
-            m_term = TaskFactory::GetNextToken(parameters);
-        }
-        else if (command.compare("rows") == 0)
-        {
-            m_mode = Mode::Rows;
-            m_term = TaskFactory::GetNextToken(parameters);
-        }
-        else if (command.compare("term") == 0)
-        {
-            m_mode = Mode::Term;
-            m_term = TaskFactory::GetNextToken(parameters);
-        }
-        else
-        {
-            RecoverableError error("Show expects \"term\" or \"rows\" (for now).");
-            throw error;
-        }
-    }
+    //ICommand::Documentation Script::GetDocumentation()
+    //{
+    //    return Documentation(
+    //        "script",
+    //        "Runs commands from a file.(TODO)",
+    //        "script <filename>\n"
+    //        "  Runs commands from a file.\n"
+    //        "  NOT IMPLEMENTED"
+    //        );
+    //}
 
 
-    void Show::Execute()
-    {
-        if (m_mode == Mode::Cache)
-        {
-            auto & environment = GetEnvironment();
-            Term term(m_term.c_str(), 0, environment.GetConfiguration());
-            auto & cache = environment.GetIngestor().GetDocumentCache();
-
-            std::cout << "DocId, Contains" << std::endl;
-            for (auto entry : cache)
-            {
-                std::cout
-                    << "  DocId(" << entry.second << ") ";
-                if (entry.first.Contains(term))
-                {
-                    std::cout << "contains ";
-                }
-                else
-                {
-                    std::cout << "does not contain ";
-                }
-                std::cout << m_term << std::endl;
-            }
-        }
-        else
-        {
-            // TODO: Consider parsing phrase terms here.
-            auto & environment = GetEnvironment();
-            Term term(m_term.c_str(), 0, environment.GetConfiguration());
-            RowIdSequence rows(term, environment.GetTermTable());
-
-            std::cout
-                << "Term("
-                << "\"" << m_term << "\""
-                << ")" << std::endl;
-
-            IIngestor & ingestor = GetEnvironment().GetIngestor();
+    ////*************************************************************************
+    ////
+    //// Show
+    ////
+    ////*************************************************************************
+    //Show::Show(Environment & environment,
+    //           Id id,
+    //           char const * parameters)
+    //    : TaskBase(environment, id, Type::Synchronous)
+    //{
+    //    auto command = TaskFactory::GetNextToken(parameters);
+    //    if (command.compare("cache") == 0)
+    //    {
+    //        m_mode = Mode::Cache;
+    //        m_term = TaskFactory::GetNextToken(parameters);
+    //    }
+    //    else if (command.compare("rows") == 0)
+    //    {
+    //        m_mode = Mode::Rows;
+    //        m_term = TaskFactory::GetNextToken(parameters);
+    //    }
+    //    else if (command.compare("term") == 0)
+    //    {
+    //        m_mode = Mode::Term;
+    //        m_term = TaskFactory::GetNextToken(parameters);
+    //    }
+    //    else
+    //    {
+    //        RecoverableError error("Show expects \"term\" or \"rows\" (for now).");
+    //        throw error;
+    //    }
+    //}
 
 
-            // TODO: Come up with a better heuristic for deciding which
-            // bits to display. Current algorithm is to display bits for
-            // the first 64 documents with ids less than 1000.
+    //void Show::Execute()
+    //{
+    //    if (m_mode == Mode::Cache)
+    //    {
+    //        auto & environment = GetEnvironment();
+    //        Term term(m_term.c_str(), 0, environment.GetConfiguration());
+    //        auto & cache = environment.GetIngestor().GetDocumentCache();
 
-            std::vector<DocId> ids;
-            for (DocId id = 0; id <= 1000; ++id)
-            {
-                if (ingestor.Contains(id))
-                {
-                    ids.push_back(id);
-                    if (ids.size() == 64)
-                    {
-                        break;
-                    }
-                }
-            }
+    //        std::cout << "DocId, Contains" << std::endl;
+    //        for (auto entry : cache)
+    //        {
+    //            std::cout
+    //                << "  DocId(" << entry.second << ") ";
+    //            if (entry.first.Contains(term))
+    //            {
+    //                std::cout << "contains ";
+    //            }
+    //            else
+    //            {
+    //                std::cout << "does not contain ";
+    //            }
+    //            std::cout << m_term << std::endl;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        // TODO: Consider parsing phrase terms here.
+    //        auto & environment = GetEnvironment();
+    //        Term term(m_term.c_str(), 0, environment.GetConfiguration());
+    //        RowIdSequence rows(term, environment.GetTermTable());
 
-            // Print out 100s digit of DocId.
-            std::cout << "                 d ";
-            for (auto id : ids)
-            {
-                std::cout << id/100;
-            }
-            std::cout << std::endl;
+    //        std::cout
+    //            << "Term("
+    //            << "\"" << m_term << "\""
+    //            << ")" << std::endl;
 
-            // Print ouf 10s digit of DocId.
-            std::cout << "                 o ";
-            for (auto id : ids)
-            {
-                std::cout << (id/10 % 10);
-            }
-            std::cout << std::endl;
-
-            // Print out 1s digit of DocId.
-            std::cout << "                 c ";
-            for (auto id : ids)
-            {
-                std::cout << (id %10);
-            }
-            std::cout << std::endl;
-
-            // Print out RowIds and their bits.
-            for (auto row : rows)
-            {
-                std::cout
-                    << "  RowId("
-                    << row.GetRank()
-                    << ", "
-                    << std::setw(5)
-                    << row.GetIndex()
-                    << ")";
-
-                if (m_mode == Mode::Rows)
-                {
-                    std::cout << ": ";
-                    for (auto id : ids)
-                    {
-                        if (ingestor.Contains(id))
-                        {
-                            auto handle = ingestor.GetHandle(id);
-                            std::cout << (handle.GetBit(row) ? "1" : "0");
-                        }
-                    }
-                }
-
-                std::cout << std::endl;
-            }
-        }
-    }
+    //        IIngestor & ingestor = GetEnvironment().GetIngestor();
 
 
-    ICommand::Documentation Show::GetDocumentation()
-    {
-        return Documentation(
-            "show",
-            "Shows information about various data structures. (TODO)",
-            "show cache <term>\n"
-            "   | rows <term> [<docstart> <docend>]\n"
-            "   | term <term>\n"
-            //"   | shards\n"
-            //"   | shard <shardid>\n"
-            "  Shows information about various data structures."
-            "  PARTIALLY IMPLEMENTED\n"
-            );
-    }
+    //        // TODO: Come up with a better heuristic for deciding which
+    //        // bits to display. Current algorithm is to display bits for
+    //        // the first 64 documents with ids less than 1000.
+
+    //        std::vector<DocId> ids;
+    //        for (DocId id = 0; id <= 1000; ++id)
+    //        {
+    //            if (ingestor.Contains(id))
+    //            {
+    //                ids.push_back(id);
+    //                if (ids.size() == 64)
+    //                {
+    //                    break;
+    //                }
+    //            }
+    //        }
+
+    //        // Print out 100s digit of DocId.
+    //        std::cout << "                 d ";
+    //        for (auto id : ids)
+    //        {
+    //            std::cout << id/100;
+    //        }
+    //        std::cout << std::endl;
+
+    //        // Print ouf 10s digit of DocId.
+    //        std::cout << "                 o ";
+    //        for (auto id : ids)
+    //        {
+    //            std::cout << (id/10 % 10);
+    //        }
+    //        std::cout << std::endl;
+
+    //        // Print out 1s digit of DocId.
+    //        std::cout << "                 c ";
+    //        for (auto id : ids)
+    //        {
+    //            std::cout << (id %10);
+    //        }
+    //        std::cout << std::endl;
+
+    //        // Print out RowIds and their bits.
+    //        for (auto row : rows)
+    //        {
+    //            std::cout
+    //                << "  RowId("
+    //                << row.GetRank()
+    //                << ", "
+    //                << std::setw(5)
+    //                << row.GetIndex()
+    //                << ")";
+
+    //            if (m_mode == Mode::Rows)
+    //            {
+    //                std::cout << ": ";
+    //                for (auto id : ids)
+    //                {
+    //                    if (ingestor.Contains(id))
+    //                    {
+    //                        auto handle = ingestor.GetHandle(id);
+    //                        std::cout << (handle.GetBit(row) ? "1" : "0");
+    //                    }
+    //                }
+    //            }
+
+    //            std::cout << std::endl;
+    //        }
+    //    }
+    //}
+
+
+    //ICommand::Documentation Show::GetDocumentation()
+    //{
+    //    return Documentation(
+    //        "show",
+    //        "Shows information about various data structures. (TODO)",
+    //        "show cache <term>\n"
+    //        "   | rows <term> [<docstart> <docend>]\n"
+    //        "   | term <term>\n"
+    //        //"   | shards\n"
+    //        //"   | shard <shardid>\n"
+    //        "  Shows information about various data structures."
+    //        "  PARTIALLY IMPLEMENTED\n"
+    //        );
+    //}
 
 
     //*************************************************************************

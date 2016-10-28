@@ -23,23 +23,24 @@
 #pragma once
 
 #include <string>       // std::string embedded.
+#include <vector>       // std::vector embedded.
 
 #include "TaskBase.h"   // TaskBase base class.
 
 
 namespace BitFunnel
 {
-    class Cd : public TaskBase
+    class Script : public TaskBase
     {
     public:
-        Cd(Environment & environment,
-           Id id,
-           char const * parameters);
+        Script(Environment & environment,
+               Id id,
+               char const * parameters);
 
         virtual void Execute() override;
         static ICommand::Documentation GetDocumentation();
 
     private:
-        std::string m_dir;
+        std::vector<std::string> m_script;
     };
 }

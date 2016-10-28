@@ -29,17 +29,18 @@
 
 namespace BitFunnel
 {
-    class Cd : public TaskBase
+    class Query : public TaskBase
     {
     public:
-        Cd(Environment & environment,
-           Id id,
-           char const * parameters);
+        Query(Environment & environment,
+              Id id,
+              char const * parameters);
 
         virtual void Execute() override;
         static ICommand::Documentation GetDocumentation();
 
     private:
-        std::string m_dir;
+        bool m_isSingleQuery;
+        std::string m_query;
     };
 }

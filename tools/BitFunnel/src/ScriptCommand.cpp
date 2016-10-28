@@ -20,26 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include <iostream>
 
-#include <string>       // std::string embedded.
-
-#include "TaskBase.h"   // TaskBase base class.
+#include "ScriptCommand.h"
 
 
 namespace BitFunnel
 {
-    class Cd : public TaskBase
+    //*************************************************************************
+    //
+    // Script
+    //
+    //*************************************************************************
+    Script::Script(Environment & environment,
+                   Id id,
+                   char const * /*parameters*/)
+        : TaskBase(environment, id, Type::Synchronous)
     {
-    public:
-        Cd(Environment & environment,
-           Id id,
-           char const * parameters);
+    }
 
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
 
-    private:
-        std::string m_dir;
-    };
+    void Script::Execute()
+    {
+        std::cout
+            << "Running script ..." << std::endl
+            << "NOT IMPLEMENTED" << std::endl
+            << std::endl;
+    }
+
+
+    ICommand::Documentation Script::GetDocumentation()
+    {
+        return Documentation(
+            "script",
+            "Runs commands from a file.(TODO)",
+            "script <filename>\n"
+            "  Runs commands from a file.\n"
+            "  NOT IMPLEMENTED"
+        );
+    }
 }

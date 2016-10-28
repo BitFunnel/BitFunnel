@@ -29,17 +29,25 @@
 
 namespace BitFunnel
 {
-    class Cd : public TaskBase
+    class Show : public TaskBase
     {
     public:
-        Cd(Environment & environment,
-           Id id,
-           char const * parameters);
+        Show(Environment & environment,
+             Id id,
+             char const * parameters);
 
         virtual void Execute() override;
         static ICommand::Documentation GetDocumentation();
 
+        enum class Mode
+        {
+            Cache,
+            Rows,
+            Term
+        };
+
     private:
-        std::string m_dir;
+        Mode m_mode;
+        std::string m_term;
     };
 }

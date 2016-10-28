@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <string>
+#include <string>       // std::string embedded.
 
 #include "TaskBase.h"   // TaskBase base class.
 
