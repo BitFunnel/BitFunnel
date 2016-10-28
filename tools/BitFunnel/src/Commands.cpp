@@ -908,7 +908,7 @@ namespace BitFunnel
             CsvTsv::CsvTableFormatter verificationFormatter(*verificationOut);
             CsvTsv::TableWriter writer(verificationFormatter);
             CsvTsv::OutputColumn<std::string>
-                queryString("query",
+                queryString("Query",
                             "Query text");
             CsvTsv::OutputColumn<uint64_t>
                 docId("Document",
