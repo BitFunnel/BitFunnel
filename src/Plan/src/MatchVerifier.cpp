@@ -121,7 +121,7 @@ namespace BitFunnel
     }
 
 
-    size_t MatchVerifier::GetNumFalseNegatives() const
+    size_t MatchVerifier::GetFalseNegativeCount() const
     {
         return m_falseNegatives.size();
     }

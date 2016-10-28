@@ -161,7 +161,7 @@ namespace BitFunnel
                 << "False positives : "
                 << verifier->GetFalsePositiveCount()
                 << std::endl;
-            if (verifier->GetNumFalseNegatives() > 0)
+            if (verifier->GetFalseNegativeCount() > 0)
             {
                 throw RecoverableError("MatchVerifier: false negative detected.");
             }

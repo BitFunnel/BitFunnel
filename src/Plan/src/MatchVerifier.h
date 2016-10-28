@@ -49,7 +49,7 @@ namespace BitFunnel
         virtual size_t GetObservedCount() const override;
         virtual size_t GetTruePositiveCount() const override;
         virtual size_t GetFalsePositiveCount() const override;
-        virtual size_t GetNumFalseNegatives() const override;
+        virtual size_t GetFalseNegativeCount() const override;
 
         virtual void Verify() override;
         virtual void Print(std::ostream &) const override;

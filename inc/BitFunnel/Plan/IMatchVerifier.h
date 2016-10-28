@@ -47,7 +47,7 @@ namespace BitFunnel
         virtual size_t GetObservedCount() const = 0;
         virtual size_t GetTruePositiveCount() const = 0;
         virtual size_t GetFalsePositiveCount() const = 0;
-        virtual size_t GetNumFalseNegatives() const = 0;
+        virtual size_t GetFalseNegativeCount() const = 0;
 
         virtual void Verify() = 0;
         virtual void Print(std::ostream & out) const = 0;
