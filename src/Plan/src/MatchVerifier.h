@@ -45,10 +45,10 @@ namespace BitFunnel
         virtual std::vector<DocId> GetFalsePositives() const override;
         virtual std::vector<DocId> GetFalseNegatives() const override;
 
-        virtual size_t GetNumExpected() const override;
-        virtual size_t GetNumObserved() const override;
-        virtual size_t GetNumTruePositives() const override;
-        virtual size_t GetNumFalsePositives() const override;
+        virtual size_t GetExpectedCount() const override;
+        virtual size_t GetObservedCount() const override;
+        virtual size_t GetTruePositiveCount() const override;
+        virtual size_t GetFalsePositiveCount() const override;
         virtual size_t GetNumFalseNegatives() const override;
 
         virtual void Verify() override;

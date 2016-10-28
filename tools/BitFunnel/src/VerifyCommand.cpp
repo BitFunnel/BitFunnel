@@ -156,10 +156,10 @@ namespace BitFunnel
                 << "\"" << std::endl;
             auto verifier = VerifyOneQuery(GetEnvironment(), m_query);
             std::cout << "True positives: "
-                << verifier->GetNumTruePositives()
+                << verifier->GetTruePositiveCount()
                 << std::endl
                 << "False positives : "
-                << verifier->GetNumFalsePositives()
+                << verifier->GetFalsePositiveCount()
                 << std::endl;
             if (verifier->GetNumFalseNegatives() > 0)
             {

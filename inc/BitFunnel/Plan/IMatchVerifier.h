@@ -43,10 +43,10 @@ namespace BitFunnel
         virtual std::vector<DocId> GetFalsePositives() const = 0;
         virtual std::vector<DocId> GetFalseNegatives() const = 0;
 
-        virtual size_t GetNumExpected() const = 0;
-        virtual size_t GetNumObserved() const = 0;
-        virtual size_t GetNumTruePositives() const = 0;
-        virtual size_t GetNumFalsePositives() const = 0;
+        virtual size_t GetExpectedCount() const = 0;
+        virtual size_t GetObservedCount() const = 0;
+        virtual size_t GetTruePositiveCount() const = 0;
+        virtual size_t GetFalsePositiveCount() const = 0;
         virtual size_t GetNumFalseNegatives() const = 0;
 
         virtual void Verify() = 0;

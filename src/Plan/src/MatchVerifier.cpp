@@ -97,25 +97,25 @@ namespace BitFunnel
     // Stats getters
     //
 
-    size_t MatchVerifier::GetNumExpected() const
+    size_t MatchVerifier::GetExpectedCount() const
     {
         return m_expected.size();
     }
 
 
-    size_t MatchVerifier::GetNumObserved() const
+    size_t MatchVerifier::GetObservedCount() const
     {
         return m_observed.size();
     }
 
 
-    size_t MatchVerifier::GetNumTruePositives() const
+    size_t MatchVerifier::GetTruePositiveCount() const
     {
         return m_truePositives.size();
     }
 
 
-    size_t MatchVerifier::GetNumFalsePositives() const
+    size_t MatchVerifier::GetFalsePositiveCount() const
     {
         return m_falsePositives.size();
     }
