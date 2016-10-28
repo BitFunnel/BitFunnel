@@ -887,6 +887,12 @@ namespace BitFunnel
                 << m_query
                 << "\"" << std::endl;
             auto verifier = VerifyOneQuery(GetEnvironment(), m_query);
+            std::cout << "True positives: "
+                      << verifier->GetNumTruePositives()
+                      << std::endl
+                      << "False positives : "
+                      << verifier->GetNumFalsePositives()
+                      << std::endl;
             if (verifier->GetNumFalseNegatives() > 0)
             {
                 throw RecoverableError("MatchVerifier: false negative detected.");
