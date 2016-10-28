@@ -22,22 +22,31 @@
 
 
 #include <cstring>
+#include <memory>
 
 #include "Allocator.h"
+#include "BitFunnel/Utilities/Factories.h"
 #include "LoggerInterfaces/Logging.h"
 
 
 namespace BitFunnel
 {
+    std::unique_ptr<IAllocator>
+        Factories::CreateAllocator(size_t bufferSize)
+    {
+        return std::unique_ptr<IAllocator>(new Allocator(bufferSize));
+    }
+
+
     //*************************************************************************
     //
     // Allocator
     //
     //*************************************************************************
     Allocator::Allocator(size_t bufferSize)
-        : m_bufferSize(bufferSize),
-          m_bytesAllocated(0),
-          m_buffer(new char[bufferSize])
+      : m_bufferSize(bufferSize),
+        m_bytesAllocated(0),
+        m_buffer(new char[bufferSize])
     {
         DebugInitialize();
     }

@@ -22,11 +22,13 @@
 
 #include <iostream>
 
+#include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/Plan/QueryPipeline.h"
+#include "BitFunnel/Plan/QueryParser.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
+#include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
 
 
@@ -69,7 +71,7 @@ namespace BitFunnel
         streamConfiguration->AddMapping("title", { 123 });
         streamConfiguration->AddMapping("anchors", { 10 });
 
-        QueryPipeline pipeline(*streamConfiguration);
+        auto allocator = Factories::CreateAllocator(4096 * 64);
 
         for (;;)
         {
@@ -86,7 +88,10 @@ namespace BitFunnel
                     break;
                 }
 
-                auto tree = pipeline.ParseQuery(line.c_str());
+                allocator->Reset();
+                QueryParser parser(line.c_str(), *streamConfiguration, *allocator);
+                auto tree = parser.Parse();
+
                 if (tree == nullptr)
                 {
                     std::cout << "(empty tree)" << std::endl;

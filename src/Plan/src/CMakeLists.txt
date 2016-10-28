@@ -10,7 +10,6 @@ set(CPPFILES
     PlanRows.cpp
     QueryInstrumentation.cpp
     QueryParser.cpp
-    QueryPipeline.cpp
     QueryPlanner.cpp
     QueryRunner.cpp
     RankDownCompiler.cpp

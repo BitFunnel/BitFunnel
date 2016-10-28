@@ -29,8 +29,10 @@
 #include "ITaskDistributor.h"
 #include "IThreadManager.h"
 
+
 namespace BitFunnel
 {
+    class IAllocator;
     class IBlockAllocator;
     class IDiagnosticStream;
     class IObjectFormatter;
@@ -39,6 +41,9 @@ namespace BitFunnel
 
     namespace Factories
     {
+        std::unique_ptr<IAllocator>
+            CreateAllocator(size_t bufferSize);
+
         std::unique_ptr<IBlockAllocator>
             CreateBlockAllocator(size_t blockSize, size_t totalBlockCount);
 

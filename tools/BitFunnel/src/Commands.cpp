@@ -28,6 +28,7 @@
 #include <thread>           // sleep_for, this_thread
 #include <unordered_map>    // For debugging.
 
+#include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
@@ -45,7 +46,7 @@
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IMatchVerifier.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
-#include "BitFunnel/Plan/QueryPipeline.h"
+#include "BitFunnel/Plan/QueryParser.h"
 #include "BitFunnel/Plan/QueryRunner.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
 #include "BitFunnel/Term.h"
@@ -808,13 +809,15 @@ namespace BitFunnel
 
 
     // TODO: this should be somewhere else.
-    std::unique_ptr<IMatchVerifier> VerifyOneQuery
-        (Environment & environment,
-         std::string query)
+    std::unique_ptr<IMatchVerifier> VerifyOneQuery(
+        Environment & environment,
+        std::string query)
     {
             auto streamConfiguration = Factories::CreateStreamConfiguration();
-            QueryPipeline pipeline(*streamConfiguration);
-            auto tree = pipeline.ParseQuery(query.c_str());
+            auto allocator = Factories::CreateAllocator(4096 * 64);
+
+            QueryParser parser(query.c_str(), *streamConfiguration, *allocator);
+            auto tree = parser.Parse();
 
             std::unique_ptr<IMatchVerifier> verifier =
                 Factories::CreateMatchVerifier(query);
