@@ -950,6 +950,7 @@ namespace BitFunnel
             summary.DefineColumn(numFalsePos);
             summary.DefineColumn(numFalseNeg);
             summary.DefineColumn(falseRate);
+            summary.WritePrologue();
 
             uint64_t position = 0;
             for (const auto & query : queries)
