@@ -31,7 +31,7 @@ namespace BitFunnel
 {
     QueryPipeline::QueryPipeline(IStreamConfiguration const & streamConfiguration)
         : m_streamConfiguration(streamConfiguration),
-          m_allocator(new Allocator(4096))
+          m_allocator(new Allocator(4096*64))
     {
     }
 
