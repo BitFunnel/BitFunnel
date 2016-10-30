@@ -67,6 +67,6 @@ namespace BitFunnel
             std::vector<std::string> const & columnNames);
 
     private:
-        static void CsvExtract::Usage(std::ostream& output);
+        static void Usage(std::ostream& output);
     };
 }

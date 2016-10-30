@@ -39,7 +39,7 @@ namespace BitFunnel
 
             std::vector<std::string> columnNames;
 
-            for (size_t i = 1; i < argc; ++i)
+            for (size_t i = 1; i < static_cast<size_t>(argc); ++i)
             {
                 // Check for duplicate column names.
                 auto it = std::find(columnNames.begin(),
@@ -75,7 +75,7 @@ namespace BitFunnel
                             std::ostream& output,
                             std::vector<std::string> const & columnNames)
     {
-        CHECK_GT(columnNames.size(), 0)
+        CHECK_GT(columnNames.size(), 0u)
             << "Expect at least one column to extract.";
 
         CsvTsv::CsvTableParser parser(input);
@@ -172,4 +172,3 @@ namespace BitFunnel
             << "  Writes filtered .csv file to standard output." << std::endl;
     }
 }
-
