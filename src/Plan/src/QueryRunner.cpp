@@ -78,7 +78,7 @@ namespace BitFunnel
                        std::vector<std::string> const & queries,
                        std::vector<QueryInstrumentation::Data> & results);
 
-        static QueryInstrumentation QueryProcessor::ProcessOneQuery(
+        static QueryInstrumentation ProcessOneQuery(
             char const * query,
             ISimpleIndex const & index,
             IStreamConfiguration const & config,
