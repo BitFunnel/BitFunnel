@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include <vector>           // std::vector return value.
+#include <vector>                   // std::vector return value.
 
-#include "IExecutable.h"    // Base class.
+#include "BitFunnel/IExecutable.h"  // Base class.
 
 
 namespace BitFunnel

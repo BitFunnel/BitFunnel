@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "IExecutable.h"               // Base class.
+#include "BitFunnel/IExecutable.h"  // Base class.
 
 
 namespace BitFunnel

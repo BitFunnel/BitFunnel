@@ -100,6 +100,7 @@ set(BITFUNNEL_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IDiagnosticStream.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IEnumerator.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IExecutable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IFileManager.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/IInterface.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/NonCopyable.h

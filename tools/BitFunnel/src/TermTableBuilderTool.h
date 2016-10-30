@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 #include "BitFunnel/BitFunnelTypes.h"   // ShardId parameter.
-#include "IExecutable.h"                // Base class.
+#include "BitFunnel/IExecutable.h"      // Base class.
 
 
 namespace BitFunnel

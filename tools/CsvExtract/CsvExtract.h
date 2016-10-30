@@ -20,19 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#pragma once
+
+#include <string>                   // std::string parameter.
+#include <vector>                   // std::vector parameter.
 
 #include "BitFunnel/IExecutable.h"  // Base class.
 
 
 namespace BitFunnel
 {
-    class IFileSystem;
-
-    class StatisticsBuilder : public IExecutable
+    //*************************************************************************
+    //
+    // CsvExtract
+    //
+    // Reads a .csv formatted table from the input stream, extracts the columns
+    // passed in columnNames, and then writes a new .csv formatted table to
+    // the output stream.
+    //
+    // Columns will written be in the order they appear in columnNames.
+    //
+    // Notes:
+    //   1. columnNames must specify at least one column.
+    //   2. All columns in columnNames must appear in the header of the input.
+    //   3. The input must start with a header row.
+    //
+    //*************************************************************************
+    class CsvExtract : public IExecutable
     {
     public:
-        StatisticsBuilder(IFileSystem& fileSystem);
-
         //
         // IExecutable methods
         //
@@ -41,15 +57,16 @@ namespace BitFunnel
                          int argc,
                          char const *argv[]) override;
 
-    private:
-        void LoadAndIngestChunkList(
-            std::ostream& output,
-            char const * intermediateDirectory,
-            char const * chunkListFileName,
-            int gramSize,
-            bool generateStatistics,
-            bool generateTermToText) const;
+        //
+        // Other methods.
+        //
 
-        IFileSystem& m_fileSystem;
+        static void Filter(
+            std::istream& input,
+            std::ostream& output,
+            std::vector<std::string> const & columnNames);
+
+    private:
+        static void CsvExtract::Usage(std::ostream& output);
     };
 }
