@@ -124,8 +124,6 @@ namespace BitFunnel
         // For non-adhoc terms this value is not applicable and is undefined.
         Term::Hash m_hash;
 
-        // Storing ITermTable as a pointer, rather than a reference to
-        // allow for assignment operator.
         const ITermTable& m_termTable;
 
         // Slot index for first RowId.
