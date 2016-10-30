@@ -405,8 +405,12 @@ namespace BitFunnel
             output << "  Rows" << std::endl;
             output << "    Total: " << GetAdhocRowCount() + m_currentRow
                    << std::endl;
-            output << "    Adhoc: " << GetAdhocRowCount() << std::endl;
-            output << "    Explicit: " << m_bins.size() << std::endl;
+            output << "    Adhoc: "
+                   << std::max(GetAdhocRowCount(),
+                               GetMinAdhocRowCount()) << std::endl;
+            output << "    Non-Private Non-Fact Explicit: "
+                   << m_bins.size() << std::endl;
+            output << "    Explicit: " << GetExplicitRowCount() << std::endl;
             output << "    Private: " << m_privateRowCount << std::endl;
             output << std::endl;
 
