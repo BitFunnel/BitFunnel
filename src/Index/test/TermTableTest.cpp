@@ -84,9 +84,14 @@ namespace BitFunnel
                 {
                     // TermTable::Seal() relocates Explicit rows to the block
                     // immediately after the Adhoc rows.
-                    // Expect RowId to be offset by adhocRowCount from the
-                    // from the RowId passed to AddRowId().
-                    RowId expected = RowId(0, r + adhocRowCount);
+                    //
+                    // System rows are relocated to be after other Explicit rows.
+                    //
+                    // Expect RowId to be offset by adhocRowCount from the from
+                    // the RowId passed to AddRowId().
+                    RowId expected =
+                        RowId(0,
+                              r + adhocRowCount - ITermTable::SystemTerm::Count);
                     RowId observed = *it;
                     EXPECT_EQ(expected, observed);
                 }

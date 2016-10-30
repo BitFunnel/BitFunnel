@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream> // TODO: remove.
 
 #include <math.h>
 #include <sstream>
@@ -247,10 +248,51 @@ namespace BitFunnel
             for (RowIndex r = start; r < end; ++r)
             {
                 // Convert RowIndex from relative to absolute.
+                //
+                // Because System terms are Facts and Facts are located at the
+                // end of the Explicit space to allow adding Facts after the
+                // TermTable has been built, SystemTerms are relocated to the
+                // end and all other Explicit terms are shifted downwards to
+                // fill in the gap.
                 RowId rowId = m_rowIds[r];
-                m_rowIds[r] = RowId(rowId, m_adhocRowCounts[rowId.GetRank()]);
+                if (rowId.GetRank() == 0u)
+                {
+                    if (r < ITermTable::SystemTerm::Count)
+                    {
+                        m_rowIds[r] = RowId(rowId, m_adhocRowCounts[rowId.GetRank()]
+                                            + m_explicitRowCounts[0]
+                                            - ITermTable::SystemTerm::Count);
+                    }
+                    else
+                    {
+                        m_rowIds[r] =
+                            RowId(rowId,
+                                  m_adhocRowCounts[rowId.GetRank()]
+                                  - ITermTable::SystemTerm::Count);
+                    }
+                }
+                else
+                {
+                    m_rowIds[r] = RowId(rowId, m_adhocRowCounts[rowId.GetRank()]);
+                }
+                // if (rowId.GetRank() == 0u)
+                // {
+                //     std::cout << "relocation "
+                //               << r << ","
+                //               << rowId.GetIndex()
+                //               << ","
+                //               <<  m_rowIds[r].GetIndex()
+                //               << std::endl;
+                // }
             }
         }
+
+        std::cout << "Row counts at Seal()" << std::endl
+                  << "m_sharedRowCounts[0] " << m_sharedRowCounts[0] << std::endl
+                  << "m_factRowCount " << m_factRowCount << std::endl
+                  << "m_explicitRowCounts[0] " << m_explicitRowCounts[0] << std::endl
+                  << "m_adhocRowCounts[0] " << m_adhocRowCounts[0] << std::endl
+                  << "m_termHashToRows.size() " << m_termHashToRows.size() << std::endl;
     }
 
 
