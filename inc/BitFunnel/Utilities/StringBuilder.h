@@ -51,7 +51,8 @@ namespace BitFunnel
         // at least 'capacity' characters, but may be larger.
         StringBuilder(IAllocator& allocator,
                       size_t capacity = c_initialCapacity)
-            : m_allocator(allocator)
+            : m_allocator(allocator),
+              m_capacity(0)
         {
             // For this constructor, use requested capacity.
             Initialize(capacity);
@@ -83,7 +84,8 @@ namespace BitFunnel
         // from a specified IAllocator.
         StringBuilder(IAllocator& allocator,
                       std::string const & s)
-            : m_allocator(allocator)
+            : m_allocator(allocator),
+              m_capacity(0)
         {
             // Initialize with an additional c_initialCapacity so that
             // the next call to push_char() or append() is less likely
