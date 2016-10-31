@@ -138,7 +138,10 @@ namespace BitFunnel
         // For each (IdfX10, GramSize) pair.
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
-            for (Term::GramSize gramSize = 1; gramSize < Term::c_maxGramSize; ++gramSize)
+            // WARNING: because we don't CloseAdHocGTerm with gramSize of 0, we
+            // write out unitialized memory.
+            for (Term::GramSize gramSize = 1;
+                 gramSize <= Term::c_maxGramSize; ++gramSize)
             {
                 const Term::Hash hash = 0ull;
                 const Term::StreamId streamId = 0;
@@ -152,7 +155,9 @@ namespace BitFunnel
                     for (size_t i = 0; i < rcEntry.GetRowCount(); ++i)
                     {
                         // Third parameter of RowId() denotes adhoc row.
-                        m_termTable.AddRowId(RowId(rcEntry.GetRank(), 0u, true));
+                        m_termTable.AddRowId(RowId(rcEntry.GetRank(),
+                                                   0u,
+                                                   true));
                     }
                 }
 
