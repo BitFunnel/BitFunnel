@@ -115,7 +115,7 @@ namespace BitFunnel
             // TODO: Make it compute the unique posting count.
 
             // TODO: should we use the dfThreshold parameter instead of the fixed value?
-            new(m_ringBuffer.PushBack()) Term(termText,
+            new(m_ringBuffer.EmplaceBack()) Term(termText,
                                               m_currentStreamId,
                                               m_configuration);
 

@@ -61,6 +61,9 @@ namespace BitFunnel
         // design is that RingBuffer doesn't really manage a buffer of T. It
         // never calls T's constructor and destructor.
         T* PushBack();
+		
+		//Inserts a new element at the end
+		T* EmplaceBack();
 
 
         // Removed the front item from the queue. This method will assert if
@@ -120,6 +123,17 @@ namespace BitFunnel
 
     template <typename T, size_t LOG2_CAPACITY>
     T* RingBuffer<T, LOG2_CAPACITY>::PushBack()
+    {
+        LogAssertB(!IsFull(), "Ring buffer is full.");
+
+        T* slot = m_slots + m_tail;
+        m_tail = (m_tail + 1) & c_slotMask;
+
+        return slot;
+    }
+	
+	template <typename T, size_t LOG2_CAPACITY>
+    T* RingBuffer<T, LOG2_CAPACITY>::EmplaceBack()
     {
         LogAssertB(!IsFull(), "Ring buffer is full.");
 
