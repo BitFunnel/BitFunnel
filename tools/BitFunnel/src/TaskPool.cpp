@@ -39,7 +39,7 @@ namespace BitFunnel
     {
         for (size_t i = 0; i < threadCount; ++i)
         {
-            m_threads.push_back(new Thread(*this, i));
+            m_threads.push_back(std::unique_ptr<IThreadBase>(new Thread(*this, i)));
         }
         m_threadManager = Factories::CreateThreadManager(m_threads);
     }

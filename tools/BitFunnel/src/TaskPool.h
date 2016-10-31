@@ -56,7 +56,7 @@ namespace BitFunnel
         };
 
         // TODO: Convert ThreadManager to use std::vector<std::unique_ptr<IThreadBase>>
-        std::vector<IThreadBase*> m_threads;
+        std::vector<std::unique_ptr<IThreadBase>> m_threads;
         std::unique_ptr<IThreadManager> m_threadManager;
 
         BlockingQueue<std::unique_ptr<ITask>> m_queue;

@@ -35,7 +35,7 @@ namespace BitFunnel
     {
     public:
         // Starts one thread for each IThreadBase* in threads. Returns true if succesful.
-        ThreadManager(const std::vector<IThreadBase*>& threads);
+        ThreadManager(const std::vector<std::unique_ptr<IThreadBase>>& threads);
 
         ~ThreadManager();
 

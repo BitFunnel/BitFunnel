@@ -314,8 +314,6 @@ namespace BitFunnel
         public:
             TokenThreadHolder(unsigned threadCount, ITokenManager& tokenManager);
 
-            ~TokenThreadHolder();
-
             void AddThread(IThreadBase* thread);
 
             void Start();
@@ -324,7 +322,7 @@ namespace BitFunnel
 
         private:
 
-            std::vector<IThreadBase*> m_threads;
+            std::vector<std::unique_ptr<IThreadBase>> m_threads;
             std::unique_ptr<IThreadManager> m_threadManager;
             std::atomic <bool> m_isRunning;
         };
@@ -337,16 +335,8 @@ namespace BitFunnel
 
             for (unsigned i = 0; i < threadCount; ++i)
             {
-                m_threads[i] = new TokenRequestorThread(tokenManager, m_isRunning);
-            }
-        }
-
-
-        TokenThreadHolder::~TokenThreadHolder()
-        {
-            for (const auto& thread: m_threads)
-            {
-                delete thread;
+                m_threads[i] =
+                    std::unique_ptr<IThreadBase>(new TokenRequestorThread(tokenManager, m_isRunning));
             }
         }
 
@@ -354,7 +344,8 @@ namespace BitFunnel
         void
         TokenThreadHolder::AddThread(IThreadBase* thread)
         {
-            m_threads.push_back(thread);
+            // TODO: propogate this unique_ptr-ness up.
+            m_threads.push_back(std::unique_ptr<IThreadBase>(thread));
         }
 
 

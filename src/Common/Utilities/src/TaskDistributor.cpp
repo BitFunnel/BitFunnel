@@ -45,19 +45,9 @@ namespace BitFunnel
     {
         for (size_t i = 0 ; i < m_processors.size(); ++i)
         {
-            m_threads.push_back(new TaskDistributorThread(*this, *m_processors[i]));
+            m_threads.push_back(std::unique_ptr<IThreadBase>(new TaskDistributorThread(*this, *m_processors[i])));
         }
-        m_threadManager = new ThreadManager(m_threads);
-    }
-
-
-    TaskDistributor::~TaskDistributor()
-    {
-        for (size_t i = 0 ; i < m_threads.size(); ++i)
-        {
-            delete m_threads[i];
-        }
-        delete m_threadManager;
+        m_threadManager = std::unique_ptr<ThreadManager>((new ThreadManager(m_threads)));
     }
 
 

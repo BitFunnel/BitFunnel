@@ -57,8 +57,8 @@ namespace BitFunnel
                 std::vector<std::unique_ptr<ITaskProcessor>> const & processors,
                 size_t taskCount);
 
-        std::unique_ptr<IThreadManager> CreateThreadManager(
-            const std::vector<IThreadBase*>& threads);
+        std::unique_ptr<IThreadManager>
+            CreateThreadManager(const std::vector<std::unique_ptr<IThreadBase>>& threads);
 
         std::unique_ptr<ITokenManager> CreateTokenManager();
     }

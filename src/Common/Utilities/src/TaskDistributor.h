@@ -61,8 +61,6 @@ namespace BitFunnel
             const std::vector<std::unique_ptr<ITaskProcessor>>& processors,
             size_t taskCount);
 
-        ~TaskDistributor();
-
         // TaskDistributorThreads call TryAllocateTask() to get their next task
         // assignment. If there is work remaining, taskId will be set to the id
         // of the assigned task and the method will return true. If there are
@@ -77,8 +75,8 @@ namespace BitFunnel
         size_t m_taskCount;
         size_t m_nextTaskId;
 
-        std::vector<IThreadBase*> m_threads;
-        ThreadManager* m_threadManager;
+        std::vector<std::unique_ptr<IThreadBase>> m_threads;
+        std::unique_ptr<ThreadManager> m_threadManager;
 
         std::mutex m_lock;
     };

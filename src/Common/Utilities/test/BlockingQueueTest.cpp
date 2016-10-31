@@ -100,13 +100,13 @@ namespace BitFunnel
             BlockingQueue<uint64_t> queue(queueLength);
 
             std::vector<ProducerConsumerThread*> producerConsumers;
-            std::vector<IThreadBase*> threads;
+            std::vector<std::unique_ptr<IThreadBase>> threads;
 
             // Create producer threads.
             for (unsigned i = 0 ; i < producerCount; ++i)
             {
                 producerConsumers.push_back(new ProducerConsumerThread(true, shutdown, itemsPerProducer, queue));
-                threads.push_back(producerConsumers.back());
+                threads.push_back(std::unique_ptr<IThreadBase>(producerConsumers.back()));
             }
             unsigned totalItems = itemsPerProducer * producerCount;
             unsigned itemsPerConsumer = totalItems / consumerCount;
@@ -125,7 +125,7 @@ namespace BitFunnel
                     // from itemsPerConsumer because of roundoff.
                     producerConsumers.push_back(new ProducerConsumerThread(false, shutdown, totalItems - consumerItems, queue));
                 }
-                threads.push_back(producerConsumers.back());
+                threads.push_back(std::unique_ptr<IThreadBase>(producerConsumers.back()));
                 consumerItems += itemsPerConsumer;
             }
 
@@ -135,10 +135,6 @@ namespace BitFunnel
             {
                 queue.Shutdown();
                 threadManager.WaitForThreads();
-                for (size_t i = 0 ; i < threads.size(); ++i)
-                {
-                    delete threads[i];
-                }
                 return;
             }
             threadManager.WaitForThreads();
@@ -161,11 +157,6 @@ namespace BitFunnel
 
             ASSERT_EQ(totalItemsProduced, totalItemsConsumed);
             ASSERT_EQ(totalItemsProduced, totalItems);
-
-            for (size_t i = 0 ; i < threads.size(); ++i)
-            {
-                delete threads[i];
-            }
         }
 
 
