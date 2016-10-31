@@ -205,18 +205,18 @@ namespace BitFunnel
             TermTable termTable;
 
             const size_t maxRowsPerConfiguration = 5;
-            const size_t explicitRowCount = 75;
+            const size_t explicitRowCount = 0;
 
-            std::vector<RowIndex> adhocRowCounts;
-            for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
-            {
-                // Choose a large minimum number of adhoc rows at each rank to
-                // reduce the possibility of a RowIndex collision. Generating
-                // RowIndexes for a small collection of rows is likely to cause
-                // collisions.
-                const size_t minAdhocRowsPerRank = 1000;
-                adhocRowCounts.push_back(100 * rank + minAdhocRowsPerRank);
-            }
+            std::vector<RowIndex> adhocRowCounts(c_maxRankValue + 1, 0u);
+            // for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
+            // {
+            //     // Choose a large minimum number of adhoc rows at each rank to
+            //     // reduce the possibility of a RowIndex collision. Generating
+            //     // RowIndexes for a small collection of rows is likely to cause
+            //     // collisions.
+            //     const size_t minAdhocRowsPerRank = 1000;
+            //     adhocRowCounts.push_back(100 * rank + minAdhocRowsPerRank);
+            // }
 
 
             // recipes stores the RowId used to configure the TermTable for
@@ -251,6 +251,7 @@ namespace BitFunnel
 
                         // Add this RowId to the current Term's configuration.
                         termTable.AddRowId(rowId);
+                        ++adhocRowCounts[rank];
                     }
 
                     termTable.CloseAdhocTerm(idf, gramSize);
@@ -262,6 +263,12 @@ namespace BitFunnel
             // range.
             for (Rank rank = 0; rank < c_maxRankValue; ++rank)
             {
+                const size_t minAdhocRows = 1000 + rank;
+                if (adhocRowCounts[rank] > 0)
+                {
+                    const size_t adhocRowCount = std::max(minAdhocRows, adhocRowCounts[rank]);
+                    adhocRowCounts[rank] = adhocRowCount;
+                }
                 termTable.SetRowCounts(rank, explicitRowCount, adhocRowCounts[rank]);
             }
             termTable.SetFactCount(0);

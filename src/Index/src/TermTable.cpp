@@ -27,6 +27,7 @@
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Utilities/StreamUtilities.h"
+#include "LoggerInterfaces/Check.h"
 #include "TermTable.h"
 
 
@@ -202,9 +203,13 @@ namespace BitFunnel
     {
         EnsureSealed(false);
 
+        size_t totalRowCount = explicitCount + adhocCount;
+        CHECK_EQ(totalRowCount != 0, m_ranksInUse[rank])
+            << "inconsistent totalRowCount and m_ranksInUse.";
+
         m_explicitRowCounts[rank] = explicitCount;
         m_adhocRowCounts[rank] = adhocCount;
-        m_sharedRowCounts[rank] = explicitCount + adhocCount;
+        m_sharedRowCounts[rank] = totalRowCount;
     }
 
 

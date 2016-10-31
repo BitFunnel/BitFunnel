@@ -141,10 +141,17 @@ namespace BitFunnel
             class Bin;
             std::set<Bin> m_bins;
 
-            size_t m_explicitTermCount;
-            size_t m_adhocTermCount;
-            size_t m_privateTermCount;
-            size_t m_privateRowCount;
+            // If any termCount is > 0, then we consider this rank "in use" and
+            // set the row count to be at least some minimum value..
+            //
+            // WARNING: if additional counts are added, GetAdhocRowCount must be
+            // updated.
+            size_t m_privateExplicitTermCount;
+            //     m_privateAdHoc doesn't exist.
+            size_t m_sharedAdhocTermCount;
+            size_t m_sharedExplicitTermCount;
+
+            size_t m_privateExplicitRowCount;
 
 
             class Bin

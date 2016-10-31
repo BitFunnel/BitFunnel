@@ -33,6 +33,7 @@
 #include "BitFunnel/Index/ITermTreatment.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "DocumentFrequencyTable.h"
+#include "LoggerInterfaces/Check.h"
 #include "TermTableBuilder.h"
 
 
@@ -184,10 +185,6 @@ namespace BitFunnel
             // https://github.com/BitFunnel/BitFunnel/issues/155
 
             size_t adhocRowCount = m_rowAssigners[rank]->GetAdhocRowCount();
-            if (m_termTable.IsRankUsed(rank))
-            {
-                adhocRowCount = std::max(adhocRowCount, GetMinAdhocRowCount());
-            }
             m_termTable.SetRowCounts(rank,
                                      m_rowAssigners[rank]->GetExplicitRowCount(),
                                      adhocRowCount);
@@ -232,9 +229,9 @@ namespace BitFunnel
     // to greatly reduce the chances that a single adhoc term will have
     // duplicate rows.
     // https://github.com/BitFunnel/BitFunnel/issues/155
-    size_t TermTableBuilder::GetMinAdhocRowCount()
+    RowIndex TermTableBuilder::GetMinAdhocRowCount()
     {
-        const size_t c_minAdhocRowCount = 1000ull;
+        const RowIndex c_minAdhocRowCount = 1000u;
         return c_minAdhocRowCount;
     }
 
@@ -252,10 +249,10 @@ namespace BitFunnel
           m_termTable(termTable),
           m_adhocTotal(0),
           m_currentRow(0),
-          m_explicitTermCount(0),
-          m_adhocTermCount(0),
-          m_privateTermCount(0),
-          m_privateRowCount(0)
+          m_privateExplicitTermCount(0),
+          m_sharedAdhocTermCount(0),
+          m_sharedExplicitTermCount(0),
+          m_privateExplicitRowCount(0)
     {
         // TODO: Is there a way to reduce this coupling between RowAssigner
         // and the internals of TermTable?
@@ -282,8 +279,8 @@ namespace BitFunnel
             // Since the row is private (i.e. not shared with other terms)
             // we only need a single row, even if count > 1.
 
-            ++m_privateTermCount;
-            ++m_privateRowCount;
+            ++m_privateExplicitTermCount;
+            ++m_privateExplicitRowCount;
 
             // Just reserve the RowIndex and then add the appropriate RowID to
             // the TermTableBuilder.
@@ -293,7 +290,7 @@ namespace BitFunnel
         {
             // This is an explicit term. In other words, it sets enough bits
             // that it must be bin-packed into its rows.
-            ++m_explicitTermCount;
+            ++m_sharedExplicitTermCount;
 
             // Use the Best Fit Descreasing bin packing algorithm.
             // See https://www.cs.ucsb.edu/~suri/cs130b/BinPacking.txt.
@@ -352,7 +349,7 @@ namespace BitFunnel
     {
         // This is an adhoc term whose location is defined by a set of
         // hash functions.
-        ++m_adhocTermCount;
+        ++m_sharedAdhocTermCount;
 
         // Update m_adhocTotal with this term's contribution to the total
         // number of bits.
@@ -369,15 +366,23 @@ namespace BitFunnel
 
     RowIndex TermTableBuilder::RowAssigner::GetAdhocRowCount() const
     {
-        double rowCount = ceil(m_adhocTotal / m_density);
-        if (rowCount > c_maxRowIndexValue)
+        if (m_privateExplicitTermCount > 0 ||
+            m_sharedAdhocTermCount > 0 ||
+            m_sharedAdhocTermCount > 0)
         {
-            FatalError
-                error("TermTableBuilder::RowAssigner::GetAdhocRowCount: too many rows.");
-            throw error;
-        }
+            double rowCount = std::max(static_cast<double>(GetMinAdhocRowCount()),
+                                       ceil(m_adhocTotal / m_density));
 
-        return static_cast<RowIndex>(rowCount);
+            CHECK_LE(rowCount, c_maxRowIndexValue)
+                << "TermTableBuilder::RowAssigner::GetAdhocRowCount: too many rows.";
+
+            return static_cast<RowIndex>(rowCount);
+        }
+        else
+        {
+            // This row table is not in use.
+            return 0;
+        }
     }
 
 
@@ -386,7 +391,7 @@ namespace BitFunnel
         output << "===================================" << std::endl;
         output << "RowAssigner for rank " << m_rank << std::endl;
 
-        if (m_explicitTermCount + m_adhocTermCount == 0)
+        if (m_sharedExplicitTermCount + m_sharedAdhocTermCount == 0)
         {
             output << "  No terms" << std::endl;
         }
@@ -394,24 +399,21 @@ namespace BitFunnel
         {
             output << "  Terms" << std::endl;
             output << "    Total: "
-                   << m_adhocTermCount + m_explicitTermCount + m_privateTermCount
+                   << m_sharedAdhocTermCount + m_sharedExplicitTermCount + m_privateExplicitTermCount
                    << std::endl;
-            output << "    Adhoc: " << m_adhocTermCount << std::endl;
-            output << "    Explicit: " << m_explicitTermCount << std::endl;
-            output << "    Private: " << m_privateTermCount << std::endl;
+            output << "    Adhoc: " << m_sharedAdhocTermCount << std::endl;
+            output << "    Explicit: " << m_sharedExplicitTermCount << std::endl;
+            output << "    Private: " << m_privateExplicitTermCount << std::endl;
 
             output << std::endl;
 
             output << "  Rows" << std::endl;
             output << "    Total: " << GetAdhocRowCount() + m_currentRow
                    << std::endl;
-            output << "    Adhoc: "
-                   << std::max(GetAdhocRowCount(),
-                               GetMinAdhocRowCount()) << std::endl;
-            output << "    Non-Private Non-Fact Explicit: "
-                   << m_bins.size() << std::endl;
+            output << "    Adhoc: " << GetAdhocRowCount() << std::endl;
+            output << "    Shared Explicit: " << m_bins.size() << std::endl;
+            output << "    Private Explicit: " << m_privateExplicitRowCount << std::endl;
             output << "    Explicit: " << GetExplicitRowCount() << std::endl;
-            output << "    Private: " << m_privateRowCount << std::endl;
             output << std::endl;
 
             output << "  Bytes per document: "
