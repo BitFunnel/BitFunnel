@@ -59,6 +59,7 @@ namespace BitFunnel
     TermTable::TermTable()
       : m_sealed(false),
         m_termOpen(false),
+        m_ranksInUse({}),
         m_explicitRowCounts(c_maxRankValue + 1, 0),
         m_adhocRowCounts(c_maxRankValue + 1, 0),
         m_sharedRowCounts(c_maxRankValue + 1, 0),
