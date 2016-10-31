@@ -28,6 +28,7 @@
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/Exceptions.h"
+#include "LoggerInterfaces/Check.h"
 #include "BitFunnel/NonCopyable.h"
 
 
@@ -51,8 +52,7 @@ namespace BitFunnel
         // at least 'capacity' characters, but may be larger.
         StringBuilder(IAllocator& allocator,
                       size_t capacity = c_initialCapacity)
-            : m_allocator(allocator),
-              m_capacity(0)
+            : m_allocator(allocator)
         {
             // For this constructor, use requested capacity.
             Initialize(capacity);
@@ -84,8 +84,7 @@ namespace BitFunnel
         // from a specified IAllocator.
         StringBuilder(IAllocator& allocator,
                       std::string const & s)
-            : m_allocator(allocator),
-              m_capacity(0)
+            : m_allocator(allocator)
         {
             // Initialize with an additional c_initialCapacity so that
             // the next call to push_char() or append() is less likely
@@ -155,12 +154,9 @@ namespace BitFunnel
     private:
         void Initialize(size_t capacity)
         {
-            // Handling zero capacity adds too much complexity, so ensure
-            // capacity is at least 1.
-            if (m_capacity == 0)
-            {
-                m_capacity = 1;
-            }
+            // Capacity 0 not handled because this makes things simpler.
+            CHECK_GT(capacity, 0ull)
+                << "capacity of 0 not allowed.";
 
             m_capacity = capacity;
             m_size = 0;
@@ -176,27 +172,24 @@ namespace BitFunnel
             size_t newSize = m_size + count;
             size_t newCapacity = m_capacity;
 
-            while (newCapacity < newSize)
+            if (newCapacity < newSize)
             {
-                if (newCapacity == 0)
+                while (newCapacity < newSize)
                 {
-                    newCapacity = 1;
-                }
-                else
-                {
+                    // m_capacity can never be 0 because of CHECK in Initialize().
                     newCapacity *= 2;
                 }
+
+                m_capacity = newCapacity;
+                char * newBuffer =
+                    static_cast<char*>(m_allocator.Allocate(newCapacity + 1));
+
+                memcpy(newBuffer, m_buffer, m_size + 1);
+
+                // NOTE: ok to walk away from original m_buffer because it was
+                // was allocated from an arena (IAllocator).
+                m_buffer = newBuffer;
             }
-
-            m_capacity = newCapacity;
-            char * newBuffer =
-                static_cast<char*>(m_allocator.Allocate(newCapacity + 1));
-
-            memcpy(newBuffer, m_buffer, m_size + 1);
-
-            // NOTE: ok to walk away from original m_buffer because it was
-            // was allocated from an arena (IAllocator).
-            m_buffer = newBuffer;
         }
 
         IAllocator & m_allocator;
