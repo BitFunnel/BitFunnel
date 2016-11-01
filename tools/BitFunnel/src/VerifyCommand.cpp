@@ -155,14 +155,44 @@ namespace BitFunnel
                 << m_query
                 << "\"" << std::endl;
             auto verifier = VerifyOneQuery(GetEnvironment(), m_query);
-            std::cout << "True positives: "
+            std::cout << "True positive count: "
                 << verifier->GetTruePositiveCount()
                 << std::endl
-                << "False positives : "
+                << "False positive count: "
                 << verifier->GetFalsePositiveCount()
+                << std::endl
+                << "False negative count: "
+                << verifier->GetFalseNegativeCount()
                 << std::endl;
+            if (verifier->GetTruePositiveCount() > 0)
+            {
+                std::cout << "True positives:" << std::endl;
+                for (const auto doc : verifier->GetTruePositives())
+                {
+                    std::cout << doc << ",";
+                }
+                std::cout << std::endl;
+            }
+
+            if (verifier->GetFalsePositiveCount() > 0)
+            {
+                std::cout << "False positives:" << std::endl;
+                for (const auto doc : verifier->GetFalsePositives())
+                {
+                    std::cout << doc << ",";
+                }
+                std::cout << std::endl;
+            }
+
             if (verifier->GetFalseNegativeCount() > 0)
             {
+                std::cout << "False negatives:" << std::endl;
+                for (const auto doc : verifier->GetFalseNegatives())
+                {
+                    std::cout << doc << ",";
+                }
+                std::cout << std::endl;
+
                 throw RecoverableError("MatchVerifier: false negative detected.");
             }
         }
