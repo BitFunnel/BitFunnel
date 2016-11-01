@@ -35,7 +35,8 @@ namespace BitFunnel
     PackedRowIdSequence::PackedRowIdSequence()
       : m_start(0ul),
         m_count(0ul),
-        m_type(static_cast<uint32_t>(Type::Adhoc))
+        m_type(static_cast<uint32_t>(Type::Adhoc)),
+        m_unused(0)
     {
     }
 
@@ -45,7 +46,8 @@ namespace BitFunnel
                                              Type type)
       : m_start(static_cast<uint32_t>(start)),
         m_count(static_cast<uint32_t>(end - start)),
-        m_type(static_cast<uint32_t>(type))
+        m_type(static_cast<uint32_t>(type)),
+        m_unused(0)
     {
         if (start > c_maxRowIndexValue ||
             end > c_maxRowIndexValue ||
@@ -53,6 +55,11 @@ namespace BitFunnel
             end - start > RowConfiguration::Entry::c_maxRowCount ||
             type > c_maxTypeValue)
         {
+            if (m_unused != 0)
+            {
+                RecoverableError error("Dummy error. There's probably memory corruption if we're here.");
+                throw error;
+            }
             RecoverableError error("PackedRowIdSequence: invalid parameter.");
             throw error;
         }

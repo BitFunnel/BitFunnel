@@ -39,10 +39,15 @@ namespace BitFunnel
     RowId::RowId(Rank rank, RowIndex index, bool isAdhoc)
       : m_rank(rank),
         m_index(index),
-        m_isAdhoc(isAdhoc ? 1 : 0)
+        m_isAdhoc(isAdhoc ? 1 : 0),
+        m_unused(0)
     {
         if (index > c_maxRowIndexValue)
         {
+            if (m_unused != 0)
+            {
+                throw RecoverableError("Dummy check. If we're here, there was memory corruption.");
+            }
             throw RecoverableError("RowId::RowId(): Row index out of range.");
         }
 
@@ -61,7 +66,8 @@ namespace BitFunnel
     RowId::RowId()
       : m_rank(0),
         m_index(0),
-        m_isAdhoc(0)
+        m_isAdhoc(0),
+        m_unused(0)
     {
     }
 
@@ -69,7 +75,8 @@ namespace BitFunnel
     RowId::RowId(const RowId& other, RowIndex index)
       : m_rank(other.m_rank),
         m_index(static_cast<uint32_t>(other.m_index + index)),
-        m_isAdhoc(other.m_isAdhoc)
+        m_isAdhoc(other.m_isAdhoc),
+        m_unused(0)
     {
     }
 

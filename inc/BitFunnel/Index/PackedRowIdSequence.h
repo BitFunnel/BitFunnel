@@ -78,7 +78,7 @@ namespace BitFunnel
 
         // NOTE: Included operator== for write-to-stream/read-from-stream
         // roundtrip test for TermTable. Normally one wants to do black box
-        // testing, but it is hard to devise a solid black box test for 
+        // testing, but it is hard to devise a solid black box test for
         // TermTable because it is not possible for a test to enumerate all of
         // the terms in the TermTable and all of the adhoc term recipes.
         bool operator==(PackedRowIdSequence const & other) const;
@@ -89,6 +89,14 @@ namespace BitFunnel
         uint32_t m_start : c_log2MaxRowIndexValue;
         uint32_t m_count : RowConfiguration::Entry::c_log2MaxRowCount;
         uint32_t m_type : c_log2MaxTypeValue;
+
+        // We fill in unused bits to prevent valgrind from complaining when we
+        // serialize this data structure to disk.
+        uint32_t m_unused :
+            32 -
+            c_log2MaxRowIndexValue -
+            RowConfiguration::Entry::c_log2MaxRowCount -
+            c_log2MaxTypeValue;
     };
 
     // Require PackedRowIdSequence to be trivailly copyable to allow for binary
