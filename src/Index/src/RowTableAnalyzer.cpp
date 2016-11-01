@@ -186,8 +186,10 @@ namespace BitFunnel
                 const size_t rowCount = rowTable.GetRowCount();
                 for (RowIndex row = 0; row < rowCount; ++row)
                 {
-                    bitCount +=
-                        rowTable.GetBit(buffer, row, column);
+                    if (rowTable.GetBit(buffer, row, column) != 0)
+                    {
+                        ++bitCount;
+                    }
                 }
 
                 columns.back().SetCount(rank, bitCount);
