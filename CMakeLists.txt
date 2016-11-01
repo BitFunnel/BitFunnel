@@ -51,6 +51,10 @@ endif()
 set(GTEST_REQUIRED_FLAGS "-Wno-shift-sign-overflow -Wno-missing-noreturn -Wno-used-but-marked-unused -Wno-deprecated -Wno-missing-variable-declarations -Wno-global-constructors -Wno-weak-vtables")
 set(WEVERYTHING_TODO_FLAGS "-Wno-format-nonliteral -Wno-non-virtual-dtor")
 set(WEVERYTHING_FLAGS "-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-undef -Wno-missing-prototypes -Wno-float-equal -Wno-exit-time-destructors -Wno-switch-enum ${GTEST_REQUIRED_FLAGS} ${WEVERYTHING_TODO_FLAGS}")
+# The standard way to use msan is to compile libc++ with msan.
+# TODO: figure out how to make msan linker flags generic.
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -L/home/leah/dev/libcxx_msan/lib -lc++abi -I/home/leah/dev/libcxx_msan/include -I/home/leah/dev/libcxx_msan/include/c++/v1")
+# set(MSAN_FLAGS "-fsanitize=memory")
 
 if(MSVC)
   set(COMMON_CXX_FLAGS "${COMMON_CXX_FLAGS} /W4 /WX")
@@ -62,6 +66,8 @@ elseif(CMAKE_COMPILER_IS_GNUCXX)
 else()
   # TODO: define a target for -Weverything.
   # set(CMAKE_CXX_FLAGS "-msse4.2 -std=c++14 -Wall -Wextra -Werror -Wold-style-cast ${WEVERYTHING_FLAGS}")
+  # TODO: define a target for msan.
+  # set(CMAKE_CXX_FLAGS "-msse4.2 -std=c++14 -Wall -Wextra -Werror -Wold-style-cast ${MSAN_FLAGS}")
   set(CMAKE_CXX_FLAGS "-msse4.2 -std=c++14 -Wall -Wextra -Werror -Wold-style-cast")
 endif()
 
