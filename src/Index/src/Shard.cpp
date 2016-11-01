@@ -463,13 +463,16 @@ namespace BitFunnel
                 for (DocIndex doc = 0; doc < GetSliceCapacity(); ++doc)
                 {
                     // Only count bits for active documents.
-                    if (rowTable0.GetBit(buffer, active, doc) == 1)
+                    if (rowTable0.GetBit(buffer, active, doc) != 0)
                     {
                         // This document is active in the index.
                         // Go ahead and include its bits in the density
                         // calculation.
                         ++activeBitCount;
-                        setBitCount += rowTable.GetBit(buffer, row, doc);
+                        if (rowTable.GetBit(buffer, row, doc) != 0)
+                        {
+                            ++setBitCount;
+                        }
                     }
                 }
             }
