@@ -114,7 +114,7 @@ namespace BitFunnel
                 // Keep this column, but update its position to reflect the order
                 // in columnNames.
                 keepColumn.push_back(true);
-                size_t columnIndex = it - columnNames.begin();
+                size_t columnIndex = static_cast<size_t>(it - columnNames.begin());
                 inputIndex[columnIndex] = inputRow.size();
                 foundColumn[columnIndex] = true;
             }
