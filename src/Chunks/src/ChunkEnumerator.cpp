@@ -24,7 +24,7 @@
 #include "BitFunnel/Utilities/ITaskDistributor.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "ChunkEnumerator.h"
-#include "ChunkTaskProcessor.h"
+//#include "ChunkTaskProcessor.h"
 
 
 namespace BitFunnel
@@ -59,5 +59,23 @@ namespace BitFunnel
         {
             m_distributor->WaitForCompletion();
         }
+    }
+
+
+    ChunkEnumerator::ChunkTaskProcessor::ChunkTaskProcessor(
+        IChunkManifestIngestor const & manifest)
+        : m_manifest(manifest)
+    {
+    }
+
+
+    void ChunkEnumerator::ChunkTaskProcessor::ProcessTask(size_t taskId)
+    {
+        m_manifest.IngestChunk(taskId);
+    }
+
+
+    void ChunkEnumerator::ChunkTaskProcessor::Finished()
+    {
     }
 }

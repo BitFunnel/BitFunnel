@@ -49,6 +49,25 @@ namespace BitFunnel
         void WaitForCompletion() const;
 
     private:
+        class ChunkTaskProcessor : public ITaskProcessor
+        {
+        public:
+            ChunkTaskProcessor(IChunkManifestIngestor const & manifest);
+
+            //
+            // ITaskProcessor methods.
+            //
+            virtual void ProcessTask(size_t taskId) override;
+            virtual void Finished() override;
+
+        private:
+            //
+            // Constructor parameters.
+            //
+            IChunkManifestIngestor const & m_manifest;
+        };
+
+
         std::vector<std::unique_ptr<ITaskProcessor>> m_processors;
         std::unique_ptr<ITaskDistributor> m_distributor;
     };
