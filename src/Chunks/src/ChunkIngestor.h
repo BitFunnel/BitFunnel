@@ -25,9 +25,9 @@
 #include <memory>                       // std::unqiue_ptr member.
 #include <vector>                       // std::vector member.
 
-#include "BitFunnel/NonCopyable.h"      // Inherits from NonCopyable.
-#include "ChunkReader.h"                // Inherits from ChunkReader::IEvents.
-#include "Document.h"                   // std::unique_ptr<IDocument>.
+#include "BitFunnel/Chunks/IChunkProcessor.h"   // Base class.
+#include "BitFunnel/NonCopyable.h"      // Base class.
+#include "Document.h"                   // std::unique_ptr<Document>.
 
 
 namespace BitFunnel
@@ -37,7 +37,7 @@ namespace BitFunnel
 
     // DESIGN NOTE: Consider adding a document factory parameter to the
     // constructor.
-    class ChunkIngestor : public NonCopyable, public ChunkReader::IEvents
+    class ChunkIngestor : public NonCopyable, public IChunkProcessor
     {
     public:
         ChunkIngestor(char const * start,
@@ -47,7 +47,7 @@ namespace BitFunnel
                       bool cacheDocuments);
 
         //
-        // ChunkReader::IEvents methods.
+        // IChunkProcessor methods.
         //
         virtual void OnFileEnter() override;
         virtual void OnDocumentEnter(DocId id) override;

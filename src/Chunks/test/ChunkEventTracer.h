@@ -24,6 +24,8 @@
 #pragma once
 
 #include <sstream>
+
+#include "BitFunnel/Chunks/IChunkProcessor.h"
 #include "ChunkReader.h"
 
 
@@ -34,7 +36,7 @@ namespace BitFunnel
         // Parses some chunk data, and counts IEvents events as they happen.
         // For example, if the chunk data contains 5 well-formed streams, this
         // class should have counted 5 OnStreamEnter and OnStreamExit events.
-        class ChunkEventTracer : public ChunkReader::IEvents
+        class ChunkEventTracer : public IChunkProcessor
         {
         public:
             ChunkEventTracer(std::vector<char> const & chunkData)
@@ -71,7 +73,8 @@ namespace BitFunnel
             void OnStreamEnter(Term::StreamId id) override
             {
                 m_trace << "OnStreamEnter;streamId: "
-                        << static_cast<uint64_t>(id)        // Cast so that operator<< won't treat uin8_t a char.
+                        // Cast to uint64_T that operator<< won't treat uin8_t a char.
+                        << static_cast<uint64_t>(id)
                         << std::endl;
             }
 

@@ -23,6 +23,7 @@
 #include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "ChunkIngestor.h"
+#include "ChunkReader.h"
 #include "Document.h"
 
 

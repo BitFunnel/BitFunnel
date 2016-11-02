@@ -22,6 +22,7 @@
 
 #include <sstream>
 
+#include "BitFunnel/Chunks/IChunkProcessor.h"
 #include "BitFunnel/Exceptions.h"
 #include "ChunkReader.h"
 
@@ -34,7 +35,7 @@ namespace BitFunnel
 
     ChunkReader::ChunkReader(char const * start,
                              char const * end,
-                             IEvents& processor)
+                             IChunkProcessor& processor)
         : m_processor(processor),
           m_next(start),
           m_end(end)

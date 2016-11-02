@@ -120,6 +120,10 @@ set(CONFIGURATION_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Configuration/IStreamConfiguration.h
 )
 
+set(CHUNKS_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Chunks/IChunkProcessor.h
+)
+
 set(DATA_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Data/Sonnets.h
 )
@@ -215,6 +219,7 @@ set(LOGGER_HFILES
 set(PUBLIC_HFILES
   ${BITFUNNEL_HFILES}
   ${CONFIGURATION_HFILES}
+  ${CHUNKS_HFILES}
   ${DATA_HFILES}
   ${INDEX_HFILES}
   ${MOCKS_HFILES}
@@ -231,6 +236,7 @@ add_custom_target(inc SOURCES ${PUBLIC_HFILES})
 set_property(TARGET inc PROPERTY FOLDER "")
 source_group("BitFunnel" FILES ${BITFUNNEL_HFILES})
 source_group("BitFunnel\\Configuration" FILES ${CONFIGURATION_HFILES})
+source_group("BitFunnel\\Chunks" FILES ${CHUNKS_HFILES})
 source_group("BitFunnel\\Data" FILES ${DATA_HFILES})
 source_group("BitFunnel\\Index" FILES ${INDEX_HFILES})
 source_group("BitFunnel\\Mocks" FILES ${MOCKS_HFILES})

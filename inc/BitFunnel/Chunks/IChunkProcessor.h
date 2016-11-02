@@ -22,45 +22,22 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <vector>
-
-#include "BitFunnel/NonCopyable.h"  // Base class.
-#include "BitFunnel/Term.h"         // Term::StreamId return value.
+#include "BitFunnel/BitFunnelTypes.h"   // DocId parameter.
+#include "BitFunnel/IInterface.h"       // Base class.
+#include "BitFunnel/Term.h"             // Term::StreamId parameter.
 
 
 namespace BitFunnel
 {
-    class IChunkProcessor;
-
-    class ChunkReader : public NonCopyable
+    class IChunkProcessor : public IInterface
     {
-    // DESIGN NOTE: Need to add arena allocators.
     public:
-        ChunkReader(char const * start,
-                    char const * end,
-                    IChunkProcessor& processor);
-
-    private:
-        void ProcessDocument();
-        void ProcessStream();
-        char const * GetToken();
-
-        DocId GetDocId();
-        Term::StreamId GetStreamId();
-
-        uint64_t GetHexValue(uint64_t digitCount);
-        void Consume(char c);
-        char GetChar();
-        char PeekChar();
-
-        // Construtor parameters.
-        IChunkProcessor& m_processor;
-
-        // Next character to be processed.
-        char const * m_next;
-
-        // Pointer to character beyond the end of m_input.
-        char const * m_end;
+        virtual void OnFileEnter() = 0;
+        virtual void OnDocumentEnter(DocId id) = 0;
+        virtual void OnStreamEnter(Term::StreamId id) = 0;
+        virtual void OnTerm(char const * term) = 0;
+        virtual void OnStreamExit() = 0;
+        virtual void OnDocumentExit(size_t bytesRead) = 0;
+        virtual void OnFileExit() = 0;
     };
 }
