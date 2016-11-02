@@ -22,9 +22,10 @@
 
 #include <iostream>
 
+#include "BitFunnel/Chunks/Factories.h"
+#include "BitFunnel/Chunks/IChunkProcessor.h"
 #include "BitFunnel/Data/Sonnets.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IChunkManifestIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/Utilities/ReadLines.h"
@@ -75,11 +76,14 @@ namespace BitFunnel
             IIngestor & ingestor = environment.GetIngestor();
             size_t threadCount = 1;
 
-            auto manifest = Factories::CreateBuiltinChunkManifest(
-                Sonnets::chunks,
+            auto factory = Factories::CreateChunkIngestorFactory(
                 configuration,
                 ingestor,
                 m_cacheDocuments);
+
+            auto manifest = Factories::CreateBuiltinChunkManifest(
+                Sonnets::chunks,
+                *factory);
 
             IngestChunks(*manifest, threadCount);
 
@@ -124,12 +128,15 @@ namespace BitFunnel
             IIngestor & ingestor = environment.GetIngestor();
             size_t threadCount = 1;
 
-            auto manifest = Factories::CreateChunkManifestIngestor(
-                fileSystem,
-                filePaths,
+            auto factory = Factories::CreateChunkIngestorFactory(
                 configuration,
                 ingestor,
                 m_cacheDocuments);
+
+            auto manifest = Factories::CreateChunkManifestIngestor(
+                fileSystem,
+                filePaths,
+                *factory);
 
             IngestChunks(*manifest, threadCount);
 

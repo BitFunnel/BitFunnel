@@ -24,10 +24,11 @@
 #include <fstream>
 #include <sstream>
 
+#include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/Index/Factories.h"
 #include "BuiltinChunkManifest.h"
 #include "ChunkIngestor.h"
+#include "ChunkReader.h"
 
 
 namespace BitFunnel
@@ -35,26 +36,18 @@ namespace BitFunnel
     std::unique_ptr<IChunkManifestIngestor>
         Factories::CreateBuiltinChunkManifest(
             BuiltinChunkManifest::ChunkArray const & chunks,
-            IConfiguration const & config,
-            IIngestor& ingestor,
-            bool cacheDocuments)
+            IChunkProcessorFactory & factory)
     {
         return std::unique_ptr<IChunkManifestIngestor>(
             new BuiltinChunkManifest(chunks,
-                                     config,
-                                     ingestor,
-                                     cacheDocuments));
+                                     factory));
     }
 
 
     BuiltinChunkManifest::BuiltinChunkManifest(ChunkArray const & chunks,
-                                               IConfiguration const & config,
-                                               IIngestor& ingestor,
-                                               bool cacheDocuments)
+                                               IChunkProcessorFactory & factory)
       : m_chunks(chunks),
-        m_config(config),
-        m_ingestor(ingestor),
-        m_cacheDocuments(cacheDocuments)
+        m_factory(factory)
     {
     }
 
@@ -73,12 +66,11 @@ namespace BitFunnel
             throw error;
         }
 
-        // NOTE: The act of constructing a ChunkIngestor causes the bytes in
-        // chunkData to be parsed into documents and ingested.
-        ChunkIngestor(m_chunks[index].second,
-                      m_chunks[index].second + m_chunks[index].first,
-                      m_config,
-                      m_ingestor,
-                      m_cacheDocuments);
+        auto processor = m_factory.Create();
+
+        ChunkReader(m_chunks[index].second,
+                    m_chunks[index].second + m_chunks[index].first,
+                    *processor);
+
     }
 }

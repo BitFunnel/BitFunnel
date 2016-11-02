@@ -59,29 +59,11 @@ namespace BitFunnel
         void AnalyzeRowTables(ISimpleIndex const & index,
                               char const * outDir);
 
-        std::unique_ptr<IChunkManifestIngestor>
-            CreateBuiltinChunkManifest(
-                std::vector<std::pair<size_t, char const *>> const & chunks,
-                IConfiguration const & config,
-                IIngestor& ingestor,
-                bool cacheDocuments);
-
-        std::unique_ptr<IChunkManifestIngestor>
-            CreateChunkManifestIngestor(
-                IFileSystem& fileSystem,
-                std::vector<std::string> const & filePaths,
-                IConfiguration const & config,
-                IIngestor& ingestor,
-                bool cacheDocuments);
-
         std::unique_ptr<IConfiguration>
             CreateConfiguration(size_t maxGramSize,
                                 bool keepTermText,
                                 IIndexedIdfTable const & idfTable,
                                 IFactSet const & facts);
-
-        std::unique_ptr<IDocument>
-            CreateDocument(IConfiguration const & configuration, DocId id);
 
         std::unique_ptr<IDocumentDataSchema> CreateDocumentDataSchema();
 

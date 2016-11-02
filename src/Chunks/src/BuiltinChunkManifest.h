@@ -30,8 +30,7 @@
 
 namespace BitFunnel
 {
-    class IConfiguration;
-    class IIngestor;
+    class IChunkProcessorFactory;
 
     class BuiltinChunkManifest : public IChunkManifestIngestor
     {
@@ -39,9 +38,7 @@ namespace BitFunnel
         typedef std::vector<std::pair<size_t, char const *>> ChunkArray;
 
         BuiltinChunkManifest(ChunkArray const & chunks,
-                             IConfiguration const & config,
-                             IIngestor& ingestor,
-                             bool cacheDocuments);
+                             IChunkProcessorFactory & factory);
 
         //
         // IChunkManifestIngestor
@@ -57,8 +54,6 @@ namespace BitFunnel
         // Constructor parameters
         //
         ChunkArray const & m_chunks;
-        IConfiguration const & m_config;
-        IIngestor& m_ingestor;
-        bool m_cacheDocuments;
+        IChunkProcessorFactory & m_factory;
     };
 }

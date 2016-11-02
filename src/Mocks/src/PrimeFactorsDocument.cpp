@@ -23,6 +23,7 @@
 #include <iostream>     // TODO: Remove
 #include <string>
 
+#include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Index/Factories.h"

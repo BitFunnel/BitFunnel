@@ -26,6 +26,8 @@
 #include <string>
 #include <vector>
 
+#include "BitFunnel/Chunks/Factories.h"
+#include "BitFunnel/Chunks/IChunkProcessor.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
@@ -139,12 +141,15 @@ namespace BitFunnel
         IConfiguration const & configuration = index->GetConfiguration();
         IIngestor & ingestor = index->GetIngestor();
 
-        auto manifest = Factories::CreateChunkManifestIngestor(
-            m_fileSystem,
-            filePaths,
+        auto factory = Factories::CreateChunkIngestorFactory(
             configuration,
             ingestor,
             false);
+
+        auto manifest = Factories::CreateChunkManifestIngestor(
+            m_fileSystem,
+            filePaths,
+            *factory);
 
         output << "Ingesting . . ." << std::endl;
 

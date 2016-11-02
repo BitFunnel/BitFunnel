@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <memory>                       // std::unique_ptr return value.
+
 #include "BitFunnel/BitFunnelTypes.h"   // DocId parameter.
 #include "BitFunnel/IInterface.h"       // Base class.
 #include "BitFunnel/Term.h"             // Term::StreamId parameter.
@@ -39,5 +41,12 @@ namespace BitFunnel
         virtual void OnStreamExit() = 0;
         virtual void OnDocumentExit(size_t bytesRead) = 0;
         virtual void OnFileExit() = 0;
+    };
+
+
+    class IChunkProcessorFactory : public IInterface
+    {
+    public:
+        virtual std::unique_ptr<IChunkProcessor> Create() = 0;
     };
 }

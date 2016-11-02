@@ -23,9 +23,9 @@
 
 #include <new>
 
+#include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/DocumentHandle.h"
-#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "Document.h"
 #include "LoggerInterfaces/Logging.h"

@@ -23,11 +23,12 @@
 #include <fstream>
 #include <sstream>
 
+#include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/Index/Factories.h"
 #include "ChunkIngestor.h"
 #include "ChunkManifestIngestor.h"
+#include "ChunkReader.h"
 
 
 namespace BitFunnel
@@ -36,31 +37,23 @@ namespace BitFunnel
         Factories::CreateChunkManifestIngestor(
             IFileSystem& fileSystem,
             std::vector<std::string> const & filePaths,
-            IConfiguration const & config,
-            IIngestor& ingestor,
-            bool cacheDocuments)
+            IChunkProcessorFactory & factory)
     {
         return std::unique_ptr<IChunkManifestIngestor>(
             new ChunkManifestIngestor(
                 fileSystem,
                 filePaths,
-                config,
-                ingestor,
-                cacheDocuments));
+                factory));
     }
 
 
     ChunkManifestIngestor::ChunkManifestIngestor(
         IFileSystem& fileSystem,
         std::vector<std::string> const & filePaths,
-        IConfiguration const & config,
-        IIngestor& ingestor,
-        bool cacheDocuments)
+        IChunkProcessorFactory & factory)
       : m_fileSystem(fileSystem),
         m_filePaths(filePaths),
-        m_config(config),
-        m_ingestor(ingestor),
-        m_cacheDocuments(cacheDocuments)
+        m_factory(factory)
     {
     }
 
@@ -105,12 +98,10 @@ namespace BitFunnel
                          (std::istreambuf_iterator<char>(*input)),
                          std::istreambuf_iterator<char>());
 
-        // NOTE: The act of constructing a ChunkIngestor causes the bytes in
-        // chunkData to be parsed into documents and ingested.
-        ChunkIngestor(&chunkData[0],
-                      &chunkData[0] + chunkData.size(),
-                      m_config,
-                      m_ingestor,
-                      m_cacheDocuments);
+        auto processor = m_factory.Create();
+
+        ChunkReader(&chunkData[0],
+                    &chunkData[0] + chunkData.size(),
+                    *processor);
     }
 }

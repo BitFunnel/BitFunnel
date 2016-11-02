@@ -20,26 +20,62 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "ChunkIngestor.h"
-#include "ChunkReader.h"
+//#include "ChunkReader.h"
 #include "Document.h"
 
 
 namespace BitFunnel
 {
-    ChunkIngestor::ChunkIngestor(
-        char const * start,
-        char const * end,
-        IConfiguration const & config,
+    std::unique_ptr<IChunkProcessorFactory>
+        Factories::CreateChunkIngestorFactory(
+            IConfiguration const & config,
+            IIngestor& ingestor,
+            bool cacheDocuments)
+    {
+        return std::unique_ptr<IChunkProcessorFactory>(
+            new ChunkIngestorFactory(config, ingestor, cacheDocuments));
+    }
+
+
+    //*************************************************************************
+    //
+    // ChunkIngestorFactory
+    //
+    //*************************************************************************
+    ChunkIngestorFactory::ChunkIngestorFactory(
+        IConfiguration const & configuration,
         IIngestor& ingestor,
         bool cacheDocuments)
+      : m_config(configuration),
+        m_ingestor(ingestor),
+        m_cacheDocuments(cacheDocuments)
+    {
+    }
+
+
+    std::unique_ptr<IChunkProcessor> ChunkIngestorFactory::Create()
+    {
+        return std::unique_ptr<IChunkProcessor>(
+            new ChunkIngestor(m_config, m_ingestor, m_cacheDocuments));
+    }
+
+
+    //*************************************************************************
+    //
+    // ChunkIngestor
+    //
+    //*************************************************************************
+    ChunkIngestor::ChunkIngestor(IConfiguration const & config,
+                                 IIngestor& ingestor,
+                                 bool cacheDocuments)
       : m_config(config),
         m_ingestor(ingestor),
         m_cacheDocuments(cacheDocuments)
     {
-        ChunkReader(start, end, *this);
     }
 
 

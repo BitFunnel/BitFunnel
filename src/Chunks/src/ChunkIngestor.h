@@ -35,14 +35,31 @@ namespace BitFunnel
     class IConfiguration;
     class IIngestor;
 
-    // DESIGN NOTE: Consider adding a document factory parameter to the
-    // constructor.
+
+    class ChunkIngestorFactory : public IChunkProcessorFactory
+    {
+    public:
+        ChunkIngestorFactory(IConfiguration const & configuration,
+                             IIngestor& ingestor,
+                             bool cacheDocuments);
+
+        //
+        // IChunkProcessorFactory methods
+        //
+
+        virtual std::unique_ptr<IChunkProcessor> Create() override;
+
+    private:
+        IConfiguration const & m_config;
+        IIngestor& m_ingestor;
+        bool m_cacheDocuments;
+    };
+
+
     class ChunkIngestor : public NonCopyable, public IChunkProcessor
     {
     public:
-        ChunkIngestor(char const * start,
-                      char const * end,
-                      IConfiguration const & configuration,
+        ChunkIngestor(IConfiguration const & configuration,
                       IIngestor& ingestor,
                       bool cacheDocuments);
 
