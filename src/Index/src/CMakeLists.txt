@@ -1,15 +1,8 @@
 # BitFunnel/src/Index/src
 
 set(CPPFILES
-    BuiltinChunkManifest.cpp
-    ChunkEnumerator.cpp
-    ChunkIngestor.cpp
-    ChunkManifestIngestor.cpp
-    ChunkReader.cpp
-    ChunkTaskProcessor.cpp
     Configuration.cpp
     DocTableDescriptor.cpp
-    Document.cpp
     DocumentCache.cpp
     DocumentDataSchema.cpp
     DocumentFrequencyTable.cpp
@@ -21,7 +14,6 @@ set(CPPFILES
     Helpers.cpp
     IDocumentCache.cpp
     IndexedIdfTable.cpp
-    IngestChunks.cpp
     Ingestor.cpp
     PackedRowIdSequence.cpp
     Recycler.cpp
@@ -49,15 +41,8 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
-    BuiltinChunkManifest.h
-    ChunkEnumerator.h
-    ChunkIngestor.h
-    ChunkManifestIngestor.h
-    ChunkReader.h
-    ChunkTaskProcessor.h
     Configuration.h
     DocTableDescriptor.h
-    Document.h
     DocumentCache.h
     DocumentDataSchema.h
     DocumentFrequencyTable.h

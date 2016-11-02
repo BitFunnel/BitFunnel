@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-#include "Mocks/ChunkEventTracer.h"
+#include "ChunkEventTracer.h"
 
 
 namespace BitFunnel
