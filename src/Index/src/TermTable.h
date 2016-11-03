@@ -184,5 +184,7 @@ namespace BitFunnel
         std::vector<RowIndex> m_adhocRowCounts;
         std::vector<RowIndex> m_sharedRowCounts;
         RowIndex m_factRowCount;
+
+        std::array<const Term::Hash, c_maxRowsPerTerm> m_randomHashes;
     };
 }

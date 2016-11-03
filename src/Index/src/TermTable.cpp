@@ -63,8 +63,21 @@ namespace BitFunnel
         m_explicitRowCounts(c_maxRankValue + 1, 0),
         m_adhocRowCounts(c_maxRankValue + 1, 0),
         m_sharedRowCounts(c_maxRankValue + 1, 0),
-        m_factRowCount(SystemTerm::Count)
-    {
+        m_factRowCount(SystemTerm::Count),
+        m_randomHashes({0xac0a7f8c2faac497,
+                    0x75a616b7c0cc21d8,
+                    0x43b34e9afb52a2db,
+                    0xc3767d8b677de5d8,
+                    0x09a4746cd3dea19f,
+                    0x155159a5f2d66662,
+                    0x24b70570573a2b4c,
+                    0x463c4be4d8bd840e,
+                    0x589ab2f68ccdcc45,
+                    0x3a392962c142487a,
+                    0xe67daeca274aeacf,
+                    0x57a86587aec8df7a
+                    })
+        {
         // Make an entry for the system rows.
         // TODO: Comment explaining why system rows are added first (rather than last).
         // Partial answer: so newly constructed TermTable is viable without a TermTableBuilder.
@@ -85,7 +98,20 @@ namespace BitFunnel
 
     TermTable::TermTable(std::istream& input)
       : m_sealed(true),
-        m_start(0)
+        m_start(0),
+        m_randomHashes({0xac0a7f8c2faac497,
+                    0x75a616b7c0cc21d8,
+                    0x43b34e9afb52a2db,
+                    0xc3767d8b677de5d8,
+                    0x09a4746cd3dea19f,
+                    0x155159a5f2d66662,
+                    0x24b70570573a2b4c,
+                    0x463c4be4d8bd840e,
+                    0x589ab2f68ccdcc45,
+                    0x3a392962c142487a,
+                    0xe67daeca274aeacf,
+                    0x57a86587aec8df7a
+                    })
     {
         size_t count = StreamUtilities::ReadField<size_t>(input);
         for (size_t i = 0; i < count; ++i)
@@ -375,14 +401,6 @@ namespace BitFunnel
     }
 
 
-    static uint64_t RotateRight(uint64_t x, uint64_t bits)
-    {
-        // TODO: Investigate `_rotl64` intrinsics; this exists on Windows, but
-        // does not seem to on Clang.
-        return (x >> bits) | (x << (64 - bits));
-    }
-
-
     RowId TermTable::GetRowIdAdhoc(Term::Hash hash,
                                    size_t index,
                                    size_t variant) const
@@ -390,6 +408,12 @@ namespace BitFunnel
         if (index >= m_rowIds.size())
         {
             RecoverableError error("TermTable::GetRowIdAdhoc: index out of range.");
+            throw error;
+        }
+
+        if (variant > c_maxRowsPerTerm)
+        {
+            FatalError error("TermTable::GetRowIdAdhoc: variant out of range.");
             throw error;
         }
 
@@ -405,7 +429,7 @@ namespace BitFunnel
         // Rotating by the variant gives a dramatically different number than
         // the original hash and adding in the variant ensures a different
         // value even after 64 rotations.
-        hash = RotateRight(hash, variant & 0x3f) + variant;
+        hash = hash ^ m_randomHashes[variant];
 
         // Adhoc rows start at RowIndex 0.
         return RowId(rank, (hash % adhocRowCount));
