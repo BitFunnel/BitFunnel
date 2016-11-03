@@ -49,13 +49,20 @@ namespace Logging
     {
         // Work-around for what is believed to be a bug in g++ v5.4.0 (among
         // other versions). See detailed discussion in #225.
-#ifndef BITFUNNEL_PLATFORM_WINDOWS
+        //
+        // Since clang and gcc define __GNUC__, we check for __GNUC__ and not
+        // clang.
+#ifdef __GNUC__
+#ifndef __clang__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
+#endif
         stream << value;
-#ifndef BITFUNNEL_PLATFORM_WINDOWS
+#ifdef __GNUC__
+#ifndef __clang__
 #pragma GCC diagnostic pop
+#endif
 #endif
     }
 
@@ -67,13 +74,20 @@ namespace Logging
     {
         // Work-around for what is believed to be a bug in g++ v5.4.0 (among
         // other versions). See detailed discussion in #225.
-#ifndef BITFUNNEL_PLATFORM_WINDOWS
+        //
+        // Since clang and gcc define __GNUC__, we check for __GNUC__ and not
+        // clang.
+#ifdef __GNUC__
+#ifndef __clang__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
+#endif
         if (value == nullptr)
-#ifndef BITFUNNEL_PLATFORM_WINDOWS
+#ifdef __GNUC__
+#ifndef __clang__
 #pragma GCC diagnostic pop
+#endif
 #endif
         {
             stream << "(nullptr)";
