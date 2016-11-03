@@ -89,6 +89,10 @@ namespace BitFunnel
     // else. See TFS 567354.
     static const unsigned c_maxRowsPerQuery = 500;
 
+    // TODO: move this value somewhere else. Maybe make it a configurable
+    // parameter for TermTableBuilder.
+    static const size_t c_explicitRowRandomizationLimit = 400;
+
     //
     // Constants for alignment of different in-memory structures.
     //

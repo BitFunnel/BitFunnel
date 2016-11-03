@@ -74,7 +74,11 @@ namespace BitFunnel
                                        IFactSet const & facts,
                                        ITermTable & termTable)
         : m_termTable(termTable),
-          m_buildTime(0.0)
+          m_buildTime(0.0),
+          // seed, min value, max value.
+          m_random(std::make_unique<RandomInt<unsigned>>(0,
+                                                         0,
+                                                         c_explicitRowRandomizationLimit))
     {
         Stopwatch stopwatch;
 
@@ -85,7 +89,8 @@ namespace BitFunnel
                 std::unique_ptr<RowAssigner>(
                     new RowAssigner(rank,
                                     density,
-                                    termTable)));
+                                    termTable,
+                                    *m_random)));
         }
 
 
@@ -248,7 +253,8 @@ namespace BitFunnel
     TermTableBuilder::RowAssigner::RowAssigner(
         Rank rank,
         double density,
-        ITermTable & termTable)
+        ITermTable & termTable,
+        RandomInt<unsigned>& random)
         : m_rank(rank),
           m_density(density),
           m_termTable(termTable),
@@ -257,7 +263,8 @@ namespace BitFunnel
           m_privateExplicitTermCount(0),
           m_sharedAdhocTermCount(0),
           m_sharedExplicitTermCount(0),
-          m_privateExplicitRowCount(0)
+          m_privateExplicitRowCount(0),
+          m_random(random)
     {
         // TODO: Is there a way to reduce this coupling between RowAssigner
         // and the internals of TermTable?
@@ -302,11 +309,32 @@ namespace BitFunnel
 
             // currentBins holds bins assigned for this term.
             std::vector<Bin> currentBins;
+            std::vector<Bin> skippedBins;
 
             for (RowIndex i = 0; i < count; ++i)
             {
                 // Look for an existing bin with enough space.
                 auto it = m_bins.lower_bound(Bin(f));
+                size_t skipDistance = m_random();
+
+                // Skip over skipDistance bins by removing them.
+                //
+                // In order to avoid correlations between explicitly packed
+                // rows, we skip randomize row placement by skipping forward N
+                // from the "optimal" placement. See
+                // https://github.com/BitFunnel/BitFunnel/issues/278 for more
+                // discusison. If this would skip past the end, we create a new
+                // bin.
+
+                while (it != m_bins.end() && skipDistance > 0)
+                {
+                    Bin bin = *it;
+                    m_bins.erase(it);
+                    skippedBins.push_back(bin);
+                    it = m_bins.lower_bound(Bin(f));
+                    --skipDistance;
+                }
+
                 if (it == m_bins.end())
                 {
                     // No existing bin has enough space. Start a new bin.
@@ -332,6 +360,10 @@ namespace BitFunnel
                     // a future iteration.
                     currentBins.push_back(bin);
                 }
+
+                // Add back skipped bins.
+                m_bins.insert(skippedBins.begin(), skippedBins.end());
+                skippedBins.clear();
             }
 
             // All of the bins for this term have been identified.

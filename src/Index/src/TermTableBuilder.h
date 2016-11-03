@@ -34,6 +34,7 @@
 #include "BitFunnel/Index/RowId.h"              // RowIndex, RowId parameter.
 #include "BitFunnel/Term.h"                     // Term::Hash template parameter.
 #include "BitFunnel/Utilities/Accumulator.h"    // Accumulator member.
+#include "Random.h"
 
 
 namespace BitFunnel
@@ -85,6 +86,8 @@ namespace BitFunnel
 
         double m_buildTime;
 
+        // Random number generator.
+        std::unique_ptr<RandomInt<unsigned>> m_random;
 
         class RowAssignment
         {
@@ -116,7 +119,8 @@ namespace BitFunnel
         public:
             RowAssigner(Rank rank,
                         double density,
-                        ITermTable & termTable);
+                        ITermTable & termTable,
+                        RandomInt<unsigned>& random);
 
             void AssignExplicit(double frequency, RowIndex count, bool isPrivate);
             void AssignAdhoc(double frequency, RowIndex count);
@@ -152,6 +156,8 @@ namespace BitFunnel
             size_t m_sharedExplicitTermCount;
 
             size_t m_privateExplicitRowCount;
+
+            RandomInt<unsigned>& m_random;
 
 
             class Bin
