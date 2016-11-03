@@ -36,8 +36,14 @@ namespace BitFunnel
     {
         TEST(Random, TrivialDummyTest)
         {
+            const unsigned c_arbitrarySeed = 0;
+            const unsigned c_minValue = 1;
+            const unsigned c_maxValue = std::numeric_limits<unsigned>::max();
+
             RandomInt<unsigned>
-                random(0, 1, std::numeric_limits<unsigned>::max());
+                random(c_arbitrarySeed,
+                       c_minValue,
+                       c_maxValue);
             EXPECT_GT(random(), 0u);
         }
     }
