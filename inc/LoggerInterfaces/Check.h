@@ -47,7 +47,16 @@ namespace Logging
                                            !std::is_pointer<T>::value &&
                                            !std::is_convertible<T, char const *>::value, T const &>::type value)
     {
+        // Work-around for what is believed to be a bug in g++ v5.4.0 (among
+        // other versions). See detailed discussion in #225.
+#ifndef BITFUNNEL_PLATFORM_WINDOWS
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
         stream << value;
+#ifndef BITFUNNEL_PLATFORM_WINDOWS
+#pragma GCC diagnostic pop
+#endif
     }
 
     template <typename T>
@@ -56,7 +65,16 @@ namespace Logging
                             !std::is_convertible<T, char const *>::value) ||
                             std::is_null_pointer<T>::value, T const &>::type value)
     {
+        // Work-around for what is believed to be a bug in g++ v5.4.0 (among
+        // other versions). See detailed discussion in #225.
+#ifndef BITFUNNEL_PLATFORM_WINDOWS
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
         if (value == nullptr)
+#ifndef BITFUNNEL_PLATFORM_WINDOWS
+#pragma GCC diagnostic pop
+#endif
         {
             stream << "(nullptr)";
         }
