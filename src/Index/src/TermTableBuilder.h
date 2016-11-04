@@ -52,7 +52,8 @@ namespace BitFunnel
                          ITermTreatment const & treatment,
                          IDocumentFrequencyTable const & terms,
                          IFactSet const & facts,
-                         ITermTable & termTable);
+                         ITermTable & termTable,
+                         unsigned randomSkipDistance);
 
         virtual void Print(std::ostream& output) const override;
 

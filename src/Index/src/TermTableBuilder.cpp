@@ -52,13 +52,15 @@ namespace BitFunnel
                                           IFactSet const & facts,
                                           ITermTable & termTable)
     {
+        // TODO: make skipDistance (currently c_explicitRowRandomizaitonLimit) a parameter.
         return
             std::unique_ptr<ITermTableBuilder>(new TermTableBuilder(density,
                                                                     adhocFrequency,
                                                                     treatment,
                                                                     terms,
                                                                     facts,
-                                                                    termTable));
+                                                                    termTable,
+                                                                    c_explicitRowRandomizationLimit));
     }
 
 
@@ -72,13 +74,14 @@ namespace BitFunnel
                                        ITermTreatment const & treatment,
                                        IDocumentFrequencyTable const & terms,
                                        IFactSet const & facts,
-                                       ITermTable & termTable)
+                                       ITermTable & termTable,
+                                       unsigned randomSkipDistance)
         : m_termTable(termTable),
           m_buildTime(0.0),
           // seed, min value, max value.
           m_random(std::make_unique<RandomInt<unsigned>>(0,
                                                          0,
-                                                         c_explicitRowRandomizationLimit))
+                                                         randomSkipDistance))
     {
         Stopwatch stopwatch;
 

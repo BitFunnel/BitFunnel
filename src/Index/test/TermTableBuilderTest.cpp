@@ -223,7 +223,7 @@ namespace BitFunnel
             m_termTable.CloseTerm(hash++);
 
             // Seventh row is configured two shared rows, one rank 0 and one
-            // rank 4. Seventh row's frequency of 0.01 is great enough to 
+            // rank 4. Seventh row's frequency of 0.01 is great enough to
             // require a private row at rank 4.
             m_termTreatment.OpenConfiguration();
             m_termTreatment.AddEntry(4, 1, false);
@@ -287,18 +287,20 @@ private:
 
             // Run the TermTableBuilder to configure a TermTable.
             ITermTreatment const & treatment = environment.GetTermTreatment();
-            DocumentFrequencyTable const & terms = 
+            DocumentFrequencyTable const & terms =
                 environment.GetDocFrequencyTable();
             IFactSet const & facts = environment.GetFactSet();
             TermTable termTable;
             double density = 0.1;
             double adhocFrequency = 0.0001;
+            unsigned c_randomSkipDistance = 0;
             TermTableBuilder builder(density,
                                      adhocFrequency,
                                      treatment,
                                      terms,
                                      facts,
-                                     termTable);
+                                     termTable,
+                                     c_randomSkipDistance);
 
             builder.Print(std::cout);
 
