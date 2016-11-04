@@ -72,7 +72,7 @@ namespace BitFunnel
                             char * const * sliceBuffers,
                             size_t iterationsPerSlice,
                             ptrdiff_t const * rowOffsets,
-                            IDiagnosticStream & diagnosticStream,
+                            // IDiagnosticStream & diagnosticStream,
                             QueryInstrumentation& instrumentation);
 
         // Runs the instruction sequence for a specified number of iterations.
@@ -223,7 +223,7 @@ namespace BitFunnel
         // TODO: Formalize definition and usage of zero flag.
         bool m_zeroFlag;
 
-        IDiagnosticStream& m_diagnosticStream;
+        // IDiagnosticStream& m_diagnosticStream;
         QueryInstrumentation& m_instrumentation;
     };
 

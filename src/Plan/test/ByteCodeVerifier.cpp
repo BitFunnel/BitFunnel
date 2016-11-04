@@ -272,7 +272,7 @@ namespace BitFunnel
         auto iterationsPerSlice = GetIterationsPerSlice();
 
         // TODO: remove diagnosticStream and replace with nullable.
-        auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
+        // auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
         QueryInstrumentation instrumentation;
         ByteCodeInterpreter interpreter(
             code,
@@ -281,7 +281,7 @@ namespace BitFunnel
             reinterpret_cast<char* const *>(sliceBuffers.data()),
             iterationsPerSlice,
             m_rowOffsets.data(),
-            *diagnosticStream,
+            // *diagnosticStream,
             instrumentation);
 
         interpreter.Run();

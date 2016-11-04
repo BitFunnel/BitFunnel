@@ -41,7 +41,7 @@ namespace BitFunnel
     public:
         SimplePlanner(TermMatchNode const & tree,
                       ISimpleIndex const & index,
-                      IDiagnosticStream& diagnosticStream,
+                      // IDiagnosticStream& diagnosticStream,
                       QueryInstrumentation & instrumentation);
 
         std::vector<DocId> const & GetMatches() const;

@@ -24,7 +24,7 @@
 #include <limits>
 
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/IDiagnosticStream.h"
+// #include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Plan/IResultsProcessor.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "ByteCodeInterpreter.h"
@@ -66,7 +66,7 @@ Decide on type of Slices
         char * const * sliceBuffers,
         size_t iterationsPerSlice,
         ptrdiff_t const * rowOffsets,
-        IDiagnosticStream& diagnosticStream,
+        // IDiagnosticStream& diagnosticStream,
         QueryInstrumentation& instrumentation)
       : m_code(code.GetCode()),
         m_jumpTable(code.GetJumpTable()),
@@ -75,7 +75,7 @@ Decide on type of Slices
         m_sliceBuffers(sliceBuffers),
         m_iterationsPerSlice(iterationsPerSlice),
         m_rowOffsets(rowOffsets),
-        m_diagnosticStream(diagnosticStream),
+        // m_diagnosticStream(diagnosticStream),
         m_instrumentation(instrumentation)
     {
     }
@@ -122,12 +122,12 @@ Decide on type of Slices
         m_ip = m_code.data();
         m_offset = iteration;
 
-        if (m_diagnosticStream.IsEnabled("bytecode/opcode"))
-        {
-            std::ostream& out = m_diagnosticStream.GetStream();
-            out << "--------------------" << std::endl;
-            out << "ByteCode RunOneIteration:" << std::endl;
-        }
+        // if (m_diagnosticStream.IsEnabled("bytecode/opcode"))
+        // {
+        //     std::ostream& out = m_diagnosticStream.GetStream();
+        //     out << "--------------------" << std::endl;
+        //     out << "ByteCode RunOneIteration:" << std::endl;
+        // }
 
         while (m_ip->GetOpcode() != Opcode::End)
         {
@@ -136,14 +136,14 @@ Decide on type of Slices
             const unsigned delta = m_ip->GetDelta();
             const bool inverted = m_ip->IsInverted();
 
-            if (m_diagnosticStream.IsEnabled("bytecode/opcode"))
-            {
-                std::ostream& out = m_diagnosticStream.GetStream();
-                out << "Opcode: " << opcode << std::endl;
-                out << "Offset: " << m_offset << std::endl;
-                out << "Row: " << row << std::endl;
-                out << "RowOffset: " << m_rowOffsets[row] << std::endl;
-            }
+            // if (m_diagnosticStream.IsEnabled("bytecode/opcode"))
+            // {
+            //     std::ostream& out = m_diagnosticStream.GetStream();
+            //     out << "Opcode: " << opcode << std::endl;
+            //     out << "Offset: " << m_offset << std::endl;
+            //     out << "Row: " << row << std::endl;
+            //     out << "RowOffset: " << m_rowOffsets[row] << std::endl;
+            // }
             switch (opcode)
             {
             case Opcode::AndRow:
@@ -157,12 +157,12 @@ Decide on type of Slices
                     m_zeroFlag = (m_accumulator == 0);
                     m_ip++;
 
-                    if (m_diagnosticStream.IsEnabled("bytecode/loadrow"))
-                    {
-                        std::ostream& out = m_diagnosticStream.GetStream();
-                        out << "AndRow: " << std::hex << m_accumulator
-                            << std::dec << std::endl;
-                    }
+                    // if (m_diagnosticStream.IsEnabled("bytecode/loadrow"))
+                    // {
+                    //     std::ostream& out = m_diagnosticStream.GetStream();
+                    //     out << "AndRow: " << std::hex << m_accumulator
+                    //         << std::dec << std::endl;
+                    // }
                 }
                 break;
             case Opcode::LoadRow:
@@ -176,12 +176,12 @@ Decide on type of Slices
                     m_zeroFlag = (m_accumulator == 0);
                     m_ip++;
 
-                    if (m_diagnosticStream.IsEnabled("bytecode/loadrow"))
-                    {
-                        std::ostream& out = m_diagnosticStream.GetStream();
-                        out << "LoadRow: " << std::hex << m_accumulator
-                            << std::dec << std::endl;
-                    }
+                    // if (m_diagnosticStream.IsEnabled("bytecode/loadrow"))
+                    // {
+                    //     std::ostream& out = m_diagnosticStream.GetStream();
+                    //     out << "LoadRow: " << std::hex << m_accumulator
+                    //         << std::dec << std::endl;
+                    // }
                 }
                 break;
             case Opcode::LeftShiftOffset:

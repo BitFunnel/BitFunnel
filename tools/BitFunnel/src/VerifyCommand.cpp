@@ -27,7 +27,7 @@
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/IDiagnosticStream.h"
+// #include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Plan/Factories.h"
@@ -122,7 +122,7 @@ namespace BitFunnel
             //     << documentCount << " documents."
             //     << std::endl;
 
-            auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
+            // auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
             // diagnosticStream->Enable("");
 
             QueryInstrumentation instrumentation;
@@ -132,7 +132,7 @@ namespace BitFunnel
             //                                             *diagnosticStream);
             auto observed = Factories::RunQueryPlanner(*tree,
                                                        environment.GetSimpleIndex(),
-                                                       *diagnosticStream,
+                                                       // *diagnosticStream,
                                                        instrumentation);
             for (auto id : observed)
             {

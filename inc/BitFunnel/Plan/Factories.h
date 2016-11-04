@@ -60,12 +60,12 @@ namespace BitFunnel
         // TODO: get rid of these convenience methods?
         std::vector<DocId> RunQueryPlanner(TermMatchNode const & tree,
                                            ISimpleIndex const & index,
-                                           IDiagnosticStream & diagnosticStream,
+                                           // IDiagnosticStream & diagnosticStream,
                                            QueryInstrumentation & instrumentation);
 
         std::vector<DocId> RunSimplePlanner(TermMatchNode const & tree,
                                             ISimpleIndex const & index,
-                                            IDiagnosticStream & diagnosticStream,
+                                            // IDiagnosticStream & diagnosticStream,
                                             QueryInstrumentation & instrumentation);
     }
 }
