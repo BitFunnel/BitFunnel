@@ -135,10 +135,14 @@ namespace BitFunnel
         // auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
         if (tree != nullptr)
         {
-            auto observed = Factories::RunSimplePlanner(*tree,
-                                                        m_index,
-                                                        // *diagnosticStream,
-                                                        instrumentation);
+            // auto observed = Factories::RunSimplePlanner(*tree,
+            //                                             m_index,
+            //                                             // *diagnosticStream,
+            //                                             instrumentation);
+            auto observed = Factories::RunQueryPlanner(*tree,
+                                                       m_index,
+                                                       // *diagnosticStream,
+                                                       instrumentation);
         }
 
         m_results[taskId] = instrumentation.GetData();
