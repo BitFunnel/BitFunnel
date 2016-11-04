@@ -179,11 +179,11 @@ namespace BitFunnel
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #endif
                 unsigned k = lround(ceil(log(frequency / snr) / log(density - frequency)) + 1);
-                configuration.push_front(RowConfiguration::Entry(0, 1, false));
+                configuration.push_front(RowConfiguration::Entry(0, 2, false));
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-                if (k > 1)
+                if (k > 2)
                 {
                     Rank rank = 3;
                     double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
@@ -193,7 +193,7 @@ namespace BitFunnel
                     }
                     else
                     {
-                        configuration.push_front(RowConfiguration::Entry(rank, k - 1, false));
+                        configuration.push_front(RowConfiguration::Entry(rank, k - 2, false));
                     }
                 }
             }
