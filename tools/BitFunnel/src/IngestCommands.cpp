@@ -87,7 +87,7 @@ namespace BitFunnel
 
             IngestChunks(*manifest, threadCount);
 
-            std::cout << "Ingestion complete." << std::endl;
+            // std::cout << "Ingestion complete." << std::endl;
         }
         else
         {
@@ -107,10 +107,10 @@ namespace BitFunnel
             else
             {
                 filePaths.push_back(m_path);
-                std::cout
-                    << "Ingesting chunk file \""
-                    << filePaths.back()
-                    << "\"" << std::endl;
+                // std::cout
+                //     << "Ingesting chunk file \""
+                //     << filePaths.back()
+                //     << "\"" << std::endl;
             }
 
             if (m_cacheDocuments)
@@ -140,7 +140,7 @@ namespace BitFunnel
 
             IngestChunks(*manifest, threadCount);
 
-            std::cout << "Ingestion complete." << std::endl;
+            // std::cout << "Ingestion complete." << std::endl;
         }
     }
 
