@@ -352,7 +352,6 @@ namespace BitFunnel
     {
         if (m_docFrequencyTableBuilder.get() != nullptr)
         {
-            std::lock_guard<std::mutex> lock(m_temporaryFrequencyTableMutex);
             m_docFrequencyTableBuilder->OnTerm(term);
         }
 
