@@ -48,6 +48,17 @@ namespace BitFunnel
         m_addResultValues.push_back(std::make_pair(accumulator, offset));
     }
 
+    // TODO: move this method somewhere.
+    uint64_t lzcnt(uint64_t value)
+    {
+#ifdef _MSC_VER
+        return __lzcnt64(value);
+#elif __LZCNT__
+        return __lzcnt64(value);
+#else
+        return __builtin_clzll(value);
+#endif
+    }
 
     bool SimpleResultsProcessor::FinishIteration(void const * sliceBuffer)
     {
@@ -56,18 +67,21 @@ namespace BitFunnel
             uint64_t acc = result.first;
             size_t offset = result.second;
 
-            size_t bitPos = 0;
+            size_t bitPos = 63;
+
             while (acc != 0)
             {
-                if (acc & 1)
-                {
-                    DocIndex docIndex = offset * c_bitsPerQuadword + bitPos;
-                    DocumentHandle handle =
-                        Factories::CreateDocumentHandle(const_cast<void*>(sliceBuffer), docIndex);
-                    m_matches.push_back(handle.GetDocId());
-                }
-                acc >>= 1;
-                ++bitPos;
+                uint64_t count = lzcnt(acc);
+                acc <<= count;
+                bitPos -= count;
+
+                DocIndex docIndex = offset * c_bitsPerQuadword + bitPos;
+                DocumentHandle handle =
+                    Factories::CreateDocumentHandle(const_cast<void*>(sliceBuffer), docIndex);
+                m_matches.push_back(handle.GetDocId());
+
+                acc <<= 1;
+                --bitPos;
             }
         }
         m_addResultValues.clear();
