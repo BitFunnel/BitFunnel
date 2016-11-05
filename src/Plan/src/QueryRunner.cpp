@@ -184,7 +184,7 @@ namespace BitFunnel
         std::vector<std::string> const & queries,
         size_t iterations)
     {
-        std::vector<QueryInstrumentation::Data> results(queries.size());
+        std::vector<QueryInstrumentation::Data> results(queries.size() * iterations);
 
         auto config = Factories::CreateStreamConfiguration();
 
@@ -222,7 +222,7 @@ namespace BitFunnel
             QueryInstrumentation::Data::FormatHeader(formatter);
             for (size_t i = 0; i < results.size(); ++i)
             {
-                formatter.WriteField(queries[i]);
+                formatter.WriteField(queries[i % queries.size()]);
                 results[i].Format(formatter);
             }
         }
