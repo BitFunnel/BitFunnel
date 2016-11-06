@@ -3,7 +3,6 @@
 set(CPPFILES
     BuiltinChunkManifest.cpp
     ChunkEnumerator.cpp
-    ChunkFilter.cpp
     ChunkIngestor.cpp
     ChunkManifestIngestor.cpp
     ChunkReader.cpp
@@ -21,11 +20,9 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     BuiltinChunkManifest.h
     ChunkEnumerator.h
-    ChunkFilter.h
     ChunkIngestor.h
     ChunkManifestIngestor.h
     ChunkReader.h
-    ChunkWriter.h
     Document.h
 )
 

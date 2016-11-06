@@ -31,41 +31,6 @@
 
 namespace BitFunnel
 {
-    //std::unique_ptr<IChunkProcessorFactory>
-    //    Factories::CreateChunkIngestorFactory(
-    //        IConfiguration const & config,
-    //        IIngestor& ingestor,
-    //        bool cacheDocuments)
-    //{
-    //    return std::unique_ptr<IChunkProcessorFactory>(
-    //        new ChunkIngestorFactory(config, ingestor, cacheDocuments));
-    //}
-
-
-    ////*************************************************************************
-    ////
-    //// ChunkIngestorFactory
-    ////
-    ////*************************************************************************
-    //ChunkIngestorFactory::ChunkIngestorFactory(
-    //    IConfiguration const & configuration,
-    //    IIngestor& ingestor,
-    //    bool cacheDocuments)
-    //  : m_config(configuration),
-    //    m_ingestor(ingestor),
-    //    m_cacheDocuments(cacheDocuments)
-    //{
-    //}
-
-
-    //std::unique_ptr<IChunkProcessor>
-    //    ChunkIngestorFactory::Create(char const * /*name*/, size_t /*index*/)
-    //{
-    //    return std::unique_ptr<IChunkProcessor>(
-    //        new ChunkIngestor(m_config, m_ingestor, m_cacheDocuments));
-    //}
-
-
     //*************************************************************************
     //
     // ChunkIngestor
@@ -135,10 +100,6 @@ namespace BitFunnel
                                                   id);
             }
         }
-        //else
-        //{
-        //    std::cout << "Discard " << m_currentDocument->GetDocId() << std::endl;
-        //}
 
         m_currentDocument.reset(nullptr);
     }

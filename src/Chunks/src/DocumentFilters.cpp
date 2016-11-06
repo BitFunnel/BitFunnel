@@ -58,9 +58,9 @@ namespace BitFunnel
     // RandomDocumentFilter
     //
     //*************************************************************************
-    RandomDocumentFilter::RandomDocumentFilter(unsigned seed, double fraction)
-      : m_engine(seed, 0.0, 1.0),
-        m_fraction(fraction)
+    RandomDocumentFilter::RandomDocumentFilter(double fraction, unsigned seed)
+      : m_fraction(fraction),
+        m_engine(seed, 0.0, 1.0)
     {
     }
 

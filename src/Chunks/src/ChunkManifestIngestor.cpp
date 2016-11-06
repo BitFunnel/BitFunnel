@@ -88,10 +88,6 @@ namespace BitFunnel
             throw error;
         }
 
-        //std::cout
-        //    << "ChunkManifestIngestor::IngestChunk: filePath = "
-        //    << m_filePaths[index] << std::endl;
-
         auto input = m_fileSystem.OpenForRead(m_filePaths[index].c_str(),
                                               std::ios::binary);
 

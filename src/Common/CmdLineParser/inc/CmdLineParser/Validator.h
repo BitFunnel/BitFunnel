@@ -97,7 +97,9 @@ namespace CmdLine
     };
 
     template <class T>
-    std::unique_ptr<IValidator<T>> Range(std::unique_ptr<IValidator<T>> first, std::unique_ptr<IValidator<T>> second);
+    std::unique_ptr<IValidator<T>> 
+        Range(std::unique_ptr<IValidator<T>> first,
+              std::unique_ptr<IValidator<T>> second);
 
     //*************************************************************************
     //
@@ -235,8 +237,8 @@ namespace CmdLine
     //*************************************************************************
     template <class T>
     PairValidator<T>::PairValidator(std::unique_ptr<IValidator<T>> first, std::unique_ptr<IValidator<T>> second)
-        : m_first(first),
-          m_second(second)
+        : m_first(std::move(first)),
+          m_second(std::move(second))
     {
     }
 
@@ -255,9 +257,11 @@ namespace CmdLine
     }
 
     template <class T>
-    std::unique_ptr<IValidator<T>> Range(std::unique_ptr<IValidator<T>> first, std::unique_ptr<IValidator<T>> second)
+    std::unique_ptr<IValidator<T>> Range(std::unique_ptr<IValidator<T>> first,
+                                         std::unique_ptr<IValidator<T>> second)
     {
-        return std::unique_ptr<IValidator<T>>(new PairValidator<T>(first, second));
+        return std::unique_ptr<IValidator<T>>(
+            new PairValidator<T>(std::move(first), std::move(second)));
     }
 
     //*************************************************************************

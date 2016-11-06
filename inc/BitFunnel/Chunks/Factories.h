@@ -33,7 +33,6 @@
 namespace BitFunnel
 {
     class IChunkManifestIngestor;
-    class IChunkProcessorFactory;
     class IConfiguration;
     class IDocument;
     class IDocumentFilter;
@@ -43,28 +42,6 @@ namespace BitFunnel
 
     namespace Factories
     {
-        //std::unique_ptr<IChunkProcessorFactory>
-        //    CreateChunkIngestorFactory(IConfiguration const & configuration,
-        //                               IIngestor& ingestor,
-        //                               bool cacheDocuments);
-
-        //std::unique_ptr<IChunkProcessorFactory>
-        //    CreateChunkFilterFactory(
-        //        IChunkProcessorFactory & factory,
-        //        double randomFraction,
-        //        size_t randomSeed,
-        //        size_t minPostingCount,
-        //        size_t maxPostingCount);
-
-        //std::unique_ptr<IChunkProcessorFactory>
-        //    CreateChunkDocIdProjectFactory(IConfiguration const & configuration);
-
-        //std::unique_ptr<IChunkProcessorFactory>
-        //    CreateChunkDocIdFilterFactory(IConfiguration const & configuration,
-        //                                  std::vector<DocId> const docIds);
-
-
-
         std::unique_ptr<IChunkManifestIngestor>
             CreateBuiltinChunkManifest(
                 std::vector<std::pair<size_t, char const *>> const & chunks,
