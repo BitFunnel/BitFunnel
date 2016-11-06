@@ -56,7 +56,7 @@ namespace BitFunnel
 #elif __LZCNT__
         return __lzcnt64(value);
 #else
-        return __builtin_clzll(value);
+        return static_cast<uint64_t>(__builtin_clzll(value));
 #endif
     }
 
