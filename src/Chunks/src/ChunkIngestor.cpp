@@ -86,7 +86,6 @@ namespace BitFunnel
 
         if (m_filter.KeepDocument(*m_currentDocument))
         {
-            std::cout << "Keep " << m_currentDocument->GetDocId() << std::endl;
             if (m_output.get() != nullptr)
             {
                 writer.Write(*m_output);

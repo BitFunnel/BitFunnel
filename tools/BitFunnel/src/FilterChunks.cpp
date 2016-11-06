@@ -26,12 +26,14 @@
 #include <string>
 #include <vector>
 
+#include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Chunks/DocumentFilters.h"
 #include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Chunks/IChunkManifestIngestor.h"
 #include "BitFunnel/Chunks/IChunkProcessor.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/IIngestor.h"
@@ -180,7 +182,7 @@ namespace BitFunnel
 
     void FilterChunks::FilterChunkList(
         std::ostream& output,
-        char const * intermediateDirectory,
+        char const * outputDirectory,
         char const * chunkListFileName,
         // TODO: gramSize should be unsigned once CmdLineParser supports unsigned.
         int gramSize,
@@ -188,7 +190,7 @@ namespace BitFunnel
     {
         // TODO: cast of gramSize can be removed when it's fixed to be unsigned.
         auto index = Factories::CreateSimpleIndex(m_fileSystem);
-        index->ConfigureForStatistics(intermediateDirectory,
+        index->ConfigureForStatistics(outputDirectory,
                                       static_cast<size_t>(gramSize),
                                       false);
         index->StartIndex();
@@ -197,7 +199,7 @@ namespace BitFunnel
         // TODO: Add try/catch around file operations.
         output
             << "Loading chunk list file '" << chunkListFileName << "'" << std::endl
-            << "Temp dir: '" << intermediateDirectory << "'" << std::endl;
+            << "Temp dir: '" << outputDirectory << "'" << std::endl;
 
         std::vector<std::string> filePaths = ReadLines(m_fileSystem, chunkListFileName);
 
@@ -206,9 +208,16 @@ namespace BitFunnel
         IConfiguration const & configuration = index->GetConfiguration();
         IIngestor & ingestor = index->GetIngestor();
 
+        // Create special file manager for output.
+        auto fileManager = Factories::CreateFileManager(
+            outputDirectory,
+            outputDirectory,
+            outputDirectory,
+            index->GetFileSystem());
+
         auto manifest = Factories::CreateChunkManifestIngestor(
             m_fileSystem,
-            nullptr,
+            fileManager.get(),
             filePaths,
             configuration,
             ingestor,
@@ -219,9 +228,25 @@ namespace BitFunnel
 
         Stopwatch stopwatch;
 
-        for (size_t i = 0; i < filePaths.size(); ++i)
         {
-            manifest->IngestChunk(i);
+            // Block scopes manifestFile.
+            auto manifestFile = fileManager->Manifest().OpenForWrite();
+
+            // DESIGN NOTE: Using single-threaded code here to avoid two
+            // threads writing to manifestFile and filter.
+            // If corpus filtering was performance critical and not disk
+            // bound, we might consider adding synchronization to allow
+            // multiple threads.
+            for (size_t i = 0; i < filePaths.size(); ++i)
+            {
+                // Copy chunks.
+                manifest->IngestChunk(i);
+
+                // Add corresponding entry to manifest file.
+                *manifestFile
+                    << fileManager->Chunk(i).GetName()
+                    << std::endl;
+            }
         }
 
         const double elapsedTime = stopwatch.ElapsedTime();

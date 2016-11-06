@@ -68,6 +68,15 @@ namespace BitFunnel
     class IDocumentFilter : public IInterface
     {
     public:
+        // Returns true if the document should be kept when copying a corpus.
+        // DESIGN NOTE: This method is not const because some predicates
+        // (e.g. random sample, document count) need to side-effect the filter.
+        // One consequence is that subsets filtered by multi-threaded code
+        // may differ from run to run.
+        // WARNING: At present the implementations of KeepDocument are not
+        // thread safe. Thread safety wasn't a requirement because the
+        // intention was to always use the filters in single threaded code
+        // for repeatability.
         virtual bool KeepDocument(IDocument const & document) = 0;
     };
 

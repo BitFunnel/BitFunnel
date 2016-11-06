@@ -139,6 +139,7 @@ namespace BitFunnel
             << "usage: BitFunnel <command> [<args>]" << std::endl
             << std::endl
             << "The most commonly used commands are" << std::endl
+            << "   filter         Copy the corpus, filtering documents by predicate." << std::endl
             << "   statistics     Generate corpus statistics used to configure the index." << std::endl
             << "   termtable      Construct a term table based on generated corpus statistics." << std::endl
             << "   repl           Run interative read-eval-print console." << std::endl
