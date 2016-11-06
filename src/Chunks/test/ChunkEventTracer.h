@@ -94,13 +94,14 @@ namespace BitFunnel
             }
 
 
-            void OnDocumentExit(size_t /*sourceByteSize*/) override
+            void OnDocumentExit(IChunkWriter & /*writer*/,
+                                size_t /*sourceByteSize*/) override
             {
                 m_trace << "OnDocumentExit" << std::endl;
             }
 
 
-            void OnFileExit() override
+            void OnFileExit(IChunkWriter & /*writer*/) override
             {
                 m_trace << "OnFileExit" << std::endl;
             }

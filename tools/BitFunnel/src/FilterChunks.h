@@ -21,30 +21,33 @@
 // THE SOFTWARE.
 
 
-// Dummy file to cause Random.h to get compiled since we haven't ported anything
-// that depends on Random yet.
+#include "BitFunnel/IExecutable.h"  // Base class.
 
-#include <limits>
-
-#include "gtest/gtest.h"
-
-#include "BitFunnel/Utilities/Random.h"
 
 namespace BitFunnel
 {
-    namespace RandomTest
-    {
-        TEST(Random, TrivialDummyTest)
-        {
-            const unsigned c_arbitrarySeed = 0;
-            const unsigned c_minValue = 1;
-            const unsigned c_maxValue = std::numeric_limits<unsigned>::max();
+    class IFileSystem;
 
-            RandomInt<unsigned>
-                random(c_arbitrarySeed,
-                       c_minValue,
-                       c_maxValue);
-            EXPECT_GT(random(), 0u);
-        }
-    }
+    class FilterChunks : public IExecutable
+    {
+    public:
+        FilterChunks(IFileSystem& fileSystem);
+
+        //
+        // IExecutable methods
+        //
+        virtual int Main(std::istream& input,
+                         std::ostream& output,
+                         int argc,
+                         char const *argv[]) override;
+
+    private:
+        void FilterChunkList(
+            std::ostream& output,
+            char const * intermediateDirectory,
+            char const * chunkListFileName,
+            int gramSize) const;
+
+        IFileSystem& m_fileSystem;
+    };
 }

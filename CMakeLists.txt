@@ -121,6 +121,8 @@ set(CONFIGURATION_HFILES
 )
 
 set(CHUNKS_HFILES
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Chunks/DocumentFilters.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Chunks/IChunkManifestIngestor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Chunks/IChunkProcessor.h
 )
 
@@ -133,7 +135,6 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Factories.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Helpers.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IConfiguration.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IChunkManifestIngestor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocument.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocumentCache.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocumentDataSchema.h
@@ -190,6 +191,7 @@ set(UTILITIES_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskDistributor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskProcessor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IThreadManager.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Random.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ReadLines.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/RingBuffer.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/StandardInputStream.h

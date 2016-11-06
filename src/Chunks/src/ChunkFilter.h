@@ -22,7 +22,6 @@
 
 #pragma once
 
-#include <iosfwd>                       // std::ostream template parameter.
 #include <memory>                       // std::unqiue_ptr member.
 #include <vector>                       // std::vector member.
 
@@ -33,38 +32,48 @@
 
 namespace BitFunnel
 {
+    class IChunkProcessor;
     class IConfiguration;
     class IIngestor;
 
 
-    //class ChunkIngestorFactory : public IChunkProcessorFactory
-    //{
-    //public:
-    //    ChunkIngestorFactory(IConfiguration const & configuration,
-    //                         IIngestor& ingestor,
-    //                         bool cacheDocuments);
-
-    //    //
-    //    // IChunkProcessorFactory methods
-    //    //
-    //    virtual std::unique_ptr<IChunkProcessor>
-    //        Create(char const * name, size_t index) override;
-
-    //private:
-    //    IConfiguration const & m_config;
-    //    IIngestor& m_ingestor;
-    //    bool m_cacheDocuments;
-    //};
-
-
-    class ChunkIngestor : public NonCopyable, public IChunkProcessor
+    class ChunkFilterFactory : public IChunkProcessorFactory
     {
     public:
-        ChunkIngestor(IConfiguration const & configuration,
-                      IIngestor& ingestor,
-                      bool cacheDocuments,
-                      IDocumentFilter & filter,
-                      std::unique_ptr<std::ostream> output);
+        ChunkFilterFactory(IChunkProcessorFactory & factory,
+                           double randomFraction,
+                           size_t randomSeed,
+                           size_t minPostingCount,
+                           size_t maxPostingCount);
+
+        //
+        // IChunkProcessorFactory methods
+        //
+        virtual std::unique_ptr<IChunkProcessor>
+            Create(char const * name, size_t index) override;
+
+    private:
+        //
+        // Constructor parameters.
+        //
+        IChunkProcessorFactory & m_factory;
+
+        double m_randomFraction;
+        size_t m_randomSeed;
+
+        size_t m_minPostingCount;
+        size_t m_maxPostingCount;
+    };
+
+
+    class ChunkFilter : public NonCopyable, public IChunkProcessor
+    {
+    public:
+        ChunkFilter(std::unique_ptr<IChunkProcessor> processor,
+                    double randomFraction,
+                    size_t randomSeed,
+                    size_t minPostingCount,
+                    size_t maxPostingCount);
 
         //
         // IChunkProcessor methods.
@@ -82,15 +91,12 @@ namespace BitFunnel
         //
         // Constructor parameters
         //
-        IConfiguration const & m_config;
-        IIngestor& m_ingestor;
-        bool m_cacheDocuments;
-        IDocumentFilter & m_filter;         // TODO: What about multi-threaded access?
-        std::unique_ptr<std::ostream> m_output;
+        std::unique_ptr<IChunkProcessor> m_processor;
 
-        //
-        // Other members
-        //
-        std::unique_ptr<Document> m_currentDocument;
+        double m_randomFraction;
+        size_t m_randomSeed;
+
+        size_t m_minPostingCount;
+        size_t m_maxPostingCount;
     };
 }

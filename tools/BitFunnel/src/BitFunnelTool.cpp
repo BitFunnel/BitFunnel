@@ -28,6 +28,7 @@
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnelTool.h"
+#include "FilterChunks.h"
 #include "REPL.h"
 #include "StatisticsBuilder.h"
 #include "TermTableBuilderTool.h"
@@ -89,7 +90,11 @@ namespace BitFunnel
     {
         std::unique_ptr<IExecutable> executable;
 
-        if (strcmp(name, "repl") == 0)
+        if (strcmp(name, "filter") == 0)
+        {
+            executable.reset(new FilterChunks(m_fileSystem));
+        }
+        else if (strcmp(name, "repl") == 0)
         {
             executable.reset(new REPL(m_fileSystem));
         }

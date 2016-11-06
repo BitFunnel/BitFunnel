@@ -25,7 +25,7 @@
 #include <vector>   // std::vector parameter.
 #include <string>   // Template parameter.
 
-#include "BitFunnel/Index/IChunkManifestIngestor.h" // Base class.
+#include "BitFunnel/Chunks/IChunkManifestIngestor.h" // Base class.
 
 
 namespace BitFunnel
@@ -38,7 +38,9 @@ namespace BitFunnel
         typedef std::vector<std::pair<size_t, char const *>> ChunkArray;
 
         BuiltinChunkManifest(ChunkArray const & chunks,
-                             IChunkProcessorFactory & factory);
+                             IConfiguration const & config,
+                             IIngestor& ingestor,
+                             bool cacheDocuments);
 
         //
         // IChunkManifestIngestor
@@ -54,6 +56,8 @@ namespace BitFunnel
         // Constructor parameters
         //
         ChunkArray const & m_chunks;
-        IChunkProcessorFactory & m_factory;
+        IConfiguration const & m_configuration;
+        IIngestor& m_ingestor;
+        bool m_cacheDocuments;
     };
 }

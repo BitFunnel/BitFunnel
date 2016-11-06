@@ -25,21 +25,27 @@
 #include <vector>   // std::vector parameter.
 #include <string>   // Template parameter.
 
-#include "BitFunnel/Index/IChunkManifestIngestor.h"   // Base class.
+#include "BitFunnel/Chunks/IChunkManifestIngestor.h"   // Base class.
 
 
 namespace BitFunnel
 {
     class IConfiguration;
+    class IDocumentFilter;
+    class IFileManager;
     class IFileSystem;
     class IIngestor;
 
     class ChunkManifestIngestor : public IChunkManifestIngestor
     {
     public:
-        ChunkManifestIngestor(IFileSystem& fileSystem,
+        ChunkManifestIngestor(IFileSystem & fileSystem,
+                              IFileManager * fileManager,
                               std::vector<std::string> const & filePaths,
-                              IChunkProcessorFactory & factory);
+                              IConfiguration const & config,
+                              IIngestor & ingestor,
+                              IDocumentFilter & filter,
+                              bool cacheDocuments);
 
         //
         // IChunkManifestIngestor methods
@@ -55,8 +61,12 @@ namespace BitFunnel
         // Constructor parameters
         //
 
-        IFileSystem& m_fileSystem;
+        IFileSystem & m_fileSystem;
+        IFileManager * m_fileManager;
         std::vector<std::string> const & m_filePaths;
-        IChunkProcessorFactory & m_factory;
+        IConfiguration const & m_configuration;
+        IIngestor& m_ingestor;
+        IDocumentFilter & m_filter;
+        bool m_cacheDocuments;
     };
 }
