@@ -53,7 +53,7 @@ namespace BitFunnel
 
 
     std::unique_ptr<ITermTreatment>
-        Factories::CreateTreatmentPrivateShardRank0And3(double density,
+        Factories::CreateTreatmentPrivateSharedRank0And3(double density,
                                                         double snr)
     {
         return
