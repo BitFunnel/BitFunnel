@@ -34,7 +34,7 @@
 #include "BitFunnel/Index/RowId.h"              // RowIndex, RowId parameter.
 #include "BitFunnel/Term.h"                     // Term::Hash template parameter.
 #include "BitFunnel/Utilities/Accumulator.h"    // Accumulator member.
-#include "Random.h"
+#include "BitFunnel/Utilities/Random.h"         // RandomInt embedded.
 
 
 namespace BitFunnel
