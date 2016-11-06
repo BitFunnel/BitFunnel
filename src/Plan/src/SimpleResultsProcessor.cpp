@@ -56,6 +56,9 @@ namespace BitFunnel
 #elif __LZCNT__
         return __lzcnt64(value);
 #else
+        // DESIGN NOTE: this is undefined if the input operand i 0. We currently
+        // only call lzcnt in one place, where we've prevously gauranteed that
+        // the input isn't 0. This is not safe to use in the general case.
         return static_cast<uint64_t>(__builtin_clzll(value));
 #endif
     }
