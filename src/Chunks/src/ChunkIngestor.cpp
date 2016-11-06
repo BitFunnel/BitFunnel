@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream>     // TODO: remove
+
 #include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
@@ -119,6 +121,7 @@ namespace BitFunnel
 
         if (m_filter.KeepDocument(*m_currentDocument))
         {
+            std::cout << "Keep " << m_currentDocument->GetDocId() << std::endl;
             if (m_output.get() != nullptr)
             {
                 writer.Write(*m_output);
@@ -132,6 +135,10 @@ namespace BitFunnel
                                                   id);
             }
         }
+        //else
+        //{
+        //    std::cout << "Discard " << m_currentDocument->GetDocId() << std::endl;
+        //}
 
         m_currentDocument.reset(nullptr);
     }

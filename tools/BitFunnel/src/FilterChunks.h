@@ -26,12 +26,13 @@
 
 namespace BitFunnel
 {
+    class IDocumentFilter;
     class IFileSystem;
 
     class FilterChunks : public IExecutable
     {
     public:
-        FilterChunks(IFileSystem& fileSystem);
+        FilterChunks(IFileSystem & fileSystem);
 
         //
         // IExecutable methods
@@ -46,7 +47,8 @@ namespace BitFunnel
             std::ostream& output,
             char const * intermediateDirectory,
             char const * chunkListFileName,
-            int gramSize) const;
+            int gramSize,
+            IDocumentFilter & filter) const;
 
         IFileSystem& m_fileSystem;
     };
