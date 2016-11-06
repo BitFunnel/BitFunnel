@@ -24,44 +24,44 @@
 #include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "ChunkIngestor.h"
-//#include "ChunkReader.h"
 #include "Document.h"
 
 
 namespace BitFunnel
 {
-    std::unique_ptr<IChunkProcessorFactory>
-        Factories::CreateChunkIngestorFactory(
-            IConfiguration const & config,
-            IIngestor& ingestor,
-            bool cacheDocuments)
-    {
-        return std::unique_ptr<IChunkProcessorFactory>(
-            new ChunkIngestorFactory(config, ingestor, cacheDocuments));
-    }
+    //std::unique_ptr<IChunkProcessorFactory>
+    //    Factories::CreateChunkIngestorFactory(
+    //        IConfiguration const & config,
+    //        IIngestor& ingestor,
+    //        bool cacheDocuments)
+    //{
+    //    return std::unique_ptr<IChunkProcessorFactory>(
+    //        new ChunkIngestorFactory(config, ingestor, cacheDocuments));
+    //}
 
 
-    //*************************************************************************
-    //
-    // ChunkIngestorFactory
-    //
-    //*************************************************************************
-    ChunkIngestorFactory::ChunkIngestorFactory(
-        IConfiguration const & configuration,
-        IIngestor& ingestor,
-        bool cacheDocuments)
-      : m_config(configuration),
-        m_ingestor(ingestor),
-        m_cacheDocuments(cacheDocuments)
-    {
-    }
+    ////*************************************************************************
+    ////
+    //// ChunkIngestorFactory
+    ////
+    ////*************************************************************************
+    //ChunkIngestorFactory::ChunkIngestorFactory(
+    //    IConfiguration const & configuration,
+    //    IIngestor& ingestor,
+    //    bool cacheDocuments)
+    //  : m_config(configuration),
+    //    m_ingestor(ingestor),
+    //    m_cacheDocuments(cacheDocuments)
+    //{
+    //}
 
 
-    std::unique_ptr<IChunkProcessor> ChunkIngestorFactory::Create()
-    {
-        return std::unique_ptr<IChunkProcessor>(
-            new ChunkIngestor(m_config, m_ingestor, m_cacheDocuments));
-    }
+    //std::unique_ptr<IChunkProcessor>
+    //    ChunkIngestorFactory::Create(char const * /*name*/, size_t /*index*/)
+    //{
+    //    return std::unique_ptr<IChunkProcessor>(
+    //        new ChunkIngestor(m_config, m_ingestor, m_cacheDocuments));
+    //}
 
 
     //*************************************************************************
@@ -71,10 +71,14 @@ namespace BitFunnel
     //*************************************************************************
     ChunkIngestor::ChunkIngestor(IConfiguration const & config,
                                  IIngestor& ingestor,
-                                 bool cacheDocuments)
+                                 bool cacheDocuments,
+                                 IDocumentFilter & filter,
+                                 std::unique_ptr<std::ostream> output)
       : m_config(config),
         m_ingestor(ingestor),
-        m_cacheDocuments(cacheDocuments)
+        m_cacheDocuments(cacheDocuments),
+        m_filter(filter),
+        m_output(std::move(output))
     {
     }
 
@@ -108,24 +112,36 @@ namespace BitFunnel
     }
 
 
-    void ChunkIngestor::OnDocumentExit(size_t bytesRead)
+    void ChunkIngestor::OnDocumentExit(IChunkWriter & writer,
+                                       size_t bytesRead)
     {
         m_currentDocument->CloseDocument(bytesRead);
-        m_ingestor.Add(m_currentDocument->GetDocId(), *m_currentDocument);
-        if (m_cacheDocuments)
+
+        if (m_filter.KeepDocument(*m_currentDocument))
         {
-            DocId id = m_currentDocument->GetDocId();
-            m_ingestor.GetDocumentCache().Add(std::move(m_currentDocument),
-                                              id);
+            if (m_output.get() != nullptr)
+            {
+                writer.Write(*m_output);
+            }
+
+            m_ingestor.Add(m_currentDocument->GetDocId(), *m_currentDocument);
+            if (m_cacheDocuments)
+            {
+                DocId id = m_currentDocument->GetDocId();
+                m_ingestor.GetDocumentCache().Add(std::move(m_currentDocument),
+                                                  id);
+            }
         }
-        else
-        {
-            m_currentDocument.reset(nullptr);
-        }
+
+        m_currentDocument.reset(nullptr);
     }
 
 
-    void ChunkIngestor::OnFileExit()
+    void ChunkIngestor::OnFileExit(IChunkWriter & writer)
     {
+        if (m_output.get() != nullptr)
+        {
+            writer.Complete(*m_output);
+        }
     }
 }

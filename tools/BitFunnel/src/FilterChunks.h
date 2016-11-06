@@ -20,53 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
 
-#include <vector>   // std::vector parameter.
-#include <string>   // Template parameter.
-
-#include "BitFunnel/Chunks/IChunkManifestIngestor.h"   // Base class.
+#include "BitFunnel/IExecutable.h"  // Base class.
 
 
 namespace BitFunnel
 {
-    class IConfiguration;
-    class IDocumentFilter;
-    class IFileManager;
     class IFileSystem;
-    class IIngestor;
 
-    class ChunkManifestIngestor : public IChunkManifestIngestor
+    class FilterChunks : public IExecutable
     {
     public:
-        ChunkManifestIngestor(IFileSystem & fileSystem,
-                              IFileManager * fileManager,
-                              std::vector<std::string> const & filePaths,
-                              IConfiguration const & config,
-                              IIngestor & ingestor,
-                              IDocumentFilter & filter,
-                              bool cacheDocuments);
+        FilterChunks(IFileSystem& fileSystem);
 
         //
-        // IChunkManifestIngestor methods
+        // IExecutable methods
         //
-
-        virtual size_t GetChunkCount() const override;
-
-        virtual void IngestChunk(size_t index) const override;
+        virtual int Main(std::istream& input,
+                         std::ostream& output,
+                         int argc,
+                         char const *argv[]) override;
 
     private:
+        void FilterChunkList(
+            std::ostream& output,
+            char const * intermediateDirectory,
+            char const * chunkListFileName,
+            int gramSize) const;
 
-        //
-        // Constructor parameters
-        //
-
-        IFileSystem & m_fileSystem;
-        IFileManager * m_fileManager;
-        std::vector<std::string> const & m_filePaths;
-        IConfiguration const & m_configuration;
-        IIngestor& m_ingestor;
-        IDocumentFilter & m_filter;
-        bool m_cacheDocuments;
+        IFileSystem& m_fileSystem;
     };
 }

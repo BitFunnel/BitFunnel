@@ -22,7 +22,9 @@
 
 #pragma once
 
+#include <iosfwd>                       // std::ostream& parameter.
 #include <memory>                       // std::unique_ptr return value.
+#include <stddef.h>                     // ::size_t parameter.
 
 #include "BitFunnel/BitFunnelTypes.h"   // DocId parameter.
 #include "BitFunnel/IInterface.h"       // Base class.
@@ -31,6 +33,23 @@
 
 namespace BitFunnel
 {
+    class IDocument;
+
+    class IChunkWriter : public IInterface
+    {
+    public:
+        virtual void Write(std::ostream& output) = 0;
+        virtual void Complete(std::ostream& output) = 0;
+    };
+
+
+    class IDocumentFilter : public IInterface
+    {
+    public:
+        virtual bool KeepDocument(IDocument const & document) = 0;
+    };
+
+
     class IChunkProcessor : public IInterface
     {
     public:
@@ -39,14 +58,16 @@ namespace BitFunnel
         virtual void OnStreamEnter(Term::StreamId id) = 0;
         virtual void OnTerm(char const * term) = 0;
         virtual void OnStreamExit() = 0;
-        virtual void OnDocumentExit(size_t bytesRead) = 0;
-        virtual void OnFileExit() = 0;
+        virtual void OnDocumentExit(IChunkWriter & writer,
+                                    size_t bytesRead) = 0;
+        virtual void OnFileExit(IChunkWriter & writer) = 0;
     };
 
 
     class IChunkProcessorFactory : public IInterface
     {
     public:
-        virtual std::unique_ptr<IChunkProcessor> Create() = 0;
+        virtual std::unique_ptr<IChunkProcessor>
+            Create(char const * name, size_t index) = 0;
     };
 }

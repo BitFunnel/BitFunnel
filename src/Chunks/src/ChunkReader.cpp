@@ -29,6 +29,12 @@
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // ChunkReader
+    //
+    //*************************************************************************
+
     static const uint64_t c_docIdDigitCount = 16;
     static const uint64_t c_streamIdDigitCount = 2;
 
@@ -52,7 +58,10 @@ namespace BitFunnel
         }
 
         Consume(0);
-        m_processor.OnFileExit();
+
+        // TODO: Is is bad to pass nullptr?
+        ChunkWriter writer(nullptr, nullptr);
+        m_processor.OnFileExit(writer);
     }
 
 
@@ -72,7 +81,11 @@ namespace BitFunnel
         {
             throw FatalError("length underflow.");
         }
-        m_processor.OnDocumentExit(static_cast<size_t>(m_next - start));
+
+        ChunkWriter writer(start, m_next);
+
+        m_processor.OnDocumentExit(writer,
+                                   static_cast<size_t>(m_next - start));
     }
 
 
@@ -105,10 +118,11 @@ namespace BitFunnel
         return begin;
     }
 
+
     DocId ChunkReader::GetDocId()
     {
         static_assert(sizeof(DocId) * 2 == c_docIdDigitCount,
-                      "DocId type is not equivalent to two hex digits.");
+                      "DocId type is not equivalent to 16 hex digits.");
         return static_cast<DocId>(GetHexValue(c_docIdDigitCount));
     }
 
@@ -173,6 +187,7 @@ namespace BitFunnel
         }
     }
 
+
     void ChunkReader::Consume(char c)
     {
         if (PeekChar() != c)
@@ -184,5 +199,30 @@ namespace BitFunnel
         }
 
         GetChar();
+    }
+
+
+    //*************************************************************************
+    //
+    // ChunkReader::ChunkWriter
+    //
+    //*************************************************************************
+    ChunkReader::ChunkWriter::ChunkWriter(char const * start,
+                                          char const * end)
+      : m_start(start),
+        m_end(end)
+    {
+    }
+
+
+    void ChunkReader::ChunkWriter::Write(std::ostream & output)
+    {
+        output.write(m_start, m_end - m_start);
+    }
+
+
+    void ChunkReader::ChunkWriter::Complete(std::ostream & output)
+    {
+        output << '\0';
     }
 }

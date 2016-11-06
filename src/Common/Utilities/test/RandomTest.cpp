@@ -28,7 +28,7 @@
 
 #include "gtest/gtest.h"
 
-#include "Random.h"
+#include "BitFunnel/Utilities/Random.h"
 
 namespace BitFunnel
 {

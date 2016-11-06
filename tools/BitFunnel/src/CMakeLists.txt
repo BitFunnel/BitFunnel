@@ -7,6 +7,7 @@ set(CPPFILES
     Environment.cpp
     ExitCommand.cpp
     FailOnExceptionCommand.cpp
+    FilterChunks.cpp
     HelpCommand.cpp
     IngestCommands.cpp
     QueryCommand.cpp
@@ -33,6 +34,7 @@ set(PRIVATE_HFILES
     CdCommand.h
     ExitCommand.h
     FailOnExceptionCommand.h
+    FilterChunks.h
     Environment.h
     HelpCommand.h
     IngestCommands.h

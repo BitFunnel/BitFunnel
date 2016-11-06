@@ -24,6 +24,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "BitFunnel/Chunks/DocumentFilters.h"
 #include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Exceptions.h"
 #include "BuiltinChunkManifest.h"
@@ -36,18 +37,26 @@ namespace BitFunnel
     std::unique_ptr<IChunkManifestIngestor>
         Factories::CreateBuiltinChunkManifest(
             BuiltinChunkManifest::ChunkArray const & chunks,
-            IChunkProcessorFactory & factory)
+            IConfiguration const & config,
+            IIngestor& ingestor,
+            bool cacheDocuments)
     {
         return std::unique_ptr<IChunkManifestIngestor>(
             new BuiltinChunkManifest(chunks,
-                                     factory));
+                                     config,
+                                     ingestor,
+                                     cacheDocuments));
     }
 
 
     BuiltinChunkManifest::BuiltinChunkManifest(ChunkArray const & chunks,
-                                               IChunkProcessorFactory & factory)
+                                               IConfiguration const & config,
+                                               IIngestor& ingestor,
+                                               bool cacheDocuments)
       : m_chunks(chunks),
-        m_factory(factory)
+        m_configuration(config),
+        m_ingestor(ingestor),
+        m_cacheDocuments(cacheDocuments)
     {
     }
 
@@ -66,11 +75,19 @@ namespace BitFunnel
             throw error;
         }
 
-        auto processor = m_factory.Create();
+        //std::string name("chunk");
+        //name.append(std::to_string(index));
+        //auto processor = m_factory.Create(name.c_str(), index);
+        NopFilter filter;
+        ChunkIngestor processor(m_configuration,
+                                m_ingestor,
+                                m_cacheDocuments,
+                                filter,
+                                nullptr);
 
         ChunkReader(m_chunks[index].second,
                     m_chunks[index].second + m_chunks[index].first,
-                    *processor);
+                    processor);
 
     }
 }

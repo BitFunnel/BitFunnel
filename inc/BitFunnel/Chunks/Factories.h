@@ -24,6 +24,7 @@
 
 #include <memory>   // std::unique_ptr return value.
 #include <vector>   // std::vector parameter.
+#include <stddef.h> // ::size_t parameter.
 #include <string>   // std::string template parameter.
 
 #include "BitFunnel/BitFunnelTypes.h"
@@ -35,15 +36,25 @@ namespace BitFunnel
     class IChunkProcessorFactory;
     class IConfiguration;
     class IDocument;
+    class IDocumentFilter;
+    class IFileManager;
     class IFileSystem;
     class IIngestor;
 
     namespace Factories
     {
-        std::unique_ptr<IChunkProcessorFactory>
-            CreateChunkIngestorFactory(IConfiguration const & configuration,
-                                       IIngestor& ingestor,
-                                       bool cacheDocuments);
+        //std::unique_ptr<IChunkProcessorFactory>
+        //    CreateChunkIngestorFactory(IConfiguration const & configuration,
+        //                               IIngestor& ingestor,
+        //                               bool cacheDocuments);
+
+        //std::unique_ptr<IChunkProcessorFactory>
+        //    CreateChunkFilterFactory(
+        //        IChunkProcessorFactory & factory,
+        //        double randomFraction,
+        //        size_t randomSeed,
+        //        size_t minPostingCount,
+        //        size_t maxPostingCount);
 
         //std::unique_ptr<IChunkProcessorFactory>
         //    CreateChunkDocIdProjectFactory(IConfiguration const & configuration);
@@ -57,17 +68,23 @@ namespace BitFunnel
         std::unique_ptr<IChunkManifestIngestor>
             CreateBuiltinChunkManifest(
                 std::vector<std::pair<size_t, char const *>> const & chunks,
-                IChunkProcessorFactory & factory);
+                IConfiguration const & config,
+                IIngestor& ingestor,
+                bool cacheDocuments);
 
 
         std::unique_ptr<IChunkManifestIngestor>
             CreateChunkManifestIngestor(
                 IFileSystem& fileSystem,
+                IFileManager * fileManager,
                 std::vector<std::string> const & filePaths,
-                IChunkProcessorFactory & factory);
+                IConfiguration const & config,
+                IIngestor& ingestor,
+                IDocumentFilter & filter,
+                bool cacheDocuments);
+
 
         std::unique_ptr<IDocument>
             CreateDocument(IConfiguration const & configuration, DocId id);
-
     }
 }

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "BitFunnel/Index/IChunkManifestIngestor.h"
+#include "BitFunnel/Chunks/IChunkManifestIngestor.h"
 #include "BitFunnel/Utilities/ITaskDistributor.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "ChunkEnumerator.h"

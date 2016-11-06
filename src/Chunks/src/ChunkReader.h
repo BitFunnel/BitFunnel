@@ -42,6 +42,21 @@ namespace BitFunnel
                     IChunkProcessor& processor);
 
     private:
+        class ChunkWriter : public IChunkWriter
+        {
+        public:
+            ChunkWriter(char const * start,
+                        char const * end);
+
+            void Write(std::ostream & output) override;
+
+            void Complete(std::ostream & output) override;
+
+        private:
+            char const * m_start;
+            char const * m_end;
+        };
+
         void ProcessDocument();
         void ProcessStream();
         char const * GetToken();

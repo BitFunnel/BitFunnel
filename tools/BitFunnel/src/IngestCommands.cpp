@@ -22,11 +22,12 @@
 
 #include <iostream>
 
+#include "BitFunnel/Chunks/DocumentFilters.h"
 #include "BitFunnel/Chunks/Factories.h"
+#include "BitFunnel/Chunks/IChunkManifestIngestor.h"
 #include "BitFunnel/Chunks/IChunkProcessor.h"
 #include "BitFunnel/Data/Sonnets.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/Index/IChunkManifestIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/Utilities/ReadLines.h"
 #include "Environment.h"
@@ -76,14 +77,16 @@ namespace BitFunnel
             IIngestor & ingestor = environment.GetIngestor();
             size_t threadCount = 1;
 
-            auto factory = Factories::CreateChunkIngestorFactory(
-                configuration,
-                ingestor,
-                m_cacheDocuments);
+            //auto factory = Factories::CreateChunkIngestorFactory(
+            //    configuration,
+            //    ingestor,
+            //    m_cacheDocuments);
 
             auto manifest = Factories::CreateBuiltinChunkManifest(
                 Sonnets::chunks,
-                *factory);
+                configuration,
+                ingestor,
+                m_cacheDocuments);
 
             IngestChunks(*manifest, threadCount);
 
@@ -128,15 +131,21 @@ namespace BitFunnel
             IIngestor & ingestor = environment.GetIngestor();
             size_t threadCount = 1;
 
-            auto factory = Factories::CreateChunkIngestorFactory(
-                configuration,
-                ingestor,
-                m_cacheDocuments);
+            //auto factory = Factories::CreateChunkIngestorFactory(
+            //    configuration,
+            //    ingestor,
+            //    m_cacheDocuments);
+
+            NopFilter filter;
 
             auto manifest = Factories::CreateChunkManifestIngestor(
                 fileSystem,
+                nullptr,
                 filePaths,
-                *factory);
+                configuration,
+                ingestor,
+                filter,
+                m_cacheDocuments);
 
             IngestChunks(*manifest, threadCount);
 
