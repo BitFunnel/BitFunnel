@@ -41,6 +41,7 @@
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "CmdLineParser/CmdLineParser.h"
 #include "FilterChunks.h"
+#include "LoggerInterfaces/Check.h"
 
 
 namespace BitFunnel
@@ -58,33 +59,38 @@ namespace BitFunnel
     {
         CmdLine::CmdLineParser parser(
             "FilterChunks",
-            "Filter chunk files by posting count, then take random sample.");
+            "Copies a set of chunk files specified by a manifest "
+            "while filtering their documents based on a set of predicates.");
 
         CmdLine::RequiredParameter<char const *> manifestFileName(
             "manifestFile",
-            "Path to a file containing the paths to the chunk files to be ingested. "
+            "Path to a file containing the paths to the chunk files to be copied. "
             "One chunk file per line. Paths are relative to working directory.");
 
         CmdLine::RequiredParameter<char const *> outputPath(
             "outDir",
-            "Path to the output directory where files will be written. ");
+            "Path to the output directory where the filtered "
+            "chunk files will be written.");
 
         // TODO: This parameter should be unsigned, but it doesn't seem to work
         // with CmdLineParser.
         CmdLine::OptionalParameter<int> gramSize(
             "gramsize",
             "Set the maximum ngram size for phrases.",
-            1u);
+            1u,
+            CmdLine::GreaterThan(0));
 
         CmdLine::OptionalParameterList random(
             "random",
-            "Sample a random fraction of the corpus.");
+            "Copy a random fraction of the corpus.");
         CmdLine::RequiredParameter<int> seed(
             "seed",
             "random number generator seed.");
         CmdLine::RequiredParameter<double> fraction(
             "fraction",
-            "fraction of corpus to sample.");
+            "fraction of corpus to copy.",
+            CmdLine::Range(CmdLine::GreaterThanOrEqual(0.0),
+                           CmdLine::LessThanOrEqual(1.0)));
         random.AddParameter(seed);
         random.AddParameter(fraction);
 
@@ -93,17 +99,20 @@ namespace BitFunnel
             "Sample documents by posting count.");
         CmdLine::RequiredParameter<int> minCount(
             "min postings",
-            "minimum number of postings.");
+            "minimum number of postings.",
+            CmdLine::GreaterThanOrEqual(0));
         CmdLine::RequiredParameter<int> maxCount(
             "max postings",
-            "maximum number of postings.");
+            "maximum number of postings.",
+            CmdLine::GreaterThan(0));
         size.AddParameter(minCount);
         size.AddParameter(maxCount);
 
         CmdLine::OptionalParameter<int> count(
             "count",
             "Maximum number of documents.",
-            1u);
+            1u,
+            CmdLine::GreaterThan(0));
 
 
         parser.AddParameter(manifestFileName);
@@ -123,6 +132,8 @@ namespace BitFunnel
 
                 if (size.IsActivated())
                 {
+                    CHECK_LT(minCount, maxCount)
+                        << "Invalid posting count range.";
                     filter.AddFilter(
                         std::unique_ptr<IDocumentFilter>(
                             new PostingCountFilter(
@@ -134,8 +145,8 @@ namespace BitFunnel
                 {
                     filter.AddFilter(
                         std::unique_ptr<IDocumentFilter>(
-                            new RandomDocumentFilter(static_cast<unsigned>(seed),
-                                                     fraction)));
+                            new RandomDocumentFilter(fraction,
+                                                     static_cast<unsigned>(seed))));
                 }
 
                 if (count.IsActivated())

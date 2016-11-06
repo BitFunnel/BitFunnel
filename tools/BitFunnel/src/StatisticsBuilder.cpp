@@ -78,7 +78,8 @@ namespace BitFunnel
         CmdLine::OptionalParameter<int> gramSize(
             "gramsize",
             "Set the maximum ngram size for phrases.",
-            1u);
+            1u,
+            CmdLine::GreaterThan(0));
 
         parser.AddParameter(manifestFileName);
         parser.AddParameter(outputPath);

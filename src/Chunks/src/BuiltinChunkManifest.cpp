@@ -75,9 +75,6 @@ namespace BitFunnel
             throw error;
         }
 
-        //std::string name("chunk");
-        //name.append(std::to_string(index));
-        //auto processor = m_factory.Create(name.c_str(), index);
         NopFilter filter;
         ChunkIngestor processor(m_configuration,
                                 m_ingestor,

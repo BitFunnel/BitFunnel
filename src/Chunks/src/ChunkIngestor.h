@@ -37,26 +37,6 @@ namespace BitFunnel
     class IIngestor;
 
 
-    //class ChunkIngestorFactory : public IChunkProcessorFactory
-    //{
-    //public:
-    //    ChunkIngestorFactory(IConfiguration const & configuration,
-    //                         IIngestor& ingestor,
-    //                         bool cacheDocuments);
-
-    //    //
-    //    // IChunkProcessorFactory methods
-    //    //
-    //    virtual std::unique_ptr<IChunkProcessor>
-    //        Create(char const * name, size_t index) override;
-
-    //private:
-    //    IConfiguration const & m_config;
-    //    IIngestor& m_ingestor;
-    //    bool m_cacheDocuments;
-    //};
-
-
     class ChunkIngestor : public NonCopyable, public IChunkProcessor
     {
     public:

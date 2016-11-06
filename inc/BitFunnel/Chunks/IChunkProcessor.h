@@ -35,14 +35,36 @@ namespace BitFunnel
 {
     class IDocument;
 
+    //*************************************************************************
+    //
+    // IChunkWriter
+    //
+    // Interfaces passed to IChunkProcessor to aid in copying a subset of
+    // documents from a chunk file. IChunkWriter provides methods for writing
+    // documents in the format of the reader that generates IChunkProcessor
+    // callbacks.
+    //
+    //*************************************************************************
     class IChunkWriter : public IInterface
     {
     public:
+        // Writes the most recently read document to a stream.
         virtual void Write(std::ostream& output) = 0;
+
+        // Call this method once after a sequence of calls to Write() in
+        // order to write any necessary epilogue and close the stream.
         virtual void Complete(std::ostream& output) = 0;
     };
 
 
+    //*************************************************************************
+    //
+    // IDocumentFilter
+    //
+    // Interface used to filter a sequence of IDocuments. Used primariy for
+    // selective copy and ingestion.
+    //
+    //*************************************************************************
     class IDocumentFilter : public IInterface
     {
     public:
@@ -50,6 +72,14 @@ namespace BitFunnel
     };
 
 
+    //*************************************************************************
+    //
+    // IChunkProcessor
+    //
+    // Interfaces for classes that respond to events from chunk file parsers
+    // (e.g. ChunkReader). Typically used to ingest or copy documents.
+    //
+    //*************************************************************************
     class IChunkProcessor : public IInterface
     {
     public:
@@ -61,13 +91,5 @@ namespace BitFunnel
         virtual void OnDocumentExit(IChunkWriter & writer,
                                     size_t bytesRead) = 0;
         virtual void OnFileExit(IChunkWriter & writer) = 0;
-    };
-
-
-    class IChunkProcessorFactory : public IInterface
-    {
-    public:
-        virtual std::unique_ptr<IChunkProcessor>
-            Create(char const * name, size_t index) = 0;
     };
 }

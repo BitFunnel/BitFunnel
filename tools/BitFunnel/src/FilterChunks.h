@@ -29,6 +29,15 @@ namespace BitFunnel
     class IDocumentFilter;
     class IFileSystem;
 
+    //*************************************************************************
+    //
+    // FilterChunks
+    //
+    // An IExecutable that copies a set of chunk files specified by a manifest,
+    // while filtering the documents based on a set of predicates, including
+    // random sampling, posting count in range, and total number of documents.
+    //
+    //*************************************************************************
     class FilterChunks : public IExecutable
     {
     public:

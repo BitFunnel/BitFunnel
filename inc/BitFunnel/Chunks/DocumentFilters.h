@@ -28,9 +28,18 @@
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // CompositeFilter
+    //
+    // An IDocumentFilter that applies a sequence of IDocumentFilters.
+    //
+    //*************************************************************************
     class CompositeFilter : public IDocumentFilter
     {
     public:
+        // Adds a filter to the sequence of filters to be applied.
+        // Filters are applied in the order they are added.
         void AddFilter(std::unique_ptr<IDocumentFilter> filter);
 
         virtual bool KeepDocument(IDocument const & document) override;
@@ -40,45 +49,91 @@ namespace BitFunnel
     };
 
 
+    //*************************************************************************
+    //
+    // RandomDocumentFilter
+    //
+    // Keeps a document with probability equal to the fraction passed to the
+    // constructor. Constructor takes a random number generator seed to allow
+    // for reproducibility from run to run.
+    //
+    //*************************************************************************
     class RandomDocumentFilter : public IDocumentFilter
     {
     public:
-        RandomDocumentFilter(unsigned seed, double fraction);
+        RandomDocumentFilter(double fraction, unsigned seed = 12345);
 
         virtual bool KeepDocument(IDocument const & document) override;
 
     private:
+        const double m_fraction;
         RandomReal<double> m_engine;
-        double m_fraction;
     };
 
 
+    //*************************************************************************
+    //
+    // PostingCountFilter
+    //
+    // IDocumentFilter that keeps documents with posting counts in a specified
+    // range.
+    //
+    //*************************************************************************
     class PostingCountFilter : public IDocumentFilter
     {
     public:
+        // Constructs a filter that accept documents with posting counts in
+        // the range [minCount, maxCount].
         PostingCountFilter(size_t minCount, size_t maxCount);
 
         virtual bool KeepDocument(IDocument const & document) override;
 
     private:
-        size_t m_minCount;
-        size_t m_maxCount;
+        const size_t m_minCount;
+        const size_t m_maxCount;
     };
 
 
+    //*************************************************************************
+    //
+    // DocumentCountFilter
+    //
+    // IDocumentFilter that keeps the first n documents.
+    //
+    //*************************************************************************
     class DocumentCountFilter : public IDocumentFilter
     {
     public:
+        // Constructs a filter that accepts the first `documentCount` documents
+        // passed to KeepDocument(). NOTE: this filter should be the last in a
+        // chain of filters to ensure that all counted documents are actually
+        // kept. For example, applying
+        //      RandomDocumentFilter
+        // before
+        //      DocumentCountFilter
+        // will ensure that the `documentCount` candidates are kept. If the
+        // filters are applied in the reverse order, `documentCount` candidates
+        // will be passed to the `RandomDocumentFilter` which will likely
+        // reject some.
         DocumentCountFilter(size_t documentCount);
 
         virtual bool KeepDocument(IDocument const & document) override;
 
     private:
         const size_t m_maxDocumentCount;
+
+        // Tracks the number of documents kept so far.
         size_t m_documentCount;
     };
 
 
+    //*************************************************************************
+    //
+    // NopFilter
+    //
+    // IDocumentFilter that keeps the all documents.
+    //
+    //*************************************************************************
     class NopFilter : public IDocumentFilter
     {
     public:
