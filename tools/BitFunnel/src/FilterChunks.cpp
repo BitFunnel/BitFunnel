@@ -130,13 +130,6 @@ namespace BitFunnel
                                 static_cast<unsigned>(maxCount))));
                 }
 
-                if (count.IsActivated())
-                {
-                    filter.AddFilter(
-                        std::unique_ptr<IDocumentFilter>(
-                            new DocumentCountFilter(static_cast<unsigned>(count))));
-                }
-
                 if (random.IsActivated())
                 {
                     filter.AddFilter(
@@ -145,10 +138,19 @@ namespace BitFunnel
                                                      fraction)));
                 }
 
+                if (count.IsActivated())
+                {
+                    filter.AddFilter(
+                        std::unique_ptr<IDocumentFilter>(
+                            new DocumentCountFilter(static_cast<unsigned>(count))));
+                }
+
                 FilterChunkList(output,
                                 outputPath,
                                 manifestFileName,
-                                gramSize);
+                                gramSize,
+                                filter);
+
                 returnCode = 0;
             }
             catch (RecoverableError e)
@@ -170,7 +172,8 @@ namespace BitFunnel
         char const * intermediateDirectory,
         char const * chunkListFileName,
         // TODO: gramSize should be unsigned once CmdLineParser supports unsigned.
-        int gramSize) const
+        int gramSize,
+        IDocumentFilter & filter) const
     {
         // TODO: cast of gramSize can be removed when it's fixed to be unsigned.
         auto index = Factories::CreateSimpleIndex(m_fileSystem);
@@ -191,8 +194,6 @@ namespace BitFunnel
 
         IConfiguration const & configuration = index->GetConfiguration();
         IIngestor & ingestor = index->GetIngestor();
-
-        NopFilter filter;
 
         auto manifest = Factories::CreateChunkManifestIngestor(
             m_fileSystem,

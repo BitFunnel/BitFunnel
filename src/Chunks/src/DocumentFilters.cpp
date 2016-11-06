@@ -30,6 +30,31 @@ namespace BitFunnel
 {
     //*************************************************************************
     //
+    // CompositeFilter
+    //
+    //*************************************************************************
+    void CompositeFilter::AddFilter(std::unique_ptr<IDocumentFilter> filter)
+    {
+        m_filters.push_back(std::move(filter));
+    }
+
+
+    bool CompositeFilter::KeepDocument(IDocument const & document)
+    {
+        for (auto & filter : m_filters)
+        {
+            if (!filter->KeepDocument(document))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    //*************************************************************************
+    //
     // RandomDocumentFilter
     //
     //*************************************************************************

@@ -31,8 +31,6 @@ namespace BitFunnel
     class CompositeFilter : public IDocumentFilter
     {
     public:
-        CompositeFilter();
-
         void AddFilter(std::unique_ptr<IDocumentFilter> filter);
 
         virtual bool KeepDocument(IDocument const & document) override;
