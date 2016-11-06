@@ -48,7 +48,13 @@ namespace BitFunnel
                              char const * statisticsDirectory,
                              char const * indexDirectory,
                              IFileSystem & fileSystem)
-        : m_columnDensities(new ParameterizedFile0(fileSystem,
+        : m_chunk(
+            new ParameterizedFile1(fileSystem,
+                                   indexDirectory,
+                                   "Chunk",
+                                   ".chunk")),
+
+          m_columnDensities(new ParameterizedFile0(fileSystem,
                                                    statisticsDirectory,
                                                    "ColumnDensities",
                                                    ".csv")),
@@ -68,6 +74,10 @@ namespace BitFunnel
                                                            statisticsDirectory,
                                                            "DocumentLengthHistogram",
                                                            ".csv" )),
+          m_manifest(new ParameterizedFile0(fileSystem,
+                                            indexDirectory,
+                                            "Manifest",
+                                            ".txt" )),
           m_indexedIdfTable(new ParameterizedFile1(fileSystem,
                                                    indexDirectory,
                                                    "IndexedIdfTable",
@@ -119,6 +129,12 @@ namespace BitFunnel
     }
 
 
+    FileDescriptor0 FileManager::Manifest()
+    {
+        return FileDescriptor0(*m_manifest);
+    }
+
+
     FileDescriptor0 FileManager::QueryPipelineStatistics()
     {
         return FileDescriptor0(*m_queryPipelineStatistics);
@@ -140,6 +156,12 @@ namespace BitFunnel
     //
     // FileDescriptor1 files.
     //
+
+    FileDescriptor1 FileManager::Chunk(size_t number)
+    {
+        return FileDescriptor1(*m_chunk, number);
+    }
+
 
     FileDescriptor1 FileManager::CumulativeTermCounts(size_t shard)
     {

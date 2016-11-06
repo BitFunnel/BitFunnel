@@ -77,11 +77,6 @@ namespace BitFunnel
             IIngestor & ingestor = environment.GetIngestor();
             size_t threadCount = 1;
 
-            //auto factory = Factories::CreateChunkIngestorFactory(
-            //    configuration,
-            //    ingestor,
-            //    m_cacheDocuments);
-
             auto manifest = Factories::CreateBuiltinChunkManifest(
                 Sonnets::chunks,
                 configuration,
@@ -130,11 +125,6 @@ namespace BitFunnel
                 environment.GetConfiguration();
             IIngestor & ingestor = environment.GetIngestor();
             size_t threadCount = 1;
-
-            //auto factory = Factories::CreateChunkIngestorFactory(
-            //    configuration,
-            //    ingestor,
-            //    m_cacheDocuments);
 
             NopFilter filter;
 

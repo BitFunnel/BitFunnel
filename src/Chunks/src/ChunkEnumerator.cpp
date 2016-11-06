@@ -41,7 +41,10 @@ namespace BitFunnel
 
         if (threadCount > 1)
         {
-            m_distributor = Factories::CreateTaskDistributor(m_processors, manifest.GetChunkCount());
+            m_distributor =
+                Factories::CreateTaskDistributor(
+                    m_processors,
+                    manifest.GetChunkCount());
         }
         else
         {

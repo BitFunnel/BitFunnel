@@ -52,7 +52,7 @@ namespace BitFunnel
         virtual FileDescriptor0 ColumnDensitySummary() override;
         virtual FileDescriptor0 DocumentLengthHistogram() override;
         //virtual FileDescriptor0 L1RankerConfig() override;
-        //virtual FileDescriptor0 Manifest() override;
+        virtual FileDescriptor0 Manifest() override;
         //virtual FileDescriptor0 Model() override;
         //virtual FileDescriptor0 PlanDescriptors() override;
         //virtual FileDescriptor0 PostingCounts() override;
@@ -72,6 +72,7 @@ namespace BitFunnel
         //virtual FileDescriptor0 StrengtheningMetawords() override;
         virtual FileDescriptor0 VerificationResults() override;
 
+        virtual FileDescriptor1 Chunk(size_t number) override;
         virtual FileDescriptor1 CumulativeTermCounts(size_t shard) override;
         virtual FileDescriptor1 DocFreqTable(size_t shard) override;
         virtual FileDescriptor1 IndexedIdfTable(size_t shard) override;
@@ -83,12 +84,14 @@ namespace BitFunnel
         //virtual FileDescriptor2 IndexSlice(size_t shard, size_t slice) override;
 
     private:
+        std::unique_ptr<IParameterizedFile1> m_chunk;
         std::unique_ptr<IParameterizedFile0> m_columnDensities;
         std::unique_ptr<IParameterizedFile0> m_columnDensitySummary;
         std::unique_ptr<IParameterizedFile1> m_cumulativeTermCounts;
         std::unique_ptr<IParameterizedFile1> m_docFreqTable;
         std::unique_ptr<IParameterizedFile0> m_documentLengthHistogram;
         std::unique_ptr<IParameterizedFile1> m_indexedIdfTable;
+        std::unique_ptr<IParameterizedFile0> m_manifest;
         std::unique_ptr<IParameterizedFile0> m_queryPipelineStatistics;
         std::unique_ptr<IParameterizedFile1> m_rowDensities;
         std::unique_ptr<IParameterizedFile1> m_termTable;

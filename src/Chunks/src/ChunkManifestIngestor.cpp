@@ -26,6 +26,7 @@
 #include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/IFileManager.h"
 #include "ChunkIngestor.h"
 #include "ChunkManifestIngestor.h"
 #include "ChunkReader.h"
@@ -110,20 +111,23 @@ namespace BitFunnel
                          (std::istreambuf_iterator<char>(*input)),
                          std::istreambuf_iterator<char>());
 
-        std::unique_ptr<std::ostream> output;
-        if (m_fileManager != nullptr)
         {
-            output.reset(nullptr);
+            // Block scopes std::ostream.
+            std::unique_ptr<std::ostream> output;
+            if (m_fileManager != nullptr)
+            {
+                output = m_fileManager->Chunk(index).OpenForWrite();
+            }
+
+            ChunkIngestor processor(m_configuration,
+                                    m_ingestor,
+                                    m_cacheDocuments,
+                                    m_filter,
+                                    std::move(output));
+
+            ChunkReader(&chunkData[0],
+                        &chunkData[0] + chunkData.size(),
+                        processor);
         }
-
-        ChunkIngestor processor(m_configuration,
-                                m_ingestor,
-                                m_cacheDocuments,
-                                m_filter,
-                                std::move(output));
-
-        ChunkReader(&chunkData[0],
-                    &chunkData[0] + chunkData.size(),
-                    processor);
     }
 }
