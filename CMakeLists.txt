@@ -7,17 +7,17 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 
 project(BitFunnel_CMake)
 
-###############################################################################
+# ###############################################################################
 
-# gtest
+# # gtest
 
-add_subdirectory(googletest)
+# add_subdirectory(googletest)
 
-include_directories(
-  ${gtest_SOURCE_DIR}/include
-)
+# include_directories(
+#   ${gtest_SOURCE_DIR}/include
+# )
 
-###############################################################################
+# ###############################################################################
 
 string(COMPARE EQUAL ${CMAKE_SYSTEM_NAME} "Linux" LINUX)
 
@@ -260,6 +260,8 @@ enable_testing()
 #
 # Libraries and executables.
 #
+add_subdirectory(NativeJIT)
+
 add_subdirectory(examples/QueryParser)
 add_subdirectory(src)
 add_subdirectory(test/Shared)
