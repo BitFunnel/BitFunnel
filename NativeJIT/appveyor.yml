@@ -1,0 +1,23 @@
+version: 1.0.{build}
+
+branches:
+  only:
+    - master
+    - staging_master
+
+image: Visual Studio 2015
+
+clone_depth: 1
+
+install:
+  - .\Configure_MSVC.bat
+#   - cd build-msvc
+
+build:
+  parallel: true
+  project: build-msvc\NativeJIT.sln
+
+test_script:
+  - cd build-msvc
+  - ctest -C Debug --verbose
+  # TODO: Add Release tests here too.
