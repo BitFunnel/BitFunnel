@@ -52,12 +52,10 @@ namespace BitFunnel
                           Allocator & allocator,
                           CompileNode const & tree);
 
-        size_t Run();
-
-        //size_t Run(size_t sliceCount,
-        //           char * const * sliceBuffers,
-        //           size_t iterationsPerSlice,
-        //           ptrdiff_t const * rowOffsets);
+        size_t Run(size_t slicecount,
+                   char * const * slicebuffers,
+                   size_t iterationsperslice,
+                   ptrdiff_t const * rowoffsets);
 
     private:
         friend class MatcherNode;
@@ -79,7 +77,9 @@ namespace BitFunnel
                       "Parameters must be standard layout.");
 
         FunctionBuffer m_code;
-        Function<size_t, Parameters const *>::FunctionType m_function;
+
+        typedef Function<size_t, Parameters const *> Prototype;
+        Prototype::FunctionType m_function;
     };
 
 
@@ -91,8 +91,7 @@ namespace BitFunnel
     class MatcherNode : public NativeJIT::Node<size_t>
     {
     public:
-        MatcherNode(Function<size_t, MatchTreeCompiler::Parameters const *>& expression,
-                    Node<size_t>& sliceCount,
+        MatcherNode(MatchTreeCompiler::Prototype& expression,
                     CompileNode const & matchTree);
 
         virtual ExpressionTree::Storage<size_t> CodeGenValue(ExpressionTree& tree) override;
@@ -102,26 +101,26 @@ namespace BitFunnel
     private:
         CompileNode const & m_matchTree;
 
-        Node<size_t>& m_sliceCount;
+        Node<size_t>* m_sliceCount;
     };
 
 
-    MatcherNode::MatcherNode(Function<size_t, MatchTreeCompiler::Parameters const *>& expression,
-                             Node<size_t>& sliceCount,
+    MatcherNode::MatcherNode(MatchTreeCompiler::Prototype& expression,
                              CompileNode const & matchTree)
       : Node(expression),
-        m_matchTree(matchTree),
-        m_sliceCount(sliceCount)
+        m_matchTree(matchTree)
     {
-        m_sliceCount.IncrementParentCount();
+        auto & a = expression.GetP1();
+        auto & b = expression.FieldPointer(a, &MatchTreeCompiler::Parameters::m_sliceCount);
+        auto & c = expression.Deref(b);
+        m_sliceCount = &c;
+        m_sliceCount->IncrementParentCount();
     }
 
 
     ExpressionTree::Storage<size_t> MatcherNode::CodeGenValue(ExpressionTree& tree)
     {
-//        return Storage<size_t>::ForImmediate(tree, static_cast<int>(12345));
-//         return tree.Immediate(12345);
-        return m_sliceCount.CodeGen(tree);
+        return m_sliceCount->CodeGen(tree);
     }
 
 
@@ -141,45 +140,26 @@ namespace BitFunnel
         Function<size_t, Parameters const *> expression(allocator, m_code);
         expression.EnableDiagnostics(std::cout);
 
-        auto & a = expression.GetP1();
-        auto & b = expression.FieldPointer(a, &Parameters::m_sliceCount);
-        auto & c = expression.Deref(b);
-
-        auto & node = expression.PlacementConstruct<MatcherNode>(expression, c, tree);
+        auto & node = expression.PlacementConstruct<MatcherNode>(expression, tree);
         m_function = expression.Compile(node);
     }
 
 
-
-    size_t MatchTreeCompiler::Run()
+    size_t MatchTreeCompiler::Run(size_t sliceCount,
+                                  char * const * sliceBuffers,
+                                  size_t iterationsPerSlice,
+                                  ptrdiff_t const * rowOffsets)
     {
         MatchTreeCompiler::Parameters parameters = {
-            0ull,
-            nullptr,
-            0ull,
-            nullptr,
+            sliceCount,
+            sliceBuffers,
+            iterationsPerSlice,
+            rowOffsets,
             &CallbackHelper
         };
 
         return m_function(&parameters);
     }
-
-
-    //size_t MatchTreeCompiler::Run(size_t sliceCount,
-    //                              char * const * sliceBuffers,
-    //                              size_t iterationsPerSlice,
-    //                              ptrdiff_t const * rowOffsets)
-    //{
-    //    MatchTreeCompiler::Parameters parameters = {
-    //        sliceCount,
-    //        sliceBuffers,
-    //        iterationsPerSlice,
-    //        rowOffsets,
-    //        &CallbackHelper
-    //    };
-
-    //    return m_function(parameters);
-    //}
 
 
     void MatchTreeCompiler::CallbackHelper(MatchTreeCompiler& /*node*/,
@@ -229,23 +209,6 @@ namespace BitFunnel
 
     TEST(MatchTreeCompiler , Placeholder)
     {
-        // The reason return tree.Immediate(12345ull) results in a static assert
-        // is that 64-bit values must be RIP-relative.
-        //
-        //std::cout << NativeJIT::CanBeInImmediateStorage<int>::value << std::endl;
-        //std::cout << NativeJIT::CanBeInImmediateStorage<size_t>::value << std::endl;
-        //std::cout << typeid(NativeJIT::RegisterStorage<size_t>::UnderlyingType).name() << std::endl;
-        //std::cout << typeid(std::remove_cv<size_t>::type).name() << std::endl;
-
-        //std::cout
-        //    << std::is_same<typename NativeJIT::RegisterStorage<size_t>::UnderlyingType,
-        //    typename std::remove_cv<size_t>::type>::value
-        //    << std::endl;
-
-        //std::cout
-        //    << !NativeJIT::MustBeEncodedAsRIPRelative<size_t>::value
-        //    << std::endl;
-
         // Create allocator and buffers for pre-compiled and post-compiled code.
         ExecutionBuffer codeAllocator(8192);
         Allocator allocator(8192);
@@ -256,27 +219,11 @@ namespace BitFunnel
                                    allocator,
                                    *node);
 
-        auto result = compiler.Run();
+        auto result = compiler.Run(1234ull,
+                                   nullptr,
+                                   0ull,
+                                   nullptr);
 
         std::cout << "Result = " << result << std::endl;
-
-        //// Create the factory for expression nodes.
-        //// Our area expression will take a single float parameter and return a float.
-        //Function<float, float> expression(allocator, code);
-
-        //// Multiply input parameter by itself to get radius squared.
-        //auto & rsquared = expression.Mul(expression.GetP1(), expression.GetP1());
-
-        //// Multiply by PI.
-        //const float  PI = 3.14159265358979f;
-        //auto & area = expression.Mul(rsquared, expression.Immediate(PI));
-
-        //// Compile expression into a function.
-        //auto function = expression.Compile(area);
-
-        //// Now run our expression!
-        //float radius = 2.0;
-        //std::cout << "The area of a circle with radius " << radius
-        //    << " is " << function(radius) << "." << std::endl;
     }
 }
