@@ -6,6 +6,7 @@ set(CPPFILES
     ByteCodeInterpreterTest.cpp
     ByteCodeVerifier.cpp
     CompileNodeTest.cpp
+    MatchTreeCompilerTest.cpp
     MatchTreeRewriterTest.cpp
     PlainTextCodeGenerator.cpp
     RankDownCompilerTest.cpp
@@ -48,6 +49,6 @@ set_property(TARGET PlanTest PROPERTY PROJECT_LABEL "Test")
 # NOTE: The ordering Utilities-Plan is important for XCode. If you reverse
 # Utilities and Plan, we will get linker errors.
 # TODO: do we really need Configuration?
-target_link_libraries (PlanTest TestShared Mocks Plan Index Chunks Configuration Utilities CsvTsv gtest gtest_main)
+target_link_libraries (PlanTest TestShared Mocks Plan Index Chunks Configuration Utilities CsvTsv NativeJIT CodeGen gtest gtest_main)
 
 add_test(NAME PlanTest COMMAND PlanTest)
