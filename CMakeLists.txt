@@ -5,9 +5,10 @@ cmake_minimum_required(VERSION 2.6)
 # Remove the warning that WIN32 is not defined in Cygwin any more.
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 
+# PRoject-wide settings for BitFunnel
 project(BitFunnel_CMake)
 
-# ###############################################################################
+################################################################################
 
 # # gtest
 
@@ -17,7 +18,7 @@ project(BitFunnel_CMake)
 #   ${gtest_SOURCE_DIR}/include
 # )
 
-# ###############################################################################
+################################################################################
 
 string(COMPARE EQUAL ${CMAKE_SYSTEM_NAME} "Linux" LINUX)
 
@@ -35,6 +36,23 @@ if(BITFUNNEL_PLATFORM_WINDOWS)
   set(COMMON_CXX_FLAGS "${COMMON_CXX_FLAGS} -DBITFUNNEL_PLATFORM_WINDOWS")
 else()
   set(COMMON_CXX_FLAGS "${COMMON_CXX_FLAGS} -DBITFUNNEL_PLATFORM_POSIX")
+endif()
+
+
+if (WIN32 OR CYGWIN)
+    set(NATIVEJIT_PLATFORM_POSIX 0)
+    set(NATIVEJIT_PLATFORM_WINDOWS 1)
+else()
+    set(NATIVEJIT_PLATFORM_POSIX 1)
+    set(NATIVEJIT_PLATFORM_WINDOWS 0)
+endif()
+
+
+if(NATIVEJIT_PLATFORM_WINDOWS)
+  # Note: -D works for both MSVC and GCC/Clang.
+  set(COMMON_CXX_FLAGS "${COMMON_CXX_FLAGS} -DNATIVEJIT_PLATFORM_WINDOWS")
+else()
+  set(COMMON_CXX_FLAGS "${COMMON_CXX_FLAGS} -DNATIVEJIT_PLATFORM_POSIX")
 endif()
 
 
