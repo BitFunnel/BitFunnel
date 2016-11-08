@@ -251,6 +251,7 @@ source_group("Logger" FILES ${LOGGER_HFILES})
 #
 include_directories(
   inc
+  NativeJIT/inc
   src/Common/CmdLineParser/inc
   src/Common/CsvTsv/inc
 )
