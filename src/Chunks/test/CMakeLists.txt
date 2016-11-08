@@ -35,6 +35,6 @@ set_property(TARGET ChunksTest PROPERTY PROJECT_LABEL "Test")
 
 # NOTE: The ordering Utilities-Index is important for XCode. If you reverse
 # Utilities and Index, we will get linker errors.
-target_link_libraries (ChunksTest CsvTsv Index Chunks Utilities gtest gtest_main)
+target_link_libraries (ChunksTest Chunks Index CsvTsv Utilities gtest gtest_main)
 
 add_test(NAME ChunksTest COMMAND ChunksTest)
