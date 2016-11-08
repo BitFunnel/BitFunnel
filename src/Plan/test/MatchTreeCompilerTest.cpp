@@ -27,10 +27,13 @@
 #include "CompileNode.h"
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
 #include "NativeJIT/CodeGen/FunctionBuffer.h"
+#include "NativeJIT/CodeGenHelpers.h"
 #include "NativeJIT/Function.h"
+#include "NativeJIT/CodeGen/Register.h"
 #include "Temporary/Allocator.h"
 
 using NativeJIT::Allocator;
+//using namespace NativeJIT::CodeGenHelpers;
 using NativeJIT::ExecutionBuffer;
 using NativeJIT::ExpressionTree;
 using NativeJIT::Function;
@@ -60,9 +63,10 @@ namespace BitFunnel
     private:
         friend class MatcherNode;
 
-        static void CallbackHelper(MatchTreeCompiler& node, size_t value);
+        static size_t CallbackHelper(/*MatchTreeCompiler& node, */size_t value);
 
-        typedef void(*Callback)(MatchTreeCompiler& node, size_t value);
+//        typedef void(*Callback)(MatchTreeCompiler& node, size_t value);
+        typedef size_t (*Callback)(size_t value);
 
         struct Parameters
         {
@@ -102,6 +106,7 @@ namespace BitFunnel
         CompileNode const & m_matchTree;
 
         Node<size_t>* m_sliceCount;
+        Node<size_t>* m_callback;
     };
 
 
@@ -112,15 +117,44 @@ namespace BitFunnel
     {
         auto & a = expression.GetP1();
         auto & b = expression.FieldPointer(a, &MatchTreeCompiler::Parameters::m_sliceCount);
-        auto & c = expression.Deref(b);
-        m_sliceCount = &c;
+        m_sliceCount = &expression.Deref(b);
         m_sliceCount->IncrementParentCount();
+
+        auto & c = expression.FieldPointer(a, &MatchTreeCompiler::Parameters::m_callback);
+        auto & d = expression.Deref(c);
+        m_callback = &expression.Call(d, *m_sliceCount);
+        m_callback->IncrementParentCount();
+    }
+
+
+    Storage<size_t> EnsureRegister(Storage<size_t> src,
+                                  NativeJIT::Register<8u, false> reg,
+                                  ExpressionTree& tree)
+    {
+        if (src.GetStorageClass() != NativeJIT::StorageClass::Direct ||
+            src.GetDirectRegister().IsSameHardwareRegister(reg))
+        {
+            auto r = tree.Direct<size_t>(reg);
+            NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Mov>(tree.GetCodeGenerator(),
+                                                                    reg,
+                                                                    src);
+
+            src = r;
+        }
+
+        return src;
     }
 
 
     ExpressionTree::Storage<size_t> MatcherNode::CodeGenValue(ExpressionTree& tree)
     {
-        return m_sliceCount->CodeGen(tree);
+        auto r1 = m_sliceCount->CodeGen(tree);
+
+        auto r2 = EnsureRegister(r1, NativeJIT::r10, tree);
+
+        auto r3 = m_callback->CodeGen(tree);
+
+        return r2;
     }
 
 
@@ -162,9 +196,16 @@ namespace BitFunnel
     }
 
 
-    void MatchTreeCompiler::CallbackHelper(MatchTreeCompiler& /*node*/,
-                                           size_t /*value*/)
+    size_t MatchTreeCompiler::CallbackHelper(//MatchTreeCompiler& /*node*/,
+                                           size_t value)
     {
+        std::cout
+            << "CallbackHelper("
+            << value
+            << ")"
+            << std::endl;
+
+        return 1234567ull;
     }
 
 
