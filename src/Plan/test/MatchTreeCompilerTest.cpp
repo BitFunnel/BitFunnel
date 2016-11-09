@@ -106,6 +106,7 @@ namespace BitFunnel
         CompileNode const & m_matchTree;
 
         Node<size_t>* m_sliceCount;
+        Node<MatchTreeCompiler::Callback>* m_callbackPtr;
         Node<size_t>* m_callback;
     };
 
@@ -115,15 +116,18 @@ namespace BitFunnel
       : Node(expression),
         m_matchTree(matchTree)
     {
-        auto & a = expression.GetP1();
-        auto & b = expression.FieldPointer(a, &MatchTreeCompiler::Parameters::m_sliceCount);
-        m_sliceCount = &expression.Deref(b);
-        m_sliceCount->IncrementParentCount();
+        //auto & a = expression.GetP1();
+        //auto & b = expression.FieldPointer(a, &MatchTreeCompiler::Parameters::m_sliceCount);
+        //m_sliceCount = &expression.Deref(b);
+        //m_sliceCount->IncrementParentCount();
 
-        auto & c = expression.FieldPointer(a, &MatchTreeCompiler::Parameters::m_callback);
-        auto & d = expression.Deref(c);
-        m_callback = &expression.Call(d, *m_sliceCount);
-        m_callback->IncrementParentCount();
+        //auto & c = expression.FieldPointer(a, &MatchTreeCompiler::Parameters::m_callback);
+        //m_callbackPtr = &expression.Deref(c);
+        //m_callback = &expression.Call(*m_callbackPtr, *m_sliceCount);
+        //m_callback->IncrementParentCount();
+
+        //m_sliceCount->IncrementParentCount();
+        //m_callbackPtr->IncrementParentCount();
     }
 
 
@@ -146,17 +150,105 @@ namespace BitFunnel
     }
 
 
+    //ExpressionTree::Storage<size_t> MatcherNode::CodeGenValue(ExpressionTree& tree)
+    //{
+    //    auto r1 = m_sliceCount->CodeGen(tree);
+
+    //    auto r2 = EnsureRegister(r1, NativeJIT::r10, tree);
+    //    auto r2Pin = r2.GetPin();
+
+    //    //auto r3 = m_callback->CodeGen(tree);
+
+    //    auto & code = tree.GetCodeGenerator();
+    //    auto topOfLoop = code.AllocateLabel();
+    //    auto bottomOfLoop = code.AllocateLabel();
+
+    //    //auto zero = tree.Immediate(0ull);
+
+    //    // TODO: Pin r1.
+    //    auto r = r1.ConvertToDirect(false);
+    //    auto r1Pin = r1.GetPin();
+
+    //    code.PlaceLabel(topOfLoop);
+    //    NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Or>(tree.GetCodeGenerator(),
+    //                                                           r,
+    //                                                           r1);
+
+    //    //NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Mov>(tree.GetCodeGenerator(),
+    //    //                                                        r1.ConvertToDirect(false),
+    //    //                                                        zero);
+    //    //code.EmitConditionalJump<NativeJIT::JccType::JZ>(bottomOfLoop);
+
+    //    auto r3 = m_callback->CodeGen(tree);
+
+    //    code.Jmp(topOfLoop);
+
+    //    code.PlaceLabel(bottomOfLoop);
+
+    //    return r2;
+    //}
+
+
+//    ExpressionTree::Storage<size_t> MatcherNode::CodeGenValue(ExpressionTree& tree)
+//    {
+//        auto & code = tree.GetCodeGenerator();
+//        auto bodyOfLoop = code.AllocateLabel();
+//        auto topOfLoop = code.AllocateLabel();
+//
+//        //auto hold1 = 
+//            m_sliceCount->CodeGenCache(tree);
+////        auto hold1Pin = hold1.GetPin();
+//        //auto hold2 = 
+//            m_callbackPtr->CodeGenCache(tree);
+////        auto hold2Pin = hold2.GetPin();
+//
+//        // Need to compile m_callback before other code.
+//        // Jump around m_callback code.
+//        code.Jmp(topOfLoop);
+//
+//        code.PlaceLabel(bodyOfLoop);
+//        auto r3 = m_callback->CodeGen(tree);
+//        code.Jmp(topOfLoop);
+//
+//        code.PlaceLabel(topOfLoop);
+//        //auto r1 = m_sliceCount->CodeGen(tree);
+//        auto r = hold1.ConvertToDirect(false);
+//        NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Or>(tree.GetCodeGenerator(),
+//                                                               r,
+//                                                               hold1);
+//        code.EmitConditionalJump<NativeJIT::JccType::JNZ>(bodyOfLoop);
+//
+//        //m_sliceCount->GetAndReleaseCache();
+//        //m_callbackPtr->GetAndReleaseCache();
+//
+//        return hold1;
+//    }
+
+
     ExpressionTree::Storage<size_t> MatcherNode::CodeGenValue(ExpressionTree& tree)
     {
-        auto r1 = m_sliceCount->CodeGen(tree);
+        auto & code = tree.GetCodeGenerator();
 
-        auto r2 = EnsureRegister(r1, NativeJIT::r10, tree);
+        // Example of declaring a temporary variable and storing a register value in it.
+        auto p1 = tree.Temporary<MatchTreeCompiler::Parameters*>();
+        NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Mov>(code, p1, NativeJIT::rcx);
 
-        auto r3 = m_callback->CodeGen(tree);
+        // Example of creating a register-indirect storage.
+        auto rcx = tree.Direct<void*>(NativeJIT::rcx);
+        Storage<size_t> x(std::move(rcx), 24);
 
-        return r2;
+        // Example of writing a register value to a register-indirect storage.
+        NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Mov>(code, NativeJIT::rax, x);
+
+        // Example of doing it old school.
+        code.Emit<NativeJIT::OpCode::Mov>(NativeJIT::rax, NativeJIT::rsi, 100ull);
+
+        // Subtract 1.
+        code.EmitImmediate<NativeJIT::OpCode::Sub>(NativeJIT::rax, 1);
+
+        auto result = tree.Direct<size_t>();
+        return result;
     }
-
 
     void MatcherNode::Print(std::ostream& out) const
     {
