@@ -32,6 +32,8 @@
 #include "NativeJIT/CodeGen/Register.h"
 #include "Temporary/Allocator.h"
 
+using namespace NativeJIT;
+
 using NativeJIT::Allocator;
 //using namespace NativeJIT::CodeGenHelpers;
 using NativeJIT::ExecutionBuffer;
@@ -89,7 +91,7 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    //
+    // MatcherNode
     //
     //*************************************************************************
     class MatcherNode : public NativeJIT::Node<size_t>
@@ -103,11 +105,20 @@ namespace BitFunnel
         virtual void Print(std::ostream& out) const override;
 
     private:
+        void EmitRegisterInitialization(ExpressionTree& tree);
+        void EmitOuterLoop(ExpressionTree& tree);
+        void EmitInnerLoop(ExpressionTree& tree);
+
         CompileNode const & m_matchTree;
 
-        Node<size_t>* m_sliceCount;
-        Node<MatchTreeCompiler::Callback>* m_callbackPtr;
-        Node<size_t>* m_callback;
+        Register<8u, false> m_param1;
+        Register<8u, false> m_return;
+
+        Storage<size_t> m_sliceCount;
+        Storage<char * const *> m_sliceBuffers;
+        Storage<size_t> m_iterationsPerSlice;
+        Storage<ptrdiff_t const *> m_rowOffsets;
+        Storage<MatchTreeCompiler::Callback> m_callback;
     };
 
 
@@ -116,139 +127,95 @@ namespace BitFunnel
       : Node(expression),
         m_matchTree(matchTree)
     {
-        //auto & a = expression.GetP1();
-        //auto & b = expression.FieldPointer(a, &MatchTreeCompiler::Parameters::m_sliceCount);
-        //m_sliceCount = &expression.Deref(b);
-        //m_sliceCount->IncrementParentCount();
-
-        //auto & c = expression.FieldPointer(a, &MatchTreeCompiler::Parameters::m_callback);
-        //m_callbackPtr = &expression.Deref(c);
-        //m_callback = &expression.Call(*m_callbackPtr, *m_sliceCount);
-        //m_callback->IncrementParentCount();
-
-        //m_sliceCount->IncrementParentCount();
-        //m_callbackPtr->IncrementParentCount();
     }
-
-
-    Storage<size_t> EnsureRegister(Storage<size_t> src,
-                                  NativeJIT::Register<8u, false> reg,
-                                  ExpressionTree& tree)
-    {
-        if (src.GetStorageClass() != NativeJIT::StorageClass::Direct ||
-            src.GetDirectRegister().IsSameHardwareRegister(reg))
-        {
-            auto r = tree.Direct<size_t>(reg);
-            NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Mov>(tree.GetCodeGenerator(),
-                                                                    reg,
-                                                                    src);
-
-            src = r;
-        }
-
-        return src;
-    }
-
-
-    //ExpressionTree::Storage<size_t> MatcherNode::CodeGenValue(ExpressionTree& tree)
-    //{
-    //    auto r1 = m_sliceCount->CodeGen(tree);
-
-    //    auto r2 = EnsureRegister(r1, NativeJIT::r10, tree);
-    //    auto r2Pin = r2.GetPin();
-
-    //    //auto r3 = m_callback->CodeGen(tree);
-
-    //    auto & code = tree.GetCodeGenerator();
-    //    auto topOfLoop = code.AllocateLabel();
-    //    auto bottomOfLoop = code.AllocateLabel();
-
-    //    //auto zero = tree.Immediate(0ull);
-
-    //    // TODO: Pin r1.
-    //    auto r = r1.ConvertToDirect(false);
-    //    auto r1Pin = r1.GetPin();
-
-    //    code.PlaceLabel(topOfLoop);
-    //    NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Or>(tree.GetCodeGenerator(),
-    //                                                           r,
-    //                                                           r1);
-
-    //    //NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Mov>(tree.GetCodeGenerator(),
-    //    //                                                        r1.ConvertToDirect(false),
-    //    //                                                        zero);
-    //    //code.EmitConditionalJump<NativeJIT::JccType::JZ>(bottomOfLoop);
-
-    //    auto r3 = m_callback->CodeGen(tree);
-
-    //    code.Jmp(topOfLoop);
-
-    //    code.PlaceLabel(bottomOfLoop);
-
-    //    return r2;
-    //}
-
-
-//    ExpressionTree::Storage<size_t> MatcherNode::CodeGenValue(ExpressionTree& tree)
-//    {
-//        auto & code = tree.GetCodeGenerator();
-//        auto bodyOfLoop = code.AllocateLabel();
-//        auto topOfLoop = code.AllocateLabel();
-//
-//        //auto hold1 = 
-//            m_sliceCount->CodeGenCache(tree);
-////        auto hold1Pin = hold1.GetPin();
-//        //auto hold2 = 
-//            m_callbackPtr->CodeGenCache(tree);
-////        auto hold2Pin = hold2.GetPin();
-//
-//        // Need to compile m_callback before other code.
-//        // Jump around m_callback code.
-//        code.Jmp(topOfLoop);
-//
-//        code.PlaceLabel(bodyOfLoop);
-//        auto r3 = m_callback->CodeGen(tree);
-//        code.Jmp(topOfLoop);
-//
-//        code.PlaceLabel(topOfLoop);
-//        //auto r1 = m_sliceCount->CodeGen(tree);
-//        auto r = hold1.ConvertToDirect(false);
-//        NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Or>(tree.GetCodeGenerator(),
-//                                                               r,
-//                                                               hold1);
-//        code.EmitConditionalJump<NativeJIT::JccType::JNZ>(bodyOfLoop);
-//
-//        //m_sliceCount->GetAndReleaseCache();
-//        //m_callbackPtr->GetAndReleaseCache();
-//
-//        return hold1;
-//    }
 
 
     ExpressionTree::Storage<size_t> MatcherNode::CodeGenValue(ExpressionTree& tree)
     {
-        auto & code = tree.GetCodeGenerator();
-
-        // Example of declaring a temporary variable and storing a register value in it.
-        auto p1 = tree.Temporary<MatchTreeCompiler::Parameters*>();
-        NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Mov>(code, p1, NativeJIT::rcx);
-
-        // Example of creating a register-indirect storage.
-        auto rcx = tree.Direct<void*>(NativeJIT::rcx);
-        Storage<size_t> x(std::move(rcx), 24);
-
-        // Example of writing a register value to a register-indirect storage.
-        NativeJIT::CodeGenHelpers::Emit<NativeJIT::OpCode::Mov>(code, NativeJIT::rax, x);
-
-        // Example of doing it old school.
-        code.Emit<NativeJIT::OpCode::Mov>(NativeJIT::rax, NativeJIT::rsi, 100ull);
-
-        // Subtract 1.
-        code.EmitImmediate<NativeJIT::OpCode::Sub>(NativeJIT::rax, 1);
+        EmitRegisterInitialization(tree);
+        EmitOuterLoop(tree);
 
         auto result = tree.Direct<size_t>();
         return result;
     }
+
+
+    template <typename OBJECT, typename FIELD>
+    Storage<FIELD> Initialize(ExpressionTree& tree, Register <8u, false> base, FIELD OBJECT::*field)
+    {
+        auto & code = tree.GetCodeGenerator();
+        auto storage = tree.Temporary<FIELD>();
+        int32_t offset =
+            static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<OBJECT*>(nullptr))->*field)));
+        code.Emit<OpCode::Mov>(rax, base, offset);
+        CodeGenHelpers::Emit<NativeJIT::OpCode::Mov>(code, storage, rax);
+        return storage;
+    }
+
+
+    void MatcherNode::EmitRegisterInitialization(ExpressionTree& tree)
+    {
+        // Abstract away the ABI differences here.
+#if BITFUNNEL_PLATFORM_WINDOWS
+        m_param1 = rcx;
+        m_return = rax;
+#else
+        m_param1 = rdi;
+        m_return = rax;
+#endif
+
+        // Initialize member variables for copy of Parameters structure.
+        m_sliceCount = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_sliceCount);
+        m_sliceBuffers = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_sliceBuffers);
+        m_iterationsPerSlice = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_iterationsPerSlice);
+        m_rowOffsets = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_rowOffsets);
+        m_callback = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_callback);
+
+        // Initialize row pointers.
+        // TODO
+    }
+
+
+    void MatcherNode::EmitOuterLoop(ExpressionTree& tree)
+    {
+        auto & code = tree.GetCodeGenerator();
+
+        auto topOfLoop = code.AllocateLabel();
+        auto bottomOfLoop = code.AllocateLabel();
+
+
+        //
+        // Top of loop
+        //
+        code.PlaceLabel(topOfLoop);
+        CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_sliceCount);
+        code.Emit<OpCode::Or>(rax, rax);
+        code.EmitConditionalJump<JccType::JZ>(bottomOfLoop);
+
+        EmitInnerLoop(tree);
+
+        CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_sliceCount);
+        code.EmitImmediate<OpCode::Sub>(rax, 1);
+        CodeGenHelpers::Emit<OpCode::Mov>(code, m_sliceCount, rax);
+
+        code.Jmp(topOfLoop);
+
+        //
+        // Bottom of loop
+        //
+        code.PlaceLabel(bottomOfLoop);
+    }
+
+
+    void MatcherNode::EmitInnerLoop(ExpressionTree& tree)
+    {
+        auto & code = tree.GetCodeGenerator();
+
+        CodeGenHelpers::Emit<OpCode::Mov>(code, m_param1, m_sliceCount);
+        CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_callback);
+        code.Emit<OpCode::Call>(rax);
+    }
+
 
     void MatcherNode::Print(std::ostream& out) const
     {
@@ -258,6 +225,11 @@ namespace BitFunnel
     }
 
 
+    //*************************************************************************
+    //
+    // MatchTreeCompiler
+    //
+    //*************************************************************************
     MatchTreeCompiler::MatchTreeCompiler(ExecutionBuffer & codeAllocator,
                                          Allocator & allocator,
                                          CompileNode const & tree)
@@ -289,7 +261,7 @@ namespace BitFunnel
 
 
     size_t MatchTreeCompiler::CallbackHelper(//MatchTreeCompiler& /*node*/,
-                                           size_t value)
+                                             size_t value)
     {
         std::cout
             << "CallbackHelper("
@@ -298,45 +270,6 @@ namespace BitFunnel
             << std::endl;
 
         return 1234567ull;
-    }
-
-
-
-    //*************************************************************************
-    //
-    //
-    //
-    //*************************************************************************
-    class InnerClass
-    {
-    public:
-        uint32_t m_a;
-        uint64_t m_b;
-    };
-
-    TEST(MatchTreeCompiler, FieldPointerPrimitive)
-    {
-        ExecutionBuffer codeAllocator(8192);
-        Allocator allocator(8192);
-        FunctionBuffer code(codeAllocator, 8192);
-
-        {
-            Function<uint64_t, InnerClass*> expression(allocator, code);
-
-            auto & a = expression.GetP1();
-            auto & b = expression.FieldPointer(a, &InnerClass::m_b);
-            auto & c = expression.Deref(b);
-            auto function = expression.Compile(c);
-
-            InnerClass innerClass;
-            innerClass.m_b = 1234ull;
-            InnerClass* p1 = &innerClass;
-
-            auto expected = p1->m_b;
-            auto observed = function(p1);
-
-            ASSERT_EQ(observed, expected);
-        }
     }
 
 
@@ -352,7 +285,7 @@ namespace BitFunnel
                                    allocator,
                                    *node);
 
-        auto result = compiler.Run(1234ull,
+        auto result = compiler.Run(3ull,
                                    nullptr,
                                    0ull,
                                    nullptr);
