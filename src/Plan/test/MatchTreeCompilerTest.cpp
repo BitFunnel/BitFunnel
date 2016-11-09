@@ -34,14 +34,6 @@
 
 using namespace NativeJIT;
 
-using NativeJIT::Allocator;
-//using namespace NativeJIT::CodeGenHelpers;
-using NativeJIT::ExecutionBuffer;
-using NativeJIT::ExpressionTree;
-using NativeJIT::Function;
-using NativeJIT::FunctionBuffer;
-using NativeJIT::Storage;
-
 
 namespace BitFunnel
 {
@@ -108,6 +100,7 @@ namespace BitFunnel
         void EmitRegisterInitialization(ExpressionTree& tree);
         void EmitOuterLoop(ExpressionTree& tree);
         void EmitInnerLoop(ExpressionTree& tree);
+        void EmitFinishIteration(ExpressionTree& tree);
 
         CompileNode const & m_matchTree;
 
@@ -119,6 +112,9 @@ namespace BitFunnel
         Storage<size_t> m_iterationsPerSlice;
         Storage<ptrdiff_t const *> m_rowOffsets;
         Storage<MatchTreeCompiler::Callback> m_callback;
+        Storage<size_t> m_innerLoopLimit;
+        Storage<size_t> m_matchFound;
+        Storage<size_t> m_temp;
     };
 
 
@@ -153,6 +149,16 @@ namespace BitFunnel
     }
 
 
+    // RAX: Scratch register
+    // RBX: Accumulator
+    // RCX: Loop counter at inner loop root, offset elsewhere in traversal
+    //      Encoded as (&SLICE_POINTER >> 3) + offset.
+    // RDX: Current slice pointer.
+    // RSI: Pointer to array of all row offset pointers.
+    // RDI: &SLICE_POINTER >> 3
+    // R8-R15: Register row pointers.
+
+
     void MatcherNode::EmitRegisterInitialization(ExpressionTree& tree)
     {
         // Abstract away the ABI differences here.
@@ -170,6 +176,9 @@ namespace BitFunnel
         m_iterationsPerSlice = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_iterationsPerSlice);
         m_rowOffsets = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_rowOffsets);
         m_callback = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_callback);
+        m_innerLoopLimit = tree.Temporary<size_t>();
+        m_matchFound = tree.Temporary<size_t>();
+        m_temp = tree.Temporary<size_t>();
 
         // Initialize row pointers.
         // TODO
@@ -188,15 +197,31 @@ namespace BitFunnel
         // Top of loop
         //
         code.PlaceLabel(topOfLoop);
+
+        // Check if the slice count (loop counter) reaches zero.
         CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_sliceCount);
         code.Emit<OpCode::Or>(rax, rax);
         code.EmitConditionalJump<JccType::JZ>(bottomOfLoop);
 
+        // RDI has the current slice pointer, expressed in the format of 
+        // the number of quadwords from address 0 to the address of the 
+        // current slice pointer(i.e. shifted right by 3).
+        CodeGenHelpers::Emit<OpCode::Mov>(code, rdi, m_sliceBuffers);
+        code.Emit<OpCode::Mov>(rdi, rdi, 0);
+        code.EmitImmediate<OpCode::Shr>(rdi, static_cast<uint8_t>(3u));
+
         EmitInnerLoop(tree);
 
+        // Decrement the slice count by 1.
+        // TODO: Implement OpCode::Dec
         CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_sliceCount);
         code.EmitImmediate<OpCode::Sub>(rax, 1);
         CodeGenHelpers::Emit<OpCode::Mov>(code, m_sliceCount, rax);
+
+        // Advance to the next slice.
+        CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_sliceBuffers);
+        code.EmitImmediate<OpCode::Add>(rax, 8);
+        CodeGenHelpers::Emit<OpCode::Mov>(code, m_sliceBuffers, rax);
 
         code.Jmp(topOfLoop);
 
@@ -211,9 +236,82 @@ namespace BitFunnel
     {
         auto & code = tree.GetCodeGenerator();
 
-        CodeGenHelpers::Emit<OpCode::Mov>(code, m_param1, m_sliceCount);
+        auto topOfLoop = code.AllocateLabel();
+        auto bottomOfLoop = code.AllocateLabel();
+        auto exitLoop = code.AllocateLabel();
+
+        // Initialize loop counter and limit.
+        // Loop counter starts at the current slice pointer, expressed as the 
+        // number of quadwords from address 0 to the address of the current slice
+        // pointer(i.e. byte address shifted right by 3).
+        // Loop limit is equal to the counter plus the number of quadwords in a slice.
+        // Initialize current quadword and limit.
+        //   rcx: current quadword - starts at slice pointer expressed in
+        //        from address 0 (i.e slice >> 3).
+        //   rdx: quadword limit - equal to (slice >> 3) + quadwords in a slice.
+        code.Emit<OpCode::Mov>(rcx, rdi);
+        CodeGenHelpers::Emit<OpCode::Mov>(code, rdx, m_iterationsPerSlice);
+        code.Emit<OpCode::Add>(rdx, rcx);
+        CodeGenHelpers::Emit<OpCode::Mov>(code, m_innerLoopLimit, rdx);
+
+
+        // Use rdx to store the slice pointer for the current slice.
+        CodeGenHelpers::Emit<OpCode::Mov>(code, rdx, m_sliceBuffers);
+        code.Emit<OpCode::Mov>(rdx, rdx, 0);
+
+
+        //
+        // Top of loop
+        //
+        code.PlaceLabel(topOfLoop);
+
+        // Exit when loop counter rcx == m_innerLoopLimit
+        CodeGenHelpers::Emit<OpCode::Cmp>(code, rcx, m_innerLoopLimit);
+        code.EmitConditionalJump<JccType::JE>(exitLoop);    // TODO: Original code passed X64::Long.
+
+        //
+        // Body of loop
+        //
+
+        // TODO: Handle case where there are no rows.
+
+        // Clear Local(0) to indicate that no matches have been found on this iteration.
+        code.Emit<OpCode::Xor>(rax, rax);
+        CodeGenHelpers::Emit<OpCode::Mov>(code, m_matchFound, rax);
+
+        //root.Compile(*this);
+
+        CodeGenHelpers::Emit<OpCode::Mov>(code, m_temp, rcx);
+
+//        CodeGenHelpers::Emit<OpCode::Mov>(code, m_param1, m_sliceCount);
         CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_callback);
         code.Emit<OpCode::Call>(rax);
+
+        CodeGenHelpers::Emit<OpCode::Mov>(code, rcx, m_temp);
+
+
+        // If at least one match was found in this iteration, call FinishIteration.
+        CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_matchFound);
+        code.Emit<OpCode::Or>(rax, rax);
+        code.EmitConditionalJump<JccType::JZ>(bottomOfLoop);    // TODO: Original code passed X64::Long.
+
+        EmitFinishIteration(tree);
+
+        //
+        // Bottom of loop
+        //
+        code.PlaceLabel(bottomOfLoop);
+        code.EmitImmediate<OpCode::Add>(rcx, 1);                // Increment current.
+        code.Jmp(topOfLoop);                                    // TODO: Original code passed X64::Long.
+
+
+        code.PlaceLabel(exitLoop);
+    }
+
+
+    void MatcherNode::EmitFinishIteration(ExpressionTree& /*tree*/)
+    {
+
     }
 
 
@@ -285,10 +383,17 @@ namespace BitFunnel
                                    allocator,
                                    *node);
 
-        auto result = compiler.Run(3ull,
-                                   nullptr,
-                                   0ull,
-                                   nullptr);
+        std::vector<char *> m_sliceBuffers(3, 0);
+        std::vector<ptrdiff_t> m_rowOffsets(2, 0);
+
+        auto result = compiler.Run(m_sliceBuffers.size(),
+                                   m_sliceBuffers.data(),
+                                   m_rowOffsets.size(),
+                                   m_rowOffsets.data());
+        //auto result = compiler.Run(3ull,
+        //                           nullptr,
+        //                           0ull,
+        //                           nullptr);
 
         std::cout << "Result = " << result << std::endl;
     }
