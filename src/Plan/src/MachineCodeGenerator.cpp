@@ -40,22 +40,43 @@ namespace BitFunnel
     //                           unsigned rRow);
 
 
-    extern void AndSIB(FunctionBuffer &  code,
-                       Register<8u, false> dest,
-                       Register<8u, false> index,
-                       Register<8u, false> base);
+    void AndSIB(FunctionBuffer &  code,
+                Register<8u, false> /*dest*/,
+                Register<8u, false> /*index*/,
+                Register<8u, false> /*base*/)
+    {
+        // TODO: Implement.
+        code.Emit8(0xcc);
+    }
 
 
-    extern void MovSIB(FunctionBuffer &  code,
-                       Register<8u, false> dest,
-                       Register<8u, false> index,
-                       Register<8u, false> base);
+    void MovSIB(FunctionBuffer &  code,
+                Register<8u, false> /*dest*/,
+                Register<8u, false> /*index*/,
+                Register<8u, false> /*base*/)
+    {
+        // TODO: Implement.
+        code.Emit8(0xcc);
+    }
 
-    extern void EmitCall(FunctionBuffer &  code,
-                         NativeJIT::Label label);
 
-    extern void EmitNot(FunctionBuffer &  code,
-                        Register<8u, false> dest);
+    void EmitCall(FunctionBuffer &  code,
+                  NativeJIT::Label label)
+    {
+        // TODO: Implement.
+        code.Emit8(0xcc);
+        code.Jmp(label);
+        code.Emit8(0xcc);
+    }
+
+
+    void EmitNot(FunctionBuffer &  code,
+                 Register<8u, false> /*dest*/)
+    {
+        // TODO: Implement.
+        code.Emit8(0xcc);
+    }
+
 
 
     ////    template <int RDEST, int ROFFSET>
@@ -92,10 +113,11 @@ namespace BitFunnel
     //
     // RankDown compiler primitives
     //
-    void MachineCodeGenerator::AndRow(unsigned id,
+    void MachineCodeGenerator::AndRow(size_t row,
                                       bool inverted,
-                                      unsigned rd)
+                                      size_t rd)
     {
+        unsigned id = static_cast<unsigned>(row);
         const uint8_t rankDelta = static_cast<uint8_t>(rd);
 
         // TODO: Need to deal with out of order loads.
@@ -278,10 +300,11 @@ namespace BitFunnel
     }
 
 
-    void MachineCodeGenerator::LoadRow(unsigned id,
+    void MachineCodeGenerator::LoadRow(size_t row,
                                        bool inverted,
-                                       unsigned rd)
+                                       size_t rd)
     {
+        unsigned id = static_cast<unsigned>(row);
         uint8_t rankDelta = static_cast<uint8_t>(rd);
 
         if (rankDelta > 0)
@@ -377,7 +400,7 @@ namespace BitFunnel
     }
 
 
-    void MachineCodeGenerator::LeftShiftOffset(unsigned shift)
+    void MachineCodeGenerator::LeftShiftOffset(size_t shift)
     {
         // Decode the offset into RCX, adjust for the shift and then encode it back.
         m_code.Emit<OpCode::Sub>(rcx, rdi);
@@ -389,7 +412,7 @@ namespace BitFunnel
     }
 
 
-    void MachineCodeGenerator::RightShiftOffset(unsigned shift)
+    void MachineCodeGenerator::RightShiftOffset(size_t shift)
     {
         // Decode the offset into RCX, adjust for the shift and then encode it back.
         m_code.Emit<OpCode::Sub>(rcx, rdi);
@@ -470,6 +493,11 @@ namespace BitFunnel
     }
 
 
+    void MachineCodeGenerator::Report()
+    {
+        // TODO: Implement.
+        m_code.Emit8(0xcc);
+    }
 #if 0
     void MachineCodeGenerator::Report()
     {

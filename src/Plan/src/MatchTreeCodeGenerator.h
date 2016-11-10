@@ -70,7 +70,7 @@ namespace BitFunnel
         Prototype::FunctionType m_function;
 
         MatcherNode(Prototype& expression,
-                    CompileNode const & matchTree,
+                    CompileNode const & compileNodeTree,
                     RegisterAllocator const & registers);
 
         virtual ExpressionTree::Storage<size_t> CodeGenValue(ExpressionTree& tree) override;
@@ -83,7 +83,7 @@ namespace BitFunnel
         void EmitInnerLoop(ExpressionTree& tree);
         void EmitFinishIteration(ExpressionTree& tree);
 
-        CompileNode const & m_matchTree;
+        CompileNode const & m_compileNodeTree;
         RegisterAllocator const & m_registers;
 
         Register<8u, false> m_param1;

@@ -62,11 +62,11 @@ namespace BitFunnel
         //
 
         // RankDown compiler primitives
-        void AndRow(unsigned id, bool inverted, unsigned rankDelta);
-        void LoadRow(unsigned id, bool inverted, unsigned rankDelta);
+        void AndRow(size_t id, bool inverted, size_t rankDelta);
+        void LoadRow(size_t id, bool inverted, size_t rankDelta);
 
-        void LeftShiftOffset(unsigned shift);
-        void RightShiftOffset(unsigned shift);
+        void LeftShiftOffset(size_t shift);
+        void RightShiftOffset(size_t shift);
         void IncrementOffset();
 
         void Push();

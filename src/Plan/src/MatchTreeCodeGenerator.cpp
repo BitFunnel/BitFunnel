@@ -26,6 +26,7 @@
 #include "NativeJIT/CodeGenHelpers.h"
 #include "NativeJIT/Function.h"
 #include "NativeJIT/CodeGen/Register.h"
+#include "MachineCodeGenerator.h"
 #include "MatchTreeCodeGenerator.h"
 #include "Temporary/Allocator.h"
 
@@ -41,10 +42,10 @@ namespace BitFunnel
     //
     //*************************************************************************
     MatcherNode::MatcherNode(Prototype& expression,
-                             CompileNode const & matchTree,
+                             CompileNode const & compileNodeTree,
                              RegisterAllocator const & registers)
       : Node(expression),
-        m_matchTree(matchTree),
+        m_compileNodeTree(compileNodeTree),
         m_registers(registers)
     {
     }
@@ -217,17 +218,22 @@ namespace BitFunnel
         CodeGenHelpers::Emit<OpCode::Cmp>(code, rcx, m_innerLoopLimit);
         code.EmitConditionalJump<JccType::JE>(exitLoop);    // TODO: Original code passed X64::Long.
 
-                                                            //
-                                                            // Body of loop
-                                                            //
+        //
+        // Body of loop
+        //
 
-                                                            // TODO: Handle case where there are no rows.
+        // TODO: Handle case where there are no rows.
 
-                                                            // Clear Local(0) to indicate that no matches have been found on this iteration.
+        // Clear Local(0) to indicate that no matches have been found on this iteration.
         code.Emit<OpCode::Xor>(rax, rax);
         CodeGenHelpers::Emit<OpCode::Mov>(code, m_matchFound, rax);
 
         //root.Compile(*this);
+        {
+            MachineCodeGenerator generator(m_registers, tree.GetCodeGenerator());
+            m_compileNodeTree.Compile(generator);
+        }
+
 
         CodeGenHelpers::Emit<OpCode::Mov>(code, m_temp, rcx);
 
