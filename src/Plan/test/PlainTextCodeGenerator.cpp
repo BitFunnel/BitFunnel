@@ -186,25 +186,25 @@ namespace BitFunnel
 
     void PlainTextCodeGenerator::Call(Label label)
     {
-        EmitUnsignedArg("Call", label);
+        EmitSizeTArg("Call", label);
     }
 
 
     void PlainTextCodeGenerator::Jmp(Label label)
     {
-        EmitUnsignedArg("Jmp", label);
+        EmitSizeTArg("Jmp", label);
     }
 
 
     void PlainTextCodeGenerator::Jnz(Label label)
     {
-        EmitUnsignedArg("Jnz", label);
+        EmitSizeTArg("Jnz", label);
     }
 
 
     void PlainTextCodeGenerator::Jz(Label label)
     {
-        EmitUnsignedArg("Jz", label);
+        EmitSizeTArg("Jz", label);
     }
 
 

@@ -35,7 +35,7 @@ namespace BitFunnel
     class ICodeGenerator
     {
     public:
-        typedef unsigned Label;
+        typedef size_t Label;
 
         virtual ~ICodeGenerator() {}
 
