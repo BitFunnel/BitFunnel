@@ -40,6 +40,7 @@ using namespace NativeJIT;
 namespace BitFunnel
 {
     class CompileNode;
+    class RegisterAllocator;
 
     //*************************************************************************
     //
@@ -69,7 +70,8 @@ namespace BitFunnel
         Prototype::FunctionType m_function;
 
         MatcherNode(Prototype& expression,
-                    CompileNode const & matchTree);
+                    CompileNode const & matchTree,
+                    RegisterAllocator const & registers);
 
         virtual ExpressionTree::Storage<size_t> CodeGenValue(ExpressionTree& tree) override;
 
@@ -82,6 +84,7 @@ namespace BitFunnel
         void EmitFinishIteration(ExpressionTree& tree);
 
         CompileNode const & m_matchTree;
+        RegisterAllocator const & m_registers;
 
         Register<8u, false> m_param1;
         Register<8u, false> m_return;
@@ -106,8 +109,9 @@ namespace BitFunnel
     {
     public:
         MatchTreeCompiler(ExecutionBuffer & codeAllocator,
-                          Allocator & allocator,
-                          CompileNode const & tree);
+                          NativeJIT::Allocator & treeAllocator,
+                          CompileNode const & tree,
+                          RegisterAllocator const & registers);
 
         size_t Run(size_t slicecount,
                    char * const * slicebuffers,

@@ -103,7 +103,7 @@ namespace BitFunnel
                     100,    // Row 2
                     102,    // Row 3
                     103,    // Row 4
-                    105,    // Row 5
+                    105,    // Row 5 
                     104,    // Row 6
                 }
             },

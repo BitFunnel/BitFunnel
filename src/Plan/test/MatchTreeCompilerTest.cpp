@@ -21,12 +21,19 @@
 // THE SOFTWARE.
 
 #include <iostream>
+#include <sstream>
 
 #include "gtest/gtest.h"
 
+#include "Allocator.h"
+#include "BitFunnel/Plan/RowMatchNode.h"
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
 #include "MatchTreeCodeGenerator.h"
+#include "MatchTreeRewriter.h"
+#include "RankDownCompiler.h"
+#include "RegisterAllocator.h"
 #include "Temporary/Allocator.h"
+#include "TextObjectParser.h"
 
 using namespace NativeJIT;
 
@@ -37,13 +44,56 @@ namespace BitFunnel
     {
         // Create allocator and buffers for pre-compiled and post-compiled code.
         ExecutionBuffer codeAllocator(8192);
-        Allocator allocator(8192);
+        NativeJIT::Allocator treeAllocator(8192);
+        BitFunnel::Allocator allocator(2048);
 
-        CompileNode const * node = nullptr;
+        std::stringstream input(
+            "And {"
+            "  Children: ["
+            "    Row(0, 0, 0, false),"
+            "    Row(1, 3, 0, false),"
+            "    Row(2, 6, 0, false),"
+            "    Or {"
+            "      Children: ["
+            "        Row(4, 3, 0, false),"
+            "        Row(3, 0, 0, false)"
+            "      ]"
+            "    },"
+            "    Or {"
+            "      Children: ["
+            "        Row(5, 0, 0, false),"
+            "        Row(6, 3, 0, false)"
+            "      ]"
+            "    }"
+            "  ]"
+            "}");
+
+        TextObjectParser parser(input, allocator, &RowMatchNode::GetType);
+        RowMatchNode const & node = RowMatchNode::Parse(parser);
+
+        RowMatchNode const & rewritten = MatchTreeRewriter::Rewrite(node, 6, 20, allocator);
+
+        RankDownCompiler rankDown(allocator);
+        rankDown.Compile(rewritten);
+        CompileNode const & compileNodeTree = rankDown.CreateTree(6);
+
+        // Use register base value of 100 in unit tests to allow
+        // easy verification of the base value.
+        RegisterAllocator registers(compileNodeTree,
+                                    7,
+                                    8,
+                                    7,
+                                    allocator);
+
+
+
+        //CompileNode const * compileNodeTree = nullptr;
+        //RegisterAllocator registers;
 
         MatchTreeCompiler compiler(codeAllocator,
-                                   allocator,
-                                   *node);
+                                   treeAllocator,
+                                   compileNodeTree,
+                                   registers);
 
         std::vector<char *> m_sliceBuffers(3, 0);
         std::vector<ptrdiff_t> m_rowOffsets(2, 0);
