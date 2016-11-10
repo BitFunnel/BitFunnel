@@ -34,9 +34,14 @@
 
 namespace BitFunnel
 {
-    MatcherNode::MatcherNode(MatchTreeCompiler::Prototype& expression,
+    //*************************************************************************
+    //
+    // MatcherNode
+    //
+    //*************************************************************************
+    MatcherNode::MatcherNode(Prototype& expression,
                              CompileNode const & matchTree)
-        : Node(expression),
+      : Node(expression),
         m_matchTree(matchTree)
     {
     }
@@ -52,6 +57,9 @@ namespace BitFunnel
     }
 
 
+    // Allocates a temporary variable and initializes it to
+    //   reinterpret_cast<OBJECT>(base)->field.
+    // Returns a Storage representing the new temporary variable.
     template <typename OBJECT, typename FIELD>
     Storage<FIELD> Initialize(ExpressionTree& tree, Register <8u, false> base, FIELD OBJECT::*field)
     {
@@ -87,11 +95,12 @@ namespace BitFunnel
 #endif
 
         // Initialize member variables for copy of Parameters structure.
-        m_sliceCount = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_sliceCount);
-        m_sliceBuffers = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_sliceBuffers);
-        m_iterationsPerSlice = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_iterationsPerSlice);
-        m_rowOffsets = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_rowOffsets);
-        m_callback = Initialize(tree, m_param1, &MatchTreeCompiler::Parameters::m_callback);
+        m_sliceCount = Initialize(tree, m_param1, &Parameters::m_sliceCount);
+        m_sliceBuffers = Initialize(tree, m_param1, &Parameters::m_sliceBuffers);
+        m_iterationsPerSlice = Initialize(tree, m_param1, &Parameters::m_iterationsPerSlice);
+        m_rowOffsets = Initialize(tree, m_param1, &Parameters::m_rowOffsets);
+        m_callback = Initialize(tree, m_param1, &Parameters::m_callback);
+
         m_innerLoopLimit = tree.Temporary<size_t>();
         m_matchFound = tree.Temporary<size_t>();
         m_temp = tree.Temporary<size_t>();
@@ -249,7 +258,7 @@ namespace BitFunnel
                                          CompileNode const & tree)
         : m_code(codeAllocator, 8192)
     {
-        Function<size_t, Parameters const *> expression(allocator, m_code);
+        MatcherNode::Prototype expression(allocator, m_code);
         expression.EnableDiagnostics(std::cout);
 
         auto & node = expression.PlacementConstruct<MatcherNode>(expression, tree);
@@ -262,7 +271,7 @@ namespace BitFunnel
                                   size_t iterationsPerSlice,
                                   ptrdiff_t const * rowOffsets)
     {
-        MatchTreeCompiler::Parameters parameters = {
+        MatcherNode::Parameters parameters = {
             sliceCount,
             sliceBuffers,
             iterationsPerSlice,

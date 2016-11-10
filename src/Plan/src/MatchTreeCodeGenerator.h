@@ -43,27 +43,14 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    // MatchTreeCompiler
+    // MatcherNode
+    //
+    // A NativeJIT::Node that implements the BitFunnel matching algorithm.
     //
     //*************************************************************************
-    class MatchTreeCompiler
+    class MatcherNode : public NativeJIT::Node<size_t>
     {
     public:
-        MatchTreeCompiler(ExecutionBuffer & codeAllocator,
-                          Allocator & allocator,
-                          CompileNode const & tree);
-
-        size_t Run(size_t slicecount,
-                   char * const * slicebuffers,
-                   size_t iterationsperslice,
-                   ptrdiff_t const * rowoffsets);
-
-    private:
-        friend class MatcherNode;
-
-        static size_t CallbackHelper(/*MatchTreeCompiler& node, */size_t value);
-
-        //        typedef void(*Callback)(MatchTreeCompiler& node, size_t value);
         typedef size_t(*Callback)(size_t value);
 
         struct Parameters
@@ -78,22 +65,10 @@ namespace BitFunnel
         static_assert(std::is_standard_layout<Parameters>::value,
                       "Parameters must be standard layout.");
 
-        FunctionBuffer m_code;
-
         typedef Function<size_t, Parameters const *> Prototype;
         Prototype::FunctionType m_function;
-    };
 
-
-    //*************************************************************************
-    //
-    // MatcherNode
-    //
-    //*************************************************************************
-    class MatcherNode : public NativeJIT::Node<size_t>
-    {
-    public:
-        MatcherNode(MatchTreeCompiler::Prototype& expression,
+        MatcherNode(Prototype& expression,
                     CompileNode const & matchTree);
 
         virtual ExpressionTree::Storage<size_t> CodeGenValue(ExpressionTree& tree) override;
@@ -115,9 +90,35 @@ namespace BitFunnel
         Storage<char * const *> m_sliceBuffers;
         Storage<size_t> m_iterationsPerSlice;
         Storage<ptrdiff_t const *> m_rowOffsets;
-        Storage<MatchTreeCompiler::Callback> m_callback;
+        Storage<Callback> m_callback;
         Storage<size_t> m_innerLoopLimit;
         Storage<size_t> m_matchFound;
         Storage<size_t> m_temp;
+    };
+
+
+    //*************************************************************************
+    //
+    // MatchTreeCompiler
+    //
+    //*************************************************************************
+    class MatchTreeCompiler
+    {
+    public:
+        MatchTreeCompiler(ExecutionBuffer & codeAllocator,
+                          Allocator & allocator,
+                          CompileNode const & tree);
+
+        size_t Run(size_t slicecount,
+                   char * const * slicebuffers,
+                   size_t iterationsperslice,
+                   ptrdiff_t const * rowoffsets);
+
+    private:
+        static size_t CallbackHelper(/*MatchTreeCompiler& node, */size_t value);
+
+        FunctionBuffer m_code;
+
+        MatcherNode::Prototype::FunctionType m_function;
     };
 }
