@@ -31,13 +31,13 @@ using namespace NativeJIT;
 
 namespace BitFunnel
 {
-//    template <int RDEST, int ROFFSET>
-    static void AndAccumulator(FunctionBuffer &  code,
-                               Register<8u, false> rDest,
-                               Register<8u, false> rOffset,
-                               //X64Register<RDEST, 3> rDest,
-                               //X64Register<ROFFSET, 3> rOffset,
-                               unsigned rRow);
+    ////template <int RDEST, int ROFFSET>
+    //static void AndAccumulator(FunctionBuffer &  code,
+    //                           Register<8u, false> rDest,
+    //                           Register<8u, false> rOffset,
+    //                           //X64Register<RDEST, 3> rDest,
+    //                           //X64Register<ROFFSET, 3> rOffset,
+    //                           unsigned rRow);
 
 
     extern void AndSIB(FunctionBuffer &  code,
@@ -58,13 +58,13 @@ namespace BitFunnel
                         Register<8u, false> dest);
 
 
-    //    template <int RDEST, int ROFFSET>
-    static void LoadAccumulator(FunctionBuffer &  code,
-                                Register<8u, false> rDest,
-                                Register<8u, false> rOffset, 
-                                //X64Register<RDEST, 3> rDest,
-                                //X64Register<ROFFSET, 3> rOffset,
-                                unsigned rRow);
+    ////    template <int RDEST, int ROFFSET>
+    //static void LoadAccumulator(FunctionBuffer &  code,
+    //                            Register<8u, false> rDest,
+    //                            Register<8u, false> rOffset, 
+    //                            //X64Register<RDEST, 3> rDest,
+    //                            //X64Register<ROFFSET, 3> rOffset,
+    //                            unsigned rRow);
 
 
     // RAX: Scratch register
@@ -117,7 +117,9 @@ namespace BitFunnel
                     //m_code.SHR(RAX, rankDelta);
 
                     unsigned reg = m_registers.GetRegister(id);
-                    AndAccumulator(m_code, rbx, rax, reg);
+                    m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
+                    AndSIB(m_code, rbx, rax, rdx);
+                    //AndAccumulator(m_code, rbx, rax, reg);
                     //AndAccumulator(m_code, RBX, RAX, reg);
                 }
                 else
@@ -164,7 +166,11 @@ namespace BitFunnel
                     //m_code.SHR(RAX, rankDelta);
 
                     unsigned reg = m_registers.GetRegister(id);
-                    LoadAccumulator(m_code, rax, rbx, reg);
+
+                    m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
+                    MovSIB(m_code, rax, rax, rdx);
+
+                    //LoadAccumulator(m_code, rax, rax, reg);
                     //LoadAccumulator(m_code, RAX, RAX, reg);
                 }
                 else
@@ -216,7 +222,9 @@ namespace BitFunnel
                 {
                     // Case 5: rankDelta == 0 && !inverted && IsRegister                                 
                     unsigned reg = m_registers.GetRegister(id);
-                    AndAccumulator(m_code, rbx, rax, reg);
+                    m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
+                    AndSIB(m_code, rbx, rax, rdx);
+                    //AndAccumulator(m_code, rbx, rax, reg);
                     //AndAccumulator(m_code, RBX, RAX, reg);
                 }
                 else
@@ -242,7 +250,9 @@ namespace BitFunnel
                 {
                     // Case 7: rankDelta == 0 && inverted && IsRegister
                     unsigned reg = m_registers.GetRegister(id);
-                    LoadAccumulator(m_code, rax, rbx, reg);
+                    m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
+                    MovSIB(m_code, rax, rax, rdx);
+                    //LoadAccumulator(m_code, rax, rax, reg);
                     //LoadAccumulator(m_code, RAX, RAX, reg);
                 }
                 else
@@ -290,7 +300,9 @@ namespace BitFunnel
                 //m_code.SHR(RAX, rankDelta);
 
                 unsigned reg = m_registers.GetRegister(id);
-                LoadAccumulator(m_code, rbx, rax, reg);
+                m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
+                MovSIB(m_code, rbx, rax, rdx);
+                //LoadAccumulator(m_code, rbx, rax, reg);
                 //LoadAccumulator(m_code, RBX, RAX, reg);
             }
             else
@@ -332,7 +344,9 @@ namespace BitFunnel
             {
                 // Case 3: rankDelta == 0, IsRegister
                 unsigned reg = m_registers.GetRegister(id);
-                LoadAccumulator(m_code, rbx, rax, reg);
+                m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
+                MovSIB(m_code, rbx, rax, rdx);
+                //LoadAccumulator(m_code, rbx, rax, reg);
                 //LoadAccumulator(m_code, RBX, RAX, reg);
             }
             else
@@ -579,116 +593,116 @@ namespace BitFunnel
     }
 
 
-    // Helper function generates code for
-    //   Add(offset, rowOffset),
-    //   And(RDEST, QWORDPTR[SCALE8(offset) + slicePtr])
-    //template <int RDEST, int ROFFSET>
-    static void AndAccumulator(FunctionBuffer &  code,
-                               Register<8u, false> rDest,
-                               Register<8u, false> rOffset,
-                               //X64Register<RDEST, 3> rDest,
-                               //X64Register<ROFFSET, 3> rOffset,
-                               unsigned rRow)
-    {
-        CHECK_LE(rRow, 15u)
-            << "Row register cannot exceed 15.";
-        CHECK_GE(rRow, 8u)
-            << "Row register cannot be less than 8.";
+    //// Helper function generates code for
+    ////   Add(offset, rowOffset),
+    ////   And(RDEST, QWORDPTR[SCALE8(offset) + slicePtr])
+    ////template <int RDEST, int ROFFSET>
+    //static void AndAccumulator(FunctionBuffer &  code,
+    //                           Register<8u, false> rDest,
+    //                           Register<8u, false> rOffset,
+    //                           //X64Register<RDEST, 3> rDest,
+    //                           //X64Register<ROFFSET, 3> rOffset,
+    //                           unsigned rRow)
+    //{
+    //    CHECK_LE(rRow, 15u)
+    //        << "Row register cannot exceed 15.";
+    //    CHECK_GE(rRow, 8u)
+    //        << "Row register cannot be less than 8.";
 
-        code.Emit<OpCode::Add>(rOffset, Register<8u, false>(rRow));
-        AndSIB(code, rDest, rOffset, rdx);
+    //    code.Emit<OpCode::Add>(rOffset, Register<8u, false>(rRow));
+    //    AndSIB(code, rDest, rOffset, rdx);
 
-        //// Each case adjusts the offset for the corresponding row, 
-        //// dereferences the slice data at the calculated offset and 
-        //// ANDs the accumulator with the dereferenced value.
-        //switch (rRow)
-        //{
-        //case 8:
-        //    code.ADD(rOffset, R8);
-        //    break;
-        //case 9:
-        //    code.ADD(rOffset, R9);
-        //    break;
-        //case 10:
-        //    code.ADD(rOffset, R10);
-        //    break;
-        //case 11:
-        //    code.ADD(rOffset, R11);
-        //    break;
-        //case 12:
-        //    code.ADD(rOffset, R12);
-        //    break;
-        //case 13:
-        //    code.ADD(rOffset, R13);
-        //    break;
-        //case 14:
-        //    code.ADD(rOffset, R14);
-        //    break;
-        //case 15:
-        //    code.ADD(rOffset, R15);
-        //    break;
-        //default:
-        //    LogAbortB("Invalid row register.");
-        //    break;
-        //};
+    //    //// Each case adjusts the offset for the corresponding row, 
+    //    //// dereferences the slice data at the calculated offset and 
+    //    //// ANDs the accumulator with the dereferenced value.
+    //    //switch (rRow)
+    //    //{
+    //    //case 8:
+    //    //    code.ADD(rOffset, R8);
+    //    //    break;
+    //    //case 9:
+    //    //    code.ADD(rOffset, R9);
+    //    //    break;
+    //    //case 10:
+    //    //    code.ADD(rOffset, R10);
+    //    //    break;
+    //    //case 11:
+    //    //    code.ADD(rOffset, R11);
+    //    //    break;
+    //    //case 12:
+    //    //    code.ADD(rOffset, R12);
+    //    //    break;
+    //    //case 13:
+    //    //    code.ADD(rOffset, R13);
+    //    //    break;
+    //    //case 14:
+    //    //    code.ADD(rOffset, R14);
+    //    //    break;
+    //    //case 15:
+    //    //    code.ADD(rOffset, R15);
+    //    //    break;
+    //    //default:
+    //    //    LogAbortB("Invalid row register.");
+    //    //    break;
+    //    //};
 
-        //code.AND(rDest, QWORDPTR[SCALE8(rOffset) + RDX]);
-    }
+    //    //code.AND(rDest, QWORDPTR[SCALE8(rOffset) + RDX]);
+    //}
 
 
-    // Helper function generates code for
-    //   ADD(offset, rowOffset)
-    //   MOV(RDEST, QWORDPTR[SCALE8(offset) + slicePtr])
-    // template <int RDEST, int ROFFSET>
-    static void LoadAccumulator(FunctionBuffer &  code,
-                                Register<8u, false> rDest,
-                                Register<8u, false> rOffset,
-                                //X64Register<RDEST, 3> rDest,
-                                //X64Register<ROFFSET, 3> rOffset,
-                                unsigned rRow)
-    {
-        CHECK_LE(rRow, 15u)
-            << "Row register cannot exceed 15.";
-        CHECK_GE(rRow, 8u)
-            << "Row register cannot be less than 8.";
+    //// Helper function generates code for
+    ////   ADD(offset, rowOffset)
+    ////   MOV(RDEST, QWORDPTR[SCALE8(offset) + slicePtr])
+    //// template <int RDEST, int ROFFSET>
+    //static void LoadAccumulator(FunctionBuffer &  code,
+    //                            Register<8u, false> rDest,
+    //                            Register<8u, false> rOffset,
+    //                            //X64Register<RDEST, 3> rDest,
+    //                            //X64Register<ROFFSET, 3> rOffset,
+    //                            unsigned rRow)
+    //{
+    //    CHECK_LE(rRow, 15u)
+    //        << "Row register cannot exceed 15.";
+    //    CHECK_GE(rRow, 8u)
+    //        << "Row register cannot be less than 8.";
 
-        code.Emit<OpCode::Add>(rOffset, Register<8u, false>(rRow));
-        MovSIB(code, rDest, rOffset, rdx);
+    //    code.Emit<OpCode::Add>(rOffset, Register<8u, false>(rRow));
+    //    MovSIB(code, rDest, rOffset, rdx);
 
-        //// Each case adjusts the offset for the corresponding row, 
-        //// dereferences the slice data at the calculated offset and 
-        //// loads the accumulator with the dereferenced value.
-        //switch (rRow)
-        //{
-        //case 8:
-        //    code.ADD(rOffset, R8);
-        //    break;
-        //case 9:
-        //    code.ADD(rOffset, R9);
-        //    break;
-        //case 10:
-        //    code.ADD(rOffset, R10);
-        //    break;
-        //case 11:
-        //    code.ADD(rOffset, R11);
-        //    break;
-        //case 12:
-        //    code.ADD(rOffset, R12);
-        //    break;
-        //case 13:
-        //    code.ADD(rOffset, R13);
-        //    break;
-        //case 14:
-        //    code.ADD(rOffset, R14);
-        //    break;
-        //case 15:
-        //    code.ADD(rOffset, R15);
-        //    break;
-        //default:
-        //    LogAbortB("Invalid row register.");
-        //    break;
-        //};
+    //    //// Each case adjusts the offset for the corresponding row, 
+    //    //// dereferences the slice data at the calculated offset and 
+    //    //// loads the accumulator with the dereferenced value.
+    //    //switch (rRow)
+    //    //{
+    //    //case 8:
+    //    //    code.ADD(rOffset, R8);
+    //    //    break;
+    //    //case 9:
+    //    //    code.ADD(rOffset, R9);
+    //    //    break;
+    //    //case 10:
+    //    //    code.ADD(rOffset, R10);
+    //    //    break;
+    //    //case 11:
+    //    //    code.ADD(rOffset, R11);
+    //    //    break;
+    //    //case 12:
+    //    //    code.ADD(rOffset, R12);
+    //    //    break;
+    //    //case 13:
+    //    //    code.ADD(rOffset, R13);
+    //    //    break;
+    //    //case 14:
+    //    //    code.ADD(rOffset, R14);
+    //    //    break;
+    //    //case 15:
+    //    //    code.ADD(rOffset, R15);
+    //    //    break;
+    //    //default:
+    //    //    LogAbortB("Invalid row register.");
+    //    //    break;
+    //    //};
 
-        //code.MOV(rDest, QWORDPTR[SCALE8(rOffset) + RDX]);
-    }
+    //    //code.MOV(rDest, QWORDPTR[SCALE8(rOffset) + RDX]);
+    //}
 }
