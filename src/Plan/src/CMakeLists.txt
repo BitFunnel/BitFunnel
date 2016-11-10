@@ -5,6 +5,7 @@ set(CPPFILES
     AbstractRowEnumerator.cpp
     ByteCodeInterpreter.cpp
     CompileNode.cpp
+    MatchTreeCodeGenerator.cpp
     MatchTreeRewriter.cpp
     MatchVerifier.cpp
     PlanRows.cpp
@@ -37,6 +38,7 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     ByteCodeInterpreter.h
     CompileNode.h
+    MatchTreeCodeGenerator.cpp
     MatchTreeRewriter.h
     MatchVerifier.h
     QueryPlanner.h
