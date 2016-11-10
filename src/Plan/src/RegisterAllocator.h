@@ -62,8 +62,7 @@ namespace BitFunnel
         // assigned a register.
         bool IsRegister(unsigned id) const;
 
-        // Retunrs the register number of the abstract row with the specified
-        // id.
+        // Returns the register number of the abstract row specified by id.
         unsigned GetRegister(unsigned id) const;
 
         // Returns the number of registers actually allocated.

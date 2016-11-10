@@ -30,6 +30,7 @@
 #include "Temporary/Allocator.h"
 
 #include "MatchTreeCodeGenerator.h"
+#include "RegisterAllocator.h"
 
 
 namespace BitFunnel
@@ -40,9 +41,11 @@ namespace BitFunnel
     //
     //*************************************************************************
     MatcherNode::MatcherNode(Prototype& expression,
-                             CompileNode const & matchTree)
+                             CompileNode const & matchTree,
+                             RegisterAllocator const & registers)
       : Node(expression),
-        m_matchTree(matchTree)
+        m_matchTree(matchTree),
+        m_registers(registers)
     {
     }
 
@@ -68,7 +71,7 @@ namespace BitFunnel
         int32_t offset =
             static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<OBJECT*>(nullptr))->*field)));
         code.Emit<OpCode::Mov>(rax, base, offset);
-        CodeGenHelpers::Emit<NativeJIT::OpCode::Mov>(code, storage, rax);
+        CodeGenHelpers::Emit<OpCode::Mov>(code, storage, rax);
         return storage;
     }
 
@@ -85,6 +88,8 @@ namespace BitFunnel
 
     void MatcherNode::EmitRegisterInitialization(ExpressionTree& tree)
     {
+        auto & code = tree.GetCodeGenerator();
+
         // Abstract away the ABI differences here.
 #if BITFUNNEL_PLATFORM_WINDOWS
         m_param1 = rcx;
@@ -106,7 +111,25 @@ namespace BitFunnel
         m_temp = tree.Temporary<size_t>();
 
         // Initialize row pointers.
-        // TODO
+
+        // RSI has pointer to row offsets.
+        CodeGenHelpers::Emit<OpCode::Mov>(code, rsi, m_rowOffsets);
+
+        // Load row offsets into R8..R8 + m_registers.GetRegistersAllocated()
+        // TODO: Should we use GetRegister() or explicitly use r+8?
+        // The former offers an opportunity to misconfigure the register allocator
+        // to use registers that conflict with other matcher registers.
+        for (unsigned r = 0; r < m_registers.GetRegistersAllocated(); ++r)
+        {
+            code.Emit<OpCode::Mov>(Register<8u, false>(r + 8),
+                                   rsi,
+                                   m_registers.GetRowIdFromRegister(r) * 8);
+            // TODO: Would the following alternative be better?
+            // This code may not work with the existing CompileNode compiler.
+            //code.Emit<OpCode::Mov>(Register<8u, false>(m_registers.GetRegister(r)),
+            //                       rsi,
+            //                       m_registers.GetRowIdFromRegister(r) * 8);
+        }
     }
 
 
@@ -236,7 +259,7 @@ namespace BitFunnel
 
     void MatcherNode::EmitFinishIteration(ExpressionTree& /*tree*/)
     {
-
+        // TODO
     }
 
 
@@ -254,14 +277,17 @@ namespace BitFunnel
     //
     //*************************************************************************
     MatchTreeCompiler::MatchTreeCompiler(ExecutionBuffer & codeAllocator,
-                                         Allocator & allocator,
-                                         CompileNode const & tree)
+                                         Allocator & treeAllocator,
+                                         CompileNode const & tree,
+                                         RegisterAllocator const & registers)
         : m_code(codeAllocator, 8192)
     {
-        MatcherNode::Prototype expression(allocator, m_code);
+        MatcherNode::Prototype expression(treeAllocator, m_code);
         expression.EnableDiagnostics(std::cout);
 
-        auto & node = expression.PlacementConstruct<MatcherNode>(expression, tree);
+        auto & node = expression.PlacementConstruct<MatcherNode>(expression,
+                                                                 tree,
+                                                                 registers);
         m_function = expression.Compile(node);
     }
 
