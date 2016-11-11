@@ -53,16 +53,20 @@ namespace BitFunnel
 
         CompileNode const & CreateTree(Rank initialRank);
 
+        Rank GetMaximumRank();
     private:
         void CompileInternal(RowMatchNode const & root, bool leftMostChild);
 
         void CompileTraversal(RowMatchNode const & node,
                               bool leftMostChild);
 
+        void SetRank(Rank rank);
+
         CompileNode const & RankUp(CompileNode const & node);
 
         IAllocator& m_allocator;
         Rank m_currentRank;
+        Rank m_maxRank;
         CompileNode const * m_accumulator;
     };
 }

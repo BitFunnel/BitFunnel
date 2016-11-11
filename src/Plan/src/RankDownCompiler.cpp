@@ -38,6 +38,7 @@ namespace BitFunnel
     RankDownCompiler::RankDownCompiler(IAllocator& allocator)
         : m_allocator(allocator),
           m_currentRank(0),
+          m_maxRank(0),
           m_accumulator(nullptr)
     {
     }
@@ -49,11 +50,17 @@ namespace BitFunnel
     }
 
 
+    Rank RankDownCompiler::GetMaximumRank()
+    {
+        return m_maxRank;
+    }
+
+
     void RankDownCompiler::CompileInternal(RowMatchNode const & root, bool leftMostChild)
     {
         // Initialize m_currentRank and m_accumulator here so that CompileInternal()
         // can be called multiple times.
-        m_currentRank = 0;
+        SetRank(0);
         m_accumulator = nullptr;
         CompileTraversal(root, leftMostChild);
     }
@@ -66,7 +73,7 @@ namespace BitFunnel
             m_accumulator = new (m_allocator.Allocate(sizeof(CompileNode::RankDown)))
                                 CompileNode::RankDown(initialRank - m_currentRank,
                                                       *m_accumulator);
-            m_currentRank = initialRank;
+            SetRank(initialRank);
         }
         LogAssertB(m_accumulator != nullptr,
                    "nullptr m_accumulator.");
@@ -102,7 +109,7 @@ namespace BitFunnel
                                     CompileNode::Or(left.CreateTree(rank),
                                                     right.CreateTree(rank));
 
-                m_currentRank = rank;
+                SetRank(rank);
             }
             break;
         case RowMatchNode::ReportMatch:
@@ -135,7 +142,7 @@ namespace BitFunnel
                     m_accumulator = new (m_allocator.Allocate(sizeof(CompileNode::RankDown)))
                                         CompileNode::RankDown(row.GetRank() - m_currentRank,
                                                               *m_accumulator);
-                    m_currentRank = row.GetRank();
+                    SetRank(row.GetRank());
                 }
 
                 if (leftmostChild)
@@ -153,5 +160,15 @@ namespace BitFunnel
         default:
             LogAbortB("Bad RowMatchNode type.");
         };
+    }
+
+
+    void RankDownCompiler::SetRank(Rank rank)
+    {
+        m_currentRank = rank;
+        if (m_currentRank > m_maxRank)
+        {
+            m_maxRank = m_currentRank;
+        }
     }
 }

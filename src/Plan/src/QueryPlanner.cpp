@@ -184,8 +184,8 @@ namespace BitFunnel
         // Compile the match tree into CompileNodes.
         RankDownCompiler compiler(allocator);
         compiler.Compile(rewritten);
-        const int c_horribleRankHack = 3;
-        CompileNode const & compileTree = compiler.CreateTree(c_horribleRankHack);
+        const Rank maxRank = compiler.GetMaximumRank();
+        CompileNode const & compileTree = compiler.CreateTree(maxRank);
         // CompileNode const & compileTree = compiler.CreateTree(c_maxRankValue);
 
         if (diagnosticStream.IsEnabled("planning/compile"))
@@ -234,7 +234,7 @@ namespace BitFunnel
             size_t sliceCount = sliceBuffers.size();
 
             // Iterations per slice calculation.
-            auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> c_horribleRankHack;
+            auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> maxRank;
 
             instrumentation.FinishPlanning();
 
