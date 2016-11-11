@@ -23,7 +23,7 @@
 #include <algorithm>    // std::sort()
 #include <iostream>
 
-// #include "BitFunnel/IDiagnosticStream.h"
+#include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IShard.h"
@@ -45,12 +45,12 @@ namespace BitFunnel
     std::vector<DocId>
         Factories::RunSimplePlanner(TermMatchNode const & tree,
                                     ISimpleIndex const & index,
-                                    // IDiagnosticStream & diagnosticStream,
+                                    IDiagnosticStream & diagnosticStream,
                                     QueryInstrumentation & instrumentation)
     {
         SimplePlanner simplePlanner(tree,
                                     index,
-                                    // diagnosticStream,
+                                    diagnosticStream,
                                     instrumentation);
         return simplePlanner.GetMatches();
     }
@@ -63,7 +63,7 @@ namespace BitFunnel
     //*************************************************************************
     SimplePlanner::SimplePlanner(TermMatchNode const & tree,
                                  ISimpleIndex const & index,
-                                 // IDiagnosticStream& diagnosticStream,
+                                 IDiagnosticStream& diagnosticStream,
                                  QueryInstrumentation & instrumentation)
         : m_index(index),
           m_resultsProcessor(Factories::CreateSimpleResultsProcessor())
@@ -117,7 +117,7 @@ namespace BitFunnel
                                            reinterpret_cast<char* const *>(sliceBuffers.data()),
                                            iterationsPerSlice,
                                            rowOffsets.data(),
-                                           // diagnosticStream,
+                                           diagnosticStream,
                                            instrumentation);
 
             instrumentation.FinishPlanning();

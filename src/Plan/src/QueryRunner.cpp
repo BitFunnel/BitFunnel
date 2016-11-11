@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// #include <iostream>  // Used for DiagnosticStream ref; not actually used.
-// #include <memory>  // Used for std::unique_ptr of diagnosticStream. Probably temporary.
+#include <iostream>  // Used for DiagnosticStream ref; not actually used.
+#include <memory>  // Used for std::unique_ptr of diagnosticStream. Probably temporary.
 #include <ostream>
 
 #include "Allocator.h"
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
-// #include "BitFunnel/IDiagnosticStream.h"
+#include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
@@ -82,8 +82,8 @@ namespace BitFunnel
             char const * query,
             ISimpleIndex const & index,
             IStreamConfiguration const & config,
-            IAllocator & allocator);
-            // IDiagnosticStream & diagnosticStream);
+            IAllocator & allocator,
+            IDiagnosticStream & diagnosticStream);
 
         //
         // ITaskProcessor methods
@@ -132,17 +132,17 @@ namespace BitFunnel
         instrumentation.FinishParsing();
 
         // TODO: remove diagnosticStream and replace with nullable.
-        // auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
+        auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
         if (tree != nullptr)
         {
-            // auto observed = Factories::RunSimplePlanner(*tree,
-            //                                             m_index,
-            //                                             // *diagnosticStream,
-            //                                             instrumentation);
             auto observed = Factories::RunQueryPlanner(*tree,
                                                        m_index,
-                                                       // *diagnosticStream,
+                                                       *diagnosticStream,
                                                        instrumentation);
+            // auto observed = Factories::RunSimplePlanner(*tree,
+            //                                             m_index,
+            //                                             *diagnosticStream,
+            //                                             instrumentation);
         }
 
         m_results[taskId] = instrumentation.GetData();
@@ -208,7 +208,7 @@ namespace BitFunnel
                                                 stopwatch.ElapsedTime()));
 
         {
-            // std::cout << "Writing results ..." << std::endl;
+            std::cout << "Writing results ..." << std::endl;
             auto outFileManager =
                 Factories::CreateFileManager(outDir,
                                              outDir,
