@@ -31,63 +31,6 @@ using namespace NativeJIT;
 
 namespace BitFunnel
 {
-    ////template <int RDEST, int ROFFSET>
-    //static void AndAccumulator(FunctionBuffer &  code,
-    //                           Register<8u, false> rDest,
-    //                           Register<8u, false> rOffset,
-    //                           //X64Register<RDEST, 3> rDest,
-    //                           //X64Register<ROFFSET, 3> rOffset,
-    //                           unsigned rRow);
-
-
-    void AndSIB(FunctionBuffer &  code,
-                Register<8u, false> /*dest*/,
-                Register<8u, false> /*index*/,
-                Register<8u, false> /*base*/)
-    {
-        // TODO: Implement.
-        code.Emit8(0xcc);
-    }
-
-
-    void MovSIB(FunctionBuffer &  code,
-                Register<8u, false> /*dest*/,
-                Register<8u, false> /*index*/,
-                Register<8u, false> /*base*/)
-    {
-        // TODO: Implement.
-        code.Emit8(0xcc);
-    }
-
-
-    void EmitCall(FunctionBuffer &  code,
-                  NativeJIT::Label label)
-    {
-        // TODO: Implement.
-        code.Emit8(0xcc);
-        code.Jmp(label);
-        code.Emit8(0xcc);
-    }
-
-
-    void EmitNot(FunctionBuffer &  code,
-                 Register<8u, false> /*dest*/)
-    {
-        // TODO: Implement.
-        code.Emit8(0xcc);
-    }
-
-
-
-    ////    template <int RDEST, int ROFFSET>
-    //static void LoadAccumulator(FunctionBuffer &  code,
-    //                            Register<8u, false> rDest,
-    //                            Register<8u, false> rOffset, 
-    //                            //X64Register<RDEST, 3> rDest,
-    //                            //X64Register<ROFFSET, 3> rOffset,
-    //                            unsigned rRow);
-
-
     // RAX: Scratch register
     // RBX: Accumulator
     // RCX: Loop counter at inner loop root, offset elsewhere in traversal
@@ -140,7 +83,8 @@ namespace BitFunnel
 
                     unsigned reg = m_registers.GetRegister(id);
                     m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                    AndSIB(m_code, rbx, rax, rdx);
+                    m_code.Emit<OpCode::And>(rbx, rdx, rax, SIB::Scale8, 0);
+                    //AndSIB(m_code, rbx, rax, rdx);
                     //AndAccumulator(m_code, rbx, rax, reg);
                     //AndAccumulator(m_code, RBX, RAX, reg);
                 }
@@ -162,7 +106,8 @@ namespace BitFunnel
                     // And the accumulator(RBX) with the quadword in the specified offset in the row.
                     m_code.Emit<OpCode::Mov>(rax, rsi, id * 8);
                     m_code.Emit<OpCode::Add>(rcx, rax);
-                    AndSIB(m_code, rbx, rcx, rdx);
+                    m_code.Emit<OpCode::And>(rbx, rdx, rcx, SIB::Scale8, 0);
+                    //AndSIB(m_code, rbx, rcx, rdx);
                     //m_code.MOV(RAX, QWORDPTR[RSI + static_cast<int>(id * 8)]);
                     //m_code.ADD(RCX, RAX);
                     //m_code.AND(RBX, QWORDPTR[SCALE8(RCX) + RDX]);
@@ -190,8 +135,8 @@ namespace BitFunnel
                     unsigned reg = m_registers.GetRegister(id);
 
                     m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                    MovSIB(m_code, rax, rax, rdx);
-
+                    m_code.Emit<OpCode::And>(rax, rdx, rax, SIB::Scale8, 0);
+                    ///MovSIB(m_code, rax, rax, rdx);
                     //LoadAccumulator(m_code, rax, rax, reg);
                     //LoadAccumulator(m_code, RAX, RAX, reg);
                 }
@@ -213,7 +158,8 @@ namespace BitFunnel
                     // And the accumulator(RBX) with the quadword in the specified offset in the row.
                     m_code.Emit<OpCode::Mov>(rax, rsi, id * 8);
                     m_code.Emit<OpCode::Add>(rcx, rax);
-                    MovSIB(m_code, rax, rcx, rdx);
+                    m_code.Emit<OpCode::Mov>(rax, rdx, rcx, SIB::Scale8, 0);
+                    //MovSIB(m_code, rax, rcx, rdx);
                     //m_code.MOV(RAX, QWORDPTR[RSI + static_cast<int>(id * 8)]);
                     //m_code.ADD(RCX, RAX);
                     //m_code.MOV(RAX, QWORDPTR[SCALE8(RCX) + RDX]);
@@ -224,7 +170,8 @@ namespace BitFunnel
                 }
 
                 // Acount for inverted row and And the data with accumulator(RBX).
-                EmitNot(m_code, rax);
+                m_code.Emit<OpCode::Not>(rax);
+                // EmitNot(m_code, rax);
                 m_code.Emit<OpCode::And>(rbx, rax);
                 //m_code.NOT(RAX);
                 //m_code.AND(RBX, RAX);
@@ -245,7 +192,8 @@ namespace BitFunnel
                     // Case 5: rankDelta == 0 && !inverted && IsRegister                                 
                     unsigned reg = m_registers.GetRegister(id);
                     m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                    AndSIB(m_code, rbx, rax, rdx);
+                    m_code.Emit<OpCode::And>(rbx, rdx, rax, SIB::Scale8, 0);
+                    //AndSIB(m_code, rbx, rax, rdx);
                     //AndAccumulator(m_code, rbx, rax, reg);
                     //AndAccumulator(m_code, RBX, RAX, reg);
                 }
@@ -255,7 +203,8 @@ namespace BitFunnel
                     // Combine with offsets within the row (stored in RCX) with the row offset.
                     // And the accumulator(RBX) with the quadword in the specified offset in the row.
                     m_code.Emit<OpCode::Add>(rax, rsi, id * 8);
-                    AndSIB(m_code, rbx, rax, rdx);
+                    m_code.Emit<OpCode::And>(rbx, rdx, rax, SIB::Scale8, 0);
+                    //AndSIB(m_code, rbx, rax, rdx);
                     //m_code.ADD(RAX, QWORDPTR[RSI + static_cast<int>(id * 8)]);
                     //m_code.AND(RBX, QWORDPTR[SCALE8(RAX) + RDX]);
                 }
@@ -273,7 +222,8 @@ namespace BitFunnel
                     // Case 7: rankDelta == 0 && inverted && IsRegister
                     unsigned reg = m_registers.GetRegister(id);
                     m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                    MovSIB(m_code, rax, rax, rdx);
+                    m_code.Emit<OpCode::Mov>(rax, rdx, rax, SIB::Scale8, 0);
+                    //MovSIB(m_code, rax, rax, rdx);
                     //LoadAccumulator(m_code, rax, rax, reg);
                     //LoadAccumulator(m_code, RAX, RAX, reg);
                 }
@@ -283,12 +233,14 @@ namespace BitFunnel
                     // Combine with offsets within the row (stored in RCX) with the row offset.
                     // And the accumulator(RBX) with the quadword in the specified offset in the row.
                     m_code.Emit<OpCode::Mov>(rax, rsi, id * 8);
-                    MovSIB(m_code, rax, rax, rdx);
+                    m_code.Emit<OpCode::And>(rax, rdx, rax, SIB::Scale8, 0);
+                    //MovSIB(m_code, rax, rax, rdx);
                     //m_code.ADD(RAX, QWORDPTR[RSI + static_cast<int>(id * 8)]);
                     //m_code.MOV(RAX, QWORDPTR[SCALE8(RAX) + RDX]);
                 }
                 // Acount for inverted row and And the data with accumulator(RBX).
-                EmitNot(m_code, rax);
+                m_code.Emit<OpCode::Not>(rax);
+                //EmitNot(m_code, rax);
                 m_code.Emit<OpCode::And>(rbx, rax);
                 //m_code.NOT(RAX);
                 //m_code.AND(RBX, RAX);
@@ -324,7 +276,8 @@ namespace BitFunnel
 
                 unsigned reg = m_registers.GetRegister(id);
                 m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                MovSIB(m_code, rbx, rax, rdx);
+                m_code.Emit<OpCode::Mov>(rbx, rdx, rax, SIB::Scale8, 0);
+                //MovSIB(m_code, rbx, rax, rdx);
                 //LoadAccumulator(m_code, rbx, rax, reg);
                 //LoadAccumulator(m_code, RBX, RAX, reg);
             }
@@ -349,7 +302,8 @@ namespace BitFunnel
                 //m_code.ADD(RCX, RAX);
 
                 // Load the accumulator(RBX) with the quadword in the specified offset in the row.
-                MovSIB(m_code, rbx, rcx, rdx);
+                m_code.Emit<OpCode::And>(rbx, rdx, rcx, SIB::Scale8, 0);
+                //MovSIB(m_code, rbx, rcx, rdx);
                 m_code.Emit<OpCode::Pop>(rcx);
                 //m_code.MOV(RBX, QWORDPTR[SCALE8(RCX) + RDX]);
                 //m_code.POP(RCX);
@@ -368,7 +322,8 @@ namespace BitFunnel
                 // Case 3: rankDelta == 0, IsRegister
                 unsigned reg = m_registers.GetRegister(id);
                 m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                MovSIB(m_code, rbx, rax, rdx);
+                m_code.Emit<OpCode::Mov>(rbx, rdx, rax, SIB::Scale8, 0);
+                //MovSIB(m_code, rbx, rax, rdx);
                 //LoadAccumulator(m_code, rbx, rax, reg);
                 //LoadAccumulator(m_code, RBX, RAX, reg);
             }
@@ -381,7 +336,8 @@ namespace BitFunnel
                 //m_code.ADD(RAX, QWORDPTR[RSI + static_cast<int>(id * 8)]);
 
                 // Load the accumulator(RBX) with the quadword in the specified offset in the row.
-                MovSIB(m_code, rbx, rax, rdx);
+                m_code.Emit<OpCode::And>(rbx, rdx, rax, SIB::Scale8, 0);
+                //MovSIB(m_code, rbx, rax, rdx);
                 //m_code.MOV(RBX, QWORDPTR[SCALE8(RAX) + RDX]);
             }
         }
@@ -390,7 +346,8 @@ namespace BitFunnel
         {
             // NOTE that the X64 not opcode does not set the zero flag.
             // Must fall through to OR(RBX, RBX) to set flag appropriately.
-            EmitNot(m_code, rax);
+            m_code.Emit<OpCode::Not>(rbx);
+            // EmitNot(m_code, rbx);
             //m_code.NOT(RBX);
         }
 
@@ -471,7 +428,8 @@ namespace BitFunnel
     void MachineCodeGenerator::Not()
     {
         // TODO: NOT does not set the Z flag. Check if this code should OR(RBX, RBX).
-        EmitNot(m_code, rbx);
+        m_code.Emit<OpCode::Not>(rbx);
+        //EmitNot(m_code, rbx);
         //m_code.NOT(RBX);
     }
 
@@ -573,7 +531,8 @@ namespace BitFunnel
     void MachineCodeGenerator::Call(Label label)
     {
         m_pushCount++;
-        EmitCall(m_code, NativeJIT::Label(label));
+        m_code.Call(NativeJIT::Label(label));
+        //EmitCall(m_code, NativeJIT::Label(label));
         //m_code.CALL(static_cast<X64::Label>(label));
         m_pushCount--;
     }
