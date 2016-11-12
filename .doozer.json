@@ -28,5 +28,9 @@
         "ninja"
       ]
     },
-  }
+  },
+
+  "artifacts": [
+    "build-*/Testing/Temporary/LastTest.log"
+  ]
 }
