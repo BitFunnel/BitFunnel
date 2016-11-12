@@ -14,20 +14,6 @@
         "make test"
       ]
     },
-    "xenial-amd64/clang-3.8": {
-      "environment": {
-        "CC": "clang-3.8",
-        "CXX": "clang++-3.8"
-      },
-      "buildenv": "xenial-amd64",
-      "builddeps": ["build-essential", "clang-3.8", "cmake"],
-      "buildcmd": [
-        "./Configure_Make.sh",
-        "cd build-make",
-        "make -j ${PARALLEL}",
-        "make test"
-      ]
-    },
     "xenial-amd64/clang-3.8+ninja": {
       "environment": {
         "CC": "clang-3.8",
