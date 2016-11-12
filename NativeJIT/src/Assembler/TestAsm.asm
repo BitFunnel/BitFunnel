@@ -69,6 +69,53 @@ movsd xmm0, xmm1
 ; vmovq xmm0, rax       // Illegal instruction
 ret
 
+; Dec
+dec al
+dec ax
+dec eax
+dec rax
+dec r12
+
+dec byte ptr [r12 + 1234h]
+dec word ptr [r13 + 1234h]
+dec dword ptr [r14 + 1234h]
+dec qword ptr [r15 + 1234h]
+
+; Inc
+inc r9b
+inc r10w
+inc r11d
+inc r12
+
+inc byte ptr [rax + 1234h]
+inc word ptr [rbp + 1234h]
+inc dword ptr [rsi + 1234h]
+inc qword ptr [rdi + 1234h]
+
+; Neg
+neg rbx
+neg qword ptr [rbp + 56h]
+
+; Not
+not bl
+not word ptr [rbp + 56h]
+
+; SIB
+mov rax, [rsi + rcx * 8 + 1234h]
+mov r15, [r14 + r13 * 8 + 1234h]
+mov al, [rcx + r13 * 8 + 12h]
+mov bx, [r15 + rax * 8 + 34h]
+
+and rax, [rsi + rcx * 8 + 1234h]
+and r15, [r14 + r13 * 8 + 1234h]
+and al, [rcx + r13 * 8 + 12h]
+and bx, [r15 + rax * 8 + 34h]
+
+and rax, [rdi + rdx * 1 + 5678h]
+and rax, [rdi + rdx * 2 + 5678h]
+and rax, [rdi + rdx * 4 + 5678h]
+and rax, [rdi + rdx * 8 + 5678h]
+
 ; Another special case
 add r13, [r13]
 mov r13, [r13]
