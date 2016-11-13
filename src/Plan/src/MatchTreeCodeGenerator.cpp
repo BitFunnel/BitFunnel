@@ -89,11 +89,11 @@ namespace BitFunnel
     }
 
 
-    template <typename OBJECT, typename FIELD>
-    int32_t OffsetOf(FIELD OBJECT::*field)
-    {
-        return static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<OBJECT*>(nullptr))->*field)));
-    }
+    //template <typename OBJECT, typename FIELD>
+    //int32_t OffsetOf(FIELD OBJECT::*field)
+    //{
+    //    return static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<OBJECT*>(nullptr))->*field)));
+    //}
 
 
     void MatcherNode::EmitRegisterInitialization(ExpressionTree& tree)
@@ -113,13 +113,6 @@ namespace BitFunnel
 
         // rdi already holds first parameter. No need to load.
 #endif
-
-        // Get offsets of fields of Paramters structure.
-        m_sliceCount = OffsetOf(&Parameters::m_sliceCount);
-        m_sliceBuffers = OffsetOf(&Parameters::m_sliceBuffers);
-        m_iterationsPerSlice = OffsetOf(&Parameters::m_iterationsPerSlice);
-        m_rowOffsets = OffsetOf(&Parameters::m_rowOffsets);
-        m_callback = OffsetOf(&Parameters::m_callback);
 
         // Allocate temporary variables.
         m_innerLoopLimit = tree.Temporary<size_t>();

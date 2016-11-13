@@ -43,6 +43,17 @@ namespace BitFunnel
     class DocumentHandle;
     class RegisterAllocator;
 
+
+    template <typename OBJECT, typename FIELD>
+    constexpr int32_t OffsetOf(FIELD OBJECT::*field)
+    {
+        return static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<OBJECT*>(nullptr))->*field)));
+    }
+
+#define OFFSET_OF(object, field) \
+static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr))->field)))
+
+
     //*************************************************************************
     //
     // MatcherNode
@@ -65,7 +76,10 @@ namespace BitFunnel
             ptrdiff_t const * m_rowOffsets;
             Callback m_callback;
 
-            // Output
+            // Dedupe
+            size_t m_dedupe[65];
+
+            // Matches
             size_t m_capacity;
             size_t m_matchCount;
             DocumentHandle* m_matches;
@@ -84,6 +98,14 @@ namespace BitFunnel
 
         virtual void Print(std::ostream& out) const override;
 
+        static const int32_t m_sliceCount = OFFSET_OF(Parameters, m_sliceCount);
+        static const int32_t m_sliceBuffers = OFFSET_OF(Parameters, m_sliceBuffers);
+        static const int32_t m_iterationsPerSlice = OFFSET_OF(Parameters, m_iterationsPerSlice);
+        static const int32_t m_rowOffsets = OFFSET_OF(Parameters, m_rowOffsets);
+        static const int32_t m_callback = OFFSET_OF(Parameters, m_callback);
+        static const int32_t m_dedupe = OFFSET_OF(Parameters, m_dedupe);
+
+
     private:
         void EmitRegisterInitialization(ExpressionTree& tree);
         void EmitOuterLoop(ExpressionTree& tree);
@@ -95,12 +117,6 @@ namespace BitFunnel
 
         Register<8u, false> m_param1;
         Register<8u, false> m_return;
-
-        int32_t m_sliceCount;
-        int32_t m_sliceBuffers;
-        int32_t m_iterationsPerSlice;
-        int32_t m_rowOffsets;
-        int32_t m_callback;
 
         Storage<size_t> m_innerLoopLimit;
         Storage<size_t> m_matchFound;

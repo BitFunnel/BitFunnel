@@ -22,6 +22,7 @@
 
 #include "LoggerInterfaces/Check.h"
 #include "MachineCodeGenerator.h"
+#include "MatchTreeCodeGenerator.h"
 #include "NativeJIT/CodeGen/FunctionBuffer.h"
 #include "NativeJIT/CodeGen/X64CodeGenerator.h"
 #include "RegisterAllocator.h"
@@ -308,77 +309,35 @@ namespace BitFunnel
 
     void MachineCodeGenerator::Report()
     {
-        // TODO: Implement.
-        m_code.Emit8(0xcc);
+        // Free up two registers.
+        m_code.Emit<OpCode::Push>(r14);
+
+        // Compute iteration number in rax.
+        m_code.Emit<OpCode::Mov>(rax, rcx);
+        m_code.Emit<OpCode::Sub>(rax, rdx);
+        m_code.EmitImmediate<OpCode::Shr>(rax, static_cast<uint8_t>(3));
+
+        // Mark the quadword for this iteration.
+        m_code.EmitImmediate<OpCode::Mov>(r14, 1);
+        //m_code.Emit<OpCode::Shl>(r14, al);
+        m_code.Emit<OpCode::Or>(rdi, MatcherNode::m_dedupe, r14);
+
+        // Or the accumulator into that quadword.
+        // TODO: Implement SIB-store addressing mode.
+        //m_code.Emit<OpCode::Or>(rdi, rax, SIB::Scale8, 0, rbx);
+        // TODO: Remove the following three SIB-emulation lines.
+        m_code.EmitImmediate<OpCode::Shl>(rax, static_cast<uint8_t>(3));
+        m_code.Emit<OpCode::Add>(rax, rdi);
+        m_code.Emit<OpCode::Or>(rax, 8, rbx);
+
+        // TODO: Set matchFound temporary variable.
+
+        // Restore registers.
+        m_code.Emit<OpCode::Pop>(r14);
     }
 
 
-    //void MachineCodeGenerator::Report()
-    //{
-    //    // TODO: set matchFound.
-
-    //}
-
-#if 0
-    void MachineCodeGenerator::Report()
-    {
-        // Save volatile registers
-        m_code.PUSH(RCX);
-        m_code.PUSH(RDX);
-        m_code.PUSH(R8);
-        m_code.PUSH(R9);
-        m_code.PUSH(R10);
-        m_code.PUSH(R11);
-        m_pushCount += 6;
-
-        // Record the fact that we found a match in this group.
-        m_code.MOV(R10, 1);
-        m_code.MOV(m_code.Local(0), R10);
-
-        // Plan to allocate one slot for each of the 3 parameters to
-        // ProcessResultsHelper.
-        int parameterCount = 3;
-        const int x64MinSlots = 4;
-        int slots = (std::max)(parameterCount, x64MinSlots);
-
-        // Ensure RSP is 16-byte aligned while allocating space for function call parameter homes.
-        // If we've pushed an odd number of times in the combination of EmitPush()/EmitPop and 
-        // saving 6 volatiles, add one more slot to ensure the stack will be 16-byte aligned.
-        if ((m_pushCount + slots) % 2 != 0)
-        {
-            ++slots;                        // Add one more slot to align RSP to 16-byte boundary.
-        }
-        m_code.SUB(RSP, slots * 8);
-
-        // Set up parameters to the function call.
-        // Please refer to EmitRegisterInitialization() function
-        // in MatchTreeCodeGenerator.cpp to understand the usage 
-        // of m_code.ParameterHome(4) and m_code.ParameterHome(6).
-        m_code.MOV(R8, RCX);                            // Third parameter is the iteration counter.
-        m_code.SUB(R8, RDI);
-
-        m_code.MOV(RDX, RBX);                           // Second parameter is accumulator value in RBX.
-        m_code.MOV(RCX, m_code.ParameterHome(4));       // First parameter is the IResultsProcessor.
-
-        m_code.MOV(RAX, m_code.ParameterHome(6));       // This is the address of AddResultsHelper passed as a parameter
-        m_code.CALL(RAX);
-
-        // Restore RSP
-        m_code.ADD(RSP, slots * 8);
-
-        // Restore volatiles
-        m_code.POP(R11);
-        m_code.POP(R10);
-        m_code.POP(R9);
-        m_code.POP(R8);
-        m_code.POP(RDX);
-        m_code.POP(RCX);
-        m_pushCount -= 6;
-    }
-#endif
-
-
-    // Constrol flow primitives.
+    // Control flow primitives.
     ICodeGenerator::Label MachineCodeGenerator::AllocateLabel()
     {
         return m_code.AllocateLabel().GetId();
