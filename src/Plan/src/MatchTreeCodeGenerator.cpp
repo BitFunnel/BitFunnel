@@ -36,6 +36,34 @@
 
 namespace BitFunnel
 {
+    void CompilePseudoCode(char * /*RCX*/, char* /*RDX*/, ptrdiff_t const * /*RSI*/)
+    {
+    }
+
+    void PseudoCode(MatcherNode::Parameters& params)
+    {
+        auto RDI = params;
+        auto RSI = RDI.m_rowOffsets;
+
+        while (RDI.m_sliceCount > 0)
+        {
+            auto RCX = *RDI.m_sliceBuffers;
+            auto RDX = RCX;
+
+            auto limit = RCX + (RDI.m_iterationsPerSlice);
+            while (RCX < limit)
+            {
+                CompilePseudoCode(RCX, RDX, RSI);
+
+                ++RCX;
+            }
+
+            --params.m_sliceCount;
+            ++params.m_sliceBuffers;
+        }
+    }
+
+
     //*************************************************************************
     //
     // MatcherNode
@@ -61,30 +89,11 @@ namespace BitFunnel
     }
 
 
-    // Allocates a temporary variable and initializes it to
-    //   reinterpret_cast<OBJECT>(base)->field.
-    // Returns a Storage representing the new temporary variable.
     template <typename OBJECT, typename FIELD>
-    Storage<FIELD> Initialize(ExpressionTree& tree, Register <8u, false> base, FIELD OBJECT::*field)
+    int32_t OffsetOf(FIELD OBJECT::*field)
     {
-        auto & code = tree.GetCodeGenerator();
-        auto storage = tree.Temporary<FIELD>();
-        int32_t offset =
-            static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<OBJECT*>(nullptr))->*field)));
-        code.Emit<OpCode::Mov>(rax, base, offset);
-        CodeGenHelpers::Emit<OpCode::Mov>(code, storage, rax);
-        return storage;
+        return static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<OBJECT*>(nullptr))->*field)));
     }
-
-
-    // RAX: Scratch register
-    // RBX: Accumulator
-    // RCX: Loop counter at inner loop root, offset elsewhere in traversal
-    //      Encoded as (&SLICE_POINTER >> 3) + offset.
-    // RDX: Current slice pointer.
-    // RSI: Pointer to array of all row offset pointers.
-    // RDI: &SLICE_POINTER >> 3
-    // R8-R15: Register row pointers.
 
 
     void MatcherNode::EmitRegisterInitialization(ExpressionTree& tree)
@@ -95,26 +104,31 @@ namespace BitFunnel
 #if BITFUNNEL_PLATFORM_WINDOWS
         m_param1 = rcx;
         m_return = rax;
+
+        // rcx holds first parameter - transfer to rdi.
+        code.Emit<OpCode::Mov>(rdi, m_param1);
 #else
         m_param1 = rdi;
         m_return = rax;
+
+        // rdi already holds first parameter. No need to load.
 #endif
 
-        // Initialize member variables for copy of Parameters structure.
-        m_sliceCount = Initialize(tree, m_param1, &Parameters::m_sliceCount);
-        m_sliceBuffers = Initialize(tree, m_param1, &Parameters::m_sliceBuffers);
-        m_iterationsPerSlice = Initialize(tree, m_param1, &Parameters::m_iterationsPerSlice);
-        m_rowOffsets = Initialize(tree, m_param1, &Parameters::m_rowOffsets);
-        m_callback = Initialize(tree, m_param1, &Parameters::m_callback);
+        // Get offsets of fields of Paramters structure.
+        m_sliceCount = OffsetOf(&Parameters::m_sliceCount);
+        m_sliceBuffers = OffsetOf(&Parameters::m_sliceBuffers);
+        m_iterationsPerSlice = OffsetOf(&Parameters::m_iterationsPerSlice);
+        m_rowOffsets = OffsetOf(&Parameters::m_rowOffsets);
+        m_callback = OffsetOf(&Parameters::m_callback);
 
+        // Allocate temporary variables.
         m_innerLoopLimit = tree.Temporary<size_t>();
         m_matchFound = tree.Temporary<size_t>();
         m_temp = tree.Temporary<size_t>();
 
         // Initialize row pointers.
-
         // RSI has pointer to row offsets.
-        CodeGenHelpers::Emit<OpCode::Mov>(code, rsi, m_rowOffsets);
+        code.Emit<OpCode::Mov>(rsi, rdi, m_rowOffsets);
 
         // Load row offsets into R8..R8 + m_registers.GetRegistersAllocated()
         // TODO: Should we use GetRegister() or explicitly use r+8?
@@ -148,29 +162,18 @@ namespace BitFunnel
         code.PlaceLabel(topOfLoop);
 
         // Check if the slice count (loop counter) reaches zero.
-        CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_sliceCount);
+        code.Emit<OpCode::Mov>(rax, rdi, m_sliceCount);
         code.Emit<OpCode::Or>(rax, rax);
         code.EmitConditionalJump<JccType::JZ>(bottomOfLoop);
-
-        // RDI has the current slice pointer, expressed in the format of 
-        // the number of quadwords from address 0 to the address of the 
-        // current slice pointer(i.e. shifted right by 3).
-        CodeGenHelpers::Emit<OpCode::Mov>(code, rdi, m_sliceBuffers);
-        code.Emit<OpCode::Mov>(rdi, rdi, 0);
-        code.EmitImmediate<OpCode::Shr>(rdi, static_cast<uint8_t>(3u));
 
         EmitInnerLoop(tree);
 
         // Decrement the slice count by 1.
-        // TODO: Implement OpCode::Dec
-        CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_sliceCount);
-        code.EmitImmediate<OpCode::Sub>(rax, 1);
-        CodeGenHelpers::Emit<OpCode::Mov>(code, m_sliceCount, rax);
+        code.Emit<OpCode::Dec, 8>(rdi, m_sliceCount);
 
         // Advance to the next slice.
-        CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_sliceBuffers);
-        code.EmitImmediate<OpCode::Add>(rax, 8);
-        CodeGenHelpers::Emit<OpCode::Mov>(code, m_sliceBuffers, rax);
+        code.EmitImmediate<OpCode::Mov>(rax, 8);
+        code.Emit<OpCode::Add>(rdi, m_sliceBuffers, rax);
 
         code.Jmp(topOfLoop);
 
@@ -190,23 +193,15 @@ namespace BitFunnel
         auto exitLoop = code.AllocateLabel();
 
         // Initialize loop counter and limit.
-        // Loop counter starts at the current slice pointer, expressed as the 
-        // number of quadwords from address 0 to the address of the current slice
-        // pointer(i.e. byte address shifted right by 3).
-        // Loop limit is equal to the counter plus the number of quadwords in a slice.
-        // Initialize current quadword and limit.
-        //   rcx: current quadword - starts at slice pointer expressed in
-        //        from address 0 (i.e slice >> 3).
-        //   rdx: quadword limit - equal to (slice >> 3) + quadwords in a slice.
-        code.Emit<OpCode::Mov>(rcx, rdi);
-        CodeGenHelpers::Emit<OpCode::Mov>(code, rdx, m_iterationsPerSlice);
-        code.Emit<OpCode::Add>(rdx, rcx);
-        CodeGenHelpers::Emit<OpCode::Mov>(code, m_innerLoopLimit, rdx);
-
-
-        // Use rdx to store the slice pointer for the current slice.
-        CodeGenHelpers::Emit<OpCode::Mov>(code, rdx, m_sliceBuffers);
+        //   rcx: loop counter starts at the current slice buffer pointer.
+        //   m_innerLoopLimit: slice buffer pointer + bytes in starting row.
+        code.Emit<OpCode::Mov>(rdx, rdi, m_sliceBuffers);
         code.Emit<OpCode::Mov>(rdx, rdx, 0);
+        code.Emit<OpCode::Mov>(rax, rdi, m_iterationsPerSlice);
+        code.EmitImmediate<OpCode::Shl>(rax, static_cast<uint8_t>(3));
+        code.Emit<OpCode::Add>(rax, rdx);
+        CodeGenHelpers::Emit<OpCode::Mov>(code, m_innerLoopLimit, rax);
+        code.Emit<OpCode::Mov>(rcx, rdx);
 
 
         //
@@ -224,30 +219,20 @@ namespace BitFunnel
 
         // TODO: Handle case where there are no rows.
 
-        // Clear Local(0) to indicate that no matches have been found on this iteration.
+        // Clear m_matchFound to indicate that no matches have been found on this iteration.
         code.Emit<OpCode::Xor>(rax, rax);
         CodeGenHelpers::Emit<OpCode::Mov>(code, m_matchFound, rax);
 
-        //root.Compile(*this);
         {
             MachineCodeGenerator generator(m_registers, tree.GetCodeGenerator());
             m_compileNodeTree.Compile(generator);
         }
 
 
-        CodeGenHelpers::Emit<OpCode::Mov>(code, m_temp, rcx);
-
-        //        CodeGenHelpers::Emit<OpCode::Mov>(code, m_param1, m_sliceCount);
-        CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_callback);
-        code.Emit<OpCode::Call>(rax);
-
-        CodeGenHelpers::Emit<OpCode::Mov>(code, rcx, m_temp);
-
-
         // If at least one match was found in this iteration, call FinishIteration.
         CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_matchFound);
         code.Emit<OpCode::Or>(rax, rax);
-        code.EmitConditionalJump<JccType::JZ>(bottomOfLoop);    // TODO: Original code passed X64::Long.
+        code.EmitConditionalJump<JccType::JZ>(bottomOfLoop);
 
         EmitFinishIteration(tree);
 
@@ -255,8 +240,8 @@ namespace BitFunnel
         // Bottom of loop
         //
         code.PlaceLabel(bottomOfLoop);
-        code.EmitImmediate<OpCode::Add>(rcx, 1);                // Increment current.
-        code.Jmp(topOfLoop);                                    // TODO: Original code passed X64::Long.
+        code.EmitImmediate<OpCode::Add>(rcx, 8);                // Increment current.
+        code.Jmp(topOfLoop);
 
 
         code.PlaceLabel(exitLoop);

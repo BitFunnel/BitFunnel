@@ -40,6 +40,25 @@ namespace BitFunnel
     // RDI: &SLICE_POINTER >> 3
     // R8-R15: Register row pointers.
 
+    // New register scheme:
+    //
+    // slice the pointer to the current slice buffer
+    // iteration is the iteration count in the inner loop
+    //
+    // rax: scratch register
+    // rbx: accumulator
+    // rcx: slice + iteration
+    // rdx: slice
+    // rsi: pointer to array of row offsets
+    // rdi: pointer to parameters data structure
+    // r8-r15: row offset pointers
+    //
+    // while (sliceCount > 0)
+    // {
+    //    
+    // }
+
+
     MachineCodeGenerator::MachineCodeGenerator(RegisterAllocator const & registers,
                                                FunctionBuffer & code)
       : m_registers(registers),
@@ -66,55 +85,25 @@ namespace BitFunnel
         // TODO: Need to deal with out of order loads.
         if (rankDelta > 0)
         {
+            // Store rank-adjusted offset in rax.
+            m_code.Emit<OpCode::Mov>(rax, rcx);
+            m_code.Emit<OpCode::Sub>(rax, rdx);
+            m_code.EmitImmediate<OpCode::Shr>(rax, static_cast<uint8_t>(rankDelta));
+
             if (!inverted)
             {
                 if (m_registers.IsRegister(id))
                 {
                     // Case 1: rankDelta > 0 && !inverted && IsRegister
-                    // Calculate the offset into RAX.
-                    m_code.Emit<OpCode::Mov>(rax, rcx);
-                    m_code.Emit<OpCode::Sub>(rax, rdi); 
-                    //m_code.MOV(RAX, RCX);
-                    //m_code.SUB(RAX, RDI);
-
-                    // Adjust the offset for the rank.
-                    m_code.EmitImmediate<OpCode::Shr>(rax, static_cast<uint8_t>(rankDelta));
-                    //m_code.SHR(RAX, rankDelta);
-
+                    m_code.Emit<OpCode::Add>(rax, rdx);
                     unsigned reg = m_registers.GetRegister(id);
-                    m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                    m_code.Emit<OpCode::And>(rbx, rdx, rax, SIB::Scale8, 0);
-                    //AndSIB(m_code, rbx, rax, rdx);
-                    //AndAccumulator(m_code, rbx, rax, reg);
-                    //AndAccumulator(m_code, RBX, RAX, reg);
+                    m_code.Emit<OpCode::And>(rbx, rax, Register<8u, false>(reg), SIB::Scale1, 0);
                 }
                 else
                 {
                     // Case 2: rankDelta > 0 && !inverted && !IsRegister
-                    // Save the original value in RCX. Calculate the offset which
-                    // is stored in RCX and adjust it for the rank.
-                    m_code.Emit<OpCode::Push>(rcx);
-                    m_code.Emit<OpCode::Sub>(rcx, rdi);
-                    m_code.EmitImmediate<OpCode::Shr>(rcx, rankDelta);
-                    //m_code.PUSH(RCX);
-                    //m_code.SUB(RCX, RDI);
-                    //m_code.SHR(RCX, rankDelta);
-
-                    // Get the offset for the row (stored in RAX) and combine with offsets within
-                    // the row (stored in RCX) to form the overall offset with respect to the
-                    // slice buffer pointer(stored in RDX).
-                    // And the accumulator(RBX) with the quadword in the specified offset in the row.
-                    m_code.Emit<OpCode::Mov>(rax, rsi, id * 8);
-                    m_code.Emit<OpCode::Add>(rcx, rax);
-                    m_code.Emit<OpCode::And>(rbx, rdx, rcx, SIB::Scale8, 0);
-                    //AndSIB(m_code, rbx, rcx, rdx);
-                    //m_code.MOV(RAX, QWORDPTR[RSI + static_cast<int>(id * 8)]);
-                    //m_code.ADD(RCX, RAX);
-                    //m_code.AND(RBX, QWORDPTR[SCALE8(RCX) + RDX]);
-
-                    // POP doesn't affect flags.
-                    m_code.Emit<OpCode::Pop>(rcx);
-                    //m_code.POP(RCX);
+                    m_code.Emit<OpCode::Add>(rax, rsi, id * 8);
+                    m_code.Emit<OpCode::And>(rbx, rax, rdx, SIB::Scale1, 0);
                 }
             }
             else
@@ -122,128 +111,60 @@ namespace BitFunnel
                 if (m_registers.IsRegister(id))
                 {
                     // Case 3: rankDelta > 0 && inverted && IsRegister
-                    // Calculate the offset into RAX.
-                    m_code.Emit<OpCode::Mov>(rax, rcx);
-                    m_code.Emit<OpCode::Sub>(rax, rdi);
-                    //m_code.MOV(RAX, RCX);
-                    //m_code.SUB(RAX, RDI);
-
-                    // Adjust the offset for rank.
-                    m_code.EmitImmediate<OpCode::Shr>(rax, rankDelta);
-                    //m_code.SHR(RAX, rankDelta);
-
+                    m_code.Emit<OpCode::Add>(rax, rdx);
                     unsigned reg = m_registers.GetRegister(id);
-
-                    m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                    m_code.Emit<OpCode::And>(rax, rdx, rax, SIB::Scale8, 0);
-                    ///MovSIB(m_code, rax, rax, rdx);
-                    //LoadAccumulator(m_code, rax, rax, reg);
-                    //LoadAccumulator(m_code, RAX, RAX, reg);
+                    m_code.Emit<OpCode::Mov>(rax, rax, Register<8u, false>(reg), SIB::Scale1, 0);
                 }
                 else
                 {
                     // Case 4: rankDelta > 0 && inverted && !IsRegister
-                    // Save the original value in RCX. Calculate the offset which
-                    // is stored in RCX and adjust it for the rank.
-                    m_code.Emit<OpCode::Push>(rcx);
-                    m_code.Emit<OpCode::Sub>(rcx, rdi);
-                    m_code.EmitImmediate<OpCode::Shr>(rcx, rankDelta);
-                    //m_code.PUSH(RCX);
-                    //m_code.SUB(RCX, RDI);
-                    //m_code.SHR(RCX, rankDelta);
-
-                    // Get the offset for the row (stored in RAX) and combine with offsets within
-                    // the row (stored in RCX) to form the overall offset with respect to the
-                    // slice buffer pointer(stored in RDX).
-                    // And the accumulator(RBX) with the quadword in the specified offset in the row.
-                    m_code.Emit<OpCode::Mov>(rax, rsi, id * 8);
-                    m_code.Emit<OpCode::Add>(rcx, rax);
-                    m_code.Emit<OpCode::Mov>(rax, rdx, rcx, SIB::Scale8, 0);
-                    //MovSIB(m_code, rax, rcx, rdx);
-                    //m_code.MOV(RAX, QWORDPTR[RSI + static_cast<int>(id * 8)]);
-                    //m_code.ADD(RCX, RAX);
-                    //m_code.MOV(RAX, QWORDPTR[SCALE8(RCX) + RDX]);
-
-                    // POP doesn't affect flags.
-                    m_code.Emit<OpCode::Pop>(rcx);
-                    //m_code.POP(RCX);
+                    m_code.Emit<OpCode::Add>(rax, rsi, id * 8);
+                    m_code.Emit<OpCode::Mov>(rax, rax, rdx, SIB::Scale1, 0);
                 }
 
-                // Acount for inverted row and And the data with accumulator(RBX).
+                // Combine inverted row with accumulator(RBX).
                 m_code.Emit<OpCode::Not>(rax);
-                // EmitNot(m_code, rax);
                 m_code.Emit<OpCode::And>(rbx, rax);
-                //m_code.NOT(RAX);
-                //m_code.AND(RBX, RAX);
             }
         }
         else
         {
             if (!inverted)
             {
-                // Calculate the offset into RAX.
-                m_code.Emit<OpCode::Mov>(rax, rcx);
-                m_code.Emit<OpCode::Sub>(rax, rdi);
-                //m_code.MOV(RAX, RCX);
-                //m_code.SUB(RAX, RDI);
-
                 if (m_registers.IsRegister(id))
                 {
-                    // Case 5: rankDelta == 0 && !inverted && IsRegister                                 
+                    // Case 5: rankDelta == 0 && !inverted && IsRegister                              m_code.Emit<OpCode::Mov>(rax, rcx);
                     unsigned reg = m_registers.GetRegister(id);
-                    m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                    m_code.Emit<OpCode::And>(rbx, rdx, rax, SIB::Scale8, 0);
-                    //AndSIB(m_code, rbx, rax, rdx);
-                    //AndAccumulator(m_code, rbx, rax, reg);
-                    //AndAccumulator(m_code, RBX, RAX, reg);
+                    m_code.Emit<OpCode::And>(rbx, rcx, Register<8u, false>(reg), SIB::Scale1, 0);
                 }
                 else
                 {
                     // Case 6: rankDelta == 0 && !inverted && !IsRegister
-                    // Combine with offsets within the row (stored in RCX) with the row offset.
-                    // And the accumulator(RBX) with the quadword in the specified offset in the row.
+                    m_code.Emit<OpCode::Mov>(rax, rcx);
                     m_code.Emit<OpCode::Add>(rax, rsi, id * 8);
-                    m_code.Emit<OpCode::And>(rbx, rdx, rax, SIB::Scale8, 0);
-                    //AndSIB(m_code, rbx, rax, rdx);
-                    //m_code.ADD(RAX, QWORDPTR[RSI + static_cast<int>(id * 8)]);
-                    //m_code.AND(RBX, QWORDPTR[SCALE8(RAX) + RDX]);
+                    m_code.Emit<OpCode::And>(rbx, rax, rdx, SIB::Scale1, 0);
                 }
             }
             else
             {
                 // Row is inverted.
-                m_code.Emit<OpCode::Mov>(rax, rcx);
-                m_code.Emit<OpCode::Sub>(rax, rdi);
-                //m_code.MOV(RAX, RCX);
-                //m_code.SUB(RAX, RDI);
-
                 if (m_registers.IsRegister(id))
                 {
                     // Case 7: rankDelta == 0 && inverted && IsRegister
                     unsigned reg = m_registers.GetRegister(id);
-                    m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                    m_code.Emit<OpCode::Mov>(rax, rdx, rax, SIB::Scale8, 0);
-                    //MovSIB(m_code, rax, rax, rdx);
-                    //LoadAccumulator(m_code, rax, rax, reg);
-                    //LoadAccumulator(m_code, RAX, RAX, reg);
+                    m_code.Emit<OpCode::Mov>(rax, rcx, Register<8u, false>(reg), SIB::Scale1, 0);
                 }
                 else
                 {
                     // Case 8: rankDelta == 0 && inverted && !IsRegister
-                    // Combine with offsets within the row (stored in RCX) with the row offset.
-                    // And the accumulator(RBX) with the quadword in the specified offset in the row.
-                    m_code.Emit<OpCode::Mov>(rax, rsi, id * 8);
-                    m_code.Emit<OpCode::And>(rax, rdx, rax, SIB::Scale8, 0);
-                    //MovSIB(m_code, rax, rax, rdx);
-                    //m_code.ADD(RAX, QWORDPTR[RSI + static_cast<int>(id * 8)]);
-                    //m_code.MOV(RAX, QWORDPTR[SCALE8(RAX) + RDX]);
+                    m_code.Emit<OpCode::Mov>(rax, rcx);
+                    m_code.Emit<OpCode::Add>(rax, rsi, id * 8);
+                    m_code.Emit<OpCode::Mov>(rax, rax, rdx, SIB::Scale1, 0);
                 }
-                // Acount for inverted row and And the data with accumulator(RBX).
+
+                // Combine inverted row with accumulator(RBX).
                 m_code.Emit<OpCode::Not>(rax);
-                //EmitNot(m_code, rax);
                 m_code.Emit<OpCode::And>(rbx, rax);
-                //m_code.NOT(RAX);
-                //m_code.AND(RBX, RAX);
             }
         }
 
@@ -261,84 +182,39 @@ namespace BitFunnel
 
         if (rankDelta > 0)
         {
+            // Store rank-adjusted offset in rax.
+            m_code.Emit<OpCode::Mov>(rax, rcx);
+            m_code.Emit<OpCode::Sub>(rax, rdx);
+            m_code.EmitImmediate<OpCode::Shr>(rax, static_cast<uint8_t>(rankDelta));
+
             if (m_registers.IsRegister(id))
             {
                 // Case 1: rankDelta > 0, IsRegister
-                // Calculate the offset into RAX.
-                m_code.Emit<OpCode::Mov>(rax, rcx);
-                m_code.Emit<OpCode::Sub>(rax, rdi);
-                //m_code.MOV(RAX, RCX);
-                //m_code.SUB(RAX, RDI);
-
-                // Adjust the offset for rank.
-                m_code.EmitImmediate<OpCode::Shr>(rax, static_cast<uint8_t>(rankDelta));
-                //m_code.SHR(RAX, rankDelta);
-
+                m_code.Emit<OpCode::Add>(rax, rdx);
                 unsigned reg = m_registers.GetRegister(id);
-                m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                m_code.Emit<OpCode::Mov>(rbx, rdx, rax, SIB::Scale8, 0);
-                //MovSIB(m_code, rbx, rax, rdx);
-                //LoadAccumulator(m_code, rbx, rax, reg);
-                //LoadAccumulator(m_code, RBX, RAX, reg);
+                m_code.Emit<OpCode::Mov>(rbx, rax, Register<8u, false>(reg), SIB::Scale1, 0);
             }
             else
             {
                 // Case 2: rankDelta > 0, !IsRegister
-                // Save the original value in RCX. Calculate the offset which
-                // is stored in RCX and adjust it for the rank.
-                m_code.Emit<OpCode::Push>(rcx);
-                m_code.Emit<OpCode::Sub>(rcx, rdi);
-                m_code.EmitImmediate<OpCode::Shr>(rcx, rankDelta);
-                //m_code.PUSH(RCX);
-                //m_code.SUB(RCX, RDI);
-                //m_code.SHR(RCX, rankDelta);
-
-                // Get the offset for the row (stored in RAX) and combine with offsets within
-                // the row (stored in RCX) to form the overall offset with respect to the
-                // slice buffer pointer(stored in RDX).
-                m_code.Emit<OpCode::Mov>(rax, rsi, id * 8);
-                m_code.Emit<OpCode::Add>(rcx, rax);
-                //m_code.MOV(RAX, QWORDPTR[RSI + static_cast<int>(id * 8)]);
-                //m_code.ADD(RCX, RAX);
-
-                // Load the accumulator(RBX) with the quadword in the specified offset in the row.
-                m_code.Emit<OpCode::And>(rbx, rdx, rcx, SIB::Scale8, 0);
-                //MovSIB(m_code, rbx, rcx, rdx);
-                m_code.Emit<OpCode::Pop>(rcx);
-                //m_code.MOV(RBX, QWORDPTR[SCALE8(RCX) + RDX]);
-                //m_code.POP(RCX);
+                m_code.Emit<OpCode::Add>(rax, rsi, id * 8);
+                m_code.Emit<OpCode::Mov>(rbx, rax, rdx, SIB::Scale1, 0);
             }
         }
         else
         {
-            // Calculate the offset into RAX.
-            m_code.Emit<OpCode::Mov>(rax, rcx);
-            m_code.Emit<OpCode::Sub>(rax, rdi);
-            //m_code.MOV(RAX, RCX);
-            //m_code.SUB(RAX, RDI);
-
             if (m_registers.IsRegister(id))
             {
                 // Case 3: rankDelta == 0, IsRegister
                 unsigned reg = m_registers.GetRegister(id);
-                m_code.Emit<OpCode::Add>(rax, Register<8u, false>(reg));
-                m_code.Emit<OpCode::Mov>(rbx, rdx, rax, SIB::Scale8, 0);
-                //MovSIB(m_code, rbx, rax, rdx);
-                //LoadAccumulator(m_code, rbx, rax, reg);
-                //LoadAccumulator(m_code, RBX, RAX, reg);
+                m_code.Emit<OpCode::Mov>(rbx, rcx, Register<8u, false>(reg), SIB::Scale1, 0);
             }
             else
             {
                 // Case 4: rankDelta == 0, !IsRegister
-                // Combine with offsets within the row (stored in RAX) with the row offset
-                // to form the overall offset with respect to the slice buffer pointer(stored in RDX).
+                m_code.Emit<OpCode::Mov>(rax, rcx);
                 m_code.Emit<OpCode::Add>(rax, rsi, id * 8);
-                //m_code.ADD(RAX, QWORDPTR[RSI + static_cast<int>(id * 8)]);
-
-                // Load the accumulator(RBX) with the quadword in the specified offset in the row.
-                m_code.Emit<OpCode::And>(rbx, rdx, rax, SIB::Scale8, 0);
-                //MovSIB(m_code, rbx, rax, rdx);
-                //m_code.MOV(RBX, QWORDPTR[SCALE8(RAX) + RDX]);
+                m_code.Emit<OpCode::Mov>(rbx, rax, rdx, SIB::Scale1, 0);
             }
         }
 
@@ -347,52 +223,40 @@ namespace BitFunnel
             // NOTE that the X64 not opcode does not set the zero flag.
             // Must fall through to OR(RBX, RBX) to set flag appropriately.
             m_code.Emit<OpCode::Not>(rbx);
-            // EmitNot(m_code, rbx);
-            //m_code.NOT(RBX);
         }
 
         // Make sure flags are set
         m_code.Emit<OpCode::Or>(rbx, rbx);
-        //m_code.OR(RBX, RBX);
     }
 
 
     void MachineCodeGenerator::LeftShiftOffset(size_t shift)
     {
         // Decode the offset into RCX, adjust for the shift and then encode it back.
-        m_code.Emit<OpCode::Sub>(rcx, rdi);
+        m_code.Emit<OpCode::Sub>(rcx, rdx);
         m_code.EmitImmediate<OpCode::Shl>(rcx, static_cast<uint8_t>(shift));
-        m_code.Emit<OpCode::Add>(rcx, rdi);
-        //m_code.SUB(RCX, RDI);
-        //m_code.SHL(RCX, shift);
-        //m_code.ADD(RCX, RDI);
+        m_code.Emit<OpCode::Add>(rcx, rdx);
     }
 
 
     void MachineCodeGenerator::RightShiftOffset(size_t shift)
     {
         // Decode the offset into RCX, adjust for the shift and then encode it back.
-        m_code.Emit<OpCode::Sub>(rcx, rdi);
+        m_code.Emit<OpCode::Sub>(rcx, rdx);
         m_code.EmitImmediate<OpCode::Shr>(rcx, static_cast<uint8_t>(shift));
-        m_code.Emit<OpCode::Add>(rcx, rdi);
-        //m_code.SUB(RCX, RDI);
-        //m_code.SHR(RCX, shift);
-        //m_code.ADD(RCX, RDI);
+        m_code.Emit<OpCode::Add>(rcx, rdx);
     }
 
 
     void MachineCodeGenerator::IncrementOffset()
     {
-        m_code.EmitImmediate<OpCode::Add>(rcx, 1);
-        //m_code.INC(RCX);
+        m_code.Emit<OpCode::Inc>(rcx);
     }
-
 
 
     void MachineCodeGenerator::Push()
     {
         m_code.Emit<OpCode::Push>(rbx);
-        //m_code.PUSH(RBX);
         ++m_pushCount;
     }
 
@@ -400,7 +264,6 @@ namespace BitFunnel
     void MachineCodeGenerator::Pop()
     {
         m_code.Emit<OpCode::Pop>(rbx);
-        //m_code.POP(RBX);
         --m_pushCount;
     }
 
@@ -412,8 +275,6 @@ namespace BitFunnel
     {
         m_code.Emit<OpCode::Pop>(rax);
         m_code.Emit<OpCode::And>(rbx, rax);
-        //m_code.POP(RAX);
-        //m_code.AND(RBX, RAX);
         --m_pushCount;
     }
 
@@ -421,7 +282,6 @@ namespace BitFunnel
     void MachineCodeGenerator::Constant(int value)
     {
         m_code.EmitImmediate<OpCode::Mov>(rbx, value);
-        //m_code.MOV(RBX, value);
     }
 
 
@@ -429,8 +289,6 @@ namespace BitFunnel
     {
         // TODO: NOT does not set the Z flag. Check if this code should OR(RBX, RBX).
         m_code.Emit<OpCode::Not>(rbx);
-        //EmitNot(m_code, rbx);
-        //m_code.NOT(RBX);
     }
 
 
@@ -438,8 +296,6 @@ namespace BitFunnel
     {
         m_code.Emit<OpCode::Pop>(rax);
         m_code.Emit<OpCode::Or>(rbx, rax);
-        //m_code.POP(RAX);
-        //m_code.OR(RBX, RAX);
         --m_pushCount;
     }
 
@@ -447,7 +303,6 @@ namespace BitFunnel
     void MachineCodeGenerator::UpdateFlags()
     {
         m_code.Emit<OpCode::Or>(rbx, rbx);
-        //m_code.OR(RBX, RBX);
     }
 
 
@@ -456,6 +311,14 @@ namespace BitFunnel
         // TODO: Implement.
         m_code.Emit8(0xcc);
     }
+
+
+    //void MachineCodeGenerator::Report()
+    //{
+    //    // TODO: set matchFound.
+
+    //}
+
 #if 0
     void MachineCodeGenerator::Report()
     {
@@ -532,8 +395,6 @@ namespace BitFunnel
     {
         m_pushCount++;
         m_code.Call(NativeJIT::Label(label));
-        //EmitCall(m_code, NativeJIT::Label(label));
-        //m_code.CALL(static_cast<X64::Label>(label));
         m_pushCount--;
     }
 
@@ -578,118 +439,4 @@ namespace BitFunnel
     {
         return c_slotCount;
     }
-
-
-    //// Helper function generates code for
-    ////   Add(offset, rowOffset),
-    ////   And(RDEST, QWORDPTR[SCALE8(offset) + slicePtr])
-    ////template <int RDEST, int ROFFSET>
-    //static void AndAccumulator(FunctionBuffer &  code,
-    //                           Register<8u, false> rDest,
-    //                           Register<8u, false> rOffset,
-    //                           //X64Register<RDEST, 3> rDest,
-    //                           //X64Register<ROFFSET, 3> rOffset,
-    //                           unsigned rRow)
-    //{
-    //    CHECK_LE(rRow, 15u)
-    //        << "Row register cannot exceed 15.";
-    //    CHECK_GE(rRow, 8u)
-    //        << "Row register cannot be less than 8.";
-
-    //    code.Emit<OpCode::Add>(rOffset, Register<8u, false>(rRow));
-    //    AndSIB(code, rDest, rOffset, rdx);
-
-    //    //// Each case adjusts the offset for the corresponding row, 
-    //    //// dereferences the slice data at the calculated offset and 
-    //    //// ANDs the accumulator with the dereferenced value.
-    //    //switch (rRow)
-    //    //{
-    //    //case 8:
-    //    //    code.ADD(rOffset, R8);
-    //    //    break;
-    //    //case 9:
-    //    //    code.ADD(rOffset, R9);
-    //    //    break;
-    //    //case 10:
-    //    //    code.ADD(rOffset, R10);
-    //    //    break;
-    //    //case 11:
-    //    //    code.ADD(rOffset, R11);
-    //    //    break;
-    //    //case 12:
-    //    //    code.ADD(rOffset, R12);
-    //    //    break;
-    //    //case 13:
-    //    //    code.ADD(rOffset, R13);
-    //    //    break;
-    //    //case 14:
-    //    //    code.ADD(rOffset, R14);
-    //    //    break;
-    //    //case 15:
-    //    //    code.ADD(rOffset, R15);
-    //    //    break;
-    //    //default:
-    //    //    LogAbortB("Invalid row register.");
-    //    //    break;
-    //    //};
-
-    //    //code.AND(rDest, QWORDPTR[SCALE8(rOffset) + RDX]);
-    //}
-
-
-    //// Helper function generates code for
-    ////   ADD(offset, rowOffset)
-    ////   MOV(RDEST, QWORDPTR[SCALE8(offset) + slicePtr])
-    //// template <int RDEST, int ROFFSET>
-    //static void LoadAccumulator(FunctionBuffer &  code,
-    //                            Register<8u, false> rDest,
-    //                            Register<8u, false> rOffset,
-    //                            //X64Register<RDEST, 3> rDest,
-    //                            //X64Register<ROFFSET, 3> rOffset,
-    //                            unsigned rRow)
-    //{
-    //    CHECK_LE(rRow, 15u)
-    //        << "Row register cannot exceed 15.";
-    //    CHECK_GE(rRow, 8u)
-    //        << "Row register cannot be less than 8.";
-
-    //    code.Emit<OpCode::Add>(rOffset, Register<8u, false>(rRow));
-    //    MovSIB(code, rDest, rOffset, rdx);
-
-    //    //// Each case adjusts the offset for the corresponding row, 
-    //    //// dereferences the slice data at the calculated offset and 
-    //    //// loads the accumulator with the dereferenced value.
-    //    //switch (rRow)
-    //    //{
-    //    //case 8:
-    //    //    code.ADD(rOffset, R8);
-    //    //    break;
-    //    //case 9:
-    //    //    code.ADD(rOffset, R9);
-    //    //    break;
-    //    //case 10:
-    //    //    code.ADD(rOffset, R10);
-    //    //    break;
-    //    //case 11:
-    //    //    code.ADD(rOffset, R11);
-    //    //    break;
-    //    //case 12:
-    //    //    code.ADD(rOffset, R12);
-    //    //    break;
-    //    //case 13:
-    //    //    code.ADD(rOffset, R13);
-    //    //    break;
-    //    //case 14:
-    //    //    code.ADD(rOffset, R14);
-    //    //    break;
-    //    //case 15:
-    //    //    code.ADD(rOffset, R15);
-    //    //    break;
-    //    //default:
-    //    //    LogAbortB("Invalid row register.");
-    //    //    break;
-    //    //};
-
-    //    //code.MOV(rDest, QWORDPTR[SCALE8(rOffset) + RDX]);
-    //}
 }

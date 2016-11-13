@@ -40,6 +40,7 @@ using namespace NativeJIT;
 namespace BitFunnel
 {
     class CompileNode;
+    class DocumentHandle;
     class RegisterAllocator;
 
     //*************************************************************************
@@ -57,11 +58,17 @@ namespace BitFunnel
         struct Parameters
         {
         public:
+            // Inputs
             size_t m_sliceCount;
             char * const * m_sliceBuffers;
             size_t m_iterationsPerSlice;
             ptrdiff_t const * m_rowOffsets;
             Callback m_callback;
+
+            // Output
+            size_t m_capacity;
+            size_t m_matchCount;
+            DocumentHandle* m_matches;
         };
         static_assert(std::is_standard_layout<Parameters>::value,
                       "Parameters must be standard layout.");
@@ -89,11 +96,12 @@ namespace BitFunnel
         Register<8u, false> m_param1;
         Register<8u, false> m_return;
 
-        Storage<size_t> m_sliceCount;
-        Storage<char * const *> m_sliceBuffers;
-        Storage<size_t> m_iterationsPerSlice;
-        Storage<ptrdiff_t const *> m_rowOffsets;
-        Storage<Callback> m_callback;
+        int32_t m_sliceCount;
+        int32_t m_sliceBuffers;
+        int32_t m_iterationsPerSlice;
+        int32_t m_rowOffsets;
+        int32_t m_callback;
+
         Storage<size_t> m_innerLoopLimit;
         Storage<size_t> m_matchFound;
         Storage<size_t> m_temp;

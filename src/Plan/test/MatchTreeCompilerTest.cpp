@@ -52,31 +52,41 @@ namespace BitFunnel
         NativeJIT::Allocator treeAllocator(8192);
         BitFunnel::Allocator allocator(2048);
 
+        //std::stringstream input(
+        //    "And {"
+        //    "  Children: ["
+        //    "    Row(0, 0, 0, false),"
+        //    "    Row(1, 3, 0, false),"
+        //    "    Row(2, 6, 0, false),"
+        //    "    Or {"
+        //    "      Children: ["
+        //    "        Row(4, 3, 0, false),"
+        //    "        Row(3, 0, 0, false)"
+        //    "      ]"
+        //    "    },"
+        //    "    Or {"
+        //    "      Children: ["
+        //    "        Row(5, 0, 0, false),"
+        //    "        Row(6, 3, 0, false)"
+        //    "      ]"
+        //    "    }"
+        //    "  ]"
+        //    "}");
+
         std::stringstream input(
             "And {"
             "  Children: ["
-            "    Row(0, 0, 0, false),"
+            "    Row(0, 6, 0, false),"
             "    Row(1, 3, 0, false),"
-            "    Row(2, 6, 0, false),"
-            "    Or {"
-            "      Children: ["
-            "        Row(4, 3, 0, false),"
-            "        Row(3, 0, 0, false)"
-            "      ]"
-            "    },"
-            "    Or {"
-            "      Children: ["
-            "        Row(5, 0, 0, false),"
-            "        Row(6, 3, 0, false)"
-            "      ]"
-            "    }"
+            "    Row(2, 0, 0, false)"
             "  ]"
             "}");
+
 
         TextObjectParser parser(input, allocator, &RowMatchNode::GetType);
         RowMatchNode const & node = RowMatchNode::Parse(parser);
 
-        RowMatchNode const & rewritten = MatchTreeRewriter::Rewrite(node, 6, 20, allocator);
+        RowMatchNode const & rewritten = MatchTreeRewriter::Rewrite(node, 0, 20, allocator);
 
         RankDownCompiler rankDown(allocator);
         rankDown.Compile(rewritten);
@@ -105,7 +115,7 @@ namespace BitFunnel
 
         auto result = compiler.Run(m_sliceBuffers.size(),
                                    m_sliceBuffers.data(),
-                                   m_rowOffsets.size(),
+                                   80,                          // Bytes per slice at max rank.
                                    m_rowOffsets.data());
 
         std::cout << "Result = " << result << std::endl;
