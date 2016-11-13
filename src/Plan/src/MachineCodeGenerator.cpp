@@ -310,30 +310,29 @@ namespace BitFunnel
     void MachineCodeGenerator::Report()
     {
         // Free up two registers.
-        m_code.Emit<OpCode::Push>(r14);
+        m_code.Emit<OpCode::Push>(rcx);
 
         // Compute iteration number in rax.
-        m_code.Emit<OpCode::Mov>(rax, rcx);
-        m_code.Emit<OpCode::Sub>(rax, rdx);
-        m_code.EmitImmediate<OpCode::Shr>(rax, static_cast<uint8_t>(3));
+        m_code.Emit<OpCode::Sub>(rcx, rdx);
+        m_code.EmitImmediate<OpCode::Shr>(rcx, static_cast<uint8_t>(3));
 
         // Mark the quadword for this iteration.
-        m_code.EmitImmediate<OpCode::Mov>(r14, 1);
-        //m_code.Emit<OpCode::Shl>(r14, al);
-        m_code.Emit<OpCode::Or>(rdi, MatcherNode::m_dedupe, r14);
+        m_code.EmitImmediate<OpCode::Mov>(rax, 1);
+        m_code.Emit<OpCode::Shl>(rax);
+        m_code.Emit<OpCode::Or>(rdi, MatcherNode::m_dedupe, rax);
 
         // Or the accumulator into that quadword.
         // TODO: Implement SIB-store addressing mode.
         //m_code.Emit<OpCode::Or>(rdi, rax, SIB::Scale8, 0, rbx);
         // TODO: Remove the following three SIB-emulation lines.
-        m_code.EmitImmediate<OpCode::Shl>(rax, static_cast<uint8_t>(3));
-        m_code.Emit<OpCode::Add>(rax, rdi);
-        m_code.Emit<OpCode::Or>(rax, 8, rbx);
+        m_code.EmitImmediate<OpCode::Shl>(rcx, static_cast<uint8_t>(3));
+        m_code.Emit<OpCode::Add>(rcx, rdi);
+        m_code.Emit<OpCode::Or>(rcx, 8 + MatcherNode::m_dedupe, rbx);
 
         // TODO: Set matchFound temporary variable.
 
         // Restore registers.
-        m_code.Emit<OpCode::Pop>(r14);
+        m_code.Emit<OpCode::Pop>(rcx);
     }
 
 
