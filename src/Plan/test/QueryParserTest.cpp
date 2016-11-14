@@ -22,7 +22,6 @@
 
 #include "gtest/gtest.h"
 
-#include <iostream> // TODO: remove.
 #include <sstream>
 
 #include "Allocator.h"
@@ -450,10 +449,9 @@ namespace BitFunnel
         streamConfiguration->AddMapping("stream", { 123 });
         QueryParser parser(input.c_str(), *streamConfiguration, allocator);
 
-        //std::cout << "input length: " << s.str().size() << std::endl;
-        std::cout
-            << "============================" << std::endl
-            << "input = \"" << input << "\"" << std::endl;
+        //std::cout
+        //    << "============================" << std::endl
+        //    << "input = \"" << input << "\"" << std::endl;
 
         auto result = parser.Parse();
         ASSERT_NE(nullptr, result);
@@ -462,7 +460,7 @@ namespace BitFunnel
         TextObjectFormatter formatter(parsedOutput);
         result->Format(formatter);
 
-        std::cout << "output: \"" << parsedOutput.str() << "\"" << std::endl;
+        //std::cout << "output: \"" << parsedOutput.str() << "\"" << std::endl;
         EXPECT_EQ(expected, parsedOutput.str());
     }
 
