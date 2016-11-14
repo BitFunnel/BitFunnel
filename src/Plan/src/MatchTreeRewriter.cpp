@@ -387,7 +387,7 @@ namespace BitFunnel
             }
         default:
             LogAbortB("Unsupported node type.");
-            return *(static_cast<const RowMatchNode::Row*>(nullptr));
+            return node;
         }
     }
 }
