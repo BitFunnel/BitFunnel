@@ -66,6 +66,12 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
     public:
         typedef size_t(*Callback)(size_t value);
 
+        struct Record
+        {
+            void * m_buffer;
+            size_t m_id;
+        };
+
         struct Parameters
         {
         public:
@@ -82,7 +88,7 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
             // Matches
             size_t m_capacity;
             size_t m_matchCount;
-            DocumentHandle* m_matches;
+            Record* m_matches;
         };
         static_assert(std::is_standard_layout<Parameters>::value,
                       "Parameters must be standard layout.");
@@ -104,6 +110,9 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
         static const int32_t m_rowOffsets = OFFSET_OF(Parameters, m_rowOffsets);
         static const int32_t m_callback = OFFSET_OF(Parameters, m_callback);
         static const int32_t m_dedupe = OFFSET_OF(Parameters, m_dedupe);
+        static const int32_t m_capacity = OFFSET_OF(Parameters, m_capacity);
+        static const int32_t m_matchCount = OFFSET_OF(Parameters, m_matchCount);
+        static const int32_t m_matches = OFFSET_OF(Parameters, m_matches);
 
 
     private:
@@ -111,6 +120,7 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
         void EmitOuterLoop(ExpressionTree& tree);
         void EmitInnerLoop(ExpressionTree& tree);
         void EmitFinishIteration(ExpressionTree& tree);
+        void EmitStoreMatch(ExpressionTree & tree);
 
         CompileNode const & m_compileNodeTree;
         RegisterAllocator const & m_registers;
@@ -119,8 +129,6 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
         Register<8u, false> m_return;
 
         Storage<size_t> m_innerLoopLimit;
-        Storage<size_t> m_matchFound;
-        Storage<size_t> m_temp;
     };
 
 

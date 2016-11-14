@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include "gtest/gtest.h"
 
@@ -40,13 +41,70 @@ using namespace NativeJIT;
 
 namespace BitFunnel
 {
-    TEST(MatchTreeCompiler, Placeholder)
+    class MockSlice
     {
-        // Temporarily disabling test code below.
+    public:
+        MockSlice(size_t iterations, size_t rowCount);
+
+        char * GetSliceBuffer() const;
+        ptrdiff_t GetRowOffset(size_t rowIndex) const;
+
+    private:
+        const size_t m_iterations;
+        const size_t m_rowCount;
+        std::unique_ptr<char[]> m_buffer;
+        std::vector<int> m_values;
+    };
+
+
+    MockSlice::MockSlice(size_t iterations, size_t rowCount)
+      : m_iterations(iterations),
+        m_rowCount(rowCount),
+        m_buffer(new char[m_iterations * m_rowCount * 8]),
+        m_values({ 0xff, 0xaa, 0x88, 0x80 })
+    {
+        char *p = m_buffer.get();
+        for (size_t r = 0; r < m_rowCount; ++r)
+        {
+            char value = static_cast<char>(m_values[r]);
+            for (size_t i = 0; i < m_iterations; ++i)
+            {
+                for (size_t j = 0; j < 8; ++j)
+                {
+                    if ((r == m_rowCount - 1) && ((j % 8) != 0))
+                    {
+                        *p++ = 0;
+                    }
+                    else
+                    {
+                        *p++ = value;
+                    }
+                }
+            }
+        }
     }
 
-    void TestUnderDevelopment()
+
+    char * MockSlice::GetSliceBuffer() const
     {
+        return m_buffer.get();
+    }
+
+
+    ptrdiff_t MockSlice::GetRowOffset(size_t rowIndex) const
+    {
+        return m_iterations * 8 * rowIndex;
+    }
+
+
+
+    TEST(MatchTreeCompiler, Placeholder)
+    {
+    //    // Temporarily disabling test code below.
+    //}
+
+    //void TestUnderDevelopment()
+    //{
         // Create allocator and buffers for pre-compiled and post-compiled code.
         ExecutionBuffer codeAllocator(8192);
         NativeJIT::Allocator treeAllocator(8192);
@@ -76,8 +134,8 @@ namespace BitFunnel
         std::stringstream input(
             "And {"
             "  Children: ["
-            "    Row(0, 6, 0, false),"
-            "    Row(1, 3, 0, false),"
+            "    Row(0, 0, 0, false),"
+            "    Row(1, 0, 0, false),"
             "    Row(2, 0, 0, false)"
             "  ]"
             "}");
@@ -90,7 +148,7 @@ namespace BitFunnel
 
         RankDownCompiler rankDown(allocator);
         rankDown.Compile(rewritten);
-        CompileNode const & compileNodeTree = rankDown.CreateTree(6);
+        CompileNode const & compileNodeTree = rankDown.CreateTree(0);
 
         // Use register base value of 100 in unit tests to allow
         // easy verification of the base value.
@@ -101,21 +159,31 @@ namespace BitFunnel
                                     allocator);
 
 
-
-        //CompileNode const * compileNodeTree = nullptr;
-        //RegisterAllocator registers;
-
         MatchTreeCompiler compiler(codeAllocator,
                                    treeAllocator,
                                    compileNodeTree,
                                    registers);
 
-        std::vector<char *> m_sliceBuffers(3, 0);
-        std::vector<ptrdiff_t> m_rowOffsets(2, 0);
+        const size_t iterationCount = 2;
+        const size_t rowCount = 3;
+
+        MockSlice slice0(iterationCount, rowCount);
+        MockSlice slice1(iterationCount, rowCount);
+        MockSlice slice2(iterationCount, rowCount);
+
+        std::vector<char *> m_sliceBuffers;
+        m_sliceBuffers.push_back(slice0.GetSliceBuffer());
+        m_sliceBuffers.push_back(slice1.GetSliceBuffer());
+        m_sliceBuffers.push_back(slice2.GetSliceBuffer());
+
+        std::vector<ptrdiff_t> m_rowOffsets;
+        m_rowOffsets.push_back(slice0.GetRowOffset(0));
+        m_rowOffsets.push_back(slice0.GetRowOffset(1));
+        m_rowOffsets.push_back(slice0.GetRowOffset(2));
 
         auto result = compiler.Run(m_sliceBuffers.size(),
                                    m_sliceBuffers.data(),
-                                   80,                          // Bytes per slice at max rank.
+                                   iterationCount,
                                    m_rowOffsets.data());
 
         std::cout << "Result = " << result << std::endl;

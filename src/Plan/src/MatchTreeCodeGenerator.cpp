@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE
 
+#include <iostream>
+
+#include "BitFunnel/Index/DocumentHandle.h"
 #include "CompileNode.h"
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
 #include "NativeJIT/CodeGen/FunctionBuffer.h"
@@ -89,13 +92,6 @@ namespace BitFunnel
     }
 
 
-    //template <typename OBJECT, typename FIELD>
-    //int32_t OffsetOf(FIELD OBJECT::*field)
-    //{
-    //    return static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<OBJECT*>(nullptr))->*field)));
-    //}
-
-
     void MatcherNode::EmitRegisterInitialization(ExpressionTree& tree)
     {
         auto & code = tree.GetCodeGenerator();
@@ -116,8 +112,6 @@ namespace BitFunnel
 
         // Allocate temporary variables.
         m_innerLoopLimit = tree.Temporary<size_t>();
-        m_matchFound = tree.Temporary<size_t>();
-        m_temp = tree.Temporary<size_t>();
 
         // Initialize row pointers.
         // RSI has pointer to row offsets.
@@ -212,20 +206,10 @@ namespace BitFunnel
 
         // TODO: Handle case where there are no rows.
 
-        // Clear m_matchFound to indicate that no matches have been found on this iteration.
-        code.Emit<OpCode::Xor>(rax, rax);
-        CodeGenHelpers::Emit<OpCode::Mov>(code, m_matchFound, rax);
-
         {
             MachineCodeGenerator generator(m_registers, tree.GetCodeGenerator());
             m_compileNodeTree.Compile(generator);
         }
-
-
-        // If at least one match was found in this iteration, call FinishIteration.
-        CodeGenHelpers::Emit<OpCode::Mov>(code, rax, m_matchFound);
-        code.Emit<OpCode::Or>(rax, rax);
-        code.EmitConditionalJump<JccType::JZ>(bottomOfLoop);
 
         EmitFinishIteration(tree);
 
@@ -233,7 +217,7 @@ namespace BitFunnel
         // Bottom of loop
         //
         code.PlaceLabel(bottomOfLoop);
-        code.EmitImmediate<OpCode::Add>(rcx, 8);                // Increment current.
+        code.EmitImmediate<OpCode::Add>(rcx, 8);    // Increment current offset.
         code.Jmp(topOfLoop);
 
 
@@ -241,9 +225,151 @@ namespace BitFunnel
     }
 
 
-    void MatcherNode::EmitFinishIteration(ExpressionTree& /*tree*/)
+    void MatcherNode::EmitFinishIteration(ExpressionTree& tree)
     {
-        // TODO
+        auto & code = tree.GetCodeGenerator();
+
+        // Check whether there are any matches.
+        auto noMatches = code.AllocateLabel();
+        code.Emit<OpCode::Mov>(rax, rdi, m_dedupe);
+        code.Emit<OpCode::Or>(rax, rax);
+        code.EmitConditionalJump<JccType::JZ>(noMatches);
+
+        // Save registers.
+        code.Emit<OpCode::Push>(r9);
+        code.Emit<OpCode::Push>(r10);
+        code.Emit<OpCode::Push>(r11);
+        code.Emit<OpCode::Push>(r12);
+        code.Emit<OpCode::Push>(r13);
+        code.Emit<OpCode::Push>(r14);
+        code.Emit<OpCode::Push>(r15);
+
+        // Initialize loop invariants.
+        // r10 has m_matches.
+        code.Emit<OpCode::Mov>(r10, rdi, m_matches);
+
+        // r9 has the Slice* extracted from the slice buffer pointer in rdx.
+        code.Emit<OpCode::Mov>(r9, rdx, 0);
+
+        auto quadwordLoopTop = code.AllocateLabel();
+        auto quadwordLoopExit = code.AllocateLabel();
+
+        // Each bit in rax corresponds to a quadword with a match.
+        code.Emit<OpCode::Mov>(rax, rdi, m_dedupe);
+
+        //
+        // Top of quadword loop.
+        //
+
+        code.PlaceLabel(quadwordLoopTop);
+        code.Emit<OpCode::Bsf>(r15, rax);
+        code.EmitConditionalJump<JccType::JZ>(quadwordLoopExit);
+
+        //
+        // Body of quadword loop.
+        //
+
+        auto bitLoopTop = code.AllocateLabel();
+        auto bitLoopExit = code.AllocateLabel();
+
+        code.Emit<OpCode::Mov>(r14, rdi, r15, SIB::Scale8, 8 + m_dedupe);
+
+        //
+        // Top of bit loop.
+        //
+
+        code.PlaceLabel(bitLoopTop);
+        code.Emit<OpCode::Bsf>(r13, r14);
+        code.EmitConditionalJump<JccType::JZ>(bitLoopExit);
+
+        EmitStoreMatch(tree);
+
+        //
+        // Bottom of bit loop.
+        //
+
+        code.Emit<OpCode::Btr>(r14, r13);
+        code.Jmp(bitLoopTop);
+
+
+        code.PlaceLabel(bitLoopExit);
+        code.Emit<OpCode::Mov>(rdi, r15, SIB::Scale8, 8 + m_dedupe, r14);
+
+
+        //
+        // Bottom of quadword loop.
+        //
+
+        code.Emit<OpCode::Btr>(rax, r15);
+        code.Jmp(quadwordLoopTop);
+
+
+        //
+        // Exit quadword loop.
+        //
+
+        code.PlaceLabel(quadwordLoopExit);
+
+        // Write zero'd out rax to m_dedupe in preparation
+        // for next matcher iteration.
+        code.Emit<OpCode::Mov>(rdi, m_dedupe, rax);
+
+        // Restore registers.
+        code.Emit<OpCode::Pop>(r15);
+        code.Emit<OpCode::Pop>(r14);
+        code.Emit<OpCode::Pop>(r13);
+        code.Emit<OpCode::Pop>(r12);
+        code.Emit<OpCode::Pop>(r11);
+        code.Emit<OpCode::Pop>(r10);
+        code.Emit<OpCode::Pop>(r9);
+
+        code.PlaceLabel(noMatches);
+    }
+
+
+    // If there is space, stores (Slice*, DocIndex) for match in
+    //   m_matches[m_matchCount++]
+    // Clobbers r10, r11, r12.
+    // Assumes
+    //   rdx has slice buffer pointer.
+    //   r13 has bit position of match.
+    //   r15 has quadword number of match.
+    //   r10 has m_matches
+    //   r9 has the Slice*
+    void MatcherNode::EmitStoreMatch(ExpressionTree & tree)
+    {
+        auto & code = tree.GetCodeGenerator();
+
+        // Save match here.
+        //   Bit position is in r13.
+        //   Quadword number is in r15.
+        auto outOfSpace = code.AllocateLabel();
+
+        // Load index of next match into r12.
+        // See if there is space for another match.
+        code.Emit<OpCode::Mov>(r12, rdi, m_matchCount);
+        code.Emit<OpCode::Cmp>(r12, rdi, m_capacity);
+        code.EmitConditionalJump<JccType::JZ>(outOfSpace);
+
+        // Convert index to byte offset. Each DocHandle record is 16 bytes.
+        code.EmitImmediate<OpCode::Shl>(r12, static_cast<uint8_t>(4));
+
+        // Compute DocIndex in r11.
+        code.Emit<OpCode::Mov>(r11, r15);
+        code.EmitImmediate<OpCode::Shl>(r11, static_cast<uint8_t>(3));
+        code.Emit<OpCode::Add>(r11, r13);
+
+
+        // Store Slice* at offset 0 of the DocHandle.
+        code.Emit<OpCode::Mov>(r10, r12, SIB::Scale1, 0, r9);
+
+        // Store index at offset 8 of the DocHandle.
+        code.Emit<OpCode::Mov>(r10, r12, SIB::Scale1, 8, r11);
+
+        // m_matchCount++
+        code.Emit<OpCode::Inc, 8>(rdi, m_matchCount);
+
+        code.PlaceLabel(outOfSpace);
     }
 
 
@@ -281,6 +407,11 @@ namespace BitFunnel
                                   size_t iterationsPerSlice,
                                   ptrdiff_t const * rowOffsets)
     {
+        const size_t matchCount = 100;
+
+        std::vector<MatcherNode::Record> matches(matchCount, { nullptr, 0 });
+
+
         MatcherNode::Parameters parameters = {
             sliceCount,
             sliceBuffers,
@@ -288,12 +419,31 @@ namespace BitFunnel
             rowOffsets,
             &CallbackHelper,
             {0},
+            matchCount,
             0,
-            0,
-            nullptr
+            matches.data()
         };
 
-        return m_function(&parameters);
+        auto result = m_function(&parameters);
+
+        std::cout
+            << parameters.m_matchCount
+            << " matches."
+            << std::endl;
+
+        for (size_t i = 0; i < parameters.m_matchCount; ++i)
+        {
+            auto & match = parameters.m_matches[i];
+            std::cout
+                << std::hex
+                << match.m_buffer
+                << std::dec
+                << ": "
+                << match.m_id
+                << std::endl;
+        }
+
+        return result;
     }
 
 

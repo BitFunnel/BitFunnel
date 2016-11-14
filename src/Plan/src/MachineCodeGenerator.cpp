@@ -32,15 +32,6 @@ using namespace NativeJIT;
 
 namespace BitFunnel
 {
-    // RAX: Scratch register
-    // RBX: Accumulator
-    // RCX: Loop counter at inner loop root, offset elsewhere in traversal
-    //      Encoded as (&SLICE_POINTER >> 3) + offset.
-    // RDX: Current slice pointer.
-    // RSI: Pointer to array of all row offsets pointers.
-    // RDI: &SLICE_POINTER >> 3
-    // R8-R15: Register row pointers.
-
     // New register scheme:
     //
     // slice the pointer to the current slice buffer
@@ -53,11 +44,6 @@ namespace BitFunnel
     // rsi: pointer to array of row offsets
     // rdi: pointer to parameters data structure
     // r8-r15: row offset pointers
-    //
-    // while (sliceCount > 0)
-    // {
-    //    
-    // }
 
 
     MachineCodeGenerator::MachineCodeGenerator(RegisterAllocator const & registers,
@@ -322,14 +308,10 @@ namespace BitFunnel
         m_code.Emit<OpCode::Or>(rdi, MatcherNode::m_dedupe, rax);
 
         // Or the accumulator into that quadword.
-        // TODO: Implement SIB-store addressing mode.
-        //m_code.Emit<OpCode::Or>(rdi, rax, SIB::Scale8, 0, rbx);
-        // TODO: Remove the following three SIB-emulation lines.
-        m_code.EmitImmediate<OpCode::Shl>(rcx, static_cast<uint8_t>(3));
-        m_code.Emit<OpCode::Add>(rcx, rdi);
-        m_code.Emit<OpCode::Or>(rcx, 8 + MatcherNode::m_dedupe, rbx);
-
-        // TODO: Set matchFound temporary variable.
+        m_code.Emit<OpCode::Or>(rdi,
+                                rcx,
+                                SIB::Scale8, 8 + MatcherNode::m_dedupe,
+                                rbx);
 
         // Restore registers.
         m_code.Emit<OpCode::Pop>(rcx);
