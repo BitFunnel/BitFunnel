@@ -30,6 +30,7 @@
 #include "BitFunnel/Plan/RowMatchNode.h"
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
 #include "MatchTreeCodeGenerator.h"
+#include "MatchTreeCompiler.h"
 #include "MatchTreeRewriter.h"
 #include "RankDownCompiler.h"
 #include "RegisterAllocator.h"
@@ -100,13 +101,8 @@ namespace BitFunnel
 
     TEST(MatchTreeCompiler, Placeholder)
     {
-    //    // Temporarily disabling test code below.
-    //}
-
-    //void TestUnderDevelopment()
-    //{
         // Create allocator and buffers for pre-compiled and post-compiled code.
-        ExecutionBuffer codeAllocator(8192);
+        NativeJIT::ExecutionBuffer codeAllocator(8192);
         NativeJIT::Allocator treeAllocator(8192);
         BitFunnel::Allocator allocator(2048);
 

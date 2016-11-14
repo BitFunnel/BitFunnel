@@ -31,10 +31,8 @@
 #include "NativeJIT/CodeGen/Register.h"
 #include "MachineCodeGenerator.h"
 #include "MatchTreeCodeGenerator.h"
-#include "Temporary/Allocator.h"
-
-#include "MatchTreeCodeGenerator.h"
 #include "RegisterAllocator.h"
+#include "Temporary/Allocator.h"
 
 
 namespace BitFunnel
@@ -378,84 +376,5 @@ namespace BitFunnel
         this->PrintCoreProperties(out, "MatcherNode");
 
         //        out << ", scorePlan = " << m_left.GetId();
-    }
-
-
-    //*************************************************************************
-    //
-    // MatchTreeCompiler
-    //
-    //*************************************************************************
-    MatchTreeCompiler::MatchTreeCompiler(ExecutionBuffer & codeAllocator,
-                                         Allocator & treeAllocator,
-                                         CompileNode const & tree,
-                                         RegisterAllocator const & registers)
-        : m_code(codeAllocator, 8192)
-    {
-        MatcherNode::Prototype expression(treeAllocator, m_code);
-        expression.EnableDiagnostics(std::cout);
-
-        auto & node = expression.PlacementConstruct<MatcherNode>(expression,
-                                                                 tree,
-                                                                 registers);
-        m_function = expression.Compile(node);
-    }
-
-
-    size_t MatchTreeCompiler::Run(size_t sliceCount,
-                                  char * const * sliceBuffers,
-                                  size_t iterationsPerSlice,
-                                  ptrdiff_t const * rowOffsets)
-    {
-        const size_t matchCount = 100;
-
-        std::vector<MatcherNode::Record> matches(matchCount, { nullptr, 0 });
-
-
-        MatcherNode::Parameters parameters = {
-            sliceCount,
-            sliceBuffers,
-            iterationsPerSlice,
-            rowOffsets,
-            &CallbackHelper,
-            {0},
-            matchCount,
-            0,
-            matches.data()
-        };
-
-        auto result = m_function(&parameters);
-
-        std::cout
-            << parameters.m_matchCount
-            << " matches."
-            << std::endl;
-
-        for (size_t i = 0; i < parameters.m_matchCount; ++i)
-        {
-            auto & match = parameters.m_matches[i];
-            std::cout
-                << std::hex
-                << match.m_buffer
-                << std::dec
-                << ": "
-                << match.m_id
-                << std::endl;
-        }
-
-        return result;
-    }
-
-
-    size_t MatchTreeCompiler::CallbackHelper(//MatchTreeCompiler& /*node*/,
-                                             size_t value)
-    {
-        std::cout
-            << "CallbackHelper("
-            << value
-            << ")"
-            << std::endl;
-
-        return 1234567ull;
     }
 }

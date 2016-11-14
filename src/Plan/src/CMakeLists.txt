@@ -7,6 +7,7 @@ set(CPPFILES
     CompileNode.cpp
     MachineCodeGenerator.cpp
     MatchTreeCodeGenerator.cpp
+    MatchTreeCompiler.cpp
     MatchTreeRewriter.cpp
     MatchVerifier.cpp
     PlanRows.cpp
@@ -41,6 +42,7 @@ set(PRIVATE_HFILES
     CompileNode.h
     MachineCodeGenerator.h
     MatchTreeCodeGenerator.cpp
+    MatchTreeCompiler.h
     MatchTreeRewriter.h
     MatchVerifier.h
     QueryPlanner.h

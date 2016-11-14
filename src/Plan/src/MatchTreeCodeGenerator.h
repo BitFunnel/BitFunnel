@@ -130,31 +130,4 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
 
         Storage<size_t> m_innerLoopLimit;
     };
-
-
-    //*************************************************************************
-    //
-    // MatchTreeCompiler
-    //
-    //*************************************************************************
-    class MatchTreeCompiler
-    {
-    public:
-        MatchTreeCompiler(ExecutionBuffer & codeAllocator,
-                          NativeJIT::Allocator & treeAllocator,
-                          CompileNode const & tree,
-                          RegisterAllocator const & registers);
-
-        size_t Run(size_t slicecount,
-                   char * const * slicebuffers,
-                   size_t iterationsperslice,
-                   ptrdiff_t const * rowoffsets);
-
-    private:
-        static size_t CallbackHelper(/*MatchTreeCompiler& node, */size_t value);
-
-        FunctionBuffer m_code;
-
-        MatcherNode::Prototype::FunctionType m_function;
-    };
 }
