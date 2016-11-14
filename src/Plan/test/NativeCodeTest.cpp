@@ -38,7 +38,7 @@
 namespace BitFunnel
 {
     // TODO: This constant is in ByteCodeVerifier as well.
-    static const Term::StreamId c_streamId = 0;
+    // static const Term::StreamId c_streamId = 0;
 
 
     static std::unique_ptr<IFileSystem> g_fileSystem;
@@ -47,7 +47,7 @@ namespace BitFunnel
     // Need enough documents to get iterations at maximum rank used in a test
     // which is rank 2. 1664 / (64 documents per quadword) / (4 for rank2) gives
     // 6.5 quadwords at rank 8.
-    static const DocId c_maxDocId = 1664;
+    // static const DocId c_maxDocId = 1664;
 
     // TODO: This should come from a shared header.
     extern ISimpleIndex const & GetIndex();
