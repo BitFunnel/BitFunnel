@@ -286,7 +286,11 @@ namespace BitFunnel
             sliceBuffers,
             iterationsPerSlice,
             rowOffsets,
-            &CallbackHelper
+            &CallbackHelper,
+            {0},
+            0,
+            0,
+            nullptr
         };
 
         return m_function(&parameters);
