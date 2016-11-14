@@ -198,6 +198,8 @@ namespace BitFunnel
 
         // TODO: remove diagnosticStream and replace with nullable.
         auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
+        // TODO: remove following debugging code.
+        // diagnosticStream->Enable("");
         QueryInstrumentation instrumentation;
         ByteCodeInterpreter interpreter(
             code,

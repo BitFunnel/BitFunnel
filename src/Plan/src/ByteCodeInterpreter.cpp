@@ -139,10 +139,11 @@ Decide on type of Slices
             if (m_diagnosticStream.IsEnabled("bytecode/opcode"))
             {
                 std::ostream& out = m_diagnosticStream.GetStream();
-                out << "Opcode: " << opcode << std::endl;
-                out << "Offset: " << m_offset << std::endl;
-                out << "Row: " << row << std::endl;
-                out << "RowOffset: " << m_rowOffsets[row] << std::endl;
+                out << "IP: " << std::hex << m_ip << std::dec << std::endl
+                    << "Opcode: " << opcode << std::endl
+                    << "Offset: " << m_offset << std::endl
+                    << "Row: " << row << std::endl
+                    << "RowOffset: " << std::hex << m_rowOffsets[row] << std::dec << std::endl;
             }
             switch (opcode)
             {

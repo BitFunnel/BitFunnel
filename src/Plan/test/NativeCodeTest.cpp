@@ -619,43 +619,44 @@ namespace BitFunnel
         verifier.Verify(text);
     }
 
-    ////*************************************************************************
-    ////
-    //// RankDown test cases
-    ////
-    ////*************************************************************************
-    //TEST(ByteCodeInterpreter, RankDownDelta1)
-    //{
-    //    char const * text =
-    //        "RankDown {"
-    //        "  Delta: 1,"
-    //        "  Child: LoadRowJz {"
-    //        "    Row: Row(0, 5, 0, false),"
-    //        "    Child: Report {"
-    //        "      Child: "
-    //        "    }"
-    //        "  }"
-    //        "}";
 
-    //    const Rank initialRank = 1;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
+    //*************************************************************************
+    //
+    // RankDown test cases
+    //
+    //*************************************************************************
+    TEST(NativeCode, RankDownDelta1)
+    {
+        char const * text =
+            "RankDown {"
+            "  Delta: 1,"
+            "  Child: LoadRowJz {"
+            "    Row: Row(0, 5, 0, false),"
+            "    Child: Report {"
+            "      Child: "
+            "    }"
+            "  }"
+            "}";
 
-    //    verifier.VerboseMode(true);
+        const Rank initialRank = 1;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
 
-    //    verifier.DeclareRow("3");
+        verifier.VerboseMode(true);
 
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
+        verifier.DeclareRow("3");
 
-    //        for (size_t i = 0; i < 2; ++i)
-    //        {
-    //            const uint64_t row0 = verifier.GetRowData(0, offset + i, slice);
-    //            verifier.ExpectResult(row0, offset + i, slice);
-    //        }
-    //    }
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
 
-    //    verifier.Verify(text);
-    //}
+            for (size_t i = 0; i < 2; ++i)
+            {
+                const uint64_t row0 = verifier.GetRowData(0, offset * 2 + i, slice);
+                verifier.ExpectResult(row0, offset * 2+ i, slice);
+            }
+        }
+
+        verifier.Verify(text);
+    }
 }
