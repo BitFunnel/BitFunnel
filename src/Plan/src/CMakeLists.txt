@@ -6,10 +6,10 @@ set(CPPFILES
     ByteCodeInterpreter.cpp
     CompileNode.cpp
     MachineCodeGenerator.cpp
-    MatchTreeCodeGenerator.cpp
     MatchTreeCompiler.cpp
     MatchTreeRewriter.cpp
     MatchVerifier.cpp
+    NativeCodeGenerator.cpp
     PlanRows.cpp
     QueryInstrumentation.cpp
     QueryParser.cpp
@@ -41,10 +41,10 @@ set(PRIVATE_HFILES
     ByteCodeInterpreter.h
     CompileNode.h
     MachineCodeGenerator.h
-    MatchTreeCodeGenerator.cpp
     MatchTreeCompiler.h
     MatchTreeRewriter.h
     MatchVerifier.h
+    NativeCodeGenerator.h
     QueryPlanner.h
     RowSet.h
     RankDownCompiler.h

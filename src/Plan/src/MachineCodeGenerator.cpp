@@ -22,7 +22,7 @@
 
 #include "LoggerInterfaces/Check.h"
 #include "MachineCodeGenerator.h"
-#include "MatchTreeCodeGenerator.h"
+#include "NativeCodeGenerator.h"
 #include "NativeJIT/CodeGen/FunctionBuffer.h"
 #include "NativeJIT/CodeGen/X64CodeGenerator.h"
 #include "RegisterAllocator.h"
@@ -305,12 +305,12 @@ namespace BitFunnel
         // Mark the quadword for this iteration.
         m_code.EmitImmediate<OpCode::Mov>(rax, 1);
         m_code.Emit<OpCode::Shl>(rax);
-        m_code.Emit<OpCode::Or>(rdi, MatcherNode::m_dedupe, rax);
+        m_code.Emit<OpCode::Or>(rdi, NativeCodeGenerator::m_dedupe, rax);
 
         // Or the accumulator into that quadword.
         m_code.Emit<OpCode::Or>(rdi,
                                 rcx,
-                                SIB::Scale8, 8 + MatcherNode::m_dedupe,
+                                SIB::Scale8, 8 + NativeCodeGenerator::m_dedupe,
                                 rbx);
 
         // Restore registers.

@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include <stddef.h>     // size_t, ptrdiff_t parameters.
+#include <stddef.h>                             // size_t, ptrdiff_t parameters.
 
-#include "MatchTreeCodeGenerator.h"             // MatcherNode::Prototype::FunctionType type.
+#include "NativeCodeGenerator.h"                // MatcherNode::Prototype::FunctionType type.
 #include "NativeJIT/CodeGen/FunctionBuffer.h"   // FunctionBuffer embedded.
 
 
@@ -60,10 +60,8 @@ namespace BitFunnel
                    ptrdiff_t const * rowoffsets);
 
     private:
-        static size_t CallbackHelper(/*MatchTreeCompiler& node, */size_t value);
-
         NativeJIT::FunctionBuffer m_code;
 
-        MatcherNode::Prototype::FunctionType m_function;
+        NativeCodeGenerator::Prototype::FunctionType m_function;
     };
 }

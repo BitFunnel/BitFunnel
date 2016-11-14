@@ -30,7 +30,7 @@
 #include "NativeJIT/Function.h"
 #include "NativeJIT/CodeGen/Register.h"
 #include "MachineCodeGenerator.h"
-#include "MatchTreeCodeGenerator.h"
+#include "NativeCodeGenerator.h"
 #include "RegisterAllocator.h"
 #include "Temporary/Allocator.h"
 
@@ -41,7 +41,7 @@ namespace BitFunnel
     {
     }
 
-    void PseudoCode(MatcherNode::Parameters& params)
+    void PseudoCode(NativeCodeGenerator::Parameters& params)
     {
         auto RDI = params;
         auto RSI = RDI.m_rowOffsets;
@@ -67,10 +67,10 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    // MatcherNode
+    // NativeCodeGenerator
     //
     //*************************************************************************
-    MatcherNode::MatcherNode(Prototype& expression,
+    NativeCodeGenerator::NativeCodeGenerator(Prototype& expression,
                              CompileNode const & compileNodeTree,
                              RegisterAllocator const & registers)
       : Node(expression),
@@ -80,7 +80,7 @@ namespace BitFunnel
     }
 
 
-    ExpressionTree::Storage<size_t> MatcherNode::CodeGenValue(ExpressionTree& tree)
+    ExpressionTree::Storage<size_t> NativeCodeGenerator::CodeGenValue(ExpressionTree& tree)
     {
         EmitRegisterInitialization(tree);
         EmitOuterLoop(tree);
@@ -90,7 +90,7 @@ namespace BitFunnel
     }
 
 
-    void MatcherNode::EmitRegisterInitialization(ExpressionTree& tree)
+    void NativeCodeGenerator::EmitRegisterInitialization(ExpressionTree& tree)
     {
         auto & code = tree.GetCodeGenerator();
 
@@ -133,7 +133,7 @@ namespace BitFunnel
     }
 
 
-    void MatcherNode::EmitOuterLoop(ExpressionTree& tree)
+    void NativeCodeGenerator::EmitOuterLoop(ExpressionTree& tree)
     {
         auto & code = tree.GetCodeGenerator();
 
@@ -169,7 +169,7 @@ namespace BitFunnel
     }
 
 
-    void MatcherNode::EmitInnerLoop(ExpressionTree& tree)
+    void NativeCodeGenerator::EmitInnerLoop(ExpressionTree& tree)
     {
         auto & code = tree.GetCodeGenerator();
 
@@ -223,7 +223,7 @@ namespace BitFunnel
     }
 
 
-    void MatcherNode::EmitFinishIteration(ExpressionTree& tree)
+    void NativeCodeGenerator::EmitFinishIteration(ExpressionTree& tree)
     {
         auto & code = tree.GetCodeGenerator();
 
@@ -334,7 +334,7 @@ namespace BitFunnel
     //   r15 has quadword number of match.
     //   r10 has m_matches
     //   r9 has the Slice*
-    void MatcherNode::EmitStoreMatch(ExpressionTree & tree)
+    void NativeCodeGenerator::EmitStoreMatch(ExpressionTree & tree)
     {
         auto & code = tree.GetCodeGenerator();
 
@@ -371,9 +371,9 @@ namespace BitFunnel
     }
 
 
-    void MatcherNode::Print(std::ostream& out) const
+    void NativeCodeGenerator::Print(std::ostream& out) const
     {
-        this->PrintCoreProperties(out, "MatcherNode");
+        this->PrintCoreProperties(out, "NativeCodeGenerator");
 
         //        out << ", scorePlan = " << m_left.GetId();
     }

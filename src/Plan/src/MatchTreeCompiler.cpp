@@ -41,10 +41,10 @@ namespace BitFunnel
                                          RegisterAllocator const & registers)
         : m_code(codeAllocator, 8192)
     {
-        MatcherNode::Prototype expression(treeAllocator, m_code);
+        NativeCodeGenerator::Prototype expression(treeAllocator, m_code);
         expression.EnableDiagnostics(std::cout);
 
-        auto & node = expression.PlacementConstruct<MatcherNode>(expression,
+        auto & node = expression.PlacementConstruct<NativeCodeGenerator>(expression,
                                                                  tree,
                                                                  registers);
         m_function = expression.Compile(node);
@@ -58,15 +58,14 @@ namespace BitFunnel
     {
         const size_t matchCount = 100;
 
-        std::vector<MatcherNode::Record> matches(matchCount, { nullptr, 0 });
+        std::vector<NativeCodeGenerator::Record> matches(matchCount, { nullptr, 0 });
 
 
-        MatcherNode::Parameters parameters = {
+        NativeCodeGenerator::Parameters parameters = {
             sliceCount,
             sliceBuffers,
             iterationsPerSlice,
             rowOffsets,
-            &CallbackHelper,
             { 0 },
             matchCount,
             0,
@@ -93,18 +92,5 @@ namespace BitFunnel
         }
 
         return result;
-    }
-
-
-    size_t MatchTreeCompiler::CallbackHelper(//MatchTreeCompiler& /*node*/,
-                                             size_t value)
-    {
-        std::cout
-            << "CallbackHelper("
-            << value
-            << ")"
-            << std::endl;
-
-        return 1234567ull;
     }
 }

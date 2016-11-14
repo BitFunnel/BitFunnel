@@ -56,16 +56,14 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
 
     //*************************************************************************
     //
-    // MatcherNode
+    // NativeCodeGenerator
     //
     // A NativeJIT::Node that implements the BitFunnel matching algorithm.
     //
     //*************************************************************************
-    class MatcherNode : public NativeJIT::Node<size_t>
+    class NativeCodeGenerator : public NativeJIT::Node<size_t>
     {
     public:
-        typedef size_t(*Callback)(size_t value);
-
         struct Record
         {
             void * m_buffer;
@@ -80,7 +78,6 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
             char * const * m_sliceBuffers;
             size_t m_iterationsPerSlice;
             ptrdiff_t const * m_rowOffsets;
-            Callback m_callback;
 
             // Dedupe
             size_t m_dedupe[65];
@@ -96,9 +93,9 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
         typedef Function<size_t, Parameters const *> Prototype;
         Prototype::FunctionType m_function;
 
-        MatcherNode(Prototype& expression,
-                    CompileNode const & compileNodeTree,
-                    RegisterAllocator const & registers);
+        NativeCodeGenerator(Prototype& expression,
+                            CompileNode const & compileNodeTree,
+                            RegisterAllocator const & registers);
 
         virtual ExpressionTree::Storage<size_t> CodeGenValue(ExpressionTree& tree) override;
 
@@ -108,7 +105,6 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
         static const int32_t m_sliceBuffers = OFFSET_OF(Parameters, m_sliceBuffers);
         static const int32_t m_iterationsPerSlice = OFFSET_OF(Parameters, m_iterationsPerSlice);
         static const int32_t m_rowOffsets = OFFSET_OF(Parameters, m_rowOffsets);
-        static const int32_t m_callback = OFFSET_OF(Parameters, m_callback);
         static const int32_t m_dedupe = OFFSET_OF(Parameters, m_dedupe);
         static const int32_t m_capacity = OFFSET_OF(Parameters, m_capacity);
         static const int32_t m_matchCount = OFFSET_OF(Parameters, m_matchCount);
