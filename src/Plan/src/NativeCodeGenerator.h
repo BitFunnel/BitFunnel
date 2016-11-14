@@ -66,6 +66,18 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
     public:
         struct Record
         {
+            bool operator<(Record const & other) const
+            {
+                if (m_buffer != other.m_buffer)
+                {
+                    return m_id < other.m_id;
+                }
+                else
+                {
+                    return m_buffer < other.m_buffer;
+                }
+            }
+
             void * m_buffer;
             size_t m_id;
         };
@@ -97,7 +109,8 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
                             CompileNode const & compileNodeTree,
                             RegisterAllocator const & registers);
 
-        virtual ExpressionTree::Storage<size_t> CodeGenValue(ExpressionTree& tree) override;
+        virtual ExpressionTree::Storage<size_t>
+            CodeGenValue(ExpressionTree& tree) override;
 
         virtual void Print(std::ostream& out) const override;
 

@@ -49,7 +49,7 @@ namespace BitFunnel
     }
 
     // TODO: move this method somewhere.
-    uint64_t lzcnt(uint64_t value)
+    static uint64_t lzcnt(uint64_t value)
     {
 #ifdef _MSC_VER
         return __lzcnt64(value);

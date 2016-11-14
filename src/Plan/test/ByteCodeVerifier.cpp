@@ -49,83 +49,8 @@ namespace BitFunnel
 
     ByteCodeVerifier::ByteCodeVerifier(ISimpleIndex const & index,
                                        Rank initialRank)
-      : m_index(index),
-        m_initialRank(initialRank),
-        m_slices(index.GetIngestor().GetShard(c_shardId).GetSliceBuffers()),
-        m_resultsCount(0),
-        m_verboseMode(false),
-        m_expectNoResults(false)
+      : CodeVerifierBase(index, initialRank)
     {
-        auto & shard = m_index.GetIngestor().GetShard(c_shardId);
-        auto & sliceBuffers = shard.GetSliceBuffers();
-        auto iterationsPerSlice = GetIterationsPerSlice();
-        auto iterationCount = iterationsPerSlice * sliceBuffers.size();
-
-        for (size_t i = 0; i < iterationCount; ++i)
-        {
-            m_iterationValues.push_back(i);
-        }
-    }
-
-
-    void ByteCodeVerifier::VerboseMode(bool mode)
-    {
-        m_verboseMode = mode;
-    }
-
-
-    void ByteCodeVerifier::ExpectNoResults()
-    {
-        m_expectNoResults = true;
-    }
-
-
-    std::vector<size_t> const & ByteCodeVerifier::GetIterations() const
-    {
-        return m_iterationValues;
-    }
-
-
-    size_t ByteCodeVerifier::GetSliceNumber(size_t iteration) const
-    {
-        return iteration / GetIterationsPerSlice();
-    }
-
-
-    size_t ByteCodeVerifier::GetOffset(size_t iteration) const
-    {
-        return iteration % GetIterationsPerSlice();
-    }
-
-
-    size_t ByteCodeVerifier::GetIterationsPerSlice() const
-    {
-        auto & shard = m_index.GetIngestor().GetShard(c_shardId);
-        return shard.GetSliceCapacity() >> 6 >> m_initialRank;
-    }
-
-
-    void ByteCodeVerifier::DeclareRow(char const * text)
-    {
-        auto & shard = m_index.GetIngestor().GetShard(c_shardId);
-        m_rowOffsets.push_back(
-            GetRowOffset(
-                text,
-                c_streamId,
-                m_index.GetConfiguration(),
-                m_index.GetTermTable(),
-                shard));
-    }
-
-
-    uint64_t ByteCodeVerifier::GetRowData(size_t row, size_t offset, size_t slice)
-    {
-        auto & shard = m_index.GetIngestor().GetShard(c_shardId);
-        auto const & slices = shard.GetSliceBuffers();
-        char const * sliceBuffer = reinterpret_cast<char const *>(slices[slice]);
-        uint64_t const * rowPtr =
-            reinterpret_cast<uint64_t const *>(sliceBuffer + m_rowOffsets[row]);
-        return rowPtr[offset];
     }
 
 
@@ -307,39 +232,5 @@ namespace BitFunnel
         CompileNode const & node = CompileNode::Parse(parser);
 
         node.Compile(code);
-    }
-
-
-    RowId ByteCodeVerifier::GetFirstRow(ITermTable const & termTable,
-                                        Term term)
-    {
-        RowIdSequence rows(term, termTable);
-
-        auto it = rows.begin();
-        // TODO: Implement operator << for RowIdSequence::const_iterator.
-        //CHECK_NE(it, rows.end())
-        //    << "Expected at least one row.";
-
-        RowId row = *it;
-
-        ++it;
-        // TODO: Implement operator << for RowIdSequence::const_iterator.
-        //CHECK_EQ(it, rows.end())
-        //    << "Expected no more than one row.";
-
-        return row;
-    }
-
-
-    ptrdiff_t ByteCodeVerifier::GetRowOffset(
-        char const * text,
-        Term::StreamId stream,
-        IConfiguration const & config,
-        ITermTable const & termTable,
-        IShard const & shard)
-    {
-        Term term(text, stream, config);
-        RowId row = GetFirstRow(termTable, term);
-        return shard.GetRowOffset(row);
     }
 }

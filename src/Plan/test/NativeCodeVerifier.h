@@ -22,24 +22,24 @@
 
 #pragma once
 
-#include <stddef.h>                             // size_t parameter.
-#include <vector>                               // std::vector return value.
+#include <set>                          // std::set embedded.
+#include <stddef.h>                     // size_t parameter.
+#include <vector>                       // std::vector return value.
 
-#include "BitFunnel/BitFunnelTypes.h"           // Rank parameter.
-#include "BitFunnel/Index/RowId.h"              // RowId parameter.
-#include "BitFunnel/Plan/IResultsProcessor.h"   // Base class.
-#include "CodeVerifierBase.h"                   // Base class.
+#include "BitFunnel/BitFunnelTypes.h"   // DocId, Rank parameter.
+#include "BitFunnel/Index/RowId.h"      // RowId parameter.
+#include "CodeVerifierBase.h"           // Base class.
+#include "NativeCodeGenerator.h"        // Template parameter.
 
 
 namespace BitFunnel
 {
-    class ByteCodeGenerator;
     class IShard;
     class ISimpleIndex;
 
     //*************************************************************************
     //
-    // ByteCodeVerifier
+    // NativeCodeVerifier
     //
     // This class verifies the correctness of a matching algorithm that invokes
     // methods on an IResultsProcessor.
@@ -48,14 +48,10 @@ namespace BitFunnel
     // IResultsProcessor::FinishIteration() match an expect sequence of calls.
     //
     //*************************************************************************
-    class ByteCodeVerifier : public CodeVerifierBase, public IResultsProcessor
+    class NativeCodeVerifier : public CodeVerifierBase
     {
     public:
-        ByteCodeVerifier(ISimpleIndex const & index, Rank initialRank);
-
-        //
-        // ICodeVerifier methods.
-        //
+        NativeCodeVerifier(ISimpleIndex const & index, Rank initialRank);
 
         // The class is configured by adding a sequence of of records
         // describing the expected interactions betweeen the matcher and its
@@ -83,41 +79,8 @@ namespace BitFunnel
 
         virtual void Verify(char const * codeText) override;
 
-
-        //
-        // IResultsProcessor methods.
-        //
-
-        void AddResult(uint64_t accumulator,
-                       size_t offset) override;
-
-
-        bool FinishIteration(void const * sliceBuffer) override;
-
-
-        bool TerminatedEarly() const override;
-
-
-
     private:
-        static void GenerateCode(char const * rowPlanText,
-                                 ByteCodeGenerator& code);
-
-        struct Expected
-        {
-            uint64_t m_accumulator;
-            size_t m_offset;
-            size_t m_slice;
-        };
-
-        std::vector<Expected> m_expectedResults;
-
-        struct Observed
-        {
-            uint64_t m_accumulator;
-            size_t m_offset;
-        };
-
-        std::vector<Observed> m_observed;
+        std::set<DocId> m_expected;
+        std::set<DocId> m_observed;
     };
 }

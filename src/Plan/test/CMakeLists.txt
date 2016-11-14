@@ -5,9 +5,11 @@ set(CPPFILES
     AbstractRowTest.cpp
     ByteCodeInterpreterTest.cpp
     ByteCodeVerifier.cpp
+    CodeVerifierBase.cpp
     CompileNodeTest.cpp
     MatchTreeCompilerTest.cpp
     MatchTreeRewriterTest.cpp
+    NativeCodeVerifier.cpp
     PlainTextCodeGenerator.cpp
     RankDownCompilerTest.cpp
     RegisterAllocatorTest.cpp
@@ -25,6 +27,9 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     ByteCodeVerifier.h
+    CodeVerifierBase.h
+    ICodeVerifier.h
+    NativeCodeVerifier.h
     PlainTextCodeGenerator.h
 )
 

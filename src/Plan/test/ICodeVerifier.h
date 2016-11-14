@@ -22,13 +22,12 @@
 
 #pragma once
 
-#include <stddef.h>                             // size_t parameter.
-#include <vector>                               // std::vector return value.
+#include <stddef.h>                     // size_t parameter.
+#include <vector>                       // std::vector embedded.
 
-#include "BitFunnel/BitFunnelTypes.h"           // Rank parameter.
-#include "BitFunnel/Index/RowId.h"              // RowId parameter.
-#include "BitFunnel/Plan/IResultsProcessor.h"   // Base class.
-#include "CodeVerifierBase.h"                   // Base class.
+#include "BitFunnel/BitFunnelTypes.h"   // Rank parameter.
+#include "BitFunnel/IInterface.h"       // Base class.
+#include "BitFunnel/Index/RowId.h"      // RowId parameter.
 
 
 namespace BitFunnel
@@ -39,7 +38,7 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    // ByteCodeVerifier
+    // CodeVerifierBase
     //
     // This class verifies the correctness of a matching algorithm that invokes
     // methods on an IResultsProcessor.
@@ -48,14 +47,24 @@ namespace BitFunnel
     // IResultsProcessor::FinishIteration() match an expect sequence of calls.
     //
     //*************************************************************************
-    class ByteCodeVerifier : public CodeVerifierBase, public IResultsProcessor
+    class ICodeVerifier : public IInterface
     {
     public:
-        ByteCodeVerifier(ISimpleIndex const & index, Rank initialRank);
+        virtual void VerboseMode(bool mode) = 0;
 
-        //
-        // ICodeVerifier methods.
-        //
+        virtual void ExpectNoResults() = 0;
+
+        virtual std::vector<size_t> const & GetIterations() const = 0;
+
+        virtual size_t GetSliceNumber(size_t iteration) const = 0;
+
+        virtual size_t GetOffset(size_t iteration) const = 0;
+
+        virtual size_t GetIterationsPerSlice() const = 0;
+
+        virtual void DeclareRow(char const * text) = 0;
+
+        virtual uint64_t GetRowData(size_t row, size_t offset, size_t slice) = 0;
 
         // The class is configured by adding a sequence of of records
         // describing the expected interactions betweeen the matcher and its
@@ -79,45 +88,8 @@ namespace BitFunnel
         //
         virtual void ExpectResult(uint64_t accumulator,
                                   size_t offset,
-                                  size_t slice) override;
+                                  size_t slice) = 0;
 
-        virtual void Verify(char const * codeText) override;
-
-
-        //
-        // IResultsProcessor methods.
-        //
-
-        void AddResult(uint64_t accumulator,
-                       size_t offset) override;
-
-
-        bool FinishIteration(void const * sliceBuffer) override;
-
-
-        bool TerminatedEarly() const override;
-
-
-
-    private:
-        static void GenerateCode(char const * rowPlanText,
-                                 ByteCodeGenerator& code);
-
-        struct Expected
-        {
-            uint64_t m_accumulator;
-            size_t m_offset;
-            size_t m_slice;
-        };
-
-        std::vector<Expected> m_expectedResults;
-
-        struct Observed
-        {
-            uint64_t m_accumulator;
-            size_t m_offset;
-        };
-
-        std::vector<Observed> m_observed;
+        virtual void Verify(char const * codeText) = 0;
     };
 }
