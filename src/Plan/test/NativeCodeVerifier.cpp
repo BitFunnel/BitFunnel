@@ -120,7 +120,7 @@ namespace BitFunnel
                 Factories::CreateDocumentHandle(sliceBuffer, docIndex);
 
             DocId id = handle.GetDocId();
-//            std::cout << "  " << id << std::endl;
+            //std::cout << "  " << id << std::endl;
             m_expected.insert(id);
 
             accumulator <<= 1;

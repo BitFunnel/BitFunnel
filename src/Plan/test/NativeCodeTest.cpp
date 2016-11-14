@@ -125,44 +125,44 @@ namespace BitFunnel
     }
 
 
-    //TEST(ByteCodeInterpreter, AndRowJzDelta1)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(1, 0, 0, false),"
-    //        "  Child: AndRowJz {"
-    //        "    Row: Row(0, 0, 1, false),"
-    //        "    Child: Report {"
-    //        "      Child: "
-    //        "    }"
-    //        "  }"
-    //        "}";
+    TEST(NativeCode, AndRowJzDelta1)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(1, 0, 0, false),"
+            "  Child: AndRowJz {"
+            "    Row: Row(0, 0, 1, false),"
+            "    Child: Report {"
+            "      Child: "
+            "    }"
+            "  }"
+            "}";
 
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
 
-    //    // IMPORTANT: row0 must be a row whose value differs
-    //    // across adjacent quadwords in order to correctly
-    //    // test the rank delta. If row0 has the same value in
-    //    // adjacent quadwords,
-    //    //     GetRowData(0, slice, offset)
-    //    // will return the same value as
-    //    //     GetRowData(0, slice, offset /2);
-    //    verifier.DeclareRow("3");
-    //    verifier.DeclareRow("2");
+        // IMPORTANT: row0 must be a row whose value differs
+        // across adjacent quadwords in order to correctly
+        // test the rank delta. If row0 has the same value in
+        // adjacent quadwords,
+        //     GetRowData(0, slice, offset)
+        // will return the same value as
+        //     GetRowData(0, slice, offset /2);
+        verifier.DeclareRow("3");
+        verifier.DeclareRow("2");
 
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
 
-    //        const uint64_t row1 = verifier.GetRowData(1, offset, slice);
-    //        const uint64_t row0 = verifier.GetRowData(0, offset / 2, slice);
-    //        verifier.ExpectResult(row1 & row0, offset, slice);
-    //    }
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
+            const uint64_t row0 = verifier.GetRowData(0, offset / 2, slice);
+            verifier.ExpectResult(row1 & row0, offset, slice);
+        }
 
-    //    verifier.Verify(text);
-    //}
+        verifier.Verify(text);
+    }
 
 
     //TEST(ByteCodeInterpreter, AndRowJzDelta1Inverted)

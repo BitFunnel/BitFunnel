@@ -75,7 +75,8 @@ namespace BitFunnel
             // Store rank-adjusted offset in rax.
             m_code.Emit<OpCode::Mov>(rax, rcx);
             m_code.Emit<OpCode::Sub>(rax, rdx);
-            m_code.EmitImmediate<OpCode::Shr>(rax, static_cast<uint8_t>(rankDelta));
+            m_code.EmitImmediate<OpCode::Shr>(rax, static_cast<uint8_t>(rankDelta + 3));
+            m_code.EmitImmediate<OpCode::Shl>(rax, static_cast<uint8_t>(3));
 
             if (!inverted)
             {
@@ -172,7 +173,8 @@ namespace BitFunnel
             // Store rank-adjusted offset in rax.
             m_code.Emit<OpCode::Mov>(rax, rcx);
             m_code.Emit<OpCode::Sub>(rax, rdx);
-            m_code.EmitImmediate<OpCode::Shr>(rax, static_cast<uint8_t>(rankDelta));
+            m_code.EmitImmediate<OpCode::Shr>(rax, static_cast<uint8_t>(rankDelta + 3));
+            m_code.EmitImmediate<OpCode::Shl>(rax, static_cast<uint8_t>(3));
 
             if (m_registers.IsRegister(id))
             {
