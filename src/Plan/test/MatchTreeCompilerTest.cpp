@@ -167,20 +167,29 @@ namespace BitFunnel
         MockSlice slice1(iterationCount, rowCount);
         MockSlice slice2(iterationCount, rowCount);
 
-        std::vector<char *> m_sliceBuffers;
-        m_sliceBuffers.push_back(slice0.GetSliceBuffer());
-        m_sliceBuffers.push_back(slice1.GetSliceBuffer());
-        m_sliceBuffers.push_back(slice2.GetSliceBuffer());
+        std::vector<void *> sliceBuffers;
+        sliceBuffers.push_back(slice0.GetSliceBuffer());
+        sliceBuffers.push_back(slice1.GetSliceBuffer());
+        sliceBuffers.push_back(slice2.GetSliceBuffer());
 
-        std::vector<ptrdiff_t> m_rowOffsets;
-        m_rowOffsets.push_back(slice0.GetRowOffset(0));
-        m_rowOffsets.push_back(slice0.GetRowOffset(1));
-        m_rowOffsets.push_back(slice0.GetRowOffset(2));
+        std::vector<ptrdiff_t> rowOffsets;
+        rowOffsets.push_back(slice0.GetRowOffset(0));
+        rowOffsets.push_back(slice0.GetRowOffset(1));
+        rowOffsets.push_back(slice0.GetRowOffset(2));
 
-        auto result = compiler.Run(m_sliceBuffers.size(),
-                                   m_sliceBuffers.data(),
+        const size_t matchCapacity =
+            iterationCount * sliceBuffers.size() * 64;
+
+        std::vector<NativeCodeGenerator::Record>
+            matches(matchCapacity, { nullptr, 0 });
+
+
+        auto result = compiler.Run(sliceBuffers.size(),
+                                   sliceBuffers.data(),
                                    iterationCount,
-                                   m_rowOffsets.data());
+                                   rowOffsets.data(),
+                                   matchCapacity,
+                                   matches.data());
 
         std::cout << "Result = " << result << std::endl;
     }

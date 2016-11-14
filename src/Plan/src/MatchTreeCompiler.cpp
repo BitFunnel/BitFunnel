@@ -42,55 +42,56 @@ namespace BitFunnel
         : m_code(codeAllocator, 8192)
     {
         NativeCodeGenerator::Prototype expression(treeAllocator, m_code);
-        expression.EnableDiagnostics(std::cout);
+        // TODO: Remove temporary debugging output.
+        //expression.EnableDiagnostics(std::cout);
 
-        auto & node = expression.PlacementConstruct<NativeCodeGenerator>(expression,
-                                                                 tree,
-                                                                 registers);
+        auto & node =
+            expression.PlacementConstruct<NativeCodeGenerator>(expression,
+                                                               tree,
+                                                               registers);
         m_function = expression.Compile(node);
     }
 
 
     size_t MatchTreeCompiler::Run(size_t sliceCount,
-                                  char * const * sliceBuffers,
+                                  void * const * sliceBuffers,
                                   size_t iterationsPerSlice,
-                                  ptrdiff_t const * rowOffsets)
+                                  ptrdiff_t const * rowOffsets,
+                                  size_t matchCapacity,
+                                  NativeCodeGenerator::Record * matches)
     {
-        const size_t matchCount = 100;
-
-        std::vector<NativeCodeGenerator::Record> matches(matchCount, { nullptr, 0 });
-
-
         NativeCodeGenerator::Parameters parameters = {
             sliceCount,
             sliceBuffers,
             iterationsPerSlice,
             rowOffsets,
             { 0 },
-            matchCount,
+            matchCapacity,
             0,
-            matches.data()
+            matches
         };
 
-        auto result = m_function(&parameters);
+        // For now ignore return value.
+        m_function(&parameters);
 
-        std::cout
-            << parameters.m_matchCount
-            << " matches."
-            << std::endl;
+        // TODO: Remove temporary debugging output.
+        //std::cout
+        //    << parameters.m_matchCount
+        //    << " matches."
+        //    << std::endl;
 
-        for (size_t i = 0; i < parameters.m_matchCount; ++i)
-        {
-            auto & match = parameters.m_matches[i];
-            std::cout
-                << std::hex
-                << match.m_buffer
-                << std::dec
-                << ": "
-                << match.m_id
-                << std::endl;
-        }
+        //for (size_t i = 0; i < parameters.m_matchCount; ++i)
+        //{
+        //    auto & match = parameters.m_matches[i];
+        //    std::cout
+        //        << std::hex
+        //        << match.m_buffer
+        //        << std::dec
+        //        << ": "
+        //        << match.m_id
+        //        << std::endl;
+        //}
 
-        return result;
+        return parameters.m_matchCount;
     }
 }

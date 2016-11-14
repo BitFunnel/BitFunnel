@@ -72,6 +72,9 @@ namespace BitFunnel
 
         DocumentHandle CreateDocumentHandle(void * sliceBuffer, DocIndex index);
 
+        // TODO: Remove this temporary function.
+        void * GetSliceBuffer(Slice * slice);
+
         std::unique_ptr<IFactSet> CreateFactSet();
 
         std::unique_ptr<IIndexedIdfTable> CreateIndexedIdfTable();

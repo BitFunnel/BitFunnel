@@ -55,9 +55,11 @@ namespace BitFunnel
                           RegisterAllocator const & registers);
 
         size_t Run(size_t slicecount,
-                   char * const * slicebuffers,
+                   void * const * slicebuffers,
                    size_t iterationsperslice,
-                   ptrdiff_t const * rowoffsets);
+                   ptrdiff_t const * rowoffsets,
+                   size_t matchCapacity,
+                   NativeCodeGenerator::Record * matches);
 
     private:
         NativeJIT::FunctionBuffer m_code;

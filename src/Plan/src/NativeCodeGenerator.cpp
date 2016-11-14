@@ -37,34 +37,6 @@
 
 namespace BitFunnel
 {
-    void CompilePseudoCode(char * /*RCX*/, char* /*RDX*/, ptrdiff_t const * /*RSI*/)
-    {
-    }
-
-    void PseudoCode(NativeCodeGenerator::Parameters& params)
-    {
-        auto RDI = params;
-        auto RSI = RDI.m_rowOffsets;
-
-        while (RDI.m_sliceCount > 0)
-        {
-            auto RCX = *RDI.m_sliceBuffers;
-            auto RDX = RCX;
-
-            auto limit = RCX + (RDI.m_iterationsPerSlice);
-            while (RCX < limit)
-            {
-                CompilePseudoCode(RCX, RDX, RSI);
-
-                ++RCX;
-            }
-
-            --params.m_sliceCount;
-            ++params.m_sliceBuffers;
-        }
-    }
-
-
     //*************************************************************************
     //
     // NativeCodeGenerator
@@ -354,9 +326,8 @@ namespace BitFunnel
 
         // Compute DocIndex in r11.
         code.Emit<OpCode::Mov>(r11, r15);
-        code.EmitImmediate<OpCode::Shl>(r11, static_cast<uint8_t>(3));
+        code.EmitImmediate<OpCode::Shl>(r11, static_cast<uint8_t>(6));
         code.Emit<OpCode::Add>(r11, r13);
-
 
         // Store Slice* at offset 0 of the DocHandle.
         code.Emit<OpCode::Mov>(r10, r12, SIB::Scale1, 0, r9);

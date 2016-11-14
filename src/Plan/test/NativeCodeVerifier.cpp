@@ -26,18 +26,19 @@
 #include "gtest/gtest.h"
 
 #include "Allocator.h"
-#include "BitFunnel/IDiagnosticStream.h" // TODO: remove.
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
+#include "BitFunnel/Plan/RowMatchNode.h"
 #include "BitFunnel/Term.h"
-#include "BitFunnel/Utilities/Factories.h"  // TODO: only for diagnosticStream. Remove.
-#include "ByteCodeInterpreter.h"
+#include "MatchTreeCompiler.h"
 #include "NativeCodeVerifier.h"
+#include "NativeJIT/CodeGen/ExecutionBuffer.h"
 #include "CompileNode.h"
+#include "RegisterAllocator.h"
 #include "TextObjectParser.h"
 
 
@@ -46,13 +47,6 @@ namespace BitFunnel
     static const ShardId c_shardId = 0;
     static const Term::StreamId c_streamId = 0;
     static const size_t c_allocatorBufferSize = 1000000;
-
-
-    void TestXXX(ISimpleIndex const & index,
-                 Rank initialRank)
-    {
-        NativeCodeVerifier v(index, initialRank);
-    }
 
 
     NativeCodeVerifier::NativeCodeVerifier(ISimpleIndex const & index,
@@ -99,9 +93,21 @@ namespace BitFunnel
     //
     void NativeCodeVerifier::ExpectResult(uint64_t accumulator,
                                           size_t offset,
-                                          size_t slice)
+                                          size_t sliceNumber)
     {
+        // TODO: Remove temporary debugging output.
+        //std::cout
+        //    << "ExpectResult("
+        //    << std::hex << accumulator << std::dec
+        //    << ", "
+        //    << offset
+        //    << ", "
+        //    << sliceNumber
+        //    << ")"
+        //    << std::endl;
+
         size_t bitPos = 63;
+        void * sliceBuffer = m_slices[sliceNumber];
 
         while (accumulator != 0)
         {
@@ -111,7 +117,11 @@ namespace BitFunnel
 
             DocIndex docIndex = offset * c_bitsPerQuadword + bitPos;
             DocumentHandle handle =
-                Factories::CreateDocumentHandle(reinterpret_cast<Slice*>(slice), docIndex);
+                Factories::CreateDocumentHandle(sliceBuffer, docIndex);
+
+            DocId id = handle.GetDocId();
+//            std::cout << "  " << id << std::endl;
+            m_expected.insert(id);
 
             accumulator <<= 1;
             --bitPos;
@@ -119,54 +129,70 @@ namespace BitFunnel
     }
 
 
-    void NativeCodeVerifier::Verify(char const * /*codeText*/)
+    void NativeCodeVerifier::Verify(char const * codeText)
     {
-        // TODO: This check isn't too useful at the moment because
-        // document 0 matches all queries. Therefore, even a poorly
-        // constructed test will get at least one match.
-        //if (m_expectNoResults)
-        //{
-        //    ASSERT_EQ(m_expectedResults.size(), 0ull)
-        //        << "Expecting no results, but ExpectResult() was called"
-        //        "at least once with a non-zero accumulator value.";
-        //}
-        //else
-        //{
-        //    ASSERT_GT(m_expectedResults.size(), 0ull)
-        //        << "Expecting at least one result, but each call to "
-        //        "ExpectResult() passed an empty accumulator.";
-        //}
+        // Create allocator and buffers for pre-compiled and post-compiled code.
+        NativeJIT::ExecutionBuffer codeAllocator(8192);
+        NativeJIT::Allocator treeAllocator(8192);
+        BitFunnel::Allocator allocator(2048);
 
-        //ByteCodeGenerator code;
-        //GenerateCode(codeText, code);
-        //code.Seal();
+        std::stringstream input(codeText);
 
-        //auto & shard = m_index.GetIngestor().GetShard(c_shardId);
-        //auto & sliceBuffers = shard.GetSliceBuffers();
-        //auto iterationsPerSlice = GetIterationsPerSlice();
+        TextObjectParser parser(input, allocator, &CompileNode::GetType);
+        CompileNode const & compileNodeTree = CompileNode::Parse(parser);
 
-        //// TODO: remove diagnosticStream and replace with nullable.
-        //auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
-        //QueryInstrumentation instrumentation;
-        //ByteCodeInterpreter interpreter(
-        //    code,
-        //    *this,
-        //    sliceBuffers.size(),
-        //    reinterpret_cast<char* const *>(sliceBuffers.data()),
-        //    iterationsPerSlice,
-        //    m_rowOffsets.data(),
-        //    *diagnosticStream,
-        //    instrumentation);
+        RegisterAllocator registers(compileNodeTree,
+                                    8,
+                                    8,
+                                    7,
+                                    allocator);
 
-        //interpreter.Run();
 
-        //// This check is necessary to detect the case where the final call
-        //// to FinishIteration is missing.
-        //EXPECT_EQ(m_resultsCount, m_expectedResults.size());
+        MatchTreeCompiler compiler(codeAllocator,
+                                   treeAllocator,
+                                   compileNodeTree,
+                                   registers);
+
+        const size_t matchCapacity =
+            GetIterationsPerSlice() * m_slices.size() * 64;
+
+        std::vector<NativeCodeGenerator::Record>
+            matches(matchCapacity, { nullptr, 0 });
+
+        auto matchCount = compiler.Run(m_slices.size(),
+                                       m_slices.data(),
+                                       GetIterationsPerSlice(),
+                                       m_rowOffsets.data(),
+                                       matches.size(),
+                                       matches.data());
+
+        for (size_t i = 0; i < matchCount; ++i)
+        {
+            Slice* slice = reinterpret_cast<Slice*>(matches[i].m_buffer);
+            void* sliceBuffer = Factories::GetSliceBuffer(slice);
+            size_t id = matches[i].m_id;
+
+            auto handle =
+                Factories::CreateDocumentHandle(sliceBuffer, id);
+            DocId doc = handle.GetDocId();
+
+            // TODO: Remove temporary debugging output.
+            //std::cout
+            //    << i << ": " << doc << std::endl;
+
+            m_observed.insert(doc);
+        }
+
+        ASSERT_EQ(m_expected.size(), m_observed.size())
+            << "Inconsistent match counts.";
+
+        for (DocId d : m_expected)
+        {
+            auto it = m_observed.find(d);
+            ASSERT_TRUE(it != m_observed.end())
+                << "Expected docId "
+                << d
+                << " not found.";
+        }
     }
-
-
-    //
-    // static methods
-    //
 }

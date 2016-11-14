@@ -10,6 +10,7 @@ set(CPPFILES
     MatchTreeCompilerTest.cpp
     MatchTreeRewriterTest.cpp
     NativeCodeVerifier.cpp
+    NativeCodeTest.cpp
     PlainTextCodeGenerator.cpp
     RankDownCompilerTest.cpp
     RegisterAllocatorTest.cpp

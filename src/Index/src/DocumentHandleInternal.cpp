@@ -40,6 +40,13 @@ namespace BitFunnel
     }
 
 
+    // TODO: Remove this temporary function.
+    void * Factories::GetSliceBuffer(Slice * slice)
+    {
+        return slice->GetSliceBuffer();
+    }
+
+
     //*************************************************************************
     //
     // DocumentHandle

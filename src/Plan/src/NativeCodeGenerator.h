@@ -87,7 +87,7 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
         public:
             // Inputs
             size_t m_sliceCount;
-            char * const * m_sliceBuffers;
+            void * const * m_sliceBuffers;
             size_t m_iterationsPerSlice;
             ptrdiff_t const * m_rowOffsets;
 
