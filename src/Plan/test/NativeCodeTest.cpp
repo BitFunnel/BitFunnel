@@ -165,416 +165,416 @@ namespace BitFunnel
     }
 
 
-    //TEST(ByteCodeInterpreter, AndRowJzDelta1Inverted)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(1, 0, 0, false),"
-    //        "  Child: AndRowJz {"
-    //        "    Row: Row(0, 0, 1, true),"
-    //        "    Child: Report {"
-    //        "      Child: "
-    //        "    }"
-    //        "  }"
-    //        "}";
-
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-    //    // IMPORTANT: row0 must be a row whose value differs
-    //    // across adjacent quadwords in order to correctly
-    //    // test the rank delta. If row0 has the same value in
-    //    // adjacent quadwords,
-    //    //     GetRowData(0, slice, offset)
-    //    // will return the same value as
-    //    //     GetRowData(0, slice, offset /2);
-    //    verifier.DeclareRow("3");
-    //    verifier.DeclareRow("2");
-
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
-
-    //        const uint64_t row1 = verifier.GetRowData(1, offset, slice);
-    //        const uint64_t row0 = verifier.GetRowData(0, offset / 2, slice);
-    //        verifier.ExpectResult(row1 & ~row0, offset, slice);
-    //    }
-
-    //    verifier.Verify(text);
-    //}
-
-
-    //TEST(ByteCodeInterpreter, AndRowJzMatches)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(0, 0, 0, false),"
-    //        "  Child: AndRowJz {"
-    //        "    Row: Row(1, 0, 0, false),"
-    //        "    Child: AndRowJz {"
-    //        "      Row: Row(2, 0, 0, false),"
-    //        "      Child: Report {"
-    //        "        Child: "
-    //        "      }"
-    //        "    }"
-    //        "  }"
-    //        "}";
-
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-    //    verifier.DeclareRow("2");
-    //    verifier.DeclareRow("3");
-    //    verifier.DeclareRow("5");
-
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
-
-    //        const uint64_t row0 = verifier.GetRowData(0, offset, slice);
-    //        const uint64_t row1 = verifier.GetRowData(1, offset, slice);
-    //        const uint64_t row2 = verifier.GetRowData(2, offset, slice);
-    //        verifier.ExpectResult(row0 & row1 & row2, offset, slice);
-    //    }
-
-    //    verifier.Verify(text);
-    //}
-
-
-    ////*************************************************************************
-    ////
-    //// LoadRowJz test cases
-    ////
-    ////*************************************************************************
-
-    ////
-    //// LoadRowJz, Rank = 0, RankDelta = 0
-    ////
-    //TEST(ByteCodeInterpreter, LoadRowJzRank0Delta0)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(0, 0, 0, false),"
-    //        "  Child: Report {"
-    //        "    Child: "
-    //        "  }"
-    //        "}";
-
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-    //    verifier.DeclareRow("3");
-
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
-
-    //        const uint64_t row0 = verifier.GetRowData(0, offset, slice);
-    //        verifier.ExpectResult(row0, offset, slice);
-    //    }
-
-    //    verifier.Verify(text);
-    //}
-
-
+    TEST(NativeCode, AndRowJzDelta1Inverted)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(1, 0, 0, false),"
+            "  Child: AndRowJz {"
+            "    Row: Row(0, 0, 1, true),"
+            "    Child: Report {"
+            "      Child: "
+            "    }"
+            "  }"
+            "}";
+
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
+
+        // IMPORTANT: row0 must be a row whose value differs
+        // across adjacent quadwords in order to correctly
+        // test the rank delta. If row0 has the same value in
+        // adjacent quadwords,
+        //     GetRowData(0, slice, offset)
+        // will return the same value as
+        //     GetRowData(0, slice, offset /2);
+        verifier.DeclareRow("3");
+        verifier.DeclareRow("2");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
+            const uint64_t row0 = verifier.GetRowData(0, offset / 2, slice);
+            verifier.ExpectResult(row1 & ~row0, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
+    TEST(NativeCode, AndRowJzMatches)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(0, 0, 0, false),"
+            "  Child: AndRowJz {"
+            "    Row: Row(1, 0, 0, false),"
+            "    Child: AndRowJz {"
+            "      Row: Row(2, 0, 0, false),"
+            "      Child: Report {"
+            "        Child: "
+            "      }"
+            "    }"
+            "  }"
+            "}";
+
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
+
+        verifier.DeclareRow("2");
+        verifier.DeclareRow("3");
+        verifier.DeclareRow("5");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
+            const uint64_t row2 = verifier.GetRowData(2, offset, slice);
+            verifier.ExpectResult(row0 & row1 & row2, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
+    //*************************************************************************
+    //
+    // LoadRowJz test cases
+    //
+    //*************************************************************************
+
+    //
+    // LoadRowJz, Rank = 0, RankDelta = 0
+    //
+    TEST(NativeCode, LoadRowJzRank0Delta0)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(0, 0, 0, false),"
+            "  Child: Report {"
+            "    Child: "
+            "  }"
+            "}";
+
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
+
+        verifier.DeclareRow("3");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            verifier.ExpectResult(row0, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
 
-    ////
-    //// LoadRowJz, Rank = 6, RankDelta = 0
-    //// (no equivalent test possible)
-    ////
-
-
-    ////
-    //// LoadRowJz, Rank = 0, RankDelta = 0, inverted
-    ////
-    //TEST(ByteCodeInterpreter, LoadRowJzRank0Delta0Inverted)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(0, 0, 0, true),"
-    //        "  Child: Report {"
-    //        "    Child: "
-    //        "  }"
-    //        "}";
-
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-    //    verifier.DeclareRow("5");
-
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
-
-    //        const uint64_t row0 = verifier.GetRowData(0, offset, slice);
-    //        verifier.ExpectResult(~row0, offset, slice);
-    //    }
-
-    //    verifier.Verify(text);
-    //}
-
-
-    ////
-    //// LoadRowJz, Rank = 0, RankDelta = 1
-    ////
-    //TEST(ByteCodeInterpreter, LoadRowJzRank0Delta1)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(0, 0, 1, false),"
-    //        "  Child: Report {"
-    //        "    Child: "
-    //        "  }"
-    //        "}";
-
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-    //    verifier.DeclareRow("7");
-
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
-
-    //        const uint64_t row0 = verifier.GetRowData(0, offset >> 1, slice);
-    //        verifier.ExpectResult(row0, offset, slice);
-    //    }
-
-    //    verifier.Verify(text);
-    //}
-
-
-    ////
-    //// LoadRowJz, Rank = 0, RankDelta = 1, inverted
-    ////
-    //TEST(ByteCodeInterpreter, LoadRowJzRank0Delta1Inverted)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(0, 0, 1, true),"
-    //        "  Child: Report {"
-    //        "    Child: "
-    //        "  }"
-    //        "}";
-
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-    //    verifier.DeclareRow("11");
-
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
-
-    //        const uint64_t row0 = verifier.GetRowData(0, offset >> 1, slice);
-    //        verifier.ExpectResult(~row0, offset, slice);
-    //    }
-
-    //    verifier.Verify(text);
-    //}
-
-
-    ////*************************************************************************
-    ////
-    //// LoadRow test cases
-    ////
-    ////*************************************************************************
-
-    ////
-    //// LoadRow, RankDelta = 0
-    ////
-    //TEST(ByteCodeInterpreter, LoadRowDelta0)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(0, 0, 0, false),"
-    //        "  Child: Report {"
-    //        "    Child: LoadRow(1, 0, 0, false)"
-    //        "  }"
-    //        "}";
-
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-    //    verifier.DeclareRow("3");
-    //    verifier.DeclareRow("5");
-
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
-
-    //        const uint64_t row0 = verifier.GetRowData(0, offset, slice);
-    //        const uint64_t row1 = verifier.GetRowData(1, offset, slice);
-    //        verifier.ExpectResult(row0 & row1, offset, slice);
-    //    }
-
-    //    verifier.Verify(text);
-    //}
-
-
-    ////
-    //// LoadRow, RankDelta = 0, inverted
-    ////
-    //TEST(ByteCodeInterpreter, LoadRowDelta0Inverted)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(0, 0, 0, false),"
-    //        "  Child: Report {"
-    //        "    Child: LoadRow(1, 0, 0, true)"
-    //        "  }"
-    //        "}";
-
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-    //    verifier.DeclareRow("3");
-    //    verifier.DeclareRow("5");
-
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
-
-    //        const uint64_t row0 = verifier.GetRowData(0, offset, slice);
-    //        const uint64_t row1 = verifier.GetRowData(1, offset, slice);
-    //        verifier.ExpectResult(row0 & ~row1, offset, slice);
-    //    }
-
-    //    verifier.Verify(text);
-    //}
-
-
-    ////
-    //// LoadRow, RankDelta = 1
-    ////
-    //TEST(ByteCodeInterpreter, LoadRowDelta1)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(0, 0, 0, false),"
-    //        "  Child: Report {"
-    //        "    Child: LoadRow(1, 0, 1, false)"
-    //        "  }"
-    //        "}";
-
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-    //    verifier.DeclareRow("3");
-    //    verifier.DeclareRow("5");
-
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
-
-    //        const uint64_t row0 = verifier.GetRowData(0, offset, slice);
-    //        const uint64_t row1 = verifier.GetRowData(1, offset >> 1, slice);
-    //        verifier.ExpectResult(row0 & row1, offset, slice);
-    //    }
-
-    //    verifier.Verify(text);
-    //}
-
-
-    ////
-    //// LoadRow, RankDelta = 1, inverted
-    ////
-    //TEST(ByteCodeInterpreter, LoadRowDelta1Inverted)
-    //{
-    //    char const * text =
-    //        "LoadRowJz {"
-    //        "  Row: Row(0, 0, 0, false),"
-    //        "  Child: Report {"
-    //        "    Child: LoadRow(1, 0, 1, true)"
-    //        "  }"
-    //        "}";
-
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-    //    verifier.DeclareRow("3");
-    //    verifier.DeclareRow("5");
-
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
-
-    //        const uint64_t row0 = verifier.GetRowData(0, offset, slice);
-    //        const uint64_t row1 = verifier.GetRowData(1, offset >> 1, slice);
-    //        verifier.ExpectResult(row0 & ~row1, offset, slice);
-    //    }
-
-    //    verifier.Verify(text);
-    //}
-
-
-    ////*************************************************************************
-    ////
-    //// Or test cases
-    ////
-    ////*************************************************************************
-
-    //TEST(ByteCodeInterpreter, OrMatches)
-    //{
-    //    char const * text =
-    //        "Or {"
-    //        "  Children: ["
-    //        "    LoadRowJz {"
-    //        "      Row: Row(0, 0, 0, false),"
-    //        "      Child: Report {"
-    //        "        Child: "
-    //        "      }"
-    //        "    },"
-    //        "    LoadRowJz {"
-    //        "      Row: Row(1, 0, 0, false),"
-    //        "      Child: Report {"
-    //        "        Child: "
-    //        "      }"
-    //        "    }"
-    //        "  ]"
-    //        "}";
-
-    //    const Rank initialRank = 0;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
-
-    //    verifier.DeclareRow("3");
-    //    verifier.DeclareRow("5");
-
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
-
-    //        const uint64_t row0 = verifier.GetRowData(0, offset, slice);
-    //        const uint64_t row1 = verifier.GetRowData(1, offset, slice);
-    //        verifier.ExpectResult(row0, offset, slice);
-    //        verifier.ExpectResult(row1, offset, slice);
-    //    }
-
-    //    verifier.Verify(text);
-    //}
-
-
-    ////*************************************************************************
-    ////
-    //// Out-of-order test cases
-    ////
-    ////*************************************************************************
+    //
+    // LoadRowJz, Rank = 6, RankDelta = 0
+    // (no equivalent test possible)
+    //
+
+
+    //
+    // LoadRowJz, Rank = 0, RankDelta = 0, inverted
+    //
+    TEST(NativeCode, LoadRowJzRank0Delta0Inverted)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(0, 0, 0, true),"
+            "  Child: Report {"
+            "    Child: "
+            "  }"
+            "}";
+
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
+
+        verifier.DeclareRow("5");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            verifier.ExpectResult(~row0, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
+    //
+    // LoadRowJz, Rank = 0, RankDelta = 1
+    //
+    TEST(NativeCode, LoadRowJzRank0Delta1)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(0, 0, 1, false),"
+            "  Child: Report {"
+            "    Child: "
+            "  }"
+            "}";
+
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
+
+        verifier.DeclareRow("7");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row0 = verifier.GetRowData(0, offset >> 1, slice);
+            verifier.ExpectResult(row0, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
+    //
+    // LoadRowJz, Rank = 0, RankDelta = 1, inverted
+    //
+    TEST(NativeCode, LoadRowJzRank0Delta1Inverted)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(0, 0, 1, true),"
+            "  Child: Report {"
+            "    Child: "
+            "  }"
+            "}";
+
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
+
+        verifier.DeclareRow("11");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row0 = verifier.GetRowData(0, offset >> 1, slice);
+            verifier.ExpectResult(~row0, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
+    //*************************************************************************
+    //
+    // LoadRow test cases
+    //
+    //*************************************************************************
+
+    //
+    // LoadRow, RankDelta = 0
+    //
+    TEST(NativeCode, LoadRowDelta0)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(0, 0, 0, false),"
+            "  Child: Report {"
+            "    Child: LoadRow(1, 0, 0, false)"
+            "  }"
+            "}";
+
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
+
+        verifier.DeclareRow("3");
+        verifier.DeclareRow("5");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
+            verifier.ExpectResult(row0 & row1, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
+    //
+    // LoadRow, RankDelta = 0, inverted
+    //
+    TEST(NativeCode, LoadRowDelta0Inverted)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(0, 0, 0, false),"
+            "  Child: Report {"
+            "    Child: LoadRow(1, 0, 0, true)"
+            "  }"
+            "}";
+
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
+
+        verifier.DeclareRow("3");
+        verifier.DeclareRow("5");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
+            verifier.ExpectResult(row0 & ~row1, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
+    //
+    // LoadRow, RankDelta = 1
+    //
+    TEST(NativeCode, LoadRowDelta1)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(0, 0, 0, false),"
+            "  Child: Report {"
+            "    Child: LoadRow(1, 0, 1, false)"
+            "  }"
+            "}";
+
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
+
+        verifier.DeclareRow("3");
+        verifier.DeclareRow("5");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            const uint64_t row1 = verifier.GetRowData(1, offset >> 1, slice);
+            verifier.ExpectResult(row0 & row1, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
+    //
+    // LoadRow, RankDelta = 1, inverted
+    //
+    TEST(NativeCode, LoadRowDelta1Inverted)
+    {
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(0, 0, 0, false),"
+            "  Child: Report {"
+            "    Child: LoadRow(1, 0, 1, true)"
+            "  }"
+            "}";
+
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
+
+        verifier.DeclareRow("3");
+        verifier.DeclareRow("5");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            const uint64_t row1 = verifier.GetRowData(1, offset >> 1, slice);
+            verifier.ExpectResult(row0 & ~row1, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
+    //*************************************************************************
+    //
+    // Or test cases
+    //
+    //*************************************************************************
+
+    TEST(NativeCode, OrMatches)
+    {
+        char const * text =
+            "Or {"
+            "  Children: ["
+            "    LoadRowJz {"
+            "      Row: Row(0, 0, 0, false),"
+            "      Child: Report {"
+            "        Child: "
+            "      }"
+            "    },"
+            "    LoadRowJz {"
+            "      Row: Row(1, 0, 0, false),"
+            "      Child: Report {"
+            "        Child: "
+            "      }"
+            "    }"
+            "  ]"
+            "}";
+
+        const Rank initialRank = 0;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
+
+        verifier.DeclareRow("3");
+        verifier.DeclareRow("5");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
+            verifier.ExpectResult(row0, offset, slice);
+            verifier.ExpectResult(row1, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
+    //*************************************************************************
+    //
+    // Out-of-order test cases
+    //
+    //*************************************************************************
 
     //// TODO: Verify that this test is actually working correctly and not just
     //// spuriously passing. Have no reason to suspect test is wrong. It just
     //// seems complex.
-    //TEST(ByteCodeInterpreter, OutOfOrderMatches)
+    //TEST(NativeCode, OutOfOrderMatches)
     //{
     //    char const * text =
     //        "RankDown {"
@@ -595,7 +595,7 @@ namespace BitFunnel
 
 
     //    const Rank initialRank = 2;
-    //    ByteCodeVerifier verifier(GetIndex(), initialRank);
+    //    NativeCodeVerifier verifier(GetIndex(), initialRank);
 
     //    verifier.DeclareRow("3");
     //    verifier.DeclareRow("5");
