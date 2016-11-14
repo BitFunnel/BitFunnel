@@ -125,6 +125,12 @@ namespace NativeJIT
         static char const * names[] = {
             "add",
             "and",
+            "bsf",
+            "bsr",
+            "bt",
+            "btc",
+            "btr",
+            "bts",
             "call",
             "cmp",
             "cvtfp2fp",
@@ -144,11 +150,13 @@ namespace NativeJIT
             "or",
             "pop",
             "push",
+            "rep",
             "ret",
             "rol",
             "shl",
             "shld",
             "shr",
+            "stosq",
             "sub",
             "xor",
         };
@@ -279,9 +287,22 @@ namespace NativeJIT
     }
 
 
+    template <> void X64CodeGenerator::Helper<OpCode::Rep>::Emit(X64CodeGenerator& code)
+    {
+        code.Emit8(0xf3);
+    }
+
+
     template <> void X64CodeGenerator::Helper<OpCode::Ret>::Emit(X64CodeGenerator& code)
     {
         code.Ret();
+    }
+
+
+    template <> void X64CodeGenerator::Helper<OpCode::Stosq>::Emit(X64CodeGenerator& code)
+    {
+        code.Emit8(0x48);
+        code.Emit8(0xab);
     }
 
 
