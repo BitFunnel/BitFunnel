@@ -571,53 +571,53 @@ namespace BitFunnel
     //
     //*************************************************************************
 
-    //// TODO: Verify that this test is actually working correctly and not just
-    //// spuriously passing. Have no reason to suspect test is wrong. It just
-    //// seems complex.
-    //TEST(NativeCode, OutOfOrderMatches)
-    //{
-    //    char const * text =
-    //        "RankDown {"
-    //        "  Delta: 2,"
-    //        "  Child: LoadRowJz {"
-    //        "    Row: Row(0, 0, 0, false),"
-    //        "    Child: AndRowJz {"
-    //        "      Row: Row(1, 0, 1, false),"
-    //        "      Child: AndRowJz {"
-    //        "        Row: Row(2, 0, 2, false),"
-    //        "        Child: Report {"
-    //        "          Child: "
-    //        "        }"
-    //        "      }"
-    //        "    }"
-    //        "  }"
-    //        "}";
+    // TODO: Verify that this test is actually working correctly and not just
+    // spuriously passing. Have no reason to suspect test is wrong. It just
+    // seems complex.
+    TEST(NativeCode, OutOfOrderMatches)
+    {
+        char const * text =
+            "RankDown {"
+            "  Delta: 2,"
+            "  Child: LoadRowJz {"
+            "    Row: Row(0, 0, 0, false),"
+            "    Child: AndRowJz {"
+            "      Row: Row(1, 0, 1, false),"
+            "      Child: AndRowJz {"
+            "        Row: Row(2, 0, 2, false),"
+            "        Child: Report {"
+            "          Child: "
+            "        }"
+            "      }"
+            "    }"
+            "  }"
+            "}";
 
 
-    //    const Rank initialRank = 2;
-    //    NativeCodeVerifier verifier(GetIndex(), initialRank);
+        const Rank initialRank = 2;
+        NativeCodeVerifier verifier(GetIndex(), initialRank);
 
-    //    verifier.DeclareRow("3");
-    //    verifier.DeclareRow("5");
-    //    verifier.DeclareRow("7");
+        verifier.DeclareRow("3");
+        verifier.DeclareRow("5");
+        verifier.DeclareRow("7");
 
-    //    for (auto iteration : verifier.GetIterations())
-    //    {
-    //        const size_t slice = verifier.GetSliceNumber(iteration);
-    //        const size_t offset = verifier.GetOffset(iteration);
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
 
-    //        for (size_t i = 0; i < 4; ++i)
-    //        {
-    //            const uint64_t row0 = verifier.GetRowData(0, offset + i, slice);
-    //            const uint64_t row1 = verifier.GetRowData(1, (offset + i) >> 1, slice);
-    //            const uint64_t row2 = verifier.GetRowData(2, (offset + i) >> 2, slice);
+            for (size_t i = 0; i < 4; ++i)
+            {
+                const uint64_t row0 = verifier.GetRowData(0, offset + i, slice);
+                const uint64_t row1 = verifier.GetRowData(1, (offset + i) >> 1, slice);
+                const uint64_t row2 = verifier.GetRowData(2, (offset + i) >> 2, slice);
 
-    //            verifier.ExpectResult(row0 & row1 & row2, offset + i, slice);
-    //        }
-    //    }
+                verifier.ExpectResult(row0 & row1 & row2, offset + i, slice);
+            }
+        }
 
-    //    verifier.Verify(text);
-    //}
+        verifier.Verify(text);
+    }
 
     ////*************************************************************************
     ////

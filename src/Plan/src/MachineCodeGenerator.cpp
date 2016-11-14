@@ -232,14 +232,15 @@ namespace BitFunnel
     {
         // Decode the offset into RCX, adjust for the shift and then encode it back.
         m_code.Emit<OpCode::Sub>(rcx, rdx);
-        m_code.EmitImmediate<OpCode::Shr>(rcx, static_cast<uint8_t>(shift));
+        m_code.EmitImmediate<OpCode::Shr>(rcx, static_cast<uint8_t>(shift + 3));
+        m_code.EmitImmediate<OpCode::Shl>(rcx, static_cast<uint8_t>(3));
         m_code.Emit<OpCode::Add>(rcx, rdx);
     }
 
 
     void MachineCodeGenerator::IncrementOffset()
     {
-        m_code.Emit<OpCode::Inc>(rcx);
+        m_code.EmitImmediate<OpCode::Add>(rcx, 8);
     }
 
 
