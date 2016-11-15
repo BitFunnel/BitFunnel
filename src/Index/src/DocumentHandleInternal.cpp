@@ -142,6 +142,18 @@ namespace BitFunnel
     }
 
 
+    bool DocumentHandle::IsActive() const
+    {
+        const RowId documentActiveRow =
+            m_slice->GetShard().GetDocumentActiveRowId();
+        RowTableDescriptor const & rowTable =
+            m_slice->GetRowTable(documentActiveRow.GetRank());
+        return rowTable.GetBit(m_slice->GetSliceBuffer(),
+                               documentActiveRow.GetIndex(),
+                               m_index) != 0ull;
+    }
+
+
     //*************************************************************************
     //
     // DocumentHandleInternal

@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>
 #include <sstream>
 #include <vector>
 
@@ -184,13 +183,12 @@ namespace BitFunnel
             matches(matchCapacity, { nullptr, 0 });
 
 
-        auto result = compiler.Run(sliceBuffers.size(),
-                                   sliceBuffers.data(),
-                                   iterationCount,
-                                   rowOffsets.data(),
-                                   matchCapacity,
-                                   matches.data());
-
-        std::cout << "Result = " << result << std::endl;
+        // TODO: return result of compiler.Run() once implemented.
+        compiler.Run(sliceBuffers.size(),
+                     sliceBuffers.data(),
+                     iterationCount,
+                     rowOffsets.data(),
+                     matchCapacity,
+                     matches.data());
     }
 }

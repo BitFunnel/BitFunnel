@@ -119,9 +119,18 @@ namespace BitFunnel
             DocumentHandle handle =
                 Factories::CreateDocumentHandle(sliceBuffer, docIndex);
 
-            DocId id = handle.GetDocId();
-            //std::cout << "  " << id << std::endl;
-            m_expected.insert(id);
+            if (handle.IsActive())
+            {
+                DocId id = handle.GetDocId();
+                //std::cout << "  " << id << std::endl;
+
+                if (m_expected.find(id) != m_expected.end())
+                {
+                    std::cout << "  Duplicate id " << id << std::endl;
+                }
+
+                m_expected.insert(id);
+            }
 
             accumulator <<= 1;
             --bitPos;
@@ -174,13 +183,16 @@ namespace BitFunnel
 
             auto handle =
                 Factories::CreateDocumentHandle(sliceBuffer, id);
-            DocId doc = handle.GetDocId();
+            if (handle.IsActive())
+            {
+                DocId doc = handle.GetDocId();
 
-            // TODO: Remove temporary debugging output.
-            //std::cout
-            //    << i << ": " << doc << std::endl;
+                // TODO: Remove temporary debugging output.
+                //std::cout
+                //    << i << ": " << doc << std::endl;
 
-            m_observed.insert(doc);
+                m_observed.insert(doc);
+            }
         }
 
         ASSERT_EQ(m_expected.size(), m_observed.size())

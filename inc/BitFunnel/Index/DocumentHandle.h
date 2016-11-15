@@ -103,6 +103,13 @@ namespace BitFunnel
         // various rows. Not sure it is needed in the long run.
         bool GetBit(RowId row) const;
 
+        // This method exists for matcher unit tests that do not inspect the
+        // active row. These tests can return matches for non-active DocIndex
+        // values when a slice is partially filled. Matches for these DocIndex
+        // value can lead to failed tests or crashes as bogus pointers are
+        // dereferenced during traversal of per-document data.
+        bool DocumentHandle::IsActive() const;
+
         // TODO: Methods for JIT trees.
 
     protected:
