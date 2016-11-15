@@ -61,14 +61,15 @@ namespace BitFunnel
             m_isOutput = false;
             m_query = parameters;
         }
-        else if (command.compare("log") != 0)
+        else if (command.compare("log") == 0)
         {
             m_isSingleQuery = false;
             m_isOutput = false;
             m_query = TaskFactory::GetNextToken(parameters);
         }
-        else if (command.compare("output") != 0)
+        else if (command.compare("output") == 0)
         {
+            m_isSingleQuery = false;
             m_isOutput = true;
             m_query = TaskFactory::GetNextToken(parameters);
         }
