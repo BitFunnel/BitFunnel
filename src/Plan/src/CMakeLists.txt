@@ -21,7 +21,6 @@ set(CPPFILES
     RowMatchNode.cpp
     RowPlan.cpp
     RowSet.cpp
-    SimplePlanner.cpp
     SimpleResultsProcessor.cpp
     StringVector.cpp
     TermMatchNode.cpp
@@ -50,7 +49,6 @@ set(PRIVATE_HFILES
     RankDownCompiler.h
     RankZeroCompiler.h
     RegisterAllocator.h
-    SimplePlanner.h
     StringVector.h
 )
 

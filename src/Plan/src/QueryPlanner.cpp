@@ -42,7 +42,6 @@
 #include "CompileNode.h"
 #include "LoggerInterfaces/Logging.h"
 #include "MatchTreeRewriter.h"
-// #include "NativeCodeGenerator.h"
 #include "QueryPlanner.h"
 #include "RankDownCompiler.h"
 #include "RegisterAllocator.h"

@@ -140,10 +140,6 @@ namespace BitFunnel
                                                        *m_allocator,
                                                        *diagnosticStream,
                                                        instrumentation);
-            // auto observed = Factories::RunSimplePlanner(*tree,
-            //                                             m_index,
-            //                                             *diagnosticStream,
-            //                                             instrumentation);
         }
 
         m_results[taskId] = instrumentation.GetData();
