@@ -64,7 +64,8 @@ namespace BitFunnel
         static void Filter(
             std::istream& input,
             std::ostream& output,
-            std::vector<std::string> const & columnNames);
+            std::vector<std::string> const & columnNames,
+            bool plainTextOutput);
 
     private:
         static void Usage(std::ostream& output);

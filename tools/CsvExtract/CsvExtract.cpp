@@ -36,26 +36,37 @@ namespace BitFunnel
     {
         try
         {
-            CHECK_GT(argc, 1)
-                << "Expect [<column number>]+";
+            bool plainTextOutput = false;
 
             std::vector<std::string> columnNames;
 
             for (size_t i = 1; i < static_cast<size_t>(argc); ++i)
             {
-                // Check for duplicate column names.
-                auto it = std::find(columnNames.begin(),
-                                    columnNames.end(),
-                                    std::string(argv[i]));
-                CHECK_TRUE(it == columnNames.end())
-                    << "Found duplicate column name \""
-                    << argv[i]
-                    << "\".";
+                const std::string arg(argv[i]);
 
-                columnNames.push_back(std::string(argv[i]));
+                if (arg == "-plaintext")
+                {
+                    plainTextOutput = true;
+                }
+                else
+                {
+                    // Check for duplicate column names.
+                    auto it = std::find(columnNames.begin(),
+                                        columnNames.end(),
+                                        arg);
+                    CHECK_TRUE(it == columnNames.end())
+                        << "Found duplicate column name \""
+                        << arg
+                        << "\".";
+
+                    columnNames.push_back(arg);
+                }
             }
 
-            Filter(input, output, columnNames);
+            CHECK_GT(columnNames.size(), 0)
+                << "No column names specified.";
+
+            Filter(input, output, columnNames, plainTextOutput);
         }
         catch (Logging::CheckException e)
         {
@@ -75,7 +86,8 @@ namespace BitFunnel
     // static
     void CsvExtract::Filter(std::istream& input,
                             std::ostream& output,
-                            std::vector<std::string> const & columnNames)
+                            std::vector<std::string> const & columnNames,
+                            bool plainTextOutput)
     {
         CHECK_GT(columnNames.size(), 0u)
             << "Expect at least one column to extract.";
@@ -157,7 +169,18 @@ namespace BitFunnel
             // Write one row.
             for (size_t i = 0; i < columnNames.size(); ++i)
             {
-                formatter.WriteField(inputRow[inputIndex[i]]);
+                if (plainTextOutput)
+                {
+                    if (i != 0)
+                    {
+                        output << ",";
+                    }
+                    output << inputRow[inputIndex[i]];
+                }
+                else
+                {
+                    formatter.WriteField(inputRow[inputIndex[i]]);
+                }
             }
             formatter.WriteRowEnd();
         }
@@ -168,9 +191,13 @@ namespace BitFunnel
     void CsvExtract::Usage(std::ostream& output)
     {
         output
-            << "CsvExtract [<column number>]+" << std::endl
+            << "CsvExtract [-plaintext] [<column number>]+" << std::endl
             << std::endl
             << "  Reads a .csv file from standard input." << std::endl
-            << "  Writes filtered .csv file to standard output." << std::endl;
+            << "  Writes filtered .csv file to standard output." << std::endl
+            << std::endl
+            << "  The -plaintext option causes the output to be" << std::endl
+            << "  without csv escaping." << std::endl
+            << std::endl;
     }
 }

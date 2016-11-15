@@ -47,7 +47,7 @@ namespace BitFunnel
 
         std::stringstream output;
 
-        CsvExtract::Filter(input, output, columns);
+        CsvExtract::Filter(input, output, columns, false);
 
         ASSERT_EQ(expected, output.str());
     }
@@ -75,7 +75,7 @@ namespace BitFunnel
 
         std::stringstream output;
 
-        CsvExtract::Filter(input, output, columns);
+        CsvExtract::Filter(input, output, columns, false);
 
         ASSERT_EQ(expected, output.str());
     }
@@ -93,7 +93,94 @@ namespace BitFunnel
 
         std::stringstream output;
 
-        ASSERT_THROW(CsvExtract::Filter(input, output, columns), Logging::CheckException);
+        ASSERT_THROW(CsvExtract::Filter(input, output, columns, false),
+                     Logging::CheckException);
+    }
+
+
+    TEST(CsvExtractTest, ExtractPlainText)
+    {
+        std::stringstream input;
+        input
+            << "a,b,c,d,e\n"
+            << "1,\"\"\"2\",3,4,5\n"
+            << "p,\"q,1\",r,s,t\n";
+
+        std::vector<std::string> columns;
+        columns.push_back("d");
+        columns.push_back("b");
+
+        std::string expected =
+            "d,b\n"
+            "4,\"2\n"
+            "s,q,1\n";
+
+        std::stringstream output;
+
+        CsvExtract::Filter(input, output, columns, true);
+
+        ASSERT_EQ(expected, output.str());
+    }
+
+
+    TEST(CsvExtractTest, ExtractPlainTextCmdLineArg)
+    {
+        std::stringstream input;
+        input
+            << "a,b,c,d,e\n"
+            << "1,\"\"\"2\",3,4,5\n"
+            << "p,\"q,1\",r,s,t\n";
+
+        std::vector<char const *> args;
+        args.push_back("CsvExtract");
+        args.push_back("d");
+        args.push_back("-plaintext");
+        args.push_back("b");
+
+        std::string expected =
+            "d,b\n"
+            "4,\"2\n"
+            "s,q,1\n";
+
+        std::stringstream output;
+
+        BitFunnel::CsvExtract extractor;
+        extractor.Main(input,
+                       output,
+                       static_cast<int>(args.size()),
+                       args.data());
+
+        ASSERT_EQ(expected, output.str());
+    }
+
+
+    TEST(CsvExtractTest, ExtractCsvTextCmdLineArg)
+    {
+        std::stringstream input;
+        input
+            << "a,b,c,d,e\n"
+            << "1,\"\"\"2\",3,4,5\n"
+            << "p,\"q,1\",r,s,t\n";
+
+        std::vector<char const *> args;
+        args.push_back("CsvExtract");
+        args.push_back("d");
+        args.push_back("b");
+
+        std::string expected =
+            "d,b\n"
+            "4,\"\"\"2\"\n"
+            "s,\"q,1\"\n";
+
+        std::stringstream output;
+
+        BitFunnel::CsvExtract extractor;
+        extractor.Main(input,
+                       output,
+                       static_cast<int>(args.size()),
+                       args.data());
+
+        ASSERT_EQ(expected, output.str());
     }
 
 
@@ -110,6 +197,7 @@ namespace BitFunnel
 
         std::stringstream output;
 
-        ASSERT_THROW(CsvExtract::Filter(input, output, columns), Logging::CheckException);
+        ASSERT_THROW(CsvExtract::Filter(input, output, columns, false),
+                     Logging::CheckException);
     }
 }
