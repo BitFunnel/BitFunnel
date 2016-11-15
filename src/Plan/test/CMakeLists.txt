@@ -7,7 +7,6 @@ set(CPPFILES
     ByteCodeVerifier.cpp
     CodeVerifierBase.cpp
     CompileNodeTest.cpp
-    MatchTreeCompilerTest.cpp
     MatchTreeRewriterTest.cpp
     NativeCodeVerifier.cpp
     NativeCodeTest.cpp
