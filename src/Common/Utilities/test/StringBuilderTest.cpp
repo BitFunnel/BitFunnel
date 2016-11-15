@@ -23,7 +23,7 @@
 
 #include "gtest/gtest.h"
 
-#include "Allocator.h"
+#include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/StringBuilder.h"
 
 

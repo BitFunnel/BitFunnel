@@ -24,7 +24,6 @@
 #include <memory>  // Used for std::unique_ptr of diagnosticStream. Probably temporary.
 #include <ostream>
 
-#include "Allocator.h"
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/IDiagnosticStream.h"
@@ -34,6 +33,7 @@
 #include "BitFunnel/Plan/QueryParser.h"
 #include "BitFunnel/Plan/QueryRunner.h"
 #include "BitFunnel/Utilities/Factories.h"
+#include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/ITaskDistributor.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "CsvTsv/Csv.h"
@@ -103,7 +103,7 @@ namespace BitFunnel
 
         std::unique_ptr<IAllocator> m_allocator;
 
-        static const size_t c_allocatorSize = 16384;
+        static const size_t c_allocatorSize = 1ull << 16;
     };
 
 
@@ -137,6 +137,7 @@ namespace BitFunnel
         {
             auto observed = Factories::RunQueryPlanner(*tree,
                                                        m_index,
+                                                       *m_allocator,
                                                        *diagnosticStream,
                                                        instrumentation);
             // auto observed = Factories::RunSimplePlanner(*tree,

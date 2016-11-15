@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "Allocator.h"
 #include "BitFunnel/Allocators/IAllocator.h"
 // #include "BitFunnel/CompiledFunction.h"
 #include "BitFunnel/IDiagnosticStream.h"
@@ -36,6 +35,7 @@
 #include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Plan/TermPlan.h"
 #include "BitFunnel/Plan/TermPlanConverter.h"
+#include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/IObjectFormatter.h"
 #include "ByteCodeInterpreter.h"
@@ -55,11 +55,10 @@ namespace BitFunnel
     // way SimplePlanner is connected.
     std::vector<DocId> Factories::RunQueryPlanner(TermMatchNode const & tree,
                                                   ISimpleIndex const & index,
-                                                  IDiagnosticStream& diagnosticStream,
+                                                  IAllocator & allocator,
+                                                  IDiagnosticStream & diagnosticStream,
                                                   QueryInstrumentation & instrumentation)
     {
-        // TODO: this really shouldn't create its own allocator.
-        Allocator allocator(4096*16);
         const int c_arbitraryRowCount = 500;
         QueryPlanner planner(tree,
                              c_arbitraryRowCount,

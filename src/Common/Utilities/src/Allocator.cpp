@@ -24,7 +24,7 @@
 #include <cstring>
 #include <memory>
 
-#include "Allocator.h"
+#include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "LoggerInterfaces/Logging.h"
 

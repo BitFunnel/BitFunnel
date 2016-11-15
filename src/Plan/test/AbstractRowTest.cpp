@@ -24,11 +24,12 @@
 
 #include <sstream>
 
-#include "Allocator.h"
 #include "BitFunnel/Plan/AbstractRow.h"
 #include "BitFunnel/Plan/RowMatchNode.h"
+#include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
 #include "TextObjectParser.h"
+
 
 namespace BitFunnel
 {

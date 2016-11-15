@@ -25,7 +25,6 @@
 
 #include "gtest/gtest.h"
 
-#include "Allocator.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IShard.h"
@@ -34,6 +33,7 @@
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/RowMatchNode.h"
 #include "BitFunnel/Term.h"
+#include "BitFunnel/Utilities/Allocator.h"
 #include "MatchTreeCompiler.h"
 #include "NativeCodeVerifier.h"
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"

@@ -22,7 +22,6 @@
 
 #include "gtest/gtest.h"
 
-#include "Allocator.h"
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
@@ -34,6 +33,7 @@
 #include "BitFunnel/Plan/RowPlan.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Plan/TermPlanConverter.h"
+#include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
 #include "TextObjectParser.h"
 // #include "BitFunnel/FalsePositiveEvaluationNode.h"

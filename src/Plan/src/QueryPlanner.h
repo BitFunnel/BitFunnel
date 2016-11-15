@@ -26,11 +26,6 @@
 #include "ByteCodeInterpreter.h"
 #include "SimpleResultsProcessor.h"
 
-// namespace X64
-// {
-//     class X64FunctionGenerator;
-// }
-
 
 namespace BitFunnel
 {

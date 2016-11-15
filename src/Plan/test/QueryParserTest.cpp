@@ -24,11 +24,11 @@
 
 #include <sstream>
 
-#include "Allocator.h"
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Plan/QueryParser.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
+#include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
 
 

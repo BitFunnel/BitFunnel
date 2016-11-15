@@ -35,6 +35,7 @@
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryParser.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
+#include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/ReadLines.h"
 #include "CsvTsv/Csv.h"
@@ -87,10 +88,12 @@ namespace BitFunnel
         std::string query,
         bool runVerification)
     {
-        auto streamConfiguration = Factories::CreateStreamConfiguration();
-        auto allocator = Factories::CreateAllocator(4096 * 64);
+        static const size_t c_allocatorSize = 1ull << 16;
+        Allocator allocator(c_allocatorSize);
 
-        QueryParser parser(query.c_str(), *streamConfiguration, *allocator);
+        auto streamConfiguration = Factories::CreateStreamConfiguration();
+
+        QueryParser parser(query.c_str(), *streamConfiguration, allocator);
         auto tree = parser.Parse();
 
         std::unique_ptr<IMatchVerifier> verifier =
@@ -144,6 +147,7 @@ namespace BitFunnel
             //                                             *diagnosticStream);
             auto observed = Factories::RunQueryPlanner(*tree,
                                                        environment.GetSimpleIndex(),
+                                                       allocator,
                                                        *diagnosticStream,
                                                        instrumentation);
             for (auto id : observed)

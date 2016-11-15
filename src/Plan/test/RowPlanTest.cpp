@@ -22,7 +22,7 @@
 
 #include "gtest/gtest.h"
 
-#include "Allocator.h"
+#include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
 #include "BitFunnel/Plan/RowMatchNode.h"
 #include "BitFunnel/Plan/RowPlan.h"

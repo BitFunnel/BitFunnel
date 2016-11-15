@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 
-#include "Allocator.h"
+#include "BitFunnel/Utilities/Allocator.h"
 #include "MatchTreeCompiler.h"
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
 
