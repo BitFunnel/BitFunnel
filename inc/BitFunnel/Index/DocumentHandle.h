@@ -108,7 +108,7 @@ namespace BitFunnel
         // values when a slice is partially filled. Matches for these DocIndex
         // value can lead to failed tests or crashes as bogus pointers are
         // dereferenced during traversal of per-document data.
-        bool DocumentHandle::IsActive() const;
+        bool IsActive() const;
 
         // TODO: Methods for JIT trees.
 
