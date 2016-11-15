@@ -58,17 +58,24 @@ namespace BitFunnel
         if (command.compare("one") == 0)
         {
             m_isSingleQuery = true;
+            m_isOutput = false;
             m_query = parameters;
+        }
+        else if (command.compare("log") != 0)
+        {
+            m_isSingleQuery = false;
+            m_isOutput = false;
+            m_query = TaskFactory::GetNextToken(parameters);
+        }
+        else if (command.compare("output") != 0)
+        {
+            m_isOutput = true;
+            m_query = TaskFactory::GetNextToken(parameters);
         }
         else
         {
-            m_isSingleQuery = false;
-            if (command.compare("log") != 0)
-            {
-                RecoverableError error("Query expects \"one\" or \"log\".");
-                throw error;
-            }
-            m_query = TaskFactory::GetNextToken(parameters);
+            RecoverableError error("Query expects \"one\" or \"log\".");
+            throw error;
         }
     }
 
@@ -76,7 +83,8 @@ namespace BitFunnel
     // TODO: this should be somewhere else.
     std::unique_ptr<IMatchVerifier> VerifyOneQuery(
         Environment & environment,
-        std::string query)
+        std::string query,
+        bool runVerification)
     {
         auto streamConfiguration = Factories::CreateStreamConfiguration();
         auto allocator = Factories::CreateAllocator(4096 * 64);
@@ -101,19 +109,22 @@ namespace BitFunnel
             size_t matchCount = 0;
             size_t documentCount = 0;
 
-            for (auto entry : cache)
+            if (runVerification)
             {
-                ++documentCount;
-                bool matches = evaluator.Evaluate(*tree, entry.first);
-
-                if (matches)
+                for (auto entry : cache)
                 {
-                    ++matchCount;
-                    //std::cout
-                    //    << "  DocId(" << entry.second << ") "
-                    //    << std::endl;
+                    ++documentCount;
+                    bool matches = evaluator.Evaluate(*tree, entry.first);
 
-                    verifier->AddExpected(entry.second);
+                    if (matches)
+                    {
+                        ++matchCount;
+                        //std::cout
+                        //    << "  DocId(" << entry.second << ") "
+                        //    << std::endl;
+
+                        verifier->AddExpected(entry.second);
+                    }
                 }
             }
 
@@ -154,7 +165,7 @@ namespace BitFunnel
                 << "Processing query \""
                 << m_query
                 << "\"" << std::endl;
-            auto verifier = VerifyOneQuery(GetEnvironment(), m_query);
+            auto verifier = VerifyOneQuery(GetEnvironment(), m_query, true);
             std::cout << "True positive count: "
                 << verifier->GetTruePositiveCount()
                 << std::endl
@@ -219,7 +230,7 @@ namespace BitFunnel
                       "ID of document.");
             CsvTsv::OutputColumn<uint64_t>
                 type("Type",
-                     "0: true positive. 1: false positive. 2: false negative. TODO: fix this");
+                     "0: true positive. 1: false positive. 2: false negative. 3: unchecked result. TODO: fix this");
 
             writer.DefineColumn(queryString);
             writer.DefineColumn(docId);
@@ -259,42 +270,62 @@ namespace BitFunnel
             uint64_t position = 0;
             for (const auto & query : queries)
             {
-                auto verifier = VerifyOneQuery(GetEnvironment(), query);
+                auto verifier = VerifyOneQuery(GetEnvironment(), query, !m_isOutput);
                 queryString = verifier->GetQuery();
-                std::vector<DocId> results = verifier->GetTruePositives();
-                numTruePos = results.size();
-                type = 0;
-                for (const auto id : results)
+
+                if (!m_isOutput)
                 {
-                    docId = id;
-                    writer.WriteDataRow();
-                }
+                    std::vector<DocId> results = verifier->GetTruePositives();
+                    numTruePos = results.size();
+                    type = 0;
+                    for (const auto id : results)
+                    {
+                        docId = id;
+                        writer.WriteDataRow();
+                    }
 
-                results = verifier->GetFalsePositives();
-                numFalsePos = results.size();
-                type = 1;
-                for (const auto id : results)
+                    results = verifier->GetFalsePositives();
+                    numFalsePos = results.size();
+                    type = 1;
+                    for (const auto id : results)
+                    {
+                        docId = id;
+                        writer.WriteDataRow();
+                    }
+
+                    results = verifier->GetFalseNegatives();
+                    numFalseNeg = results.size();
+                    type = 2;
+                    for (const auto id : results)
+                    {
+                        docId = id;
+                        writer.WriteDataRow();
+                    }
+
+                    falseRate = static_cast<double>(numFalsePos) /
+                        (static_cast<double>(numFalsePos) +
+                         static_cast<double>(numTruePos));
+
+                    summary.WriteDataRow();
+                    ++position;
+                    termPos = position;
+                }
+                else
                 {
-                    docId = id;
-                    writer.WriteDataRow();
+                    // TODO: fix this confusing setup. In m_isOutput mode, we
+                    // never run the verifier and therefore never have
+                    // "expected" results, which means that everything shows up
+                    // as a false positive. This terminology conflict is because
+                    // we added this mode after creating the verifier.
+                    std::vector<DocId> results = verifier->GetFalsePositives();
+                    type = 3;
+                    for (const auto id : results)
+                    {
+                        docId = id;
+                        writer.WriteDataRow();
+                    }
+
                 }
-
-                results = verifier->GetFalseNegatives();
-                numFalseNeg = results.size();
-                type = 2;
-                for (const auto id : results)
-                {
-                    docId = id;
-                    writer.WriteDataRow();
-                }
-
-                falseRate = static_cast<double>(numFalsePos) /
-                    (static_cast<double>(numFalsePos) +
-                     static_cast<double>(numTruePos));
-
-                summary.WriteDataRow();
-                ++position;
-                termPos = position;
             }
 
             writer.WriteEpilogue();

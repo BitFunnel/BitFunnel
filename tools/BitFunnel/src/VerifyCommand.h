@@ -40,7 +40,12 @@ namespace BitFunnel
         static ICommand::Documentation GetDocumentation();
 
     private:
+        // m_isSingleQuery means to run one query. Otherwise, a log of queries
+        // is expected.
         bool m_isSingleQuery;
+        // m_isOutput means output results without verification. Otherwise, the
+        // verifier gets run.
+        bool m_isOutput;
         std::string m_query;
     };
 }
