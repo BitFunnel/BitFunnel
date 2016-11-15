@@ -2,6 +2,8 @@
 # Output is in fully normalized format, the same as VerifyCommand.cpp produces.
 #
 
+# Note: requires Python3.
+
 # TODO: remove hardcoded paths.
 
 # file format:
@@ -22,9 +24,21 @@ with open("/tmp/groundTruth.csv") as f:
         if (len(row) == 3 and (row[2] == '0' or row[2] == '2')):
             true_matches[row[0]].add(row[1])
 
-with open("/tmp/unknowns.csv") as f:
+# TODO: switch to using csv module for output.
+
+
+with open("/tmp/unknown.csv") as f:
+    cf = open("/tmp/sum.csv", 'w', newline='')
+    writer = csv.writer(cf)
+    writer.writerow(["Query","TermPos","TruePositives","FalsePositives","FalseNegatives","FalseRate"])
     reader = csv.reader(f)
+    last_term = ""
+    num_true_pos = 0
+    num_false_pos = 0
+    num_false_neg = 0 # TODO: handle.
+    term_pos = -1
     for row in reader:
+        # print(row)
         # TODO: assert that value is '3'
         #
         # TODO: handle false negatives. Could keep a counter of how many matches
@@ -32,6 +46,19 @@ with open("/tmp/unknowns.csv") as f:
         # we see a false negative.
         if (len(row) == 3):
             if row[1] in true_matches[row[0]]:
-                print(row[0] + "," + row[1] + ",0")
+                num_true_pos += 1
             else:
-                print(row[0] + "," + row[1] + ",1")
+                num_false_pos += 1
+        if row[0] != last_term:
+            if (term_pos > 0):
+                writer.writerow([row[0],
+                                 term_pos,
+                                 num_true_pos,
+                                 num_false_pos,
+                                 num_false_neg,
+                                 num_false_pos / (num_true_pos + num_false_pos)])
+            num_true_pos = 0
+            num_false_pos = 0
+            num_false_neg = 0 # TODO: handle.
+            term_pos += 1
+        last_term = row[0]
