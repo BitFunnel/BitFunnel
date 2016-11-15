@@ -195,6 +195,16 @@ namespace BitFunnel
     }
 
 
+    // WARNING: The design of the dedupe buffer in EmitFinishIteration()
+    // only supports ranks up to 6. The reason is that a single quadword
+    // is used as a bitmap to 64 quadwords. In the worst case, with a
+    // plan starting at rank 6, a single iteration can find matches in
+    // 2^6 = 64 different quadwords. Supporting larger ranks would require
+    // extending the bitmap to multiple quadwords, or mapping individual
+    // bits to multiple quadwords.
+    static_assert(c_maxRankValue <= 6,
+                  "EmitFinishIteration() does not support rank values above 6.");
+
     void NativeCodeGenerator::EmitFinishIteration(ExpressionTree& tree)
     {
         auto & code = tree.GetCodeGenerator();

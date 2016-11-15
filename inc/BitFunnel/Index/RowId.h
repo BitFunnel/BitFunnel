@@ -86,7 +86,7 @@ namespace BitFunnel
         uint32_t m_rank: c_log2MaxRankValue;
 
         // Index is the row number within a row table.
-        // We are limited to c^c_log2MaxRankValue rows, which at this time
+        // We are limited to c_log2MaxRowIndexValue rows, which at this time
         // is 2^25 = 33M rows. At 10% bit density this means that BitFunnel
         // isi limited to 3.3M postings per document.
         uint32_t m_index: c_log2MaxRowIndexValue;

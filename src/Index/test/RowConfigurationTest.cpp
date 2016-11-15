@@ -46,9 +46,9 @@ namespace BitFunnel
             EXPECT_EQ(e1.GetRowCount(), 2u);
             EXPECT_FALSE(e1.IsPrivate());
 
-            RowConfiguration::Entry e(7u, 6u, true);
-            EXPECT_EQ(e.GetRank(), 7u);
-            EXPECT_EQ(e.GetRowCount(), 6u);
+            RowConfiguration::Entry e(6u, 5u, true);
+            EXPECT_EQ(e.GetRank(), 6u);
+            EXPECT_EQ(e.GetRowCount(), 5u);
             EXPECT_TRUE(e.IsPrivate());
         }
 
@@ -92,8 +92,8 @@ namespace BitFunnel
             std::deque<RowConfiguration::Entry> expected;
             RowConfiguration observed;
 
-            // push_front, iterate, and verify contents for up to 8 entries.
-            for (unsigned i = 0; i < 8; ++i)
+            // push_front, iterate, and verify contents for up to c_maxRankValue + 1 entries.
+            for (unsigned i = 0; i <= c_maxRankValue ; ++i)
             {
                 RowConfiguration::Entry e(i, i + 1, (i & 1) == 1);
                 expected.push_front(e);
