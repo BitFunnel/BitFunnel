@@ -52,7 +52,7 @@ namespace BitFunnel
         // m_lock protects m_head from multiple writers.
         std::mutex m_lock;
 
-        // m_head is atomic to support reading in the presenxe of writers.
+        // m_head is atomic to support reading in the presence of writers.
         std::atomic<Node const *> m_head;
     };
 }
