@@ -63,7 +63,7 @@ namespace BitFunnel
                 }
             }
 
-            CHECK_GT(columnNames.size(), 0)
+            CHECK_GT(columnNames.size(), 0u)
                 << "No column names specified.";
 
             Filter(input, output, columnNames, plainTextOutput);
