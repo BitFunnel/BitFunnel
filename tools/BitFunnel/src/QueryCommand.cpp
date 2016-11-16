@@ -75,7 +75,8 @@ namespace BitFunnel
                 << "\"" << std::endl;
             auto instrumentation =
                 QueryRunner::Run(m_query.c_str(),
-                                 GetEnvironment().GetSimpleIndex());
+                                 GetEnvironment().GetSimpleIndex(),
+                                 GetEnvironment().GetCompilerMode());
 
             std::cout << "Results:" << std::endl;
             CsvTsv::CsvTableFormatter formatter(std::cout);
@@ -104,7 +105,8 @@ namespace BitFunnel
                                  GetEnvironment().GetOutputDir().c_str(),
                                  c_threadCount,
                                  queries,
-                                 c_iterations);
+                                 c_iterations,
+                                 GetEnvironment().GetCompilerMode());
             std::cout << "Results:" << std::endl;
             statistics.Print(std::cout);
         }

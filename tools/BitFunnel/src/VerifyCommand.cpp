@@ -152,7 +152,7 @@ namespace BitFunnel
                                        *diagnosticStream,
                                        instrumentation,
                                        results,
-                                       false);
+                                       environment.GetCompilerMode());
 
             for (auto result : results)
             {

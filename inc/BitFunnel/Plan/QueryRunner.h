@@ -51,12 +51,14 @@ namespace BitFunnel
 
         static QueryInstrumentation::Data Run(
             char const * query,
-            ISimpleIndex const & index);
+            ISimpleIndex const & index,
+            bool useNativeCode);
 
         static Statistics Run(ISimpleIndex const & index,
                               char const * outputDir,
                               size_t threadCount,
                               std::vector<std::string> const & queries,
-                              size_t iterations);
+                              size_t iterations,
+                              bool useNativeCode);
     };
 }

@@ -79,7 +79,8 @@ namespace BitFunnel
                        IStreamConfiguration const & config,
                        std::vector<std::string> const & queries,
                        std::vector<QueryInstrumentation::Data> & results,
-                       size_t maxResultCount);
+                       size_t maxResultCount,
+                       bool useNativeCode);
 
         static QueryInstrumentation ProcessOneQuery(
             char const * query,
@@ -103,6 +104,8 @@ namespace BitFunnel
         IStreamConfiguration const & m_config;
         std::vector<std::string> const & m_queries;
         std::vector<QueryInstrumentation::Data> & m_results;
+        bool m_useNativeCode;
+
         std::vector<ResultsBuffer::Result> m_matches;
 
         ResultsBuffer m_resultsBuffer;
@@ -117,11 +120,13 @@ namespace BitFunnel
                                    IStreamConfiguration const & config,
                                    std::vector<std::string> const & queries,
                                    std::vector<QueryInstrumentation::Data> & results,
-                                   size_t maxResultCount)
+                                   size_t maxResultCount,
+                                   bool useNativeCode)
       : m_index(index),
         m_config(config),
         m_queries(queries),
         m_results(results),
+        m_useNativeCode(useNativeCode),
         m_matches(maxResultCount, {nullptr, 0}),
         m_resultsBuffer(index.GetIngestor().GetDocumentCount()),
         m_allocator(new Allocator(c_allocatorSize))
@@ -150,7 +155,7 @@ namespace BitFunnel
                                        *diagnosticStream,
                                        instrumentation,
                                        m_resultsBuffer,
-                                       false);
+                                       m_useNativeCode);
         }
 
         m_results[taskId] = instrumentation.GetData();
@@ -168,7 +173,8 @@ namespace BitFunnel
     //*************************************************************************
     QueryInstrumentation::Data QueryRunner::Run(
         char const * query,
-        ISimpleIndex const & index)
+        ISimpleIndex const & index,
+        bool useNativeCode)
     {
         std::vector<std::string> queries;
         queries.push_back(std::string(query));
@@ -180,7 +186,12 @@ namespace BitFunnel
         size_t maxResultCount = index.GetIngestor().GetDocumentCount();
 
         QueryProcessor
-            processor(index, *config, queries, results, maxResultCount);
+            processor(index,
+                      *config,
+                      queries,
+                      results,
+                      maxResultCount,
+                      useNativeCode);
         processor.ProcessTask(0);
         processor.Finished();
 
@@ -193,7 +204,8 @@ namespace BitFunnel
         char const * outDir,
         size_t threadCount,
         std::vector<std::string> const & queries,
-        size_t iterations)
+        size_t iterations,
+        bool useNativeCode)
     {
         std::vector<QueryInstrumentation::Data> results(queries.size() * iterations);
 
@@ -209,7 +221,8 @@ namespace BitFunnel
                                        *config,
                                        queries,
                                        results,
-                                       maxResultCount)));
+                                       maxResultCount,
+                                       useNativeCode)));
         }
 
         auto distributor =
