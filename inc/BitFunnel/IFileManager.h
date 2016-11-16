@@ -80,7 +80,7 @@ namespace BitFunnel
         //virtual FileDescriptor0 DocFreqTable() = 0;
         virtual FileDescriptor0 ColumnDensities() = 0;
         virtual FileDescriptor0 ColumnDensitySummary() = 0;
-        virtual FileDescriptor0 DocumentLengthHistogram() = 0;
+        virtual FileDescriptor0 DocumentHistogram() = 0;
         //virtual FileDescriptor0 L1RankerConfig() = 0;
         virtual FileDescriptor0 Manifest() = 0;
         //virtual FileDescriptor0 Model() = 0;

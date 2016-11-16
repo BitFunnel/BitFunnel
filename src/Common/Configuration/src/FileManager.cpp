@@ -70,10 +70,10 @@ namespace BitFunnel
           m_docFreqTable(new ParameterizedFile1(fileSystem,
                                                 statisticsDirectory,
                                                 "DocFreqTable", ".csv")),
-          m_documentLengthHistogram(new ParameterizedFile0(fileSystem,
-                                                           statisticsDirectory,
-                                                           "DocumentLengthHistogram",
-                                                           ".csv" )),
+          m_documentHistogram(new ParameterizedFile0(fileSystem,
+                                                     statisticsDirectory,
+                                                     "DocumentHistogram",
+                                                     ".csv" )),
           m_indexedIdfTable(new ParameterizedFile1(fileSystem,
                                                    indexDirectory,
                                                    "IndexedIdfTable",
@@ -123,9 +123,9 @@ namespace BitFunnel
     }
 
 
-    FileDescriptor0 FileManager::DocumentLengthHistogram()
+    FileDescriptor0 FileManager::DocumentHistogram()
     {
-        return FileDescriptor0(*m_documentLengthHistogram);
+        return FileDescriptor0(*m_documentHistogram);
     }
 
 

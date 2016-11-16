@@ -23,17 +23,17 @@
 
 #include "CsvTsv/Csv.h"
 #include "CsvTsv/Table.h"
-#include "DocumentLengthHistogram.h"
+#include "DocumentHistogramBuilder.h"
 
 namespace BitFunnel
 {
-    DocumentLengthHistogram::DocumentLengthHistogram()
+    DocumentHistogramBuilder::DocumentHistogramBuilder()
         : m_totalCount(0)
     {
     }
 
 
-    void DocumentLengthHistogram::AddDocument(size_t postingCount)
+    void DocumentHistogramBuilder::AddDocument(size_t postingCount)
     {
         {
             const std::lock_guard<std::mutex> lock(m_lock);
@@ -43,13 +43,13 @@ namespace BitFunnel
     }
 
 
-    size_t DocumentLengthHistogram::GetPostingCount() const
+    size_t DocumentHistogramBuilder::GetPostingCount() const
     {
         return m_totalCount;
     }
 
 
-    size_t DocumentLengthHistogram::GetValue(size_t postingCount) const
+    size_t DocumentHistogramBuilder::GetValue(size_t postingCount) const
     {
         const std::lock_guard<std::mutex> lock(m_lock);
 
@@ -65,7 +65,7 @@ namespace BitFunnel
     }
 
 
-    void DocumentLengthHistogram::Write(std::ostream& output) const
+    void DocumentHistogramBuilder::Write(std::ostream& output) const
     {
         CsvTsv::CsvTableFormatter formatter(output);
         CsvTsv::TableWriter writer(formatter);

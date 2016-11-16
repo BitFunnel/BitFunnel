@@ -71,7 +71,7 @@ namespace BitFunnel
         // FileManager:
         //
         //   Per IIngester
-        //      DocumentLengthHistogram
+        //      DocumentHistogramBuilder
         //   Per Shard
         //      CumulativeTermCountd
         //      DocumentFrequencyTable (with term text if termToText provided)
