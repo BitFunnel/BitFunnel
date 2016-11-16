@@ -89,7 +89,7 @@ namespace BitFunnel
             std::numeric_limits<size_t>::max();
 
         // Can't find a path unless there is at least one edge or two vertices.
-        CHECK_GE(costFunction.GetVertexCount(), 2)
+        CHECK_GE(costFunction.GetVertexCount(), 2u)
             << "Cost function must include at least two vertices.";
 
         //

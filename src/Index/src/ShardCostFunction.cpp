@@ -62,7 +62,7 @@ namespace BitFunnel
           m_minShardCapacity(minShardCapacity),
           m_maxRankInUse(maxRankInUse)
     {
-        LogAssertB(m_histogram.GetEntryCount() > 0);
+        LogAssertB(m_histogram.GetEntryCount() > 0, "");
 
         StartAt(0);
     }
