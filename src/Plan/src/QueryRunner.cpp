@@ -122,9 +122,9 @@ namespace BitFunnel
         m_config(config),
         m_queries(queries),
         m_results(results),
-        m_allocator(new Allocator(c_allocatorSize)),
         m_matches(maxResultCount, {nullptr, 0}),
-        m_resultsBuffer(index.GetIngestor().GetDocumentCount())
+        m_resultsBuffer(index.GetIngestor().GetDocumentCount()),
+        m_allocator(new Allocator(c_allocatorSize))
     {
     }
 
