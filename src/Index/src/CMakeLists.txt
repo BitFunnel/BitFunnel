@@ -23,6 +23,7 @@ set(CPPFILES
     RowTableAnalyzer.cpp
     RowTableDescriptor.cpp
     Shard.cpp
+    ShardCostFunction.cpp
     SimpleIndex.cpp
     SingleSourceShortestPath.cpp
     Slice.cpp
@@ -57,10 +58,12 @@ set(PRIVATE_HFILES
     IndexedIdfTable.h
     Ingestor.h
     IRecyclable.h
+    IShardCostFunction.h
     Recycler.h
     RowTableDescriptor.h
     RowTableAnalyzer.h
     Shard.h
+    ShardCostFunction.h
     SimpleIndex.h
     SingleSourceShortestPath.h
     Slice.h

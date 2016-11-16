@@ -49,7 +49,7 @@ namespace BitFunnel
 
         size_t GetPostingCount() const;
 
-        // AddDocument is thread safe with multiple readers and writers.
+        // GetValue is thread safe with multiple readers and writers.
         size_t GetValue(size_t postingCount) const;
 
         // Persists the contents of the histogram to a stream, not thread-safe
