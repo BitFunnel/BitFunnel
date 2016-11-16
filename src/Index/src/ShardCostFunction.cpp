@@ -73,7 +73,6 @@ namespace BitFunnel
         m_fromVertex = vertex;
         m_toVertex = vertex;
         m_documentCount = 0;
-        m_bodyLengthSum = 0;
         m_postingCountSum = 0;
         m_maxPostingCount = 0;
     }
@@ -83,7 +82,6 @@ namespace BitFunnel
     {
         double documentCount = m_histogram.GetDocumentCount(m_toVertex);
         m_documentCount += documentCount;
-        m_bodyLengthSum += m_histogram.GetAverageBodyLength(m_toVertex) * documentCount;
 
         size_t postingCount = m_histogram.GetPostingCount(m_toVertex);
         m_postingCountSum += postingCount * documentCount;

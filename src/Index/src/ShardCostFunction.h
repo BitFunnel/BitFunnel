@@ -92,8 +92,6 @@ namespace BitFunnel
         // Total number of postings in above set of histogram slots.
         double m_postingCountSum;
 
-        double m_bodyLengthSum;
-
         // Number of postings in histogram slot m_toVertex.
         size_t m_maxPostingCount;
 

@@ -22,39 +22,42 @@
 
 #pragma once
 
+#include <iosfwd>   // std::istream & parameter.
+#include <utility>  // std::pair template parameter.
+#include <vector>   // std::vector embedded.
+
+#include "IDocumentHistogram.h"     // Base class.
+
 
 namespace BitFunnel
 {
-    //*************************************************************************
-    //
-    // IDocumentHistogram is an abstract base class or interface for classes
-    // that represent a histogram of document count and document body length
-    // sum for each quantity of postings associated with a document. The
-    // histogram can be accessed as an ordered set of entries containing
-    // (posting count, document count) pairs.These entries are ordered by
-    // increasing posting count, but posting counts are not required to be
-    // consecutive.
-    //
-    //*************************************************************************
-    class IDocumentHistogram
+    class DocumentHistogram : public IDocumentHistogram
     {
     public:
-        virtual ~IDocumentHistogram() {};
+        DocumentHistogram(std::istream & input);
+
+        //
+        // IDocumentHistogram methods.
+        //
 
         // Returns the number of entries within the histogram.
-        virtual size_t GetEntryCount() const = 0;
+        virtual size_t GetEntryCount() const override;
 
         // Returns the sum of the document counts across all of the entries
         // in the histogram. This is equal to the number of documents in the
         // corpus used to create the histogram.
-        virtual double GetTotalDocumentCount() const = 0;
+        virtual double GetTotalDocumentCount() const override;
 
         // Returns the posting count associated with a specific entry.
-        virtual size_t GetPostingCount(size_t index) const = 0;
+        virtual size_t GetPostingCount(size_t index) const override;
 
         // Returns the document count associated with a specific entry.
         // This is the number of documents in the corpus that have posting
         // counts equal to GetPostingCount(index).
-        virtual double GetDocumentCount(size_t index) const = 0;
+        virtual double GetDocumentCount(size_t index) const override;
+
+    private:
+        size_t m_documentCount;
+        std::vector<std::pair<size_t, size_t>> m_entries;
     };
 }

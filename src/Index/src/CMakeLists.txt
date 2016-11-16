@@ -8,6 +8,7 @@ set(CPPFILES
     DocumentFrequencyTable.cpp
     DocumentFrequencyTableBuilder.cpp
     DocumentHandleInternal.cpp
+    DocumentHistogram.cpp
     DocumentHistogramBuilder.cpp
     DocumentMap.cpp
     FactSetBase.cpp
@@ -50,6 +51,7 @@ set(PRIVATE_HFILES
     DocumentFrequencyTable.h
     DocumentFrequencyTableBuilder.h
     DocumentHandleInternal.h
+    DocumentHistogram.h
     DocumentHistogramBuilder.h
     DocumentMap.h
     FactSetBase.h
