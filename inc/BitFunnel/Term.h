@@ -76,6 +76,7 @@ namespace BitFunnel
         static const IdfX10 c_maxIdfX10Value = 60;
         // TODO: what should this value really be?
         //static const IdfX10 c_maxIdfSumX10Value = std::numeric_limits<IdfX10>::max() - 1;
+        static const IdfX10 c_maxIdfSumX10Value = (std::numeric_limits<IdfX10>::max)() - 1;
 
         // TODO: Should terms store IDF values? Why?
         // TODO: Should terms store ngram sizes? Why?
