@@ -68,8 +68,8 @@ namespace BitFunnel
                             void * const * sliceBuffers,
                             size_t iterationsPerSlice,
                             ptrdiff_t const * rowOffsets,
-                            IDiagnosticStream & diagnosticStream,
-                            QueryInstrumentation& instrumentation);
+                            IDiagnosticStream * diagnosticStream,
+                            QueryInstrumentation & instrumentation);
 
         // Runs the instruction sequence for a specified number of iterations.
         // Each iteration processes a single quadword of row data at the
@@ -227,9 +227,8 @@ namespace BitFunnel
         // Dedupe buffer. First entry is bitmap indicating which of the
         // remaining 64 entries correspond to accumulators with matches.
         uint64_t m_dedupe[65];
-//        std::vector<std::pair<uint64_t, size_t>> m_addResultValues;
 
-        IDiagnosticStream& m_diagnosticStream;
+        IDiagnosticStream* m_diagnosticStream;
         QueryInstrumentation& m_instrumentation;
     };
 
@@ -322,7 +321,8 @@ namespace BitFunnel
         // targets in this vector were set through a combination of calls to
         // AllocateLabel() and PlaceLabel(). Class must be sealed before
         // calling this method.
-        std::vector<ByteCodeInterpreter::Instruction const *> const & GetJumpTable() const;
+        std::vector<ByteCodeInterpreter::Instruction const *> const &
+            GetJumpTable() const;
 
         //
         // ICodeGenerator methods

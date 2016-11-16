@@ -224,7 +224,7 @@ namespace BitFunnel
                                            sliceBuffers.data(),
                                            iterationsPerSlice,
                                            rowSet.GetRowOffsets(c_shardId),
-                                           diagnosticStream,
+                                           nullptr,
                                            instrumentation);
 
             intepreter.Run();

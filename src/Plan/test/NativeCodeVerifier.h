@@ -22,8 +22,6 @@
 
 #pragma once
 
-#include <set>                          // std::set embedded.
-
 #include "BitFunnel/BitFunnelTypes.h"   // DocId, Rank parameter.
 #include "CodeVerifierBase.h"           // Base class.
 

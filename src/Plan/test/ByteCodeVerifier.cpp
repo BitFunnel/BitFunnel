@@ -66,10 +66,6 @@ namespace BitFunnel
         node.Compile(code);
         code.Seal();
 
-        // TODO: remove diagnosticStream and replace with nullable.
-        auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
-        // TODO: remove following debugging code.
-        // diagnosticStream->Enable("");
         QueryInstrumentation instrumentation;
 
         ResultsBuffer results(m_index.GetIngestor().GetDocumentCount());
@@ -80,7 +76,7 @@ namespace BitFunnel
             m_slices.data(),
             GetIterationsPerSlice(),
             m_rowOffsets.data(),
-            *diagnosticStream,
+            nullptr,
             instrumentation);
 
         interpreter.Run();
