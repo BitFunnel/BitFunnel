@@ -26,7 +26,6 @@
 
 #include "NativeCodeGenerator.h"                // MatcherNode::Prototype::FunctionType type.
 #include "NativeJIT/CodeGen/FunctionBuffer.h"   // FunctionBuffer embedded.
-#include "ResultsBuffer.h"
 
 
 namespace NativeJIT

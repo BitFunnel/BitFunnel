@@ -28,12 +28,14 @@
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IDiagnosticStream.h"
+#include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IMatchVerifier.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryParser.h"
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
 #include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/Factories.h"
@@ -142,17 +144,19 @@ namespace BitFunnel
 
             QueryInstrumentation instrumentation;
 
-            // auto observed = Factories::RunSimplePlanner(*tree,
-            //                                             environment.GetSimpleIndex(),
-            //                                             *diagnosticStream);
-            auto observed = Factories::RunQueryPlanner(*tree,
-                                                       environment.GetSimpleIndex(),
-                                                       allocator,
-                                                       *diagnosticStream,
-                                                       instrumentation);
-            for (auto id : observed)
+            ResultsBuffer results(environment.GetSimpleIndex().GetIngestor().GetDocumentCount());
+
+            Factories::RunQueryPlanner(*tree,
+                                       environment.GetSimpleIndex(),
+                                       allocator,
+                                       *diagnosticStream,
+                                       instrumentation,
+                                       results);
+
+            for (auto result : results)
             {
-                verifier->AddObserved(id);
+                DocumentHandle handle = Factories::CreateDocumentHandle(result.m_slice, result.m_index);
+                verifier->AddObserved(handle.GetDocId());
             }
 
             verifier->Verify();

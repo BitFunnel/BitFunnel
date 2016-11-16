@@ -31,6 +31,7 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Plan/RowMatchNode.h"
 #include "BitFunnel/Term.h"
 #include "BitFunnel/Utilities/Allocator.h"
@@ -39,7 +40,6 @@
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
 #include "CompileNode.h"
 #include "RegisterAllocator.h"
-#include "ResultsBuffer.h"
 #include "TextObjectParser.h"
 
 
@@ -163,23 +163,19 @@ namespace BitFunnel
                                    compileNodeTree,
                                    registers);
 
-        const size_t matchCapacity =
-            GetIterationsPerSlice() * m_slices.size() * 64;
+        ResultsBuffer results(m_index.GetIngestor().GetDocumentCount());
 
-        std::vector<ResultsBuffer::Result>
-            matches(matchCapacity, { nullptr, 0 });
-        ResultsBuffer results(matches);
+        compiler.Run(m_slices.size(),
+                     m_slices.data(),
+                     GetIterationsPerSlice(),
+                     m_rowOffsets.data(),
+                     results);
 
-        auto matchCount = compiler.Run(m_slices.size(),
-                                       m_slices.data(),
-                                       GetIterationsPerSlice(),
-                                       m_rowOffsets.data(),
-                                       results);
-
-        for (size_t i = 0; i < matchCount; ++i)
+        for (auto result : results)
         {
-            auto handle = Factories::CreateDocumentHandle(matches[i].m_slice,
-                                                          matches[i].m_index);
+            DocumentHandle handle =
+                Factories::CreateDocumentHandle(result.m_slice, result.m_index);
+
             if (handle.IsActive())
             {
                 DocId doc = handle.GetDocId();

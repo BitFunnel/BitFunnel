@@ -61,7 +61,7 @@ Decide on type of Slices
     //*************************************************************************
     ByteCodeInterpreter::ByteCodeInterpreter(
         ByteCodeGenerator const & code,
-        IResultsProcessor & resultsProcessor,
+        ResultsBuffer & resultsBuffer,
         size_t sliceCount,
         char * const * sliceBuffers,
         size_t iterationsPerSlice,
@@ -70,7 +70,7 @@ Decide on type of Slices
         QueryInstrumentation& instrumentation)
       : m_code(code.GetCode()),
         m_jumpTable(code.GetJumpTable()),
-        m_resultsProcessor(resultsProcessor),
+        m_resultsBuffer(resultsBuffer),
         m_sliceCount(sliceCount),
         m_sliceBuffers(sliceBuffers),
         m_iterationsPerSlice(iterationsPerSlice),
@@ -234,7 +234,7 @@ Decide on type of Slices
                 // TODO: Combine accumulator with value stack.
                 if (m_accumulator != 0)
                 {
-                    m_resultsProcessor.AddResult(m_accumulator, m_offset);
+                    AddResult(m_accumulator, m_offset);
                     calledAddResult = true;
                 }
                 m_ip++;
@@ -280,7 +280,7 @@ Decide on type of Slices
         bool terminate = false;
         if (calledAddResult)
         {
-            terminate = m_resultsProcessor.FinishIteration(sliceBuffer);
+            terminate = FinishIteration(sliceBuffer);
         }
 
         return terminate;

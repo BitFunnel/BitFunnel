@@ -27,11 +27,13 @@
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/IDiagnosticStream.h"
+#include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryParser.h"
 #include "BitFunnel/Plan/QueryRunner.h"
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/ITaskDistributor.h"
@@ -76,7 +78,8 @@ namespace BitFunnel
         QueryProcessor(ISimpleIndex const & index,
                        IStreamConfiguration const & config,
                        std::vector<std::string> const & queries,
-                       std::vector<QueryInstrumentation::Data> & results);
+                       std::vector<QueryInstrumentation::Data> & results,
+                       size_t maxResultCount);
 
         static QueryInstrumentation ProcessOneQuery(
             char const * query,
@@ -100,6 +103,9 @@ namespace BitFunnel
         IStreamConfiguration const & m_config;
         std::vector<std::string> const & m_queries;
         std::vector<QueryInstrumentation::Data> & m_results;
+        std::vector<ResultsBuffer::Result> m_matches;
+
+        ResultsBuffer m_resultsBuffer;
 
         std::unique_ptr<IAllocator> m_allocator;
 
@@ -110,12 +116,15 @@ namespace BitFunnel
     QueryProcessor::QueryProcessor(ISimpleIndex const & index,
                                    IStreamConfiguration const & config,
                                    std::vector<std::string> const & queries,
-                                   std::vector<QueryInstrumentation::Data> & results)
+                                   std::vector<QueryInstrumentation::Data> & results,
+                                   size_t maxResultCount)
       : m_index(index),
         m_config(config),
         m_queries(queries),
         m_results(results),
-        m_allocator(new Allocator(c_allocatorSize))
+        m_allocator(new Allocator(c_allocatorSize)),
+        m_matches(maxResultCount, {nullptr, 0}),
+        m_resultsBuffer(index.GetIngestor().GetDocumentCount())
     {
     }
 
@@ -135,11 +144,12 @@ namespace BitFunnel
         auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
         if (tree != nullptr)
         {
-            auto observed = Factories::RunQueryPlanner(*tree,
-                                                       m_index,
-                                                       *m_allocator,
-                                                       *diagnosticStream,
-                                                       instrumentation);
+            Factories::RunQueryPlanner(*tree,
+                                       m_index,
+                                       *m_allocator,
+                                       *diagnosticStream,
+                                       instrumentation,
+                                       m_resultsBuffer);
         }
 
         m_results[taskId] = instrumentation.GetData();
@@ -166,7 +176,10 @@ namespace BitFunnel
 
         auto config = Factories::CreateStreamConfiguration();
 
-        QueryProcessor processor(index, *config, queries, results);
+        size_t maxResultCount = index.GetIngestor().GetDocumentCount();
+
+        QueryProcessor
+            processor(index, *config, queries, results, maxResultCount);
         processor.ProcessTask(0);
         processor.Finished();
 
@@ -185,11 +198,17 @@ namespace BitFunnel
 
         auto config = Factories::CreateStreamConfiguration();
 
+        size_t maxResultCount = index.GetIngestor().GetDocumentCount();
+
         std::vector<std::unique_ptr<ITaskProcessor>> processors;
         for (size_t i = 0; i < threadCount; ++i) {
             processors.push_back(
                 std::unique_ptr<ITaskProcessor>(
-                    new QueryProcessor(index, *config, queries, results)));
+                    new QueryProcessor(index,
+                                       *config,
+                                       queries,
+                                       results,
+                                       maxResultCount)));
         }
 
         auto distributor =

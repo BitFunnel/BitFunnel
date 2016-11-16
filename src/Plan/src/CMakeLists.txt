@@ -45,7 +45,6 @@ set(PRIVATE_HFILES
     MatchVerifier.h
     NativeCodeGenerator.h
     QueryPlanner.h
-    ResultsBuffer.h
     RowSet.h
     RankDownCompiler.h
     RankZeroCompiler.h

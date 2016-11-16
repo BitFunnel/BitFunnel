@@ -31,6 +31,7 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Term.h"
 #include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/Factories.h"  // TODO: only for diagnosticStream. Remove.
@@ -192,6 +193,8 @@ namespace BitFunnel
         GenerateCode(codeText, code);
         code.Seal();
 
+        ResultsBuffer results(m_index.GetIngestor().GetDocumentCount());
+
         auto & shard = m_index.GetIngestor().GetShard(c_shardId);
         auto & sliceBuffers = shard.GetSliceBuffers();
         auto iterationsPerSlice = GetIterationsPerSlice();
@@ -203,7 +206,7 @@ namespace BitFunnel
         QueryInstrumentation instrumentation;
         ByteCodeInterpreter interpreter(
             code,
-            *this,
+            results,
             sliceBuffers.size(),
             reinterpret_cast<char* const *>(sliceBuffers.data()),
             iterationsPerSlice,

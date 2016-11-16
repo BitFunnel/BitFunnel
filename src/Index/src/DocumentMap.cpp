@@ -84,4 +84,12 @@ namespace BitFunnel
 
         return found;
     }
+
+
+    size_t DocumentMap::size() const
+    {
+        std::lock_guard<std::mutex> lock(m_lock);
+
+        return m_docIdToDocHandle.size();
+    }
 }

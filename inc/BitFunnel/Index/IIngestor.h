@@ -121,6 +121,9 @@ namespace BitFunnel
         // various rows. Not sure it is needed in the long run.
         virtual DocumentHandle GetHandle(DocId id) const = 0;
 
+        // Returns the number of documents currently active in the index.
+        virtual size_t GetDocumentCount() const = 0;
+
         // Returns the size in bytes of the capacity of row tables in the
         // entire ingestion index.
         virtual size_t GetUsedCapacityInBytes() const = 0;

@@ -31,6 +31,7 @@
 #include "BitFunnel/Plan/IPlanRows.h"
 // #include "BitFunnel/IThreadResources.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Plan/RowPlan.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Plan/TermPlan.h"
@@ -52,11 +53,12 @@ namespace BitFunnel
 {
     // TODO: remove. This is a quick shortcut to try to connect QueryPlanner the
     // way SimplePlanner is connected.
-    std::vector<DocId> Factories::RunQueryPlanner(TermMatchNode const & tree,
-                                                  ISimpleIndex const & index,
-                                                  IAllocator & allocator,
-                                                  IDiagnosticStream & diagnosticStream,
-                                                  QueryInstrumentation & instrumentation)
+    void Factories::RunQueryPlanner(TermMatchNode const & tree,
+                                    ISimpleIndex const & index,
+                                    IAllocator & allocator,
+                                    IDiagnosticStream & diagnosticStream,
+                                    QueryInstrumentation & instrumentation,
+                                    ResultsBuffer & resultsBuffer)
     {
         const int c_arbitraryRowCount = 500;
         QueryPlanner planner(tree,
@@ -64,28 +66,9 @@ namespace BitFunnel
                              index,
                              allocator,
                              diagnosticStream,
-                             instrumentation);
-        return planner.GetMatches();
+                             instrumentation,
+                             resultsBuffer);
     }
-
-
-    // QueryPlanner::X64FunctionGeneratorWrapper::X64FunctionGeneratorWrapper(IThreadResources& threadResources)
-    //     : m_code(threadResources.AllocateFunctionGenerator()),
-    //       m_threadResources(threadResources)
-    // {
-    // }
-
-
-    // QueryPlanner::X64FunctionGeneratorWrapper::~X64FunctionGeneratorWrapper()
-    // {
-    //     m_threadResources.ReleaseFunctionGenerator(m_code);
-    // }
-
-
-    // QueryPlanner::X64FunctionGeneratorWrapper::operator X64::X64FunctionGenerator&() const
-    // {
-    //     return m_code;
-    // }
 
 
     unsigned const c_targetCrossProductTermCount = 180;
@@ -98,12 +81,9 @@ namespace BitFunnel
                                // IThreadResources& threadResources,
                                IAllocator & allocator,
                                IDiagnosticStream & diagnosticStream,
-                               QueryInstrumentation & instrumentation)
-                               // bool generateNonBodyPlan,
-                               // unsigned maxIterationsScannedBetweenTerminationChecks)
-        : m_resultsProcessor(Factories::CreateSimpleResultsProcessor())
-    // : // m_x64FunctionGeneratorWrapper(threadResources),
-    //   m_maxIterationsScannedBetweenTerminationChecks(maxIterationsScannedBetweenTerminationChecks)
+                               QueryInstrumentation & instrumentation,
+                               ResultsBuffer & resultsBuffer)
+      : m_resultsBuffer(resultsBuffer)
     {
         if (diagnosticStream.IsEnabled("planning/term"))
         {
@@ -236,8 +216,10 @@ namespace BitFunnel
 
             instrumentation.FinishPlanning();
 
+            m_resultsBuffer.Reset();
+
             ByteCodeInterpreter intepreter(m_code,
-                                           *m_resultsProcessor,
+                                           m_resultsBuffer,
                                            sliceCount,
                                            reinterpret_cast<char* const *>(sliceBuffers.data()),
                                            iterationsPerSlice,
@@ -248,7 +230,7 @@ namespace BitFunnel
             intepreter.Run();
 
             instrumentation.FinishMatching();
-            instrumentation.SetMatchCount(m_resultsProcessor->GetMatches().size());
+            instrumentation.SetMatchCount(m_resultsBuffer.size());
         } // End of token lifetime.
     }
 
@@ -259,10 +241,10 @@ namespace BitFunnel
 //         return CompiledFunction((X64::X64FunctionGenerator&)m_x64FunctionGeneratorWrapper);
 //     }
 
-    std::vector<DocId> const & QueryPlanner::GetMatches() const
-    {
-        return m_resultsProcessor->GetMatches();
-    }
+    //std::vector<DocId> const & QueryPlanner::GetMatches() const
+    //{
+    //    return m_resultsProcessor->GetMatches();
+    //}
 
 
     IPlanRows const & QueryPlanner::GetPlanRows() const

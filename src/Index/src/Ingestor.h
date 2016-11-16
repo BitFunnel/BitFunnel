@@ -112,6 +112,9 @@ namespace BitFunnel
 
         virtual DocumentHandle GetHandle(DocId id) const override;
 
+        // Returns the number of documents currently active in the index.
+        virtual size_t GetDocumentCount() const override;
+
         // Returns the size in bytes of the capacity of row tables in the
         // entire ingestion index.
         virtual size_t GetUsedCapacityInBytes() const override;

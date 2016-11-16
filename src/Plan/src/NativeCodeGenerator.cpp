@@ -24,12 +24,12 @@
 
 #include "BitFunnel/Index/DocumentHandle.h"
 #include "CompileNode.h"
+#include "MachineCodeGenerator.h"
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
 #include "NativeJIT/CodeGen/FunctionBuffer.h"
 #include "NativeJIT/CodeGenHelpers.h"
 #include "NativeJIT/Function.h"
 #include "NativeJIT/CodeGen/Register.h"
-#include "MachineCodeGenerator.h"
 #include "NativeCodeGenerator.h"
 #include "RegisterAllocator.h"
 #include "Temporary/Allocator.h"
