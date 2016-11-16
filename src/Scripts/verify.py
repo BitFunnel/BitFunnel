@@ -16,16 +16,16 @@
 from collections import defaultdict
 import csv
 
-true_matches = defaultdict(set)
+def get_true_matches(filename):
+    true_matches = defaultdict(set)
+    with open(filename) as f:
+        reader = csv.reader(f)
+        for row in reader:
+            if (len(row) == 3 and (row[2] == '0' or row[2] == '2')):
+                true_matches[row[0]].add(row[1])
+    return true_matches
 
-with open("/tmp/groundTruth.csv") as f:
-    reader = csv.reader(f)
-    for row in reader:
-        if (len(row) == 3 and (row[2] == '0' or row[2] == '2')):
-            true_matches[row[0]].add(row[1])
-
-# TODO: switch to using csv module for output.
-
+true_matches = get_true_matches("/tmp/groundTruth.csv")
 
 with open("/tmp/unknown.csv") as f:
     cf = open("/tmp/sum.csv", 'w', newline='')
@@ -44,21 +44,27 @@ with open("/tmp/unknown.csv") as f:
         # TODO: handle false negatives. Could keep a counter of how many matches
         # we've seen and compare, then iterate over the set in the rare instance
         # we see a false negative.
+        #
+        # TODO: handle last term.
+        if row[0] != last_term:
+            if (last_term == "proglet"):
+                print(num_true_pos)
+                print(num_false_pos)
+            if (term_pos > 0):
+                writer.writerow([last_term,
+                                term_pos,
+                                num_true_pos,
+                                num_false_pos,
+                                num_false_neg,
+                                num_false_pos / (num_true_pos + num_false_pos)])
+            num_true_pos = 0
+            num_false_pos = 0
+            num_false_neg = 0 # TODO: handle.
+            term_pos += 1
+
         if (len(row) == 3):
             if row[1] in true_matches[row[0]]:
                 num_true_pos += 1
             else:
                 num_false_pos += 1
-        if row[0] != last_term:
-            if (term_pos > 0):
-                writer.writerow([row[0],
-                                 term_pos,
-                                 num_true_pos,
-                                 num_false_pos,
-                                 num_false_neg,
-                                 num_false_pos / (num_true_pos + num_false_pos)])
-            num_true_pos = 0
-            num_false_pos = 0
-            num_false_neg = 0 # TODO: handle.
-            term_pos += 1
         last_term = row[0]
