@@ -45,11 +45,6 @@
 
 namespace BitFunnel
 {
-    // static const ShardId c_shardId = 0;
-    // static const Term::StreamId c_streamId = 0;
-    // static const size_t c_allocatorBufferSize = 1000000;
-
-
     NativeCodeVerifier::NativeCodeVerifier(ISimpleIndex const & index,
                                            Rank initialRank)
       : CodeVerifierBase(index, initialRank)
@@ -96,7 +91,7 @@ namespace BitFunnel
                                           size_t offset,
                                           size_t sliceNumber)
     {
-        // TODO: Remove temporary debugging output.
+        //// TODO: Remove temporary debugging output.
         //std::cout
         //    << "ExpectResult("
         //    << std::hex << accumulator << std::dec
@@ -123,6 +118,7 @@ namespace BitFunnel
             if (handle.IsActive())
             {
                 DocId id = handle.GetDocId();
+                //// TODO: Remove temporary debugging output.
                 //std::cout << "  " << id << std::endl;
 
                 if (m_expected.find(id) != m_expected.end())
@@ -182,7 +178,7 @@ namespace BitFunnel
 
                 // TODO: Remove temporary debugging output.
                 //std::cout
-                //    << i << ": " << doc << std::endl;
+                //    << "  ==> " << doc << std::endl;
 
                 m_observed.insert(doc);
             }

@@ -27,7 +27,6 @@
 #include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Index/DocumentHandle.h"
 #include "BitFunnel/Index/Factories.h"
-//#include "BitFunnel/Plan/IResultsProcessor.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/ResultsBuffer.h"
 #include "ByteCodeInterpreter.h"
@@ -66,7 +65,7 @@ Decide on type of Slices
         ByteCodeGenerator const & code,
         ResultsBuffer & resultsBuffer,
         size_t sliceCount,
-        char * const * sliceBuffers,
+        void * const * sliceBuffers,
         size_t iterationsPerSlice,
         ptrdiff_t const * rowOffsets,
         IDiagnosticStream& diagnosticStream,
@@ -78,6 +77,7 @@ Decide on type of Slices
         m_sliceBuffers(sliceBuffers),
         m_iterationsPerSlice(iterationsPerSlice),
         m_rowOffsets(rowOffsets),
+        m_dedupe(),
         m_diagnosticStream(diagnosticStream),
         m_instrumentation(instrumentation)
     {
@@ -118,9 +118,12 @@ Decide on type of Slices
 
 
     bool ByteCodeInterpreter::RunOneIteration(
-        char const * sliceBuffer,
+        void const * voidSliceBuffer,
         size_t iteration)
     {
+        char const * sliceBuffer =
+            reinterpret_cast<char const *>(voidSliceBuffer);
+
         bool calledAddResult = false;
         m_ip = m_code.data();
         m_offset = iteration;
@@ -293,56 +296,77 @@ Decide on type of Slices
     void ByteCodeInterpreter::AddResult(uint64_t accumulator,
                                         size_t offset)
     {
-        m_addResultValues.push_back(std::make_pair(accumulator, offset));
+        // Set bit indicating that we're storing an accululator at offset.
+        m_dedupe[0] |= (1ull << offset);
+
+        // Or in the accumulator.
+        m_dedupe[offset + 1] |= accumulator;
     }
-    
-    // TODO: move this method somewhere.
-    static uint64_t lzcnt(uint64_t value)
+
+
+//    // TODO: move this method somewhere.
+//    static uint64_t lzcnt(uint64_t value)
+//    {
+//#ifdef _MSC_VER
+//        return __lzcnt64(value);
+//#elif __LZCNT__
+//        return __lzcnt64(value);
+//#else
+//        // DESIGN NOTE: this is undefined if the input operand i 0. We currently
+//        // only call lzcnt in one place, where we've prevously gauranteed that
+//        // the input isn't 0. This is not safe to use in the general case.
+//        return static_cast<uint64_t>(__builtin_clzll(value));
+//#endif
+//    }
+
+    static uint64_t bsf(uint64_t value)
     {
 #ifdef _MSC_VER
-        return __lzcnt64(value);
-#elif __LZCNT__
-        return __lzcnt64(value);
+        unsigned long index;
+        _BitScanForward64(&index, value);
+        return index;
 #else
         // DESIGN NOTE: this is undefined if the input operand i 0. We currently
         // only call lzcnt in one place, where we've prevously gauranteed that
         // the input isn't 0. This is not safe to use in the general case.
-        return static_cast<uint64_t>(__builtin_clzll(value));
+        return static_cast<uint64_t>(__builtin_ctzll(value));
 #endif
     }
-    
+
+
     bool ByteCodeInterpreter::FinishIteration(void const * sliceBuffer)
     {
-        for (auto const & result : m_addResultValues)
+        uint64_t map = m_dedupe[0];
+        while (map != 0)
         {
-            uint64_t acc = result.first;
-            size_t offset = result.second;
-            
-            size_t bitPos = 63;
-            
-            while (acc != 0)
+            size_t offset = bsf(map);
+
+            uint64_t accumulator = m_dedupe[offset + 1];
+
+            while (accumulator != 0)
             {
-                uint64_t count = lzcnt(acc);
-                acc <<= count;
-                bitPos -= count;
-                
+                size_t bitPos = bsf(accumulator);
+
                 DocIndex docIndex = offset * c_bitsPerQuadword + bitPos;
-//                DocumentHandle handle =
-//                Factories::CreateDocumentHandle(const_cast<void*>(sliceBuffer), docIndex);
-//                m_matches.push_back(handle.GetDocId());
-                Slice* slice = reinterpret_cast<Slice*>(const_cast<void*>(sliceBuffer));
+//                std::cout << m_resultsBuffer.m_size << ": " << docIndex << std::endl;
+
+                // TODO: find a better way to get the Slice pointer.
+                Slice* slice = *reinterpret_cast<Slice**>(const_cast<void*>(sliceBuffer));
                 m_resultsBuffer.push_back(slice, docIndex);
-                
-                acc <<= 1;
-                --bitPos;
+
+                // Clear the lowest bit set in the accumulator.
+                accumulator &= (accumulator - 1);
             }
+            m_dedupe[offset + 1] = 0;
+
+            // Clear the lowest bit set in the map.
+            map &= (map - 1);
         }
-        m_addResultValues.clear();
-        
+        m_dedupe[0] = 0;
+
         // TODO: don't always return false.
         return false;
     }
-    
 
 
     //*************************************************************************
