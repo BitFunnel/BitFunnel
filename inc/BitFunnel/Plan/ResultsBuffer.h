@@ -75,6 +75,14 @@ namespace BitFunnel
         {
             m_size = 0;
         }
+        
+        void push_back(Slice* slice, size_t index)
+        {
+            // TODO: add overflow check
+            m_buffer[m_size].m_slice = slice;
+            m_buffer[m_size].m_index = index;
+            m_size++;
+        }
 
         class const_iterator
             : public std::iterator<std::input_iterator_tag, Result>

@@ -24,7 +24,7 @@
 
 #include <stddef.h>                         // size_t, ptrdiff_t parameter.
 #include <stdint.h>                         // uint32_t embedded.
-#include <vector>
+#include <vector>                           // std::vector embedded.
 
 #include "BitFunnel/BitFunnelTypes.h"       // Rank parameter.
 #include "BitFunnel/Plan/ICodeGenerator.h"  // Base class.
@@ -228,6 +228,8 @@ namespace BitFunnel
         // TODO: Formalize definition and usage of zero flag.
         bool m_zeroFlag;
 
+        std::vector<std::pair<uint64_t, size_t>> m_addResultValues;
+        
         IDiagnosticStream& m_diagnosticStream;
         QueryInstrumentation& m_instrumentation;
     };

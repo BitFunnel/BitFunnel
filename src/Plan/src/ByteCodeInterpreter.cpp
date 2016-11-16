@@ -25,8 +25,11 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IDiagnosticStream.h"
-#include "BitFunnel/Plan/IResultsProcessor.h"
+#include "BitFunnel/Index/DocumentHandle.h"
+#include "BitFunnel/Index/Factories.h"
+//#include "BitFunnel/Plan/IResultsProcessor.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "ByteCodeInterpreter.h"
 #include "LoggerInterfaces/Check.h"
 
@@ -285,6 +288,61 @@ Decide on type of Slices
 
         return terminate;
     }
+    
+    
+    void ByteCodeInterpreter::AddResult(uint64_t accumulator,
+                                        size_t offset)
+    {
+        m_addResultValues.push_back(std::make_pair(accumulator, offset));
+    }
+    
+    // TODO: move this method somewhere.
+    static uint64_t lzcnt(uint64_t value)
+    {
+#ifdef _MSC_VER
+        return __lzcnt64(value);
+#elif __LZCNT__
+        return __lzcnt64(value);
+#else
+        // DESIGN NOTE: this is undefined if the input operand i 0. We currently
+        // only call lzcnt in one place, where we've prevously gauranteed that
+        // the input isn't 0. This is not safe to use in the general case.
+        return static_cast<uint64_t>(__builtin_clzll(value));
+#endif
+    }
+    
+    bool ByteCodeInterpreter::FinishIteration(void const * sliceBuffer)
+    {
+        for (auto const & result : m_addResultValues)
+        {
+            uint64_t acc = result.first;
+            size_t offset = result.second;
+            
+            size_t bitPos = 63;
+            
+            while (acc != 0)
+            {
+                uint64_t count = lzcnt(acc);
+                acc <<= count;
+                bitPos -= count;
+                
+                DocIndex docIndex = offset * c_bitsPerQuadword + bitPos;
+//                DocumentHandle handle =
+//                Factories::CreateDocumentHandle(const_cast<void*>(sliceBuffer), docIndex);
+//                m_matches.push_back(handle.GetDocId());
+                Slice* slice = reinterpret_cast<Slice*>(const_cast<void*>(sliceBuffer));
+                m_resultsBuffer.push_back(slice, docIndex);
+                
+                acc <<= 1;
+                --bitPos;
+            }
+        }
+        m_addResultValues.clear();
+        
+        // TODO: don't always return false.
+        return false;
+    }
+    
 
 
     //*************************************************************************
