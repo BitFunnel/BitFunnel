@@ -186,11 +186,18 @@ namespace BitFunnel
                 << std::endl;
             if (verifier->GetTruePositiveCount() > 0)
             {
-                std::cout << "True positives:" << std::endl;
+                std::cout << "True positives: ";
+                size_t counter = 0;
                 for (const auto doc : verifier->GetTruePositives())
                 {
-                    std::cout << doc << ",";
+                    if (counter != 0)
+                    {
+                        std::cout << ", ";
+                    }
+                    std::cout << doc;
+                    ++counter;
                 }
+                std::cout << std::endl;
                 std::cout << std::endl;
             }
 
