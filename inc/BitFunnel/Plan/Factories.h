@@ -63,6 +63,7 @@ namespace BitFunnel
                              IAllocator & allocator,
                              IDiagnosticStream & diagnosticStream,
                              QueryInstrumentation & instrumentation,
-                             ResultsBuffer & resultsBuffer);
+                             ResultsBuffer & resultsBuffer,
+                             bool useNativeCode);
     }
 }

@@ -149,7 +149,8 @@ namespace BitFunnel
                                        *m_allocator,
                                        *diagnosticStream,
                                        instrumentation,
-                                       m_resultsBuffer);
+                                       m_resultsBuffer,
+                                       false);
         }
 
         m_results[taskId] = instrumentation.GetData();

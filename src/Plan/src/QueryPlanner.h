@@ -34,6 +34,7 @@ namespace BitFunnel
     class IThreadResources;
     class QueryInstrumentation;
     class ResultsBuffer;
+    class RowSet;
     class TermMatchNode;
 
     class QueryPlanner : public NonCopyable
@@ -47,7 +48,8 @@ namespace BitFunnel
                      IAllocator& allocator,
                      IDiagnosticStream& diagnosticStream,
                      QueryInstrumentation & instrumentation,
-                     ResultsBuffer & resultsBuffer);
+                     ResultsBuffer & resultsBuffer,
+                     bool useNativeCode);
 
         //// TODO: get rid of this convenience method.
         //std::vector<DocId> const & GetMatches() const;
@@ -61,6 +63,18 @@ namespace BitFunnel
         IPlanRows const & GetPlanRows() const;
 
     private:
+        void RunByteCodeInterpreter(ISimpleIndex const & index,
+                                    QueryInstrumentation & instrumentation,
+                                    CompileNode const & compileTree,
+                                    Rank maxRank,
+                                    RowSet const & rowSet);
+
+        void RunNativeCode(ISimpleIndex const & index,
+                           IAllocator& allocator,
+                           QueryInstrumentation & instrumentation,
+                           CompileNode const & compileTree,
+                           Rank maxRank,
+                           RowSet const & rowSet);
 
         // // Wrapper class for X64FunctionGenerator to manage the
         // // allocate and release of the X64FunctionGenerator object in
@@ -107,5 +121,6 @@ namespace BitFunnel
         ByteCodeGenerator m_code;
 
         ResultsBuffer& m_resultsBuffer;
+        bool m_useNativeCode;
     };
 }

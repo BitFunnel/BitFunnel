@@ -58,7 +58,8 @@ namespace BitFunnel
                                     IAllocator & allocator,
                                     IDiagnosticStream & diagnosticStream,
                                     QueryInstrumentation & instrumentation,
-                                    ResultsBuffer & resultsBuffer)
+                                    ResultsBuffer & resultsBuffer,
+                                    bool useNativeCode)
     {
         const int c_arbitraryRowCount = 500;
         QueryPlanner planner(tree,
@@ -67,7 +68,8 @@ namespace BitFunnel
                              allocator,
                              diagnosticStream,
                              instrumentation,
-                             resultsBuffer);
+                             resultsBuffer,
+                             useNativeCode);
     }
 
 
@@ -82,8 +84,10 @@ namespace BitFunnel
                                IAllocator & allocator,
                                IDiagnosticStream & diagnosticStream,
                                QueryInstrumentation & instrumentation,
-                               ResultsBuffer & resultsBuffer)
-      : m_resultsBuffer(resultsBuffer)
+                               ResultsBuffer & resultsBuffer,
+                               bool useNativeCode)
+      : m_resultsBuffer(resultsBuffer),
+        m_useNativeCode(useNativeCode)
     {
         if (diagnosticStream.IsEnabled("planning/term"))
         {
@@ -178,34 +182,45 @@ namespace BitFunnel
             out << std::endl;
         }
 
-        // This has been ported, but doesn't seem necessary for the
-        // ByteCodeInterpreter?
-        //
-        // // Perform register allocation on the compile tree.
-        // RegisterAllocator const registers(compileTree,
-        //                                   rowPlan.GetPlanRows().GetRowCount(),
-        //                                   c_registerBase,
-        //                                   c_registerCount,
-        //                                   allocator);
-
-        compileTree.Compile(m_code);
-        m_code.Seal();
-
-        // Finally, translate compile tree to X64 machine code.
-        // MatchTreeCodeGenerator generator(registers,
-        //                                  m_x64FunctionGeneratorWrapper,
-        //                                  m_maxIterationsScannedBetweenTerminationChecks);
-        // generator.GenerateX64Code(compileTree);
-
         RowSet rowSet(index, *m_planRows, allocator);
         rowSet.LoadRows();
         instrumentation.SetRowCount(rowSet.GetRowCount());
 
-        // TODO: Move all of this somewhere else.
+        if (useNativeCode)
+        {
+            RunNativeCode(index,
+                          allocator,
+                          instrumentation,
+                          compileTree,
+                          maxRank,
+                          rowSet);
+        }
+        else
+        {
+            RunByteCodeInterpreter(index,
+                                   instrumentation,
+                                   compileTree,
+                                   maxRank,
+                                   rowSet);
+        }
+    }
+
+
+    void QueryPlanner::RunByteCodeInterpreter(ISimpleIndex const & index,
+                                              QueryInstrumentation & instrumentation,
+                                              CompileNode const & compileTree,
+                                              Rank maxRank,
+                                              RowSet const & rowSet)
+    {
+        // TODO: Clear results buffer here?
+        compileTree.Compile(m_code);
+        m_code.Seal();
+
         // Get token before we GetSliceBuffers.
         {
             auto token = index.GetIngestor().GetTokenManager().RequestToken();
 
+            // TODO: Loop over all shards.
             const size_t c_shardId = 0u;
             auto & shard = index.GetIngestor().GetShard(c_shardId);
             auto & sliceBuffers = shard.GetSliceBuffers();
@@ -235,16 +250,56 @@ namespace BitFunnel
     }
 
 
-//     const CompiledFunction QueryPlanner::GetMatchingFunction() const
-// OA    {
-//         // TODO: Don't like how call to GetMatchingFunction() finalizes jumps. This should be explicit.
-//         return CompiledFunction((X64::X64FunctionGenerator&)m_x64FunctionGeneratorWrapper);
-//     }
+    void QueryPlanner::RunNativeCode(ISimpleIndex const & index,
+                                     IAllocator& allocator,
+                                     QueryInstrumentation & instrumentation,
+                                     CompileNode const & compileTree,
+                                     Rank maxRank,
+                                     RowSet const & rowSet)
+    {
+         // Perform register allocation on the compile tree.
+         RegisterAllocator const registers(compileTree,
+                                           rowSet.GetRowCount(),
+                                           c_registerBase,
+                                           c_registerCount,
+                                           allocator);
 
-    //std::vector<DocId> const & QueryPlanner::GetMatches() const
-    //{
-    //    return m_resultsProcessor->GetMatches();
-    //}
+        // TODO: Clear results buffer here?
+        compileTree.Compile(m_code);
+        m_code.Seal();
+
+        // Get token before we GetSliceBuffers.
+        {
+            auto token = index.GetIngestor().GetTokenManager().RequestToken();
+
+            // TODO: Loop over all shards.
+            const size_t c_shardId = 0u;
+            auto & shard = index.GetIngestor().GetShard(c_shardId);
+            auto & sliceBuffers = shard.GetSliceBuffers();
+            size_t sliceCount = sliceBuffers.size();
+
+            // Iterations per slice calculation.
+            auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> maxRank;
+
+            instrumentation.FinishPlanning();
+
+            m_resultsBuffer.Reset();
+
+            ByteCodeInterpreter intepreter(m_code,
+                                           m_resultsBuffer,
+                                           sliceCount,
+                                           sliceBuffers.data(),
+                                           iterationsPerSlice,
+                                           rowSet.GetRowOffsets(c_shardId),
+                                           nullptr,
+                                           instrumentation);
+
+            intepreter.Run();
+
+            instrumentation.FinishMatching();
+            instrumentation.SetMatchCount(m_resultsBuffer.size());
+        } // End of token lifetime.
+    }
 
 
     IPlanRows const & QueryPlanner::GetPlanRows() const

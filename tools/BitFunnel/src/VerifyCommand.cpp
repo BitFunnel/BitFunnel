@@ -151,7 +151,8 @@ namespace BitFunnel
                                        allocator,
                                        *diagnosticStream,
                                        instrumentation,
-                                       results);
+                                       results,
+                                       false);
 
             for (auto result : results)
             {
