@@ -20,44 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>
+#pragma once
 
-#include "FailOnExceptionCommand.h"
-#include "Environment.h"
+#include "TaskBase.h"   // TaskBase base class.
 
 
 namespace BitFunnel
 {
-    //*************************************************************************
-    //
-    // FailOnException
-    //
-    //*************************************************************************
-    FailOnException::FailOnException(Environment & environment,
-                                     Id id,
-                                     char const * /*parameters*/)
-        : TaskBase(environment, id, Type::Synchronous)
+    class CompilerCommand : public TaskBase
     {
-    }
+    public:
+        CompilerCommand(Environment & environment,
+                        Id id,
+                        char const * parameters);
 
+        virtual void Execute() override;
+        static ICommand::Documentation GetDocumentation();
 
-    void FailOnException::Execute()
-    {
-        GetEnvironment().SetFailOnException(true);
-        std::cout
-            << "REPL will now throw an exception if an error is detected." << std::endl
-            << "Restart REPL to reenable catching of exceptions." << std::endl
-            << std::endl;
-    }
-
-
-    ICommand::Documentation FailOnException::GetDocumentation()
-    {
-        return Documentation(
-            "failOnException",
-            "Forces application failure when exceptions are thrown.",
-            "failOnException\n"
-            "  Forces application failure when exceptions are thrown."
-        );
-    }
+    private:
+    };
 }

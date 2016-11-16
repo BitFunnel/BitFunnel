@@ -4,6 +4,7 @@ set(CPPFILES
     AnalyzeCommand.cpp
     BitFunnelTool.cpp
     CdCommand.cpp
+    CompilerCommand.cpp
     CorrelateCommand.cpp
     Environment.cpp
     ExitCommand.cpp
@@ -11,6 +12,7 @@ set(CPPFILES
     FilterChunks.cpp
     HelpCommand.cpp
     IngestCommands.cpp
+    InterpreterCommand.cpp
     QueryCommand.cpp
     REPL.cpp
     ScriptCommand.cpp
@@ -33,6 +35,7 @@ set(PRIVATE_HFILES
     AnalyzeCommand.h
     BitFunnelTool.h
     CdCommand.h
+    CompilerCommand.h
     CorrelateCommand.h
     ExitCommand.h
     FailOnExceptionCommand.h
@@ -41,6 +44,7 @@ set(PRIVATE_HFILES
     HelpCommand.h
     IngestCommands.h
     ICommand.h
+    InterpreterCommand.h
     ITask.h
     QueryCommand.h
     REPL.h

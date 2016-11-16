@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-#include "FailOnExceptionCommand.h"
+#include "CompilerCommand.h"
 #include "Environment.h"
 
 
@@ -30,10 +30,10 @@ namespace BitFunnel
 {
     //*************************************************************************
     //
-    // FailOnException
+    // CompilerCommand
     //
     //*************************************************************************
-    FailOnException::FailOnException(Environment & environment,
+    CompilerCommand::CompilerCommand(Environment & environment,
                                      Id id,
                                      char const * /*parameters*/)
         : TaskBase(environment, id, Type::Synchronous)
@@ -41,23 +41,23 @@ namespace BitFunnel
     }
 
 
-    void FailOnException::Execute()
+    void CompilerCommand::Execute()
     {
-        GetEnvironment().SetFailOnException(true);
+        GetEnvironment().SetCompilerMode(true);
         std::cout
-            << "REPL will now throw an exception if an error is detected." << std::endl
-            << "Restart REPL to reenable catching of exceptions." << std::endl
+            << "Using the native x64 compiler."
+            << std::endl
             << std::endl;
     }
 
 
-    ICommand::Documentation FailOnException::GetDocumentation()
+    ICommand::Documentation CompilerCommand::GetDocumentation()
     {
         return Documentation(
-            "failOnException",
-            "Forces application failure when exceptions are thrown.",
-            "failOnException\n"
-            "  Forces application failure when exceptions are thrown."
+            "compiler",
+            "Use the native x64 compiler for query processing.",
+            "compiler\n"
+            "  Use the native x64 compiler for query processing."
         );
     }
 }

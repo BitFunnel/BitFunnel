@@ -52,6 +52,9 @@ namespace BitFunnel
         bool GetFailOnException() const;
         void SetFailOnException(bool mode);
 
+        bool GetCompilerMode() const;
+        void SetCompilerMode(bool mode);
+
         std::string const & GetOutputDir() const;
         void SetOutputDir(std::string dir);
 
@@ -72,6 +75,7 @@ namespace BitFunnel
         std::unique_ptr<ISimpleIndex> m_index;
 
         bool m_failOnException;
+        bool m_compilerMode;
         std::string m_outputDir;
     };
 }

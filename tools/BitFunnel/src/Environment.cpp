@@ -24,12 +24,14 @@
 #include "BitFunnel/Index/IRecycler.h"
 #include "AnalyzeCommand.h"
 #include "CdCommand.h"
+#include "CompilerCommand.h"
 #include "CorrelateCommand.h"
 #include "Environment.h"
 #include "ExitCommand.h"
 #include "FailOnExceptionCommand.h"
 #include "HelpCommand.h"
 #include "IngestCommands.h"
+#include "InterpreterCommand.h"
 #include "QueryCommand.h"
 #include "ScriptCommand.h"
 #include "ShowCommand.h"
@@ -63,12 +65,14 @@ namespace BitFunnel
     void Environment::RegisterCommands()
     {
         m_taskFactory->RegisterCommand<Analyze>();
+        m_taskFactory->RegisterCommand<Cache>();
         m_taskFactory->RegisterCommand<Cd>();
+        m_taskFactory->RegisterCommand<CompilerCommand>();
         m_taskFactory->RegisterCommand<Correlate>();
         m_taskFactory->RegisterCommand<Exit>();
         m_taskFactory->RegisterCommand<FailOnException>();
         m_taskFactory->RegisterCommand<Help>();
-        m_taskFactory->RegisterCommand<Cache>();
+        m_taskFactory->RegisterCommand<InterpreterCommand>();
         m_taskFactory->RegisterCommand<Load>();
         m_taskFactory->RegisterCommand<Query>();
         m_taskFactory->RegisterCommand<Script>();
@@ -99,6 +103,18 @@ namespace BitFunnel
     void Environment::SetFailOnException(bool mode)
     {
         m_failOnException = mode;
+    }
+
+
+    bool Environment::GetCompilerMode() const
+    {
+        return m_compilerMode;
+    }
+
+
+    void Environment::SetCompilerMode(bool mode)
+    {
+        m_compilerMode = mode;
     }
 
 

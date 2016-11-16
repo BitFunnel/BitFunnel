@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-#include "FailOnExceptionCommand.h"
+#include "InterpreterCommand.h"
 #include "Environment.h"
 
 
@@ -30,34 +30,34 @@ namespace BitFunnel
 {
     //*************************************************************************
     //
-    // FailOnException
+    // CompilerCommand
     //
     //*************************************************************************
-    FailOnException::FailOnException(Environment & environment,
-                                     Id id,
-                                     char const * /*parameters*/)
+    InterpreterCommand::InterpreterCommand(Environment & environment,
+                                           Id id,
+                                           char const * /*parameters*/)
         : TaskBase(environment, id, Type::Synchronous)
     {
     }
 
 
-    void FailOnException::Execute()
+    void InterpreterCommand::Execute()
     {
-        GetEnvironment().SetFailOnException(true);
+        GetEnvironment().SetCompilerMode(false);
         std::cout
-            << "REPL will now throw an exception if an error is detected." << std::endl
-            << "Restart REPL to reenable catching of exceptions." << std::endl
+            << "Using the byte code interpreter."
+            << std::endl
             << std::endl;
     }
 
 
-    ICommand::Documentation FailOnException::GetDocumentation()
+    ICommand::Documentation InterpreterCommand::GetDocumentation()
     {
         return Documentation(
-            "failOnException",
-            "Forces application failure when exceptions are thrown.",
-            "failOnException\n"
-            "  Forces application failure when exceptions are thrown."
+            "interpreter",
+            "Use the byte code interpreter for query processing.",
+            "compiler\n"
+            "  Use the byte code interpreter for query processing."
         );
     }
 }
