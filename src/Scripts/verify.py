@@ -65,5 +65,8 @@ def process_unknowns(filename, true_matches):
                     num_false_pos += 1
             last_term = row[0]
 
-true_matches = get_true_matches("/tmp/groundTruth.csv")
-process_unknowns("/tmp/unknown.csv", true_matches)
+def run():
+    true_matches = get_true_matches("/tmp/groundTruth.csv")
+    process_unknowns("/tmp/unknown.csv", true_matches)
+
+run()
