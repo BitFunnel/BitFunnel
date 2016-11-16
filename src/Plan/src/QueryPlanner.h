@@ -121,6 +121,6 @@ namespace BitFunnel
         ByteCodeGenerator m_code;
 
         ResultsBuffer& m_resultsBuffer;
-        bool m_useNativeCode;
+        // bool m_useNativeCode;
     };
 }

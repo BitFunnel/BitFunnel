@@ -86,8 +86,8 @@ namespace BitFunnel
                                QueryInstrumentation & instrumentation,
                                ResultsBuffer & resultsBuffer,
                                bool useNativeCode)
-      : m_resultsBuffer(resultsBuffer),
-        m_useNativeCode(useNativeCode)
+      : m_resultsBuffer(resultsBuffer)
+        // m_useNativeCode(useNativeCode)
     {
         if (diagnosticStream.IsEnabled("planning/term"))
         {
