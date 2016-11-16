@@ -22,11 +22,9 @@
 
 #pragma once
 
-#include <stddef.h>                             // size_t parameter.
-#include <vector>                               // std::vector return value.
+#include <set>                          // std::set embedded.
 
 #include "BitFunnel/BitFunnelTypes.h"           // Rank parameter.
-#include "BitFunnel/Index/RowId.h"              // RowId parameter.
 #include "CodeVerifierBase.h"                   // Base class.
 
 
@@ -52,60 +50,6 @@ namespace BitFunnel
     public:
         ByteCodeVerifier(ISimpleIndex const & index, Rank initialRank);
 
-        //
-        // ICodeVerifier methods.
-        //
-
-        // The class is configured by adding a sequence of of records
-        // describing the expected interactions betweeen the matcher and its
-        // IResultsProcessor. Each call to Add() corresponds to expectation
-        // that the matcher will invoke IResultsProcessor::AddResult(). The
-        // accumulator and offset parameters to Add() are the expected
-        // parameters to AddResult().
-        //
-        // The usage pattern for IResultsProcessor is a sequence of calls
-        // to AddResult() interspersed with calls to FinishIteration().
-        // The call to FinishIteration() provides the void* slice buffer
-        // pointer that is applicable to the sequence of calls to AddResult()
-        // since the previous call to FinishIteration() (or the start of
-        // the matching algorithm if there was no previous call to
-        // FinishIteration().
-        //
-        // The third parameter of the Add() method indicates the slice
-        // that expected to be passed on the next call to FinishIteration.
-        // The slice parameter is a size_t index into an array of slice
-        // buffer pointers associated with the index.
-        //
-        virtual void ExpectResult(uint64_t accumulator,
-                                  size_t offset,
-                                  size_t slice) override;
-
         virtual void Verify(char const * codeText) override;
-
-
-    private:
-        static void GenerateCode(char const * rowPlanText,
-                                 ByteCodeGenerator& code);
-
-        //struct Expected
-        //{
-        //    uint64_t m_accumulator;
-        //    size_t m_offset;
-        //    size_t m_slice;
-        //};
-
-        ////ResultsBuffer m_expectedResults;
-        ////std::vector<Expected> m_expectedResults;
-
-        //struct Observed
-        //{
-        //    uint64_t m_accumulator;
-        //    size_t m_offset;
-        //};
-
-        //std::vector<Observed> m_observed;
-
-        std::set<DocId> m_expected;
-        std::set<DocId> m_observed;
     };
 }
