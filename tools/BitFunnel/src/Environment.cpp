@@ -24,6 +24,7 @@
 #include "BitFunnel/Index/IRecycler.h"
 #include "AnalyzeCommand.h"
 #include "CdCommand.h"
+#include "CorrelateCommand.h"
 #include "Environment.h"
 #include "ExitCommand.h"
 #include "FailOnExceptionCommand.h"
@@ -63,6 +64,7 @@ namespace BitFunnel
     {
         m_taskFactory->RegisterCommand<Analyze>();
         m_taskFactory->RegisterCommand<Cd>();
+        m_taskFactory->RegisterCommand<Correlate>();
         m_taskFactory->RegisterCommand<Exit>();
         m_taskFactory->RegisterCommand<FailOnException>();
         m_taskFactory->RegisterCommand<Help>();
