@@ -32,6 +32,12 @@
 
 namespace BitFunnel
 {
+    DocumentHandle Factories::CreateDocumentHandle(Slice * slice, DocIndex index)
+    {
+        return DocumentHandleInternal(slice, index);
+    }
+
+
     DocumentHandle Factories::CreateDocumentHandle(void * sliceBuffer, DocIndex index)
     {
         Slice* slice = *reinterpret_cast<Slice**>(

@@ -42,9 +42,10 @@ namespace BitFunnel
     // NativeCodeGenerator
     //
     //*************************************************************************
-    NativeCodeGenerator::NativeCodeGenerator(Prototype& expression,
-                             CompileNode const & compileNodeTree,
-                             RegisterAllocator const & registers)
+    NativeCodeGenerator::NativeCodeGenerator(
+        Prototype& expression,
+        CompileNode const & compileNodeTree,
+        RegisterAllocator const & registers)
       : Node(expression),
         m_compileNodeTree(compileNodeTree),
         m_registers(registers)
@@ -52,7 +53,8 @@ namespace BitFunnel
     }
 
 
-    ExpressionTree::Storage<size_t> NativeCodeGenerator::CodeGenValue(ExpressionTree& tree)
+    ExpressionTree::Storage<size_t> NativeCodeGenerator::CodeGenValue(
+        ExpressionTree& tree)
     {
         EmitRegisterInitialization(tree);
         EmitOuterLoop(tree);
@@ -62,7 +64,8 @@ namespace BitFunnel
     }
 
 
-    void NativeCodeGenerator::EmitRegisterInitialization(ExpressionTree& tree)
+    void NativeCodeGenerator::EmitRegisterInitialization(
+        ExpressionTree& tree)
     {
         auto & code = tree.GetCodeGenerator();
 

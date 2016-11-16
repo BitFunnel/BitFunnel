@@ -24,6 +24,7 @@
 #include "BitFunnel/Utilities/Allocator.h"
 #include "MatchTreeCompiler.h"
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
+#include "ResultsBuffer.h"
 
 using namespace NativeJIT;
 
@@ -57,8 +58,7 @@ namespace BitFunnel
                                   void * const * sliceBuffers,
                                   size_t iterationsPerSlice,
                                   ptrdiff_t const * rowOffsets,
-                                  size_t matchCapacity,
-                                  NativeCodeGenerator::Record * matches)
+                                  ResultsBuffer & results)
     {
         NativeCodeGenerator::Parameters parameters = {
             sliceCount,
@@ -66,9 +66,9 @@ namespace BitFunnel
             iterationsPerSlice,
             rowOffsets,
             { 0 },
-            matchCapacity,
+            results.m_capacity,
             0,
-            matches
+            results.m_buffer
         };
 
         // For now ignore return value.

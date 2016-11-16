@@ -26,6 +26,7 @@
 
 #include "NativeJIT/CodeGen/FunctionBuffer.h"   // FunctionBuffer embedded.
 #include "NativeJIT/Function.h"                 // Function in typedef.
+#include "ResultsBuffer.h"                      // ResultsBuffer::Result type.
 
 
 namespace NativeJIT
@@ -36,6 +37,7 @@ namespace NativeJIT
 };
 
 using namespace NativeJIT;
+
 
 namespace BitFunnel
 {
@@ -64,24 +66,6 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
     class NativeCodeGenerator : public NativeJIT::Node<size_t>
     {
     public:
-        struct Record
-        {
-            bool operator<(Record const & other) const
-            {
-                if (m_buffer != other.m_buffer)
-                {
-                    return m_id < other.m_id;
-                }
-                else
-                {
-                    return m_buffer < other.m_buffer;
-                }
-            }
-
-            void * m_buffer;
-            size_t m_id;
-        };
-
         struct Parameters
         {
         public:
@@ -91,16 +75,16 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
             size_t m_iterationsPerSlice;
             ptrdiff_t const * m_rowOffsets;
 
-            // Dedupe
+            // Dedupe buffer
             size_t m_dedupe[65];
 
             // Matches
             size_t m_capacity;
             size_t m_matchCount;
-            Record* m_matches;
+            ResultsBuffer::Result* m_matches;
         };
         static_assert(std::is_standard_layout<Parameters>::value,
-                      "Parameters must be standard layout.");
+                      "Generated code requires that Parameters be standard layout.");
 
         typedef Function<size_t, Parameters const *> Prototype;
         Prototype::FunctionType m_function;

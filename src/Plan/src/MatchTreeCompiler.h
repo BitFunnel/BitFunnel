@@ -26,6 +26,7 @@
 
 #include "NativeCodeGenerator.h"                // MatcherNode::Prototype::FunctionType type.
 #include "NativeJIT/CodeGen/FunctionBuffer.h"   // FunctionBuffer embedded.
+#include "ResultsBuffer.h"
 
 
 namespace NativeJIT
@@ -40,6 +41,7 @@ namespace BitFunnel
     class CompileNode;
     class DocumentHandle;
     class RegisterAllocator;
+    class ResultsBuffer;
 
     //*************************************************************************
     //
@@ -58,8 +60,7 @@ namespace BitFunnel
                    void * const * slicebuffers,
                    size_t iterationsperslice,
                    ptrdiff_t const * rowoffsets,
-                   size_t matchCapacity,
-                   NativeCodeGenerator::Record * matches);
+                   ResultsBuffer & results);
 
     private:
         NativeJIT::FunctionBuffer m_code;

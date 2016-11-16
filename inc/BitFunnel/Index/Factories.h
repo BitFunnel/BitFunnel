@@ -70,6 +70,7 @@ namespace BitFunnel
         std::unique_ptr<IDocumentFrequencyTable>
             CreateDocumentFrequencyTable(std::istream& input);
 
+        DocumentHandle CreateDocumentHandle(Slice * sliceBuffer, DocIndex index);
         DocumentHandle CreateDocumentHandle(void * sliceBuffer, DocIndex index);
 
         // TODO: Remove this temporary function.

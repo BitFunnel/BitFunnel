@@ -39,6 +39,7 @@
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
 #include "CompileNode.h"
 #include "RegisterAllocator.h"
+#include "ResultsBuffer.h"
 #include "TextObjectParser.h"
 
 
@@ -165,24 +166,20 @@ namespace BitFunnel
         const size_t matchCapacity =
             GetIterationsPerSlice() * m_slices.size() * 64;
 
-        std::vector<NativeCodeGenerator::Record>
+        std::vector<ResultsBuffer::Result>
             matches(matchCapacity, { nullptr, 0 });
+        ResultsBuffer results(matches);
 
         auto matchCount = compiler.Run(m_slices.size(),
                                        m_slices.data(),
                                        GetIterationsPerSlice(),
                                        m_rowOffsets.data(),
-                                       matches.size(),
-                                       matches.data());
+                                       results);
 
         for (size_t i = 0; i < matchCount; ++i)
         {
-            Slice* slice = reinterpret_cast<Slice*>(matches[i].m_buffer);
-            void* sliceBuffer = Factories::GetSliceBuffer(slice);
-            size_t id = matches[i].m_id;
-
-            auto handle =
-                Factories::CreateDocumentHandle(sliceBuffer, id);
+            auto handle = Factories::CreateDocumentHandle(matches[i].m_slice,
+                                                          matches[i].m_index);
             if (handle.IsActive())
             {
                 DocId doc = handle.GetDocId();
