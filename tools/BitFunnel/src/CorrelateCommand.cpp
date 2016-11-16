@@ -58,9 +58,9 @@ namespace BitFunnel
     {
         return Documentation(
             "correlate",
-            "Calculate RowTables correlations.",
+            "Calculate RowTable correlations.",
             "correlate\n"
-            "  Calculate RowTables correlations.\n"
+            "  Calculate RowTable correlations.\n"
         );
     }
 
