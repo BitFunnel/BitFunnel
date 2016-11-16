@@ -21,7 +21,6 @@ set(CPPFILES
     RowMatchNode.cpp
     RowPlan.cpp
     RowSet.cpp
-    SimpleResultsProcessor.cpp
     StringVector.cpp
     TermMatchNode.cpp
     TermMatchTreeConverter.cpp

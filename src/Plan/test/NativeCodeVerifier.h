@@ -37,11 +37,7 @@ namespace BitFunnel
     //
     // NativeCodeVerifier
     //
-    // This class verifies the correctness of a matching algorithm that invokes
-    // methods on an IResultsProcessor.
-    //
-    // Verifies that a sequence of calls to IResultsProcessor::AddResult() and
-    // IResultsProcessor::FinishIteration() match an expect sequence of calls.
+    // This class verifies the correctness of a matching algorithm.
     //
     //*************************************************************************
     class NativeCodeVerifier : public CodeVerifierBase

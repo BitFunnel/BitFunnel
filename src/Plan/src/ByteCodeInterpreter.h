@@ -62,10 +62,6 @@ namespace BitFunnel
         // Constructs a ByteCodeInterpreter for the sequence of instructions
         // in a specific ByteCodeGenerator. This interpreter will run against
         // the rows passed as that second parameter.
-        //
-        // NOTE: This method is a work-in-progress. It will eventually take
-        // some sort of IResultsProcessor callback and an array of Shard
-        // buffer pointers.
         ByteCodeInterpreter(ByteCodeGenerator const & code,
                             ResultsBuffer & resultsBuffer,
                             size_t sliceCount,

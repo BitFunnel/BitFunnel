@@ -24,7 +24,6 @@
 
 #include "BitFunnel/NonCopyable.h"        // Inherits from NonCopyable.
 #include "ByteCodeInterpreter.h"
-#include "SimpleResultsProcessor.h"
 
 
 namespace BitFunnel

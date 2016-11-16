@@ -41,11 +41,7 @@ namespace BitFunnel
     //
     // CodeVerifierBase
     //
-    // This class verifies the correctness of a matching algorithm that invokes
-    // methods on an IResultsProcessor.
-    //
-    // Verifies that a sequence of calls to IResultsProcessor::AddResult() and
-    // IResultsProcessor::FinishIteration() match an expect sequence of calls.
+    // This class verifies the correctness of a matching algorithm.
     //
     //*************************************************************************
     class CodeVerifierBase : public ICodeVerifier
@@ -79,7 +75,7 @@ namespace BitFunnel
         // The class is configured by adding a sequence of of records
         // describing the expected interactions betweeen the matcher and its
         // IResultsProcessor. Each call to Add() corresponds to expectation
-        // that the matcher will invoke IResultsProcessor::AddResult(). The
+        // that the matcher will invoke its interal AddResult() method. The
         // accumulator and offset parameters to Add() are the expected
         // parameters to AddResult().
         //
