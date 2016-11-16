@@ -36,13 +36,10 @@
 
 namespace BitFunnel
 {
-    class DocumentLengthHistogram : public NonCopyable
+    class DocumentHistogramBuilder : public NonCopyable
     {
     public:
-        // TODO: Do we need a document scaling constructor, like in the
-        // original?
-        DocumentLengthHistogram(std::istream& input);
-        DocumentLengthHistogram();
+        DocumentHistogramBuilder();
 
         // AddDocument is thread safe with multiple writers.
         void AddDocument(size_t postingCount);

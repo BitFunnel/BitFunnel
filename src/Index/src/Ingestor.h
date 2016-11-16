@@ -33,7 +33,7 @@
 #include "BitFunnel/Index/Token.h"          // ITokenManager parameterizes std::unique_ptr.
 #include "BitFunnel/NonCopyable.h"          // Base class.
 #include "DocumentCache.h"                  // DocumentCache embedded.
-#include "DocumentLengthHistogram.h"        // Embeds DocumentLengthHistogram.
+#include "DocumentHistogramBuilder.h"       // Embeds DocumentHistogramBuilder.
 #include "DocumentMap.h"                    // DocumentMap template parameter.
 #include "Shard.h"                          // std::unique_ptr template parameter.
 
@@ -64,7 +64,7 @@ namespace BitFunnel
         // FileManager:
         //
         //   Per IIngester
-        //      DocumentLengthHistogram
+        //      DocumentHistogramBuilder
         //   Per Shard
         //      CumulativeTermCountd
         //      DocumentFrequencyTable (with term text if termToText provided)
@@ -181,7 +181,7 @@ namespace BitFunnel
         std::mutex m_deleteDocumentLock;
 
 
-        DocumentLengthHistogram m_histogram;
+        DocumentHistogramBuilder m_histogram;
 
         // Allocator used to allocate memory for the slice buffers within
         // Shards. ISliceBufferAllocator uses IBlockAllocator to allocate

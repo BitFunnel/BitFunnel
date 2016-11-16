@@ -115,7 +115,7 @@ namespace BitFunnel
         }
 
         {
-            auto out = fileManager.DocumentLengthHistogram().OpenForWrite();
+            auto out = fileManager.DocumentHistogram().OpenForWrite();
             m_histogram.Write(*out);
         }
 
@@ -148,7 +148,7 @@ namespace BitFunnel
         ++m_documentCount;
         m_totalSourceByteSize += document.GetSourceByteSize();
 
-        // Add postingCount to the DocumentLengthHistogram
+        // Add postingCount to the DocumentHistogramBuilder
         m_histogram.AddDocument(document.GetPostingCount());
 
         // Choose correct shard and then allocate handle.
