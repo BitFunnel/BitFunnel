@@ -24,6 +24,7 @@ set(CPPFILES
     RowTableDescriptor.cpp
     Shard.cpp
     SimpleIndex.cpp
+    SingleSourceShortestPath.cpp
     Slice.cpp
     SliceBufferAllocator.cpp
     Term.cpp
@@ -51,6 +52,7 @@ set(PRIVATE_HFILES
     DocumentLengthHistogram.h
     DocumentMap.h
     FactSetBase.h
+    ICostFunction.h
     IDocumentCacheNode.h
     IndexedIdfTable.h
     Ingestor.h
@@ -60,6 +62,7 @@ set(PRIVATE_HFILES
     RowTableAnalyzer.h
     Shard.h
     SimpleIndex.h
+    SingleSourceShortestPath.h
     Slice.h
     SliceBufferAllocator.h
     TermTable.h
