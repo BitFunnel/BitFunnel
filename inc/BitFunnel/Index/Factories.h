@@ -37,6 +37,7 @@ namespace BitFunnel
     class IConfiguration;
     class IDocument;
     class IDocumentDataSchema;
+    class IDocumentHistogram;
     class IDocumentFrequencyTable;
     class IFactSet;
     class IFileManager;
@@ -44,6 +45,7 @@ namespace BitFunnel
     class IIndexedIdfTable;
     class IIngestor;
     class IRecycler;
+    class IShardCostFunction;
     class IShardDefinition;
     class ISimpleIndex;
     class ISliceBufferAllocator;
@@ -91,6 +93,12 @@ namespace BitFunnel
                            ISliceBufferAllocator& sliceBufferAllocator);
 
         std::unique_ptr<IRecycler> CreateRecycler();
+
+        std::unique_ptr<IShardCostFunction>
+            CreateShardCostFunction(IDocumentHistogram const & histogram,
+                                    double shardOverhead,
+                                    size_t minShardCapacity,
+                                    Rank maxRankInUse);
 
         std::unique_ptr<ISimpleIndex> CreateSimpleIndex(IFileSystem& fileSystem);
 

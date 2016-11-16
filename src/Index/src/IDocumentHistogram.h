@@ -20,37 +20,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 #pragma once
 
-#include <map>
-
-#include "BitFunnel/Noncopyable.h"
+#include <ostream>      // std::ostream parameter.
 
 
 namespace BitFunnel
 {
-    class DocumentHistogram : public NonCopyable
+    //*************************************************************************
+    //
+    // IDocumentHistogram is an abstract base class or interface for classes
+    // that represent a histogram of document count and document body length
+    // sum for each quantity of postings associated with a document. The
+    // histogram can be accessed as an ordered set of entries containing
+    // posting count, document count, and body length sum. These entries are
+    // ordered by increasing posting count, but posting counts are not required
+    // to be consecutive.
+    //
+    //*************************************************************************
+    class IDocumentHistogram
     {
     public:
-        class DocumentHistogramEntry
-        {
-        public:
-            DocumentHistogramEntry();
+        virtual ~IDocumentHistogram() {};
 
-            void AddDocument(size_t postingCount);
+        // Persists the contents of the histogram to a stream. Typically
+        // classes that implement IDocumentHistogram will provide a
+        // constructor that initializes the histogram from a stream.
+        virtual void Write(std::ostream& output) const = 0;
 
-            size_t GetPostingCountSum() const;
-            size_t GetDocumentCount() const;
+        // Returns the number of entries within the histogram.
+        virtual size_t GetEntryCount() const = 0;
 
-        private:
-            size_t m_postingCountSum;
-            size_t m_documentCount;
-        };
+        // Returns the sum of the document counts across all of the entries
+        // in the histogram. This is equal to the number of documents in the
+        // corpus used to create the histogram.
+        virtual double GetTotalDocumentCount() const = 0;
 
-        virtual DocumentHistogramEntry const & operator[](size_t postingCount) const = 0;
-        virtual size_t GetMaxPostingCount() const = 0;
+        // Returns the posting count associated with a specific entry.
+        virtual unsigned GetPostingCount(size_t index) const = 0;
 
-        virtual void AddDocument(size_t postingCount) = 0;
+        // Returns the document count associated with a specific entry.
+        // This is the number of documents in the corpus that have posting
+        // counts equal to GetPostingCount(index).
+        virtual double GetDocumentCount(size_t index) const = 0;
+
+        // Returns the average document body length associated with a specific
+        // entry. This average is over all documents in the corpus that have
+        // posting counts equal to GetPostingCount(index).
+        virtual double GetAverageBodyLength(size_t index) const = 0;
+
+        // Adds a new entry to the histogram. The posting count must be
+        // strictly greater than the largest posting count already in the
+        // histogram.
+        virtual void AddEntry(size_t postingCount,
+                              double documentCount,
+                              double averageBodyLength) = 0;
     };
 }
