@@ -189,6 +189,7 @@ set(PLAN_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryInstrumentation.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryParser.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryRunner.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/ResultsBuffer.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/RowMatchNode.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/RowPlan.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/TermMatchNode.h

@@ -35,8 +35,8 @@ namespace BitFunnel
 {
     class ByteCodeGenerator;
     class IDiagnosticStream;
-    class IResultsProcessor;
     class QueryInstrumentation;
+    class ResultsBuffer;
 
     //*************************************************************************
     //
@@ -67,7 +67,7 @@ namespace BitFunnel
         // some sort of IResultsProcessor callback and an array of Shard
         // buffer pointers.
         ByteCodeInterpreter(ByteCodeGenerator const & code,
-                            IResultsProcessor & resultsProcessor,
+                            ResultsBuffer & resultsBuffer,
                             size_t sliceCount,
                             char * const * sliceBuffers,
                             size_t iterationsPerSlice,
@@ -183,6 +183,11 @@ namespace BitFunnel
         // number. Returns true to indicate early termination.
         bool RunOneIteration(char const * sliceBuffer, size_t iteration);
 
+        void AddResult(uint64_t accumulator,
+                       size_t offset);
+
+        bool FinishIteration(void const * sliceBuffer);
+
         //
         // Cached constructor parameters.
         //
@@ -190,7 +195,7 @@ namespace BitFunnel
         std::vector<Instruction> const & m_code;
         std::vector<Instruction const *> const & m_jumpTable;
 
-        IResultsProcessor & m_resultsProcessor;
+        ResultsBuffer & m_resultsBuffer;
 
         size_t m_sliceCount;
         char * const * m_sliceBuffers;

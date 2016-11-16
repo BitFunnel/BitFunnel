@@ -23,9 +23,12 @@
 #pragma once
 
 #include <iterator>
+#include <memory>       // std::unique_ptr
 #include <type_traits>
 #include <stddef.h>     // size_t embedded.
 #include <vector>       // Inline method.
+
+#include "BitFunnel/Index/Factories.h"      // TODO: Remove this include after remving inline.
 
 
 namespace BitFunnel
@@ -38,6 +41,11 @@ namespace BitFunnel
         class Result
         {
         public:
+            DocumentHandle GetHandle() const
+            {
+                return Factories::CreateDocumentHandle(m_slice, m_index);
+            }
+
             bool operator<(Result const & other) const
             {
                 if (m_slice != other.m_slice)
@@ -58,17 +66,8 @@ namespace BitFunnel
         static_assert(std::is_trivially_copyable<Result>::value,
                       "Generated code requires that Result be trivially copyable.");
 
-        ResultsBuffer(size_t capacity, Result* results)
-          : m_capacity(capacity),
-            m_size(0),
-            m_buffer(results)
-        {
-        }
-
-        ResultsBuffer(std::vector<Result>& matches)
-          : m_capacity(matches.size()),
-            m_size(0),
-            m_buffer(matches.data())
+        ResultsBuffer(size_t capacity)
+          : m_bufferOwner(new Result[capacity])
         {
         }
 
@@ -82,7 +81,7 @@ namespace BitFunnel
         {
         public:
             const_iterator(Result * result)
-              : m_current(result)
+                : m_current(result)
             {
             }
 
@@ -121,6 +120,7 @@ namespace BitFunnel
             return m_size;
         }
 
+        std::unique_ptr<Result> m_bufferOwner;
         size_t m_capacity;
         size_t m_size;
         Result * m_buffer;

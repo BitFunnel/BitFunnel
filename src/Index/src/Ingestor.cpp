@@ -278,6 +278,12 @@ namespace BitFunnel
     }
 
 
+    size_t Ingestor::GetDocumentCount() const
+    {
+        return m_documentMap->size();
+    }
+
+
     size_t Ingestor::GetUsedCapacityInBytes() const
     {
         throw NotImplemented();

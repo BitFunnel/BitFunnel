@@ -34,9 +34,8 @@ namespace BitFunnel
     class ISimpleIndex;
     class IThreadResources;
     class QueryInstrumentation;
-    // class TermPlan;
+    class ResultsBuffer;
     class TermMatchNode;
-    // class X64::X64FunctionGenerator;
 
     class QueryPlanner : public NonCopyable
     {
@@ -48,12 +47,11 @@ namespace BitFunnel
                      // IThreadResources& threadResources,
                      IAllocator& allocator,
                      IDiagnosticStream& diagnosticStream,
-                     QueryInstrumentation & instrumentation);
-                     // bool generateNonBodyPlan,
-                     // unsigned maxIterationsScannedBetweenTerminationChecks);
+                     QueryInstrumentation & instrumentation,
+                     ResultsBuffer & resultsBuffer);
 
-        // TODO: get rid of this convenience method.
-        std::vector<DocId> const & GetMatches() const;
+        //// TODO: get rid of this convenience method.
+        //std::vector<DocId> const & GetMatches() const;
 
         //
         // IQueryPlanner methods.
@@ -109,8 +107,6 @@ namespace BitFunnel
 
         ByteCodeGenerator m_code;
 
-        // TODO: should this be an IResultsProcessor? This isn't right now
-        // because IResultsProcessor doesn't have a method to pull matches out.
-        std::unique_ptr<SimpleResultsProcessor> m_resultsProcessor;
+        ResultsBuffer& m_resultsBuffer;
     };
 }

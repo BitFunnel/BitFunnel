@@ -56,6 +56,9 @@ namespace BitFunnel
         // Returns true otherwise.
         bool Delete(DocId id);
 
+        // Returns the number of DocIds in the map.
+        size_t size() const;
+
     private:
         // Lock protecting operations on m_docIdToHandle.
         // Made mutable to allow using it from const functions.
