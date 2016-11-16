@@ -43,8 +43,6 @@
 
 namespace BitFunnel
 {
-    static const ShardId c_shardId = 0;
-    // static const Term::StreamId c_streamId = 0;
     static const size_t c_allocatorBufferSize = 1000000;
 
 
