@@ -55,6 +55,21 @@ namespace BitFunnel
     }
 
 
+    // TODO: move this method somewhere.
+    static uint64_t lzcnt(uint64_t value)
+    {
+#ifdef _MSC_VER
+        return __lzcnt64(value);
+#elif __LZCNT__
+        return __lzcnt64(value);
+#else
+        // DESIGN NOTE: this is undefined if the input operand i 0. We currently
+        // only call lzcnt in one place, where we've prevously gauranteed that
+        // the input isn't 0. This is not safe to use in the general case.
+        return static_cast<uint64_t>(__builtin_clzll(value));
+#endif
+    }
+
     // The class is configured by adding a sequence of of records
     // describing the expected interactions betweeen the matcher and its
     // IResultsProcessor. Each call to Add() corresponds to expectation
@@ -77,148 +92,105 @@ namespace BitFunnel
     //
     void ByteCodeVerifier::ExpectResult(uint64_t accumulator,
                                         size_t offset,
-                                        size_t slice)
+                                        size_t sliceNumber)
     {
-        if (accumulator != 0)
+        //// TODO: Remove temporary debugging output.
+        //std::cout
+        //    << "ExpectResult("
+        //    << std::hex << accumulator << std::dec
+        //    << ", "
+        //    << offset
+        //    << ", "
+        //    << sliceNumber
+        //    << ")"
+        //    << std::endl;
+
+        size_t bitPos = 63;
+        void * sliceBuffer = m_slices[sliceNumber];
+
+        while (accumulator != 0)
         {
-            m_expectedResults.push_back({ accumulator, offset, slice });
-            if (m_verboseMode)
+            uint64_t count = lzcnt(accumulator);
+            accumulator <<= count;
+            bitPos -= count;
+
+            DocIndex docIndex = offset * c_bitsPerQuadword + bitPos;
+            DocumentHandle handle =
+                Factories::CreateDocumentHandle(sliceBuffer, docIndex);
+
+            if (handle.IsActive())
             {
-                std::cout
-                    << "Expect: " << std::hex << accumulator << std::dec
-                    << ", " << slice
-                    << ", " << offset << std::endl;
-            }
-        }
-        else
-        {
-            if (m_verboseMode)
-            {
-                std::cout
-                    << "XXXXXX: " << std::hex << accumulator << std::dec
-                    << ", " << slice
-                    << ", " << offset << std::endl;
-            }
-        }
-    }
+                DocId id = handle.GetDocId();
+                //// TODO: Remove temporary debugging output.
+                //std::cout << "  " << id << std::endl;
 
+                if (m_expected.find(id) != m_expected.end())
+                {
+                    std::cout << "  Duplicate id " << id << std::endl;
+                }
 
-    //
-    // IResultsProcessor methods.
-    //
-
-    void ByteCodeVerifier::AddResult(uint64_t accumulator,
-                                     size_t offset)
-    {
-        if (m_verboseMode)
-        {
-            std::cout
-                << "AddResult("
-                << std::hex << accumulator << std::dec
-                << ", " << offset
-                << ")" << std::endl;
-        }
-
-        m_observed.push_back({ accumulator, offset });
-    }
-
-
-    bool ByteCodeVerifier::FinishIteration(void const * sliceBuffer)
-    {
-        if (m_verboseMode)
-        {
-            std::cout
-                << "FinishIteration("
-                << std::hex << sliceBuffer << std::dec
-                << ")" << std::endl;
-        }
-
-        for (size_t i = 0; i < m_observed.size(); ++i)
-        {
-            // Would like to ASSERT, rather than EXPECT to avoid out of
-            // bounds array index below. Unfortunately ASSERT cannot be
-            // used inside of a function that returns bool. Hence, we
-            // EXPECT_LT and then break on failure.
-            EXPECT_LT(m_resultsCount, m_expectedResults.size());
-            if (m_resultsCount >= m_expectedResults.size())
-            {
-                break;
+                m_expected.insert(id);
             }
 
-            auto const & expected = m_expectedResults[m_resultsCount];
-            auto const & observed = m_observed[i];
-
-            EXPECT_EQ(observed.m_accumulator, expected.m_accumulator);
-            EXPECT_EQ(observed.m_offset, expected.m_offset);
-            EXPECT_EQ(sliceBuffer, m_slices[expected.m_slice]);
-
-            m_resultsCount++;
+            accumulator <<= 1;
+            --bitPos;
         }
-
-
-        m_observed.clear();
-
-        // TODO: Should this return true or false?
-        return false;
-    }
-
-
-    bool ByteCodeVerifier::TerminatedEarly() const
-    {
-        std::cout
-            << "TerminatedEarly()" << std::endl;
-        return false;
     }
 
 
     void ByteCodeVerifier::Verify(char const * codeText)
     {
-        // TODO: This check isn't too useful at the moment because
-        // document 0 matches all queries. Therefore, even a poorly
-        // constructed test will get at least one match.
-        if (m_expectNoResults)
-        {
-            ASSERT_EQ(m_expectedResults.size(), 0ull)
-                << "Expecting no results, but ExpectResult() was called"
-                "at least once with a non-zero accumulator value.";
-        }
-        else
-        {
-            ASSERT_GT(m_expectedResults.size(), 0ull)
-                << "Expecting at least one result, but each call to "
-                "ExpectResult() passed an empty accumulator.";
-        }
-
         ByteCodeGenerator code;
         GenerateCode(codeText, code);
         code.Seal();
-
-        ResultsBuffer results(m_index.GetIngestor().GetDocumentCount());
-
-        auto & shard = m_index.GetIngestor().GetShard(c_shardId);
-        auto & sliceBuffers = shard.GetSliceBuffers();
-        auto iterationsPerSlice = GetIterationsPerSlice();
 
         // TODO: remove diagnosticStream and replace with nullable.
         auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
         // TODO: remove following debugging code.
         // diagnosticStream->Enable("");
         QueryInstrumentation instrumentation;
+
+        ResultsBuffer results(m_index.GetIngestor().GetDocumentCount());
         ByteCodeInterpreter interpreter(
             code,
             results,
-            sliceBuffers.size(),
-            reinterpret_cast<char* const *>(sliceBuffers.data()),
-            iterationsPerSlice,
+            m_slices.size(),
+            m_slices.data(),
+            GetIterationsPerSlice(),
             m_rowOffsets.data(),
             *diagnosticStream,
             instrumentation);
 
         interpreter.Run();
 
-        // This check is necessary to detect the case where the final call
-        // to FinishIteration is missing.
-        EXPECT_EQ(m_resultsCount, m_expectedResults.size());
+        for (auto result : results)
+        {
+            DocumentHandle handle =
+                Factories::CreateDocumentHandle(result.m_slice, result.m_index);
+
+            if (handle.IsActive())
+            {
+                DocId doc = handle.GetDocId();
+
+                // TODO: Remove temporary debugging output.
+                //std::cout
+                //    << "  ==> " << doc << std::endl;
+
+                m_observed.insert(doc);
+            }
+        }
+
+        ASSERT_EQ(m_expected.size(), m_observed.size())
+            << "Inconsistent match counts.";
+
+        for (DocId d : m_expected)
+        {
+            auto it = m_observed.find(d);
+            ASSERT_TRUE(it != m_observed.end())
+                << "Expected docId "
+                << d
+                << " not found.";
+        }
     }
 
 

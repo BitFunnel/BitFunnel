@@ -67,8 +67,11 @@ namespace BitFunnel
                       "Generated code requires that Result be trivially copyable.");
 
         ResultsBuffer(size_t capacity)
-          : m_bufferOwner(new Result[capacity])
+          : m_bufferOwner(new Result[capacity]),
+            m_capacity(capacity),
+            m_size(0)
         {
+            m_buffer = m_bufferOwner.get();
         }
 
         void Reset()
@@ -128,7 +131,7 @@ namespace BitFunnel
             return m_size;
         }
 
-        std::unique_ptr<Result> m_bufferOwner;
+        std::unique_ptr<Result[]> m_bufferOwner;
         size_t m_capacity;
         size_t m_size;
         Result * m_buffer;

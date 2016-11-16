@@ -69,7 +69,7 @@ namespace BitFunnel
         ByteCodeInterpreter(ByteCodeGenerator const & code,
                             ResultsBuffer & resultsBuffer,
                             size_t sliceCount,
-                            char * const * sliceBuffers,
+                            void * const * sliceBuffers,
                             size_t iterationsPerSlice,
                             ptrdiff_t const * rowOffsets,
                             IDiagnosticStream & diagnosticStream,
@@ -181,7 +181,7 @@ namespace BitFunnel
 
         // Executes the instruction sequence for the specified iteration
         // number. Returns true to indicate early termination.
-        bool RunOneIteration(char const * sliceBuffer, size_t iteration);
+        bool RunOneIteration(void const * sliceBuffer, size_t iteration);
 
         void AddResult(uint64_t accumulator,
                        size_t offset);
@@ -198,7 +198,7 @@ namespace BitFunnel
         ResultsBuffer & m_resultsBuffer;
 
         size_t m_sliceCount;
-        char * const * m_sliceBuffers;
+        void * const * m_sliceBuffers;
         size_t m_iterationsPerSlice;
 
         ptrdiff_t const * m_rowOffsets;
@@ -228,8 +228,11 @@ namespace BitFunnel
         // TODO: Formalize definition and usage of zero flag.
         bool m_zeroFlag;
 
-        std::vector<std::pair<uint64_t, size_t>> m_addResultValues;
-        
+        // Dedupe buffer. First entry is bitmap indicating which of the
+        // remaining 64 entries correspond to accumulators with matches.
+        uint64_t m_dedupe[65];
+//        std::vector<std::pair<uint64_t, size_t>> m_addResultValues;
+
         IDiagnosticStream& m_diagnosticStream;
         QueryInstrumentation& m_instrumentation;
     };

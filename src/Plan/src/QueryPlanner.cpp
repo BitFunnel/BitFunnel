@@ -221,7 +221,7 @@ namespace BitFunnel
             ByteCodeInterpreter intepreter(m_code,
                                            m_resultsBuffer,
                                            sliceCount,
-                                           reinterpret_cast<char* const *>(sliceBuffers.data()),
+                                           sliceBuffers.data(),
                                            iterationsPerSlice,
                                            rowSet.GetRowOffsets(c_shardId),
                                            diagnosticStream,

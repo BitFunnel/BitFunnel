@@ -92,6 +92,8 @@ namespace BitFunnel
         //        << std::endl;
         //}
 
+        results.m_size = parameters.m_matchCount;
+
         return parameters.m_matchCount;
     }
 }

@@ -27,7 +27,6 @@
 
 #include "BitFunnel/BitFunnelTypes.h"           // Rank parameter.
 #include "BitFunnel/Index/RowId.h"              // RowId parameter.
-#include "BitFunnel/Plan/IResultsProcessor.h"   // Base class.
 #include "CodeVerifierBase.h"                   // Base class.
 
 
@@ -48,7 +47,7 @@ namespace BitFunnel
     // IResultsProcessor::FinishIteration() match an expect sequence of calls.
     //
     //*************************************************************************
-    class ByteCodeVerifier : public CodeVerifierBase, public IResultsProcessor
+    class ByteCodeVerifier : public CodeVerifierBase
     {
     public:
         ByteCodeVerifier(ISimpleIndex const & index, Rank initialRank);
@@ -84,40 +83,29 @@ namespace BitFunnel
         virtual void Verify(char const * codeText) override;
 
 
-        //
-        // IResultsProcessor methods.
-        //
-
-        void AddResult(uint64_t accumulator,
-                       size_t offset) override;
-
-
-        bool FinishIteration(void const * sliceBuffer) override;
-
-
-        bool TerminatedEarly() const override;
-
-
-
     private:
         static void GenerateCode(char const * rowPlanText,
                                  ByteCodeGenerator& code);
 
-        struct Expected
-        {
-            uint64_t m_accumulator;
-            size_t m_offset;
-            size_t m_slice;
-        };
+        //struct Expected
+        //{
+        //    uint64_t m_accumulator;
+        //    size_t m_offset;
+        //    size_t m_slice;
+        //};
 
-        std::vector<Expected> m_expectedResults;
+        ////ResultsBuffer m_expectedResults;
+        ////std::vector<Expected> m_expectedResults;
 
-        struct Observed
-        {
-            uint64_t m_accumulator;
-            size_t m_offset;
-        };
+        //struct Observed
+        //{
+        //    uint64_t m_accumulator;
+        //    size_t m_offset;
+        //};
 
-        std::vector<Observed> m_observed;
+        //std::vector<Observed> m_observed;
+
+        std::set<DocId> m_expected;
+        std::set<DocId> m_observed;
     };
 }
