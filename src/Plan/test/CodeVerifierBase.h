@@ -25,7 +25,7 @@
 #include <stddef.h>                     // size_t parameter.
 #include <vector>                       // std::vector embedded.
 
-#include "BitFunnel/BitFunnelTypes.h"   // Rank parameter.
+#include "BitFunnel/BitFunnelTypes.h"   // Rank parameter, DocId template parameter.
 #include "ICodeVerifier.h"              // Base class.
 #include "BitFunnel/Index/RowId.h"      // RowId parameter.
 
@@ -35,6 +35,7 @@ namespace BitFunnel
     class ByteCodeGenerator;
     class IShard;
     class ISimpleIndex;
+    class ResultsBuffer;
 
     //*************************************************************************
     //
@@ -53,6 +54,10 @@ namespace BitFunnel
         CodeVerifierBase(ISimpleIndex const & index, Rank initialRank);
 
 
+        //
+        // ICodeVerifier methods.
+        //
+
         virtual void VerboseMode(bool mode) override;
 
         virtual void ExpectNoResults() override;
@@ -70,6 +75,34 @@ namespace BitFunnel
         virtual uint64_t GetRowData(size_t row,
                                     size_t offset,
                                     size_t slice) override;
+
+        // The class is configured by adding a sequence of of records
+        // describing the expected interactions betweeen the matcher and its
+        // IResultsProcessor. Each call to Add() corresponds to expectation
+        // that the matcher will invoke IResultsProcessor::AddResult(). The
+        // accumulator and offset parameters to Add() are the expected
+        // parameters to AddResult().
+        //
+        // The usage pattern for IResultsProcessor is a sequence of calls
+        // to AddResult() interspersed with calls to FinishIteration().
+        // The call to FinishIteration() provides the void* slice buffer
+        // pointer that is applicable to the sequence of calls to AddResult()
+        // since the previous call to FinishIteration() (or the start of
+        // the matching algorithm if there was no previous call to
+        // FinishIteration().
+        //
+        // The third parameter of the Add() method indicates the slice
+        // that expected to be passed on the next call to FinishIteration.
+        // The slice parameter is a size_t index into an array of slice
+        // buffer pointers associated with the index.
+        //
+        virtual void ExpectResult(uint64_t accumulator,
+                                  size_t offset,
+                                  size_t slice) override;
+
+
+    protected:
+        void CheckResults(ResultsBuffer const & results);
 
     private:
         static RowId GetFirstRow(ITermTable const & termTable,
@@ -110,5 +143,10 @@ namespace BitFunnel
         bool m_verboseMode;
 
         bool m_expectNoResults;
+
+        std::set<DocId> m_observed;
+
+    private:
+        std::set<DocId> m_expected;
     };
 }
