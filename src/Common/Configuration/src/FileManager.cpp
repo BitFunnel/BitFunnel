@@ -63,6 +63,10 @@ namespace BitFunnel
                                      statisticsDirectory,
                                      "ColumnDensitySummary",
                                      ".txt")),
+          m_correlate(new ParameterizedFile1(fileSystem,
+                                             statisticsDirectory,
+                                             "Correlate",
+                                             ".csv")),
           m_cumulativeTermCounts(new ParameterizedFile1(fileSystem,
                                                         statisticsDirectory,
                                                         "CumulativeTermCounts",
@@ -160,6 +164,12 @@ namespace BitFunnel
     FileDescriptor1 FileManager::Chunk(size_t number)
     {
         return FileDescriptor1(*m_chunk, number);
+    }
+
+
+    FileDescriptor1 FileManager::Correlate(size_t shard)
+    {
+        return FileDescriptor1(*m_correlate, shard);
     }
 
 

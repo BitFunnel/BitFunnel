@@ -73,6 +73,7 @@ namespace BitFunnel
         virtual FileDescriptor0 VerificationResults() override;
 
         virtual FileDescriptor1 Chunk(size_t number) override;
+        virtual FileDescriptor1 Correlate(size_t shard) override;
         virtual FileDescriptor1 CumulativeTermCounts(size_t shard) override;
         virtual FileDescriptor1 DocFreqTable(size_t shard) override;
         virtual FileDescriptor1 IndexedIdfTable(size_t shard) override;
@@ -87,6 +88,7 @@ namespace BitFunnel
         std::unique_ptr<IParameterizedFile1> m_chunk;
         std::unique_ptr<IParameterizedFile0> m_columnDensities;
         std::unique_ptr<IParameterizedFile0> m_columnDensitySummary;
+        std::unique_ptr<IParameterizedFile1> m_correlate;
         std::unique_ptr<IParameterizedFile1> m_cumulativeTermCounts;
         std::unique_ptr<IParameterizedFile1> m_docFreqTable;
         std::unique_ptr<IParameterizedFile0> m_documentHistogram;
