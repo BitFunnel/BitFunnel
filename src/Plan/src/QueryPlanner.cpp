@@ -42,7 +42,9 @@
 #include "ByteCodeInterpreter.h"
 #include "CompileNode.h"
 #include "LoggerInterfaces/Logging.h"
+#include "MatchTreeCompiler.h"
 #include "MatchTreeRewriter.h"
+#include "NativeJIT/CodeGen/ExecutionBuffer.h"
 #include "QueryPlanner.h"
 #include "RankDownCompiler.h"
 #include "RegisterAllocator.h"
@@ -264,7 +266,18 @@ namespace BitFunnel
                                            c_registerCount,
                                            allocator);
 
-        // TODO: Clear results buffer here?
+         // Create allocator and buffers for pre-compiled and post-compiled code.
+         // TODO: These should be passed down from QueryProcessor.
+         NativeJIT::ExecutionBuffer codeAllocator(8192);
+         NativeJIT::Allocator treeAllocator(8192);
+
+         MatchTreeCompiler compiler(codeAllocator,
+                                    treeAllocator,
+                                    compileTree,
+                                    registers);
+
+
+         // TODO: Clear results buffer here?
         compileTree.Compile(m_code);
         m_code.Seal();
 
@@ -276,7 +289,6 @@ namespace BitFunnel
             const size_t c_shardId = 0u;
             auto & shard = index.GetIngestor().GetShard(c_shardId);
             auto & sliceBuffers = shard.GetSliceBuffers();
-            size_t sliceCount = sliceBuffers.size();
 
             // Iterations per slice calculation.
             auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> maxRank;
@@ -285,16 +297,11 @@ namespace BitFunnel
 
             m_resultsBuffer.Reset();
 
-            ByteCodeInterpreter intepreter(m_code,
-                                           m_resultsBuffer,
-                                           sliceCount,
-                                           sliceBuffers.data(),
-                                           iterationsPerSlice,
-                                           rowSet.GetRowOffsets(c_shardId),
-                                           nullptr,
-                                           instrumentation);
-
-            intepreter.Run();
+            compiler.Run(sliceBuffers.size(),
+                         sliceBuffers.data(),
+                         iterationsPerSlice,
+                         rowSet.GetRowOffsets(c_shardId),
+                         m_resultsBuffer);
 
             instrumentation.FinishMatching();
             instrumentation.SetMatchCount(m_resultsBuffer.size());

@@ -56,6 +56,25 @@ namespace BitFunnel
     ExpressionTree::Storage<size_t> NativeCodeGenerator::CodeGenValue(
         ExpressionTree& tree)
     {
+        // Allocate all of the nonvolatile rxx registers so that NativeJIT
+        // will preserve their values for the caller.
+        // TODO: It may make more sense for NativeJIT to allocate all rxx
+        // registers with the exception of rsp and rbp. This will allow us
+        // to detect register spills when NativeJIT compiles the scoring plan.
+        std::vector<Storage<size_t>> registers;
+        unsigned mask =
+            CallingConvention::c_rxxNonVolatileRegistersMask &
+            ~tree.GetRXXUsedMask();
+        for (unsigned r = 0; r < 16; ++r, mask >>= 1)
+        {
+            Register<8u, false> reg(r);
+            if (mask & 1)
+            {
+                registers.push_back(
+                    Storage<size_t>::ForFreeRegister(tree, reg));
+            }
+        }
+
         EmitRegisterInitialization(tree);
         EmitOuterLoop(tree);
 
