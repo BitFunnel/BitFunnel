@@ -121,7 +121,8 @@ namespace BitFunnel
             {
                 if (m_registers.IsRegister(id))
                 {
-                    // Case 5: rankDelta == 0 && !inverted && IsRegister                              m_code.Emit<OpCode::Mov>(rax, rcx);
+                    // Case 5: rankDelta == 0 && !inverted && IsRegister
+                    m_code.Emit<OpCode::Mov>(rax, rcx);
                     unsigned reg = m_registers.GetRegister(id);
                     m_code.Emit<OpCode::And>(rbx, rcx, Register<8u, false>(reg), SIB::Scale1, 0);
                 }
@@ -130,7 +131,7 @@ namespace BitFunnel
                     // Case 6: rankDelta == 0 && !inverted && !IsRegister
                     m_code.Emit<OpCode::Mov>(rax, rcx);
                     m_code.Emit<OpCode::Add>(rax, rsi, id * 8);
-                    m_code.Emit<OpCode::And>(rbx, rax, rdx, SIB::Scale1, 0);
+                    m_code.Emit<OpCode::And>(rbx, rax, 0);
                 }
             }
             else
@@ -147,7 +148,7 @@ namespace BitFunnel
                     // Case 8: rankDelta == 0 && inverted && !IsRegister
                     m_code.Emit<OpCode::Mov>(rax, rcx);
                     m_code.Emit<OpCode::Add>(rax, rsi, id * 8);
-                    m_code.Emit<OpCode::Mov>(rax, rax, rdx, SIB::Scale1, 0);
+                    m_code.Emit<OpCode::Mov>(rax, rax, 0);
                 }
 
                 // Combine inverted row with accumulator(RBX).
@@ -203,7 +204,7 @@ namespace BitFunnel
                 // Case 4: rankDelta == 0, !IsRegister
                 m_code.Emit<OpCode::Mov>(rax, rcx);
                 m_code.Emit<OpCode::Add>(rax, rsi, id * 8);
-                m_code.Emit<OpCode::Mov>(rbx, rax, rdx, SIB::Scale1, 0);
+                m_code.Emit<OpCode::Mov>(rbx, rax, 0);
             }
         }
 
