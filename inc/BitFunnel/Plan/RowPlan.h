@@ -81,7 +81,8 @@ namespace BitFunnel
         RowPlan(RowMatchNode const & matchTree,
                 IPlanRows const & planRows);
 
-        RowPlan(IObjectParser& parser);
+        // Only used for a test which is now commented out.
+        // RowPlan(IObjectParser& parser);
 
         void Format(IObjectFormatter& formatter) const;
 
@@ -90,7 +91,7 @@ namespace BitFunnel
 
         NodeType GetType() const;
 
-        static RowPlan& Parse(IObjectParser& parser);
+        // static RowPlan& Parse(IObjectParser& parser);
 
     private:
         // WARNING: The persistence format depends on the order in which the

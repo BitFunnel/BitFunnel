@@ -106,13 +106,13 @@ namespace BitFunnel
     // RowPlan. It is possible that we are using them inside the RowPlan, but
     // never wrote the deserializing constructor because never transported
     // RowPlans between machines. TFS 490813.
-    RowPlan::RowPlan(IObjectParser& parser)
-        : m_matchTree((parser.OpenObject(),
-                       ParseNodeField<RowMatchNode>(parser, c_matchTreeField))),
-          m_planRows(*(static_cast<IPlanRows*>(nullptr)))
-    {
-        parser.CloseObject();
-    }
+    // RowPlan::RowPlan(IObjectParser& parser)
+    //     : m_matchTree((parser.OpenObject(),
+    //                    ParseNodeField<RowMatchNode>(parser, c_matchTreeField))),
+    //       m_planRows(*(static_cast<IPlanRows*>(nullptr)))
+    // {
+    //     parser.CloseObject();
+    // }
 
 
     void RowPlan::Format(IObjectFormatter& formatter) const
@@ -149,9 +149,9 @@ namespace BitFunnel
     }
 
 
-    RowPlan& RowPlan::Parse(IObjectParser& parser)
-    {
-        LogAssertB(parser.ReadTypeTag() == Plan, "");
-        return ParseNode<RowPlan>(parser);
-    }
+    // RowPlan& RowPlan::Parse(IObjectParser& parser)
+    // {
+    //     LogAssertB(parser.ReadTypeTag() == Plan, "");
+    //     return ParseNode<RowPlan>(parser);
+    // }
 }

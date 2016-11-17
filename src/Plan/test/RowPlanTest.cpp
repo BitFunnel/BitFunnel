@@ -151,16 +151,14 @@ namespace BitFunnel
         };
 
 
-
-
-        const char* c_rowPlanCases[] = {
-            //
-            // RowPlan
-            //
-            "RowPlan {\n"
-            "  Match: Row(0, 1, 0, false)\n"
-            "}",
-        };
+        // const char* c_rowPlanCases[] = {
+        //     //
+        //     // RowPlan
+        //     //
+        //     "RowPlan {\n"
+        //     "  Match: Row(0, 1, 0, false)\n"
+        //     "}",
+        // };
 
 
         template <class T>
@@ -198,13 +196,13 @@ namespace BitFunnel
         }
 
 
-        TEST(RowPlan,RowPlan)
-        {
-            for (unsigned i = 0; i < sizeof(c_rowPlanCases) / sizeof(const char*); ++i)
-            {
-                VerifyRoundtripCase<RowPlan>(c_rowPlanCases[i]);
-            }
-        }
+        // TEST(RowPlan,RowPlan)
+        // {
+        //     for (unsigned i = 0; i < sizeof(c_rowPlanCases) / sizeof(const char*); ++i)
+        //     {
+        //         VerifyRoundtripCase<RowPlan>(c_rowPlanCases[i]);
+        //     }
+        // }
 
 
         //*********************************************************************
