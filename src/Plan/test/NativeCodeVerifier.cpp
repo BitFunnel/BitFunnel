@@ -30,6 +30,7 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
+#include "BitFunnel/Plan/QueryResources.h"
 #include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Plan/RowMatchNode.h"
 #include "BitFunnel/Term.h"
@@ -58,6 +59,8 @@ namespace BitFunnel
         NativeJIT::Allocator treeAllocator(8192);
         BitFunnel::Allocator allocator(2048);
 
+
+
         std::stringstream input(codeText);
 
         TextObjectParser parser(input, allocator, &CompileNode::GetType);
@@ -69,9 +72,9 @@ namespace BitFunnel
                                     7,
                                     allocator);
 
+        QueryResources resources;
 
-        MatchTreeCompiler compiler(codeAllocator,
-                                   treeAllocator,
+        MatchTreeCompiler compiler(resources,
                                    compileNodeTree,
                                    registers);
 

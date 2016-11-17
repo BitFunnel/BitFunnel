@@ -14,6 +14,7 @@ set(CPPFILES
     QueryInstrumentation.cpp
     QueryParser.cpp
     QueryPlanner.cpp
+    QueryResources.cpp
     QueryRunner.cpp
     RankDownCompiler.cpp
     RankZeroCompiler.cpp

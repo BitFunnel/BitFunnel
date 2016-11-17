@@ -33,6 +33,7 @@
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryParser.h"
 #include "BitFunnel/Plan/QueryRunner.h"
+#include "BitFunnel/Plan/QueryResources.h"
 #include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/Allocator.h"
@@ -82,13 +83,6 @@ namespace BitFunnel
                        size_t maxResultCount,
                        bool useNativeCode);
 
-        static QueryInstrumentation ProcessOneQuery(
-            char const * query,
-            ISimpleIndex const & index,
-            IStreamConfiguration const & config,
-            IAllocator & allocator,
-            IDiagnosticStream & diagnosticStream);
-
         //
         // ITaskProcessor methods
         //
@@ -110,7 +104,7 @@ namespace BitFunnel
 
         ResultsBuffer m_resultsBuffer;
 
-        std::unique_ptr<IAllocator> m_allocator;
+        QueryResources m_resources;
 
         static const size_t c_allocatorSize = 1ull << 16;
     };
@@ -129,7 +123,7 @@ namespace BitFunnel
         m_useNativeCode(useNativeCode),
         m_matches(maxResultCount, {nullptr, 0}),
         m_resultsBuffer(index.GetIngestor().GetDocumentCount()),
-        m_allocator(new Allocator(c_allocatorSize))
+        m_resources(c_allocatorSize, c_allocatorSize)
     {
     }
 
@@ -137,11 +131,13 @@ namespace BitFunnel
     void QueryProcessor::ProcessTask(size_t taskId)
     {
         QueryInstrumentation instrumentation;
-        m_allocator->Reset();
+        m_resources.Reset();
 
         size_t queryId = taskId % m_queries.size();
 
-        QueryParser parser(m_queries[queryId].c_str(), m_config, *m_allocator);
+        QueryParser parser(m_queries[queryId].c_str(),
+                           m_config,
+                           m_resources.GetMatchTreeAllocator());
         auto tree = parser.Parse();
         instrumentation.FinishParsing();
 
@@ -151,7 +147,7 @@ namespace BitFunnel
         {
             Factories::RunQueryPlanner(*tree,
                                        m_index,
-                                       *m_allocator,
+                                       m_resources,
                                        *diagnosticStream,
                                        instrumentation,
                                        m_resultsBuffer,

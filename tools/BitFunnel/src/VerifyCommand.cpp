@@ -35,6 +35,7 @@
 #include "BitFunnel/Plan/IMatchVerifier.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryParser.h"
+#include "BitFunnel/Plan/QueryResources.h"
 #include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
 #include "BitFunnel/Utilities/Allocator.h"
@@ -146,9 +147,11 @@ namespace BitFunnel
 
             ResultsBuffer results(environment.GetSimpleIndex().GetIngestor().GetDocumentCount());
 
+            QueryResources resources;
+
             Factories::RunQueryPlanner(*tree,
                                        environment.GetSimpleIndex(),
-                                       allocator,
+                                       resources,
                                        *diagnosticStream,
                                        instrumentation,
                                        results,

@@ -87,7 +87,9 @@ namespace BitFunnel
     void Allocator::Reset()
     {
         m_bytesAllocated = 0;
+#ifdef DEBUG
         DebugInitialize();
+#endif
     }
 
 

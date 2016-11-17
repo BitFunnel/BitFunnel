@@ -28,11 +28,11 @@
 
 namespace BitFunnel
 {
-    class IAllocator;
     class IPlanRows;
     class ISimpleIndex;
     class IThreadResources;
     class QueryInstrumentation;
+    class QueryResources;
     class ResultsBuffer;
     class RowSet;
     class TermMatchNode;
@@ -45,20 +45,11 @@ namespace BitFunnel
                      unsigned targetRowCount,
                      ISimpleIndex const & index,
                      // IThreadResources& threadResources,
-                     IAllocator& allocator,
+                     QueryResources & resources,
                      IDiagnosticStream& diagnosticStream,
                      QueryInstrumentation & instrumentation,
                      ResultsBuffer & resultsBuffer,
                      bool useNativeCode);
-
-        //// TODO: get rid of this convenience method.
-        //std::vector<DocId> const & GetMatches() const;
-
-        //
-        // IQueryPlanner methods.
-        //
-
-        // const CompiledFunction GetMatchingFunction() const;
 
         IPlanRows const & GetPlanRows() const;
 
@@ -70,39 +61,11 @@ namespace BitFunnel
                                     RowSet const & rowSet);
 
         void RunNativeCode(ISimpleIndex const & index,
-                           IAllocator& allocator,
+                           QueryResources & resources,
                            QueryInstrumentation & instrumentation,
                            CompileNode const & compileTree,
                            Rank maxRank,
                            RowSet const & rowSet);
-
-        // // Wrapper class for X64FunctionGenerator to manage the
-        // // allocate and release of the X64FunctionGenerator object in
-        // // ThreadResources.
-        // // The goal of this class is to be an RAII wrapper to protect
-        // // against throws in the constructor of QueryPlanner.
-        // class X64FunctionGeneratorWrapper : public NonCopyable
-        // {
-        // public:
-        //     // The constructor takes a X64FunctionGenerator from thread resources.
-        //     X64FunctionGeneratorWrapper(IThreadResources& threadResources);
-
-        //     // The destructor return the X64FunctionGenerator back to the thread resources.
-        //     ~X64FunctionGeneratorWrapper();
-
-        //     operator X64::X64FunctionGenerator&() const;
-
-        // private:
-        //     // The X64FunctionGenerator maintains the executable buffers of X64
-        //     X64::X64FunctionGenerator& m_code;
-
-        //     // Stored so that the X64FunctionGenerator can be released during destruction
-        //     IThreadResources& m_threadResources;
-        // };
-
-        // The X64FunctionGeneratorWrapper which wraps a x64FunctionGenerator allocated from
-        // thread resources. It also is responsible for release the wrapped x64FunctionGenerator.
-        // X64FunctionGeneratorWrapper m_x64FunctionGeneratorWrapper;
 
         IPlanRows const * m_planRows;
 
@@ -121,6 +84,5 @@ namespace BitFunnel
         ByteCodeGenerator m_code;
 
         ResultsBuffer& m_resultsBuffer;
-        // bool m_useNativeCode;
     };
 }

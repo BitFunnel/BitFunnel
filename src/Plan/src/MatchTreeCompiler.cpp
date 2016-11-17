@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 
+#include "BitFunnel/Plan/QueryResources.h"
 #include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Utilities/Allocator.h"
 #include "MatchTreeCompiler.h"
@@ -36,13 +37,12 @@ namespace BitFunnel
     // MatchTreeCompiler
     //
     //*************************************************************************
-    MatchTreeCompiler::MatchTreeCompiler(NativeJIT::ExecutionBuffer & codeAllocator,
-                                         NativeJIT::Allocator & treeAllocator,
+    MatchTreeCompiler::MatchTreeCompiler(QueryResources & resources,
                                          CompileNode const & tree,
                                          RegisterAllocator const & registers)
-        : m_code(codeAllocator, 8192)
     {
-        NativeCodeGenerator::Prototype expression(treeAllocator, m_code);
+        NativeCodeGenerator::Prototype expression(resources.GetExpressionTreeAllocator(),
+                                                  resources.GetCode());
         // TODO: Remove temporary debugging output.
         //expression.EnableDiagnostics(std::cout);
 

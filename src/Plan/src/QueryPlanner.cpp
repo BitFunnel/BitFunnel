@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #include "BitFunnel/Allocators/IAllocator.h"
-// #include "BitFunnel/CompiledFunction.h"
 #include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
@@ -29,8 +28,8 @@
 #include "BitFunnel/Index/Token.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IPlanRows.h"
-// #include "BitFunnel/IThreadResources.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
+#include "BitFunnel/Plan/QueryResources.h"
 #include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Plan/RowPlan.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
@@ -57,7 +56,7 @@ namespace BitFunnel
     // way SimplePlanner is connected.
     void Factories::RunQueryPlanner(TermMatchNode const & tree,
                                     ISimpleIndex const & index,
-                                    IAllocator & allocator,
+                                    QueryResources & resources,
                                     IDiagnosticStream & diagnosticStream,
                                     QueryInstrumentation & instrumentation,
                                     ResultsBuffer & resultsBuffer,
@@ -67,7 +66,7 @@ namespace BitFunnel
         QueryPlanner planner(tree,
                              c_arbitraryRowCount,
                              index,
-                             allocator,
+                             resources,
                              diagnosticStream,
                              instrumentation,
                              resultsBuffer,
@@ -82,8 +81,7 @@ namespace BitFunnel
     QueryPlanner::QueryPlanner(TermMatchNode const & tree,
                                unsigned targetRowCount,
                                ISimpleIndex const & index,
-                               // IThreadResources& threadResources,
-                               IAllocator & allocator,
+                               QueryResources & resources,
                                IDiagnosticStream & diagnosticStream,
                                QueryInstrumentation & instrumentation,
                                ResultsBuffer & resultsBuffer,
@@ -107,7 +105,7 @@ namespace BitFunnel
             TermPlanConverter::BuildRowPlan(tree,
                                             index,
                                             // generateNonBodyPlan,
-                                            allocator);
+                                            resources.GetMatchTreeAllocator());
 
         if (diagnosticStream.IsEnabled("planning/row"))
         {
@@ -150,7 +148,7 @@ namespace BitFunnel
             MatchTreeRewriter::Rewrite(rowPlan.GetMatchTree(),
                                        targetRowCount,
                                        c_targetCrossProductTermCount,
-                                       allocator);
+                                       resources.GetMatchTreeAllocator());
 
 
         if (diagnosticStream.IsEnabled("planning/rewrite"))
@@ -166,7 +164,7 @@ namespace BitFunnel
         }
 
         // Compile the match tree into CompileNodes.
-        RankDownCompiler compiler(allocator);
+        RankDownCompiler compiler(resources.GetMatchTreeAllocator());
         compiler.Compile(rewritten);
         const Rank maxRank = compiler.GetMaximumRank();
         CompileNode const & compileTree = compiler.CreateTree(maxRank);
@@ -184,14 +182,14 @@ namespace BitFunnel
             out << std::endl;
         }
 
-        RowSet rowSet(index, *m_planRows, allocator);
+        RowSet rowSet(index, *m_planRows, resources.GetMatchTreeAllocator());
         rowSet.LoadRows();
         instrumentation.SetRowCount(rowSet.GetRowCount());
 
         if (useNativeCode)
         {
             RunNativeCode(index,
-                          allocator,
+                          resources,
                           instrumentation,
                           compileTree,
                           maxRank,
@@ -253,7 +251,7 @@ namespace BitFunnel
 
 
     void QueryPlanner::RunNativeCode(ISimpleIndex const & index,
-                                     IAllocator& allocator,
+                                     QueryResources & resources,
                                      QueryInstrumentation & instrumentation,
                                      CompileNode const & compileTree,
                                      Rank maxRank,
@@ -264,15 +262,9 @@ namespace BitFunnel
                                            rowSet.GetRowCount(),
                                            c_registerBase,
                                            c_registerCount,
-                                           allocator);
+                                           resources.GetMatchTreeAllocator());
 
-         // Create allocator and buffers for pre-compiled and post-compiled code.
-         // TODO: These should be passed down from QueryProcessor.
-         NativeJIT::ExecutionBuffer codeAllocator(8192);
-         NativeJIT::Allocator treeAllocator(8192);
-
-         MatchTreeCompiler compiler(codeAllocator,
-                                    treeAllocator,
+         MatchTreeCompiler compiler(resources,
                                     compileTree,
                                     registers);
 

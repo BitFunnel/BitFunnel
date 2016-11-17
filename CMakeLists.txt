@@ -77,7 +77,8 @@ set(WEVERYTHING_FLAGS "-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic
 if(MSVC)
   set(COMMON_CXX_FLAGS "${COMMON_CXX_FLAGS} /W4 /WX")
   set(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG} ${COMMON_CXX_FLAGS} /MTd")
-  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} ${COMMON_CXX_FLAGS} /MT")
+  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} ${COMMON_CXX_FLAGS} /MT /Z7")
+  set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} /DEBUG" )
 elseif(CMAKE_COMPILER_IS_GNUCXX)
   # Need gnu++ instead of c++ so that GTest can access fdopen() etc.
   set(CMAKE_CXX_FLAGS "-msse4.2 -std=gnu++14 -Wall -Wextra -Werror -Wold-style-cast -fstrict-aliasing -Wstrict-aliasing")
@@ -187,6 +188,7 @@ set(PLAN_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/IMatchVerifier.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryInstrumentation.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryParser.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryResources.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryRunner.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/ResultsBuffer.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/RowMatchNode.h

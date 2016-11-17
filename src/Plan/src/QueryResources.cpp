@@ -22,45 +22,28 @@
 
 #pragma once
 
-#include <stddef.h>                             // size_t, ptrdiff_t parameters.
-
-#include "NativeCodeGenerator.h"                // MatcherNode::Prototype::FunctionType type.
-#include "NativeJIT/CodeGen/FunctionBuffer.h"   // FunctionBuffer embedded.
-
-
-namespace NativeJIT
-{
-    class Allocator;
-    class ExecutionBuffer;
-}; 
+#include "BitFunnel/Plan/QueryResources.h"
+#include "BitFunnel/Utilities/Allocator.h"
 
 
 namespace BitFunnel
 {
-    class CompileNode;
-    class QueryResources;
-    class RegisterAllocator;
-    class ResultsBuffer;
-
-    //*************************************************************************
-    //
-    // MatchTreeCompiler
-    //
-    //*************************************************************************
-    class MatchTreeCompiler
+    QueryResources::QueryResources(size_t treeAllocatorBytes,
+                                   size_t codeAllocatorBytes)
+        : m_matchTreeAllocator(new BitFunnel::Allocator(treeAllocatorBytes)),
+          m_expressionTreeAllocator(new NativeJIT::Allocator(treeAllocatorBytes)),
+          m_codeAllocator(new NativeJIT::ExecutionBuffer(codeAllocatorBytes))
     {
-    public:
-        MatchTreeCompiler(QueryResources & resources,
-                          CompileNode const & tree,
-                          RegisterAllocator const & registers);
+        m_code.reset(new NativeJIT::FunctionBuffer(*m_codeAllocator,
+                                                   static_cast<unsigned>(codeAllocatorBytes)));
+    }
 
-        size_t Run(size_t slicecount,
-                   void * const * slicebuffers,
-                   size_t iterationsperslice,
-                   ptrdiff_t const * rowoffsets,
-                   ResultsBuffer & results);
 
-    private:
-        NativeCodeGenerator::Prototype::FunctionType m_function;
-    };
+    void QueryResources::Reset()
+    {
+        m_matchTreeAllocator->Reset();
+        m_expressionTreeAllocator->Reset();
+        // WARNING: Do not reset m_codeAllocator. It is used to provision m_code.
+        m_code->Reset();
+    }
 }
