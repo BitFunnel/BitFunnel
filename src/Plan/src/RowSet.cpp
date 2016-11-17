@@ -92,8 +92,6 @@ namespace BitFunnel
             for (unsigned i = 0; i < m_planRows.GetRowCount(); ++i)
             {
                 const RowId rowId = m_planRows.PhysicalRow(shardId, i);
-
-                // See https://github.com/BitFunnel/BitFunnel/issues/250.
                 m_rows[shardId][i] = shard.GetRowOffset(rowId);
             }
         }
