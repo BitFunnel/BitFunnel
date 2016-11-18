@@ -127,7 +127,7 @@ namespace BitFunnel
                 text,
                 c_streamId,
                 m_index.GetConfiguration(),
-                m_index.GetTermTable(),
+                m_index.GetTermTable0(),
                 shard));
     }
 

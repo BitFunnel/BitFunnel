@@ -27,6 +27,7 @@
 
 namespace BitFunnel
 {
+    class Environment;
     class IFileSystem;
 
     class REPL : public IExecutable
@@ -54,6 +55,11 @@ namespace BitFunnel
                 size_t gramSize,
                 size_t threadCount,
                 char const * scriptFile) const;
+
+        void Loop(Environment& environment,
+                  std::istream& input,
+                  std::ostream& output,
+                  char const * scriptFile) const;
 
         //
         // Constructor parameters.

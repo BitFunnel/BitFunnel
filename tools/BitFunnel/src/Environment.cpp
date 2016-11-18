@@ -52,12 +52,12 @@ namespace BitFunnel
       // TODO: Don't like passing *this to TaskFactory.
       // What if TaskFactory calls back before Environment is fully initialized?
       : m_fileSystem(fileSystem),
-          m_taskFactory(new TaskFactory(*this)),
-          // Start one extra thread for the Recycler.
-          m_taskPool(new TaskPool(threadCount + 1)),
-          m_index(Factories::CreateSimpleIndex(fileSystem)),
-          m_failOnException(false),
-          m_threadCount(8)
+        m_taskFactory(new TaskFactory(*this)),
+        // Start one extra thread for the Recycler.
+        m_taskPool(new TaskPool(threadCount + 1)),
+        m_index(Factories::CreateSimpleIndex(fileSystem)),
+        m_failOnException(false),
+        m_threadCount(8)
     {
         m_index->ConfigureForServing(directory, gramSize, false);
         RegisterCommands();
@@ -177,6 +177,6 @@ namespace BitFunnel
 
     ITermTable const & Environment::GetTermTable() const
     {
-        return m_index->GetTermTable();
+        return m_index->GetTermTable0();
     }
 }

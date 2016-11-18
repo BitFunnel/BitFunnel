@@ -100,8 +100,13 @@ namespace BitFunnel
     BlockingQueue<T>::~BlockingQueue()
     {
         // m_finished implies m_shutdown.
-        LogAssertB(m_shutdown, "Queue destructed without calling shutdown.")
-        LogAssertB(m_finished, "Queue destructed without finishing shutdown.")
+
+        // See issue 308.
+        //    https://github.com/BitFunnel/BitFunnel/issues/308
+        // When SimpleIndex::SimpleIndex() throws, BlockingQueue gets
+        // shutdown before it has started.
+        //LogAssertB(m_shutdown, "Queue destructed without calling shutdown.")
+        //LogAssertB(m_finished, "Queue destructed without finishing shutdown.")
     }
 
 

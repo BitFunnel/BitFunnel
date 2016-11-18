@@ -264,6 +264,13 @@ namespace BitFunnel
         {
             m_shardDefinition =
                 Factories::CreateShardDefinition();
+
+            // The following shard-aware code causes problems when the
+            // input file is missing. See issue 308.
+            //      https://github.com/BitFunnel/BitFunnel/issues/308
+            //auto input = m_fileManager->ShardDefinition().OpenForRead();
+            //m_shardDefinition =
+            //    Factories::CreateShardDefinition(*input);
         }
 
         if (m_termTables.get() == nullptr)
@@ -379,7 +386,12 @@ namespace BitFunnel
 
     void SimpleIndex::StopIndex()
     {
-        EnsureStarted(true);
+        // StopIndex() can be called even if the index hasn't been started.
+        // If SimpleIndex::SimpleIndex() throws, ~SimpleIndex() will be
+        // invoked which will call StopIndex().
+        // See issue 308.
+        //    https://github.com/BitFunnel/BitFunnel/issues/308
+        //EnsureStarted(true);
 
         if (m_recycler != nullptr)
         {
@@ -424,14 +436,17 @@ namespace BitFunnel
     }
 
 
-    ITermTable const & SimpleIndex::GetTermTable() const
+    ITermTable const & SimpleIndex::GetTermTable0() const
+    {
+        return GetTermTable(0);
+    }
+
+
+    ITermTable const & SimpleIndex::GetTermTable(ShardId shardId) const
     {
         EnsureStarted(true);
 
-        // TODO: There is a different TermTable in each shard. Which should
-        // be returned? Currently returning the TermTable for shard 0.
-        const ShardId tempId = 0;
-        return m_termTables->GetTermTable(tempId);
+        return m_termTables->GetTermTable(shardId);
     }
 
 

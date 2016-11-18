@@ -95,7 +95,8 @@ namespace BitFunnel
         virtual IFileSystem & GetFileSystem() const override;
         virtual IIngestor & GetIngestor() const override;
         virtual IRecycler & GetRecycler() const override;
-        virtual ITermTable const & GetTermTable() const override;
+        virtual ITermTable const & GetTermTable0() const override;
+        virtual ITermTable const & GetTermTable(ShardId shardId) const override;
 
     private:
         void EnsureStarted(bool started) const;

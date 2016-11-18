@@ -216,32 +216,33 @@ namespace BitFunnel
         compileTree.Compile(m_code);
         m_code.Seal();
 
+        instrumentation.FinishPlanning();
+
         // Get token before we GetSliceBuffers.
         {
             auto token = index.GetIngestor().GetTokenManager().RequestToken();
 
-            // TODO: Loop over all shards.
-            const size_t c_shardId = 0u;
-            auto & shard = index.GetIngestor().GetShard(c_shardId);
-            auto & sliceBuffers = shard.GetSliceBuffers();
+            for (ShardId shardId = 0; shardId < index.GetIngestor().GetShardCount(); ++shardId)
+            {
+                auto & shard = index.GetIngestor().GetShard(shardId);
+                auto & sliceBuffers = shard.GetSliceBuffers();
 
-            // Iterations per slice calculation.
-            auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> maxRank;
+                // Iterations per slice calculation.
+                auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> maxRank;
 
-            instrumentation.FinishPlanning();
+                m_resultsBuffer.Reset();
 
-            m_resultsBuffer.Reset();
+                ByteCodeInterpreter intepreter(m_code,
+                                               m_resultsBuffer,
+                                               sliceBuffers.size(),
+                                               sliceBuffers.data(),
+                                               iterationsPerSlice,
+                                               rowSet.GetRowOffsets(shardId),
+                                               nullptr,
+                                               instrumentation);
 
-            ByteCodeInterpreter intepreter(m_code,
-                                           m_resultsBuffer,
-                                           sliceBuffers.size(),
-                                           sliceBuffers.data(),
-                                           iterationsPerSlice,
-                                           rowSet.GetRowOffsets(c_shardId),
-                                           nullptr,
-                                           instrumentation);
-
-            intepreter.Run();
+                intepreter.Run();
+            }
 
             instrumentation.FinishMatching();
             instrumentation.SetMatchCount(m_resultsBuffer.size());
@@ -272,31 +273,34 @@ namespace BitFunnel
         compileTree.Compile(m_code);
         m_code.Seal();
 
+        instrumentation.FinishPlanning();
+
         // Get token before we GetSliceBuffers.
         {
             auto token = index.GetIngestor().GetTokenManager().RequestToken();
 
-            // TODO: Loop over all shards.
-            const size_t c_shardId = 0u;
-            auto & shard = index.GetIngestor().GetShard(c_shardId);
-            auto & sliceBuffers = shard.GetSliceBuffers();
+            for (ShardId shardId = 0; shardId < index.GetIngestor().GetShardCount(); ++shardId)
+            {
+                auto & shard = index.GetIngestor().GetShard(shardId);
+                auto & sliceBuffers = shard.GetSliceBuffers();
 
-            // Iterations per slice calculation.
-            auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> maxRank;
+                // Iterations per slice calculation.
+                auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> maxRank;
 
-            instrumentation.FinishPlanning();
 
-            m_resultsBuffer.Reset();
+                m_resultsBuffer.Reset();
 
-            size_t quadwordCount = compiler.Run(sliceBuffers.size(),
-                                                sliceBuffers.data(),
-                                                iterationsPerSlice,
-                                                rowSet.GetRowOffsets(c_shardId),
-                                                m_resultsBuffer);
+                size_t quadwordCount = compiler.Run(sliceBuffers.size(),
+                                                    sliceBuffers.data(),
+                                                    iterationsPerSlice,
+                                                    rowSet.GetRowOffsets(shardId),
+                                                    m_resultsBuffer);
+
+                instrumentation.IncrementQuadwordCount(quadwordCount);
+            }
 
             instrumentation.FinishMatching();
             instrumentation.SetMatchCount(m_resultsBuffer.size());
-            instrumentation.IncrementQuadwordCount(quadwordCount);
         } // End of token lifetime.
     }
 

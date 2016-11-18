@@ -84,7 +84,7 @@ namespace BitFunnel
     {
         // TODO: may need to support multiple term tables.
         // return *m_index.GetTermTables().GetTermTable(shard);
-        return m_index.GetTermTable();
+        return m_index.GetTermTable0();
     }
 
 

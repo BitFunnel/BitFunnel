@@ -134,35 +134,68 @@ namespace BitFunnel
                   size_t threadCount,
                   char const * scriptFile) const
     {
-        output
-            << "Welcome to BitFunnel!" << std::endl
-            << "Starting " << threadCount
-            << " thread" << ((threadCount == 1) ? "" : "s") << std::endl
-            << "(plus one extra thread for the Recycler.)" << std::endl
-            << std::endl
-            << "directory = \"" << directory << "\"" << std::endl
-            << "gram size = " << gramSize << std::endl
-            << std::endl;
-
-        Environment environment(m_fileSystem,
-                                directory,
-                                gramSize,
-                                threadCount);
-
-        output
-            << "Starting index ..."
-            << std::endl;
-
         try
         {
+            output
+                << "Welcome to BitFunnel!" << std::endl
+                << "Starting " << threadCount
+                << " thread" << ((threadCount == 1) ? "" : "s") << std::endl
+                << "(plus one extra thread for the Recycler.)" << std::endl
+                << std::endl
+                << "directory = \"" << directory << "\"" << std::endl
+                << "gram size = " << gramSize << std::endl
+                << std::endl;
+
+            Environment environment(m_fileSystem,
+                                    directory,
+                                    gramSize,
+                                    threadCount);
+
+            output
+                << "Starting index ..."
+                << std::endl;
+
             environment.StartIndex();
+
+            Loop(environment,
+                 input,
+                 output,
+                 scriptFile);
+        }
+        catch (RecoverableError e)
+        {
+            output << "Error: " << e.what() << std::endl;
+            Advice(output);
+        }
+        catch (FatalError e)
+        {
+            output << "Fatal Error: " << e.what() << std::endl;
+            Advice(output);
+            throw e;
+        }
+        catch (Logging::CheckException e)
+        {
+            output
+                << "Error: "
+                << e.GetMessage()
+                << std::endl;
+            Advice(output);
+            throw(e);
         }
         catch (...)
         {
+            output << "Unknown error." << std::endl;
             Advice(output);
             throw;
         }
+    }
 
+
+    void REPL::Loop(Environment& environment,
+                    std::istream& input,
+                    std::ostream& output,
+                    char const * scriptFile) const
+    {
         output
             << "Index started successfully."
             << std::endl;

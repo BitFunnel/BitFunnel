@@ -81,10 +81,6 @@ namespace BitFunnel
     std::unique_ptr<std::istream> ParameterizedFile::OpenForRead(const std::string& filename)
     {
         return m_fileSystem.OpenForRead(filename.c_str(), std::ios::binary);
-        //std::ifstream* stream = new std::ifstream(filename.c_str(), std::ifstream::binary);
-        //stream->exceptions ( std::ifstream::badbit );
-        //LogAssertB(stream->is_open(), "File %s failed to open for read.", filename.c_str());
-        //return std::unique_ptr<std::istream>(stream);
     }
 
 
@@ -97,10 +93,6 @@ namespace BitFunnel
     std::unique_ptr<std::ostream> ParameterizedFile::OpenForWrite(const std::string& filename)
     {
         return m_fileSystem.OpenForWrite(filename.c_str(), std::ios::binary);
-        //std::ofstream* stream =  new std::ofstream(filename.c_str(), std::ofstream::binary);
-        //stream->exceptions ( std::ifstream::failbit | std::ifstream::badbit );
-        //LogAssertB(stream->is_open(), "File %s failed to open for write.", filename.c_str());
-        //return std::unique_ptr<std::ostream>(stream);
     }
 
 

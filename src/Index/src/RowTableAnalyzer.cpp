@@ -125,7 +125,7 @@ namespace BitFunnel
         for (auto dfEntry : *terms)
         {
             Term term = dfEntry.GetTerm();
-            RowIdSequence rows(term, m_index.GetTermTable());
+            RowIdSequence rows(term, m_index.GetTermTable0());
 
             formatter.WriteField(termToText.Lookup(term.GetRawHash()));
             formatter.WriteField(dfEntry.GetFrequency());

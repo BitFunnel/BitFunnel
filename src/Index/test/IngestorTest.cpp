@@ -144,7 +144,7 @@ namespace BitFunnel
                     char const* text = Primes::c_primesBelow10000Text[i].c_str();
 
                     Term term(Term::ComputeRawHash(text), c_streamId, 0);
-                    RowIdSequence rows(term, m_index->GetTermTable());
+                    RowIdSequence rows(term, m_index->GetTermTable0());
                     for (auto row : rows)
                     {
                         IShard & shard = m_index->GetIngestor().GetShard(0);
