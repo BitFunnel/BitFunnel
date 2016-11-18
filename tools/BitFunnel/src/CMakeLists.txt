@@ -22,6 +22,7 @@ set(CPPFILES
     TaskFactory.cpp
     TaskPool.cpp
     TermTableBuilderTool.cpp
+    ThreadsCommand.cpp
     VerifyCommand.cpp
 )
 
@@ -56,6 +57,7 @@ set(PRIVATE_HFILES
     TaskPool.h
     TaskFactory.h
     TermTableBuilderTool.h
+    ThreadsCommand.h
     VerifyCommand.h
 )
 

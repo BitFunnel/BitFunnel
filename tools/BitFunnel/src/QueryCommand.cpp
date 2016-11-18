@@ -98,7 +98,7 @@ namespace BitFunnel
             std::string const & filename = m_query;
             auto fileSystem = Factories::CreateFileSystem();  // TODO: Use environment file system
             auto queries = ReadLines(*fileSystem, filename.c_str());
-            const size_t c_threadCount = 8;
+            const size_t c_threadCount = GetEnvironment().GetThreadCount();
             const size_t c_iterations = 1;
             auto statistics =
                 QueryRunner::Run(GetEnvironment().GetSimpleIndex(),

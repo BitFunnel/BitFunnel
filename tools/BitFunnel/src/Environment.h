@@ -49,14 +49,17 @@ namespace BitFunnel
 
         IFileSystem & GetFileSystem() const;
 
-        bool GetFailOnException() const;
-        void SetFailOnException(bool mode);
-
         bool GetCompilerMode() const;
         void SetCompilerMode(bool mode);
 
+        bool GetFailOnException() const;
+        void SetFailOnException(bool mode);
+
         std::string const & GetOutputDir() const;
         void SetOutputDir(std::string dir);
+
+        size_t GetThreadCount() const;
+        void SetThreadCount(size_t threadCount);
 
         TaskFactory & GetTaskFactory() const;
         TaskPool & GetTaskPool() const;
@@ -74,8 +77,9 @@ namespace BitFunnel
         std::unique_ptr<TaskPool> m_taskPool;
         std::unique_ptr<ISimpleIndex> m_index;
 
-        bool m_failOnException;
         bool m_compilerMode;
+        bool m_failOnException;
+        size_t m_threadCount;
         std::string m_outputDir;
     };
 }

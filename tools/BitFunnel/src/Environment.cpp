@@ -39,6 +39,7 @@
 #include "TaskBase.h"          // TaskBase base class.
 #include "TaskFactory.h"
 #include "TaskPool.h"
+#include "ThreadsCommand.h"
 #include "VerifyCommand.h"
 
 
@@ -48,14 +49,15 @@ namespace BitFunnel
                              char const * directory,
                              size_t gramSize,
                              size_t threadCount)
-        // TODO: Don't like passing *this to TaskFactory.
-        // What if TaskFactory calls back before Environment is fully initialized?
-        : m_fileSystem(fileSystem),
+      // TODO: Don't like passing *this to TaskFactory.
+      // What if TaskFactory calls back before Environment is fully initialized?
+      : m_fileSystem(fileSystem),
           m_taskFactory(new TaskFactory(*this)),
           // Start one extra thread for the Recycler.
           m_taskPool(new TaskPool(threadCount + 1)),
           m_index(Factories::CreateSimpleIndex(fileSystem)),
-          m_failOnException(false)
+          m_failOnException(false),
+          m_threadCount(8)
     {
         m_index->ConfigureForServing(directory, gramSize, false);
         RegisterCommands();
@@ -78,6 +80,7 @@ namespace BitFunnel
         m_taskFactory->RegisterCommand<Script>();
         m_taskFactory->RegisterCommand<Show>();
         m_taskFactory->RegisterCommand<Status>();
+        m_taskFactory->RegisterCommand<ThreadsCommand>();
         m_taskFactory->RegisterCommand<Verify>();
     }
 
@@ -127,6 +130,18 @@ namespace BitFunnel
     void Environment::SetOutputDir(std::string dir)
     {
         m_outputDir = dir;
+    }
+
+
+    size_t Environment::GetThreadCount() const
+    {
+        return m_threadCount;
+    }
+
+
+    void Environment::SetThreadCount(size_t count)
+    {
+        m_threadCount = count;
     }
 
 
