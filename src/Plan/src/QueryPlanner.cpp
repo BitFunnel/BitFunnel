@@ -224,7 +224,6 @@ namespace BitFunnel
             const size_t c_shardId = 0u;
             auto & shard = index.GetIngestor().GetShard(c_shardId);
             auto & sliceBuffers = shard.GetSliceBuffers();
-            size_t sliceCount = sliceBuffers.size();
 
             // Iterations per slice calculation.
             auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> maxRank;
@@ -235,7 +234,7 @@ namespace BitFunnel
 
             ByteCodeInterpreter intepreter(m_code,
                                            m_resultsBuffer,
-                                           sliceCount,
+                                           sliceBuffers.size(),
                                            sliceBuffers.data(),
                                            iterationsPerSlice,
                                            rowSet.GetRowOffsets(c_shardId),

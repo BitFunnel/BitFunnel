@@ -243,6 +243,8 @@ namespace BitFunnel
         code.Emit<OpCode::Or>(rax, rax);
         code.EmitConditionalJump<JccType::JZ>(noMatches);
 
+        // TODO: Instead of saving and restoring registers, consider just
+        // restoring them from [rsi + x].
         // Save registers.
         code.Emit<OpCode::Push>(r9);
         code.Emit<OpCode::Push>(r10);

@@ -67,12 +67,12 @@ namespace BitFunnel
 
         inline void FinishPlanning()
         {
-            m_data.m_planningTime = m_stopwatch.ElapsedTime();
+            m_data.m_planningTime = m_stopwatch.ElapsedTime() - m_data.m_parsingTime;
         }
 
         inline void FinishMatching()
         {
-            m_data.m_matchingTime = m_stopwatch.ElapsedTime();
+            m_data.m_matchingTime = m_stopwatch.ElapsedTime() - m_data.m_planningTime;
         }
 
         inline Data & GetData()
