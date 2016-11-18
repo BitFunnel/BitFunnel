@@ -66,6 +66,10 @@ namespace BitFunnel
                                       bool inverted,
                                       size_t rd)
     {
+#ifdef QUADWORDCOUNT
+        m_code.Emit<OpCode::Inc, 8>(rdi, NativeCodeGenerator::m_quadwordCount);
+#endif
+
         unsigned id = static_cast<unsigned>(row);
         const uint8_t rankDelta = static_cast<uint8_t>(rd);
 
@@ -122,7 +126,6 @@ namespace BitFunnel
                 if (m_registers.IsRegister(id))
                 {
                     // Case 5: rankDelta == 0 && !inverted && IsRegister
-                    m_code.Emit<OpCode::Mov>(rax, rcx);
                     unsigned reg = m_registers.GetRegister(id);
                     m_code.Emit<OpCode::And>(rbx, rcx, Register<8u, false>(reg), SIB::Scale1, 0);
                 }
@@ -166,6 +169,10 @@ namespace BitFunnel
                                        bool inverted,
                                        size_t rd)
     {
+#ifdef QUADWORDCOUNT
+        m_code.Emit<OpCode::Inc, 8>(rdi, NativeCodeGenerator::m_quadwordCount);
+#endif
+
         unsigned id = static_cast<unsigned>(row);
         uint8_t rankDelta = static_cast<uint8_t>(rd);
 

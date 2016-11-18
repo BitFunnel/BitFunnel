@@ -55,6 +55,11 @@ namespace BitFunnel
             ++m_data.m_quadwordCount;
         }
 
+        inline void IncrementQuadwordCount(size_t amount)
+        {
+            m_data.m_quadwordCount += amount;
+        }
+
         inline void FinishParsing()
         {
             m_data.m_parsingTime = m_stopwatch.ElapsedTime();

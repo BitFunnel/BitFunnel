@@ -289,14 +289,15 @@ namespace BitFunnel
 
             m_resultsBuffer.Reset();
 
-            compiler.Run(sliceBuffers.size(),
-                         sliceBuffers.data(),
-                         iterationsPerSlice,
-                         rowSet.GetRowOffsets(c_shardId),
-                         m_resultsBuffer);
+            size_t quadwordCount = compiler.Run(sliceBuffers.size(),
+                                                sliceBuffers.data(),
+                                                iterationsPerSlice,
+                                                rowSet.GetRowOffsets(c_shardId),
+                                                m_resultsBuffer);
 
             instrumentation.FinishMatching();
             instrumentation.SetMatchCount(m_resultsBuffer.size());
+            instrumentation.IncrementQuadwordCount(quadwordCount);
         } // End of token lifetime.
     }
 

@@ -82,6 +82,8 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
             size_t m_capacity;
             size_t m_matchCount;
             ResultsBuffer::Result* m_matches;
+
+            size_t m_quadwordCount;
         };
         static_assert(std::is_standard_layout<Parameters>::value,
                       "Generated code requires that Parameters be standard layout.");
@@ -106,6 +108,7 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
         static const int32_t m_capacity = OFFSET_OF(Parameters, m_capacity);
         static const int32_t m_matchCount = OFFSET_OF(Parameters, m_matchCount);
         static const int32_t m_matches = OFFSET_OF(Parameters, m_matches);
+        static const int32_t m_quadwordCount = OFFSET_OF(Parameters, m_quadwordCount);
 
 
     private:

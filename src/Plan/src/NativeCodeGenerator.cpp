@@ -78,7 +78,13 @@ namespace BitFunnel
         EmitRegisterInitialization(tree);
         EmitOuterLoop(tree);
 
-        auto result = tree.Direct<size_t>();
+        auto result = Storage<size_t>::ForFreeRegister(tree, rax);
+        auto & code = tree.GetCodeGenerator();
+#ifdef QUADWORDCOUNT
+        code.Emit<OpCode::Mov>(rax, rdi, NativeCodeGenerator::m_quadwordCount);
+#else
+        code.Emit<OpCode::Xor>(rax, rax);
+#endif
         return result;
     }
 

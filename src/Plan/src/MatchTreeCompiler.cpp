@@ -68,7 +68,8 @@ namespace BitFunnel
             { 0 },
             results.m_capacity,
             0,
-            results.m_buffer
+            results.m_buffer,
+            0
         };
 
         // For now ignore return value.
@@ -94,6 +95,6 @@ namespace BitFunnel
 
         results.m_size = parameters.m_matchCount;
 
-        return parameters.m_matchCount;
+        return parameters.m_quadwordCount;
     }
 }
