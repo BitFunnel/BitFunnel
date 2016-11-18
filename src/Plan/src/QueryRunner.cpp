@@ -227,11 +227,21 @@ namespace BitFunnel
 
         Stopwatch stopwatch;
         distributor->WaitForCompletion();
+        double elapsedTime = stopwatch.ElapsedTime();
+
+        size_t queriesProcessed = 0;
+        for (auto result : results)
+        {
+            if (result.GetRowCount() > 0)
+            {
+                ++queriesProcessed;
+            }
+        }
 
         auto statistics(QueryRunner::Statistics(threadCount,
                                                 queries.size(),
-                                                queries.size() * iterations,
-                                                stopwatch.ElapsedTime()));
+                                                queriesProcessed,
+                                                elapsedTime));
 
         {
             std::cout << "Writing results ..." << std::endl;
