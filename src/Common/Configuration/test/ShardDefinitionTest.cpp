@@ -107,7 +107,7 @@ namespace BitFunnel
          {
              std::stringstream input;
              ShardDefinition s(input);
-             EXPECT_EQ(s.GetShardCount(), 1);
+             EXPECT_EQ(s.GetShardCount(), 1u);
          }
     }
 }
