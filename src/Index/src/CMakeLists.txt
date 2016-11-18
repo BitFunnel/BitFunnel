@@ -24,6 +24,7 @@ set(CPPFILES
     RowTableAnalyzer.cpp
     RowTableDescriptor.cpp
     Shard.cpp
+    ShardDefinitionBuilder.cpp
     ShardCostFunction.cpp
     SimpleIndex.cpp
     SingleSourceShortestPath.cpp
@@ -55,12 +56,10 @@ set(PRIVATE_HFILES
     DocumentHistogramBuilder.h
     DocumentMap.h
     FactSetBase.h
-    ICostFunction.h
     IDocumentCacheNode.h
     IndexedIdfTable.h
     Ingestor.h
     IRecyclable.h
-    IShardCostFunction.h
     Recycler.h
     RowTableDescriptor.h
     RowTableAnalyzer.h

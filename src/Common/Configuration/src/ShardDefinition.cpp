@@ -25,6 +25,7 @@
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Exceptions.h"
+#include "CsvTsv/Csv.h"
 #include "ShardDefinition.h"
 
 
@@ -47,14 +48,15 @@ namespace BitFunnel
     }
 
 
-    ShardDefinition::ShardDefinition(std::istream& /*input*/)
+    ShardDefinition::ShardDefinition(std::istream& input)
     {
+        CsvTsv::ReadCsvColumn(input, m_maxPostingCounts);
     }
 
 
-    void ShardDefinition::Write(std::ostream& /*output*/) const
+    void ShardDefinition::Write(std::ostream& output) const
     {
-        throw NotImplemented();
+        CsvTsv::WriteCsvColumn(output, m_maxPostingCounts);
     }
 
 

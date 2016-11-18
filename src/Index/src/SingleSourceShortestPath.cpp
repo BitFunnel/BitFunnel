@@ -23,7 +23,7 @@
 
 #include <limits>   // std::numeric_limits<float>::infinity().
 
-#include "ICostFunction.h"
+#include "BitFunnel/Index/ICostFunction.h"
 #include "LoggerInterfaces/Check.h"
 #include "SingleSourceShortestPath.h"
 

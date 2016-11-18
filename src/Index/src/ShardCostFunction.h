@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include "BitFunnel/NonCopyable.h"  // Base class.
-#include "IShardCostFunction.h"     // Base class.
+#include "BitFunnel/NonCopyable.h"              // Base class.
+#include "BitFunnel/Index/IShardCostFunction.h" // Base class.
 
 
 namespace BitFunnel

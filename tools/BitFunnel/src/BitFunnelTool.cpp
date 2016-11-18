@@ -30,6 +30,7 @@
 #include "BitFunnelTool.h"
 #include "FilterChunks.h"
 #include "REPL.h"
+#include "ShardBuilder.h"
 #include "StatisticsBuilder.h"
 #include "TermTableBuilderTool.h"
 
@@ -97,6 +98,10 @@ namespace BitFunnel
         else if (strcmp(name, "repl") == 0)
         {
             executable.reset(new REPL(m_fileSystem));
+        }
+        else if (strcmp(name, "shard") == 0)
+        {
+            executable.reset(new ShardBuilder(m_fileSystem));
         }
         else if (strcmp(name, "statistics") == 0)
         {

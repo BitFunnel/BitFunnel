@@ -16,6 +16,7 @@ set(CPPFILES
     QueryCommand.cpp
     REPL.cpp
     ScriptCommand.cpp
+    ShardBuilder.cpp
     ShowCommand.cpp
     StatisticsBuilder.cpp
     StatusCommand.cpp
@@ -50,6 +51,7 @@ set(PRIVATE_HFILES
     QueryCommand.h
     REPL.h
     ScriptCommand.h
+    ShardBuilder.h
     ShowCommand.h
     StatisticsBuilder.h
     StatusCommand.h

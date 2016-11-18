@@ -30,6 +30,6 @@ include_directories(${CMAKE_SOURCE_DIR}/src/Common/Configuration/src)
 add_executable(ConfigurationTest ${CPPFILES} ${PRIVATE_HFILES} ${PUBLIC_HFILES})
 set_property(TARGET ConfigurationTest PROPERTY FOLDER "src/Common/Configuration")
 set_property(TARGET ConfigurationTest PROPERTY PROJECT_LABEL "Test")
-target_link_libraries (ConfigurationTest Configuration Utilities gtest gtest_main)
+target_link_libraries (ConfigurationTest Configuration Utilities CsvTsv gtest gtest_main)
 
 add_test(NAME ConfigurationTest COMMAND ConfigurationTest)

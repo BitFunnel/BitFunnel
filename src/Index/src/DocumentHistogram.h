@@ -26,7 +26,7 @@
 #include <utility>  // std::pair template parameter.
 #include <vector>   // std::vector embedded.
 
-#include "IDocumentHistogram.h"     // Base class.
+#include "BitFunnel/Index/IDocumentHistogram.h"     // Base class.
 
 
 namespace BitFunnel

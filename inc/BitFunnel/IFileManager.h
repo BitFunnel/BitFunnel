@@ -87,7 +87,7 @@ namespace BitFunnel
         //virtual FileDescriptor0 PlanDescriptors() = 0;
         //virtual FileDescriptor0 PostingCounts() = 0;
         virtual FileDescriptor0 QueryPipelineStatistics() = 0;
-        //virtual FileDescriptor0 ShardDefinition() = 0;
+        virtual FileDescriptor0 ShardDefinition() = 0;
         //virtual FileDescriptor0 ShardDocCounts() = 0;
         //virtual FileDescriptor0 ShardedDocFreqTable() = 0;
         //virtual FileDescriptor0 SortRankerConfig() = 0;

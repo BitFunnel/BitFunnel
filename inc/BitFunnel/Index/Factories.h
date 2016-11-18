@@ -75,6 +75,8 @@ namespace BitFunnel
         DocumentHandle CreateDocumentHandle(Slice * sliceBuffer, DocIndex index);
         DocumentHandle CreateDocumentHandle(void * sliceBuffer, DocIndex index);
 
+        std::unique_ptr<IDocumentHistogram> CreateDocumentHistogram(std::istream& input);
+
         // TODO: Remove this temporary function.
         void * GetSliceBuffer(Slice * slice);
 

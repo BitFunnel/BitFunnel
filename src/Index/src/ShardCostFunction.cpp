@@ -25,8 +25,8 @@
 
 #include "BitFunnel/Configuration/IShardDefinition.h"
 #include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Index/IDocumentHistogram.h"
 #include "BitFunnel/Index/Row.h"
-#include "IDocumentHistogram.h"
 #include "LoggerInterfaces/Logging.h"
 #include "ShardCostFunction.h"
 
@@ -140,11 +140,5 @@ namespace BitFunnel
     void ShardCostFunction::AddShard(IShardDefinition& shardDefinition) const
     {
         shardDefinition.AddShard(m_maxPostingCount);
-        //shardDefinition.AddShard(m_maxPostingCount,
-        //                         m_postingCountSum / m_documentCount,
-        //                         Row::DocumentsInRank0Row(static_cast<DocIndex>(m_documentCount),
-        //                                                  m_maxRankInUse),
-        //                         m_bodyLengthSum / m_documentCount,
-        //                         GetCost() - m_shardOverhead);
     }
 }

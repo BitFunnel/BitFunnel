@@ -1,13 +1,33 @@
-#include "stdafx.h"
+// The MIT License (MIT)
+
+// Copyright (c) 2016, Microsoft
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 #include <memory>
 
-#include "BitFunnel/Factories.h"
-#include "BitFunnel/IDocumentHistogram.h"
-#include "BitFunnel/IShardCostFunction.h"
-#include "BitFunnel/IShardDefinition.h"
+#include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Configuration/IShardDefinition.h"
+#include "BitFunnel/Index/IDocumentHistogram.h"
+#include "BitFunnel/Index/IShardCostFunction.h"
+#include "BitFunnel/Index/ShardDefinitionBuilder.h"
 #include "LoggerInterfaces/Logging.h"
-#include "BitFunnel/ShardDefinitionBuilder.h"
 #include "SingleSourceShortestPath.h"
 
 
@@ -25,21 +45,24 @@ namespace BitFunnel
     // mathematical properties of the cost function.
     //
     //*********************************************************************
-    const IShardDefinition*
-    ShardDefinitionBuilder::CreateShardDefinition(IShardCostFunction& costFunction, unsigned maxShardCount)
+    std::unique_ptr<IShardDefinition const>
+    ShardDefinitionBuilder::CreateShardDefinition(IShardCostFunction& costFunction,
+                                                  size_t maxShardCount)
     {
         //
         // Use the Single Source Shortest Path algorithm to find the path that
         // corresponds to the lowest cost set of shards.
         //
-        std::vector<unsigned> path;
+        std::vector<size_t> path;
         SingleSourceShortestPath::FindPath(costFunction, maxShardCount, path);
 
         //
         // Convert the path into a ShardDefinition.
         //
-        std::auto_ptr<IShardDefinition> shardDefinition(Factories::CreateShardDefinition());
-        unsigned index = 0;
+        auto shardDefinition =
+            Factories::CreateShardDefinition();
+
+        size_t index = 0;
         costFunction.StartAt(index);
         for (unsigned i = 1 ; i < path.size(); ++i)
         {
@@ -52,6 +75,6 @@ namespace BitFunnel
             costFunction.StartAt(index);
         }
 
-        return shardDefinition.release();
+        return std::move(shardDefinition);
     }
 }

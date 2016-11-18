@@ -22,25 +22,30 @@
 
 #pragma once
 
-#include "ICostFunction.h"  // Base class.
-
+#include <memory>   // std::unique_ptr embedded.
 
 namespace BitFunnel
 {
+    class IDocumentHistogram;
+    class IShardCostFunction;
     class IShardDefinition;
 
-    //*************************************************************************
-    //
-    // IShardCostFunction is an abstract base class or interface that extends
-    // ICostFunction to add the ability to create a shard definition entry
-    // for the shard specified by ICostFunction::StartAt() and
-    // ICostFunction::Extend().
-    //
-    //*************************************************************************
-    class IShardCostFunction : public virtual ICostFunction
+
+    namespace ShardDefinitionBuilder
     {
-    public:
-        // Adds the current shard to the specified IShardDefinition.
-        virtual void AddShard(IShardDefinition& shardDefinition) const = 0;
+        //*********************************************************************
+        //
+        // CreateShardDefinition() constructs an optimal shard definition based
+        // on an ICostFunction which assigns costs to proposed shards.
+        //
+        // CreateShardDefinition() uses an algorithm that is guaranteed to find
+        // the set of shards which minimize the sum of shard costs. The
+        // algorithm is combinatorial and places no restrictions on the
+        // mathematical properties of the cost function.
+        //
+        //*********************************************************************
+        std::unique_ptr<IShardDefinition const> CreateShardDefinition(
+            IShardCostFunction& costFunction,
+            size_t maxShardCount);
     };
 }

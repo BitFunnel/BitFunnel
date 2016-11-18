@@ -59,14 +59,16 @@ namespace BitFunnel
         CmdLine::OptionalParameter<int> gramSize(
             "gramsize",
             "Set the maximum ngram size for phrases.",
-            1u);
+            1u,
+            CmdLine::GreaterThan(0));
 
         // TODO: This parameter should be unsigned, but it doesn't seem to work
         // with CmdLineParser.
         CmdLine::OptionalParameter<int> threadCount(
             "threads",
             "Set the thread count for ingestion and query processing.",
-            1u);
+            1u,
+            CmdLine::GreaterThan(0));
 
         CmdLine::OptionalParameter<char const *> scriptFile(
             "script",

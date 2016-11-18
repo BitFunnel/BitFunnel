@@ -154,14 +154,17 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Factories.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Helpers.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IConfiguration.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ICostFunction.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocument.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocumentCache.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocumentDataSchema.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IDocumentHistogram.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IFactSet.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IIngestor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IngestChunks.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IRecycler.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IShard.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/IShardCostFunction.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ISimpleIndex.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ISliceBufferAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTable.h
@@ -172,6 +175,8 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Row.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/RowId.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/RowIdSequence.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Token.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ShardDefinitionBuilder.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Token.h
 )
 

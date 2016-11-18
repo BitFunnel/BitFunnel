@@ -20,12 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "BitFunnel/Index/Factories.h"
 #include "CsvTsv/Csv.h"
 #include "DocumentHistogram.h"
 
 
 namespace BitFunnel
 {
+    std::unique_ptr<IDocumentHistogram>
+        Factories::CreateDocumentHistogram(std::istream& input)
+    {
+        return std::unique_ptr<IDocumentHistogram>(new DocumentHistogram(input));
+    }
+
+
     DocumentHistogram::DocumentHistogram(std::istream & input)
         : m_documentCount(0)
     {
@@ -48,8 +56,8 @@ namespace BitFunnel
         {
             reader.ReadDataRow();
 
-            m_entries.push_back(std::make_pair(postingCount,
-                                               documentCount));
+            m_entries.push_back(std::make_pair(postingCount.GetValue(),
+                                               documentCount.GetValue()));
             m_documentCount += documentCount;
         }
 

@@ -95,6 +95,11 @@ namespace BitFunnel
                                      statisticsDirectory,
                                      "RowDensities",
                                      ".csv")),
+          m_shardDefinition(
+              new ParameterizedFile0(fileSystem,
+                                     statisticsDirectory,
+                                     "ShardDefinition",
+                                     ".csv")),
           m_termTable(new ParameterizedFile1(fileSystem,
                                              indexDirectory,
                                              "TermTable",
@@ -142,6 +147,12 @@ namespace BitFunnel
     FileDescriptor0 FileManager::QueryPipelineStatistics()
     {
         return FileDescriptor0(*m_queryPipelineStatistics);
+    }
+
+
+    FileDescriptor0 FileManager::ShardDefinition()
+    {
+        return FileDescriptor0(*m_shardDefinition);
     }
 
 
