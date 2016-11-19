@@ -95,7 +95,7 @@ namespace BitFunnel
              ShardDefinition s2(stream);
 
              EXPECT_EQ(s1.GetShardCount(), s2.GetShardCount());
-             for (ShardId i = 0; i < s1.GetShardCount(); ++i)
+             for (ShardId i = 0; i < s1.GetShardCount() -1; ++i)
              {
                  EXPECT_EQ(s1.GetMaxPostingCount(i), s2.GetMaxPostingCount(i));
              }
