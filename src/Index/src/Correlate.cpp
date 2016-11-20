@@ -49,13 +49,13 @@
 
 namespace BitFunnel
 {
-    void Factories::Correlate(ISimpleIndex const & index,
+    void Factories::CreateCorrelate(ISimpleIndex const & index,
                               char const * outDir)
     {
         CHECK_NE(*outDir, '\0')
             << "Output directory not set. ";
 
-        Correlate::Correlate correlate(index);
+        Correlate correlate(index);
         // TODO: call methods here.
     }
 

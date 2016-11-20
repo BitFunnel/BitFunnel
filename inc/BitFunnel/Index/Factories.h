@@ -61,7 +61,7 @@ namespace BitFunnel
         void AnalyzeRowTables(ISimpleIndex const & index,
                               char const * outDir);
 
-        void Correlate(ISimpleIndex const & index,
+        void CreateCorrelate(ISimpleIndex const & index,
                        char const * outDir);
 
         std::unique_ptr<IConfiguration>
