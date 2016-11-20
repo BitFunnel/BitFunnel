@@ -2,6 +2,7 @@
 
 set(CPPFILES
     Configuration.cpp
+    Correlate.cpp
     DocTableDescriptor.cpp
     DocumentCache.cpp
     DocumentDataSchema.cpp
@@ -46,6 +47,7 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     Configuration.h
+    Correlate.h
     DocTableDescriptor.h
     DocumentCache.h
     DocumentDataSchema.h

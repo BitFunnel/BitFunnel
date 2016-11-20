@@ -38,5 +38,6 @@ namespace BitFunnel
         static ICommand::Documentation GetDocumentation();
 
     private:
+        std::vector<std::string> m_terms;
     };
 }

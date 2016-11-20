@@ -61,6 +61,9 @@ namespace BitFunnel
         void AnalyzeRowTables(ISimpleIndex const & index,
                               char const * outDir);
 
+        void Correlate(ISimpleIndex const & index,
+                       char const * outDir);
+
         std::unique_ptr<IConfiguration>
             CreateConfiguration(size_t maxGramSize,
                                 bool keepTermText,

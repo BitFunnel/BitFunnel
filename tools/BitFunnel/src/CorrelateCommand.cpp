@@ -22,8 +22,11 @@
 
 #include <iostream>  // TODO: remove.
 
-#include "CorrelateCommand.h"
+#include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Index/Factories.h"
+#include "BitFunnel/Utilities/ReadLines.h"
+#include "CorrelateCommand.h"
 #include "Environment.h"
 #include "LoggerInterfaces/Check.h"
 
@@ -37,9 +40,12 @@ namespace BitFunnel
     //*************************************************************************
     Correlate::Correlate(Environment & environment,
                      Id id,
-                     char const * /*parameters*/)
+                     char const * parameters)
         : TaskBase(environment, id, Type::Synchronous)
     {
+        std::string termsFilename = TaskFactory::GetNextToken(parameters);
+        auto fileSystem = Factories::CreateFileSystem();  // TODO: Use environment file system
+        m_terms = ReadLines(*fileSystem, termsFilename.c_str());
     }
 
 
@@ -51,6 +57,9 @@ namespace BitFunnel
             << "output directory";
 
         std::cout << "Dummy correlate command." << std::endl;
+
+        Factories::Correlate(GetEnvironment().GetSimpleIndex(),
+                             GetEnvironment().GetOutputDir().c_str());
     }
 
 

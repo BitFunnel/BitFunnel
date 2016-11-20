@@ -36,6 +36,7 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Index/Token.h"
+#include "Correlate.h"
 #include "CsvTsv/Csv.h"
 #include "DocumentHandleInternal.h"
 #include "LoggerInterfaces/Check.h"
@@ -54,7 +55,7 @@ namespace BitFunnel
         CHECK_NE(*outDir, '\0')
             << "Output directory not set. ";
 
-        Correlate correlate(index);
+        Correlate::Correlate correlate(index);
         // TODO: call methods here.
     }
 
@@ -65,17 +66,13 @@ namespace BitFunnel
     }
 
 
-    void Correlate::Correlate(char const * outDir) const
+    void Correlate::CorrelateRows(char const * outDir) const
     {
-        //
-        // Gather row statistics for ingested documents.
-        // (documents need not be cached)
-        //
         auto & fileManager = m_index.GetFileManager();
         auto & ingestor = m_index.GetIngestor();
 
-        // TODO: Create with factory?
-        TermToText termToText(*fileManager.TermToText().OpenForRead());
+        // // TODO: Create with factory?
+        // TermToText termToText(*fileManager.TermToText().OpenForRead());
 
         for (ShardId shardId = 0; shardId < ingestor.GetShardCount(); ++shardId)
         {
@@ -89,19 +86,20 @@ namespace BitFunnel
                                              outDir,
                                              *fileSystem);
 
+            // TODO: hoist this read out of loop?
             CorrelateShard(shardId,
-                           termToText,
+                           // termToText,
                            *outFileManager->RowDensities(shardId).OpenForWrite());
         }
     }
 
 
     void Correlate::CorrelateShard(
-        ShardId const & shardId,
-        ITermToText const & termToText,
-        std::ostream& out) const
+                                   ShardId const & /*shardId*/,
+        // ITermToText const & termToText,
+                                   std::ostream& /*out*/) const
     {
-        auto & fileManager = m_index.GetFileManager();
+        // auto & fileManager = m_index.GetFileManager();
     }
 
 }

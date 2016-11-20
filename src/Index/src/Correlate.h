@@ -36,15 +36,16 @@ namespace BitFunnel
     class ISimpleIndex;
     class ITermToText;
 
-    class RowTableAnalyzer
+    class Correlate
     {
     public:
         Correlate (ISimpleIndex const & index);
+        void CorrelateRows(char const * outDir) const;
 
     private:
         void CorrelateShard(
             ShardId const & shardId,
-            ITermToText const & termToText,
+            // ITermToText const & termToText,
             std::ostream& out) const;
 
         ISimpleIndex const & m_index;
