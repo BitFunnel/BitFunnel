@@ -22,7 +22,8 @@
 
 
 #include <ostream>
-#include <stack>
+#include <unordered_map>                        // TODO: consider changing.
+#include <unordered_set>                        // TODO: consider changing.
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
@@ -34,34 +35,54 @@
 #include "BitFunnel/Index/IDocumentFrequencyTable.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
+#include "BitFunnel/Index/RowId.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Index/Token.h"
 #include "Correlate.h"
 #include "CsvTsv/Csv.h"
 #include "DocumentHandleInternal.h"
 #include "LoggerInterfaces/Check.h"
+#include "NativeJIT/TypeConverter.h"
 #include "RowTableAnalyzer.h"
 #include "RowTableDescriptor.h"
 #include "Shard.h"
 #include "Slice.h"
-#include "TermToText.h"
+#include "Term.h"
+
+// Define hash of RowId to allow use of map/set.
+// TODO: remove this when we stop using map/set.
+namespace std
+{
+    template<>
+    struct hash<BitFunnel::RowId>
+    {
+        std::size_t operator()(BitFunnel::RowId const & row) const
+        {
+            // TODO: do we need to hash this?
+            return NativeJIT::convertType<BitFunnel::RowId, size_t>(row);
+        }
+    };
+}
 
 
 namespace BitFunnel
 {
     void Factories::CreateCorrelate(ISimpleIndex const & index,
-                              char const * outDir)
+                                    char const * outDir,
+                                    std::vector<std::string> const & terms)
     {
         CHECK_NE(*outDir, '\0')
             << "Output directory not set. ";
 
-        Correlate correlate(index);
+        Correlate correlate(index, terms);
         // TODO: call methods here.
     }
 
 
-    Correlate::Correlate(ISimpleIndex const & index)
-        : m_index(index)
+    Correlate::Correlate(ISimpleIndex const & index,
+                         std::vector<std::string> const & terms)
+        : m_index(index),
+          m_terms(terms)
     {
     }
 
@@ -95,11 +116,34 @@ namespace BitFunnel
 
 
     void Correlate::CorrelateShard(
-                                   ShardId const & /*shardId*/,
+                                   ShardId const & shardId,
         // ITermToText const & termToText,
                                    std::ostream& /*out*/) const
     {
+        const Term::StreamId c_TODOStreamId = 0;
+        std::unordered_map<Term::Hash, std::unordered_set<RowId>> hashToRowId;
+
         // auto & fileManager = m_index.GetFileManager();
+        for (auto const & termText : m_terms)
+        {
+            Term term(termText.c_str(), c_TODOStreamId, m_index.GetConfiguration());
+            RowIdSequence rows(term, m_index.GetTermTable(shardId));
+            for (RowId row : rows)
+            {
+                hashToRowId[term.GetRawHash()].insert(row);
+            }
+        }
+
+        // for (auto const & outerTermText : m_terms)
+        // {
+        //     Term outerTerm(outerTermText.c_str(), c_TODOStreamId, m_index.GetConfiguration());
+        //     for (auto const & innerTermText : m_terms)
+        //     {
+        //         RowIdSequence outerRows(outerTerm, m_index.GetTermTable(shardId));
+
+        //     }
+
+        // }
     }
 
 }

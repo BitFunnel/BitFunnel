@@ -39,7 +39,8 @@ namespace BitFunnel
     class Correlate
     {
     public:
-        Correlate (ISimpleIndex const & index);
+        Correlate (ISimpleIndex const & index,
+                   std::vector<std::string> const & terms);
         void CorrelateRows(char const * outDir) const;
 
     private:
@@ -49,5 +50,6 @@ namespace BitFunnel
             std::ostream& out) const;
 
         ISimpleIndex const & m_index;
+        std::vector<std::string> const & m_terms;
     };
 }

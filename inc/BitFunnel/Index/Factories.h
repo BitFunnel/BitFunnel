@@ -62,7 +62,8 @@ namespace BitFunnel
                               char const * outDir);
 
         void CreateCorrelate(ISimpleIndex const & index,
-                       char const * outDir);
+                             char const * outDir,
+                             std::vector<std::string> const & terms);
 
         std::unique_ptr<IConfiguration>
             CreateConfiguration(size_t maxGramSize,

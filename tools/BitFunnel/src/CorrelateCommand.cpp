@@ -59,7 +59,8 @@ namespace BitFunnel
         std::cout << "Dummy correlate command." << std::endl;
 
         Factories::CreateCorrelate(GetEnvironment().GetSimpleIndex(),
-                                   GetEnvironment().GetOutputDir().c_str());
+                                   GetEnvironment().GetOutputDir().c_str(),
+                                   m_terms);
     }
 
 
