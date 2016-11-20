@@ -38,6 +38,7 @@
 #include "BitFunnel/Index/RowId.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Index/Token.h"
+#include "BitFunnel/Term.h"
 #include "Correlate.h"
 #include "CsvTsv/Csv.h"
 #include "DocumentHandleInternal.h"
@@ -47,7 +48,6 @@
 #include "RowTableDescriptor.h"
 #include "Shard.h"
 #include "Slice.h"
-#include "Term.h"
 
 // Define hash of RowId to allow use of map/set.
 // TODO: remove this when we stop using map/set.
