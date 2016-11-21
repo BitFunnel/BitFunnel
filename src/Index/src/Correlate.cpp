@@ -129,7 +129,10 @@ namespace BitFunnel
             Term outerTerm(outerTermText.c_str(),
                            c_TODOStreamId,
                            m_index.GetConfiguration());
-            out << outerTermText;
+            // Use CsvTableFormatter to escape terms that contain commas and quotes.
+            CsvTsv::CsvTableFormatter formatter(out);
+
+            formatter.WriteField(outerTermText);
             for (auto const & innerTermText : m_terms)
             {
                 Term innerTerm(innerTermText.c_str(),
@@ -148,7 +151,8 @@ namespace BitFunnel
                 if (intersectionSize > 1 &&
                     innerTermText != outerTermText)
                 {
-                    out << "," << innerTermText << "," << intersectionSize;
+                    formatter.WriteField(innerTermText);
+                    formatter.WriteField(intersectionSize);
                 }
             }
             out << std::endl;
