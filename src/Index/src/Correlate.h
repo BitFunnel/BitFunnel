@@ -46,7 +46,7 @@ namespace BitFunnel
     private:
         void CorrelateShard(
             ShardId const & shardId,
-            // ITermToText const & termToText,
+            ITermToText const & termToText,
             std::ostream& out) const;
 
         ISimpleIndex const & m_index;

@@ -48,6 +48,8 @@
 #include "RowTableDescriptor.h"
 #include "Shard.h"
 #include "Slice.h"
+#include "TermToText.h"
+
 
 // Define hash of RowId to allow use of map/set.
 // TODO: remove this when we stop using map/set.
@@ -91,6 +93,8 @@ namespace BitFunnel
     {
         auto & ingestor = m_index.GetIngestor();
 
+        auto & fileManager = m_index.GetFileManager();
+        TermToText termToText(*fileManager.TermToText().OpenForRead());
         for (ShardId shardId = 0; shardId < ingestor.GetShardCount(); ++shardId)
         {
             auto fileSystem = Factories::CreateFileSystem();
@@ -101,16 +105,19 @@ namespace BitFunnel
                                              *fileSystem);
 
             CorrelateShard(shardId,
+                           termToText,
                            *outFileManager->Correlate(shardId).OpenForWrite());
         }
     }
 
 
     void Correlate::CorrelateShard(ShardId const & shardId,
+                                   ITermToText const & termToText,
                                    std::ostream& out) const
     {
         const Term::StreamId c_TODOStreamId = 0;
-        std::unordered_map<Term::Hash, std::unordered_set<RowId>> hashToRowId;
+        // std::unordered_map<Term::Hash, std::unordered_set<RowId>> hashToRowId;
+        std::unordered_map<RowId, std::unordered_set<Term::Hash>> rowIdToHash;
 
         // auto & fileManager = m_index.GetFileManager();
         for (auto const & termText : m_terms)
@@ -119,43 +126,46 @@ namespace BitFunnel
             RowIdSequence rows(term, m_index.GetTermTable(shardId));
             for (RowId row : rows)
             {
-                hashToRowId[term.GetRawHash()].insert(row);
+                rowIdToHash[row].insert(term.GetRawHash());
             }
         }
 
 
-        for (auto const & outerTermText : m_terms)
+        std::unordered_map<Term::Hash,
+                           std::unordered_map<Term::Hash, uint8_t>> collisions;
+        for (auto const & item : rowIdToHash)
         {
-            Term outerTerm(outerTermText.c_str(),
-                           c_TODOStreamId,
-                           m_index.GetConfiguration());
-            // Use CsvTableFormatter to escape terms that contain commas and quotes.
-            CsvTsv::CsvTableFormatter formatter(out);
-
-            formatter.WriteField(outerTermText);
-            for (auto const & innerTermText : m_terms)
+            auto const & rowId = item.first;
+            auto const & hashes = rowIdToHash[rowId];
+            for (auto const & leftHash : hashes)
             {
-                Term innerTerm(innerTermText.c_str(),
-                               c_TODOStreamId,
-                               m_index.GetConfiguration());
-                RowIdSequence outerRows(outerTerm, m_index.GetTermTable(shardId));
-                size_t intersectionSize = 0;
-                for (RowId row : outerRows)
+                for (auto const & rightHash : hashes)
                 {
-                    if (hashToRowId[innerTerm.GetRawHash()].find(row) !=
-                        hashToRowId[innerTerm.GetRawHash()].end())
+                    if (leftHash != rightHash)
                     {
-                        ++intersectionSize;
+                        ++collisions[leftHash][rightHash];
                     }
                 }
-                if (intersectionSize > 1 &&
-                    innerTermText != outerTermText)
+            }
+        }
+
+        CsvTsv::CsvTableFormatter formatter(out);
+        for (auto const & item : collisions)
+        {
+            auto const & leftHash = item.first;
+            // TODO: consider only writing out terms with collisions.
+            formatter.WriteField(termToText.Lookup(leftHash));
+            for (auto const & innerItem : item.second)
+            {
+                auto const & rightHash = innerItem.first;
+                const uint8_t numCollisions = innerItem.second;
+                if (numCollisions > 1)
                 {
-                    formatter.WriteField(innerTermText);
-                    formatter.WriteField(intersectionSize);
+                    formatter.WriteField(termToText.Lookup(rightHash));
+                    formatter.WriteField(numCollisions);
                 }
             }
-            out << std::endl;
+            formatter.WriteRowEnd();
         }
     }
 }

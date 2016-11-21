@@ -56,8 +56,6 @@ namespace BitFunnel
             << "Please use the 'cd' command to set an "
             << "output directory";
 
-        std::cout << "Dummy correlate command." << std::endl;
-
         Factories::CreateCorrelate(GetEnvironment().GetSimpleIndex(),
                                    GetEnvironment().GetOutputDir().c_str(),
                                    m_terms);
