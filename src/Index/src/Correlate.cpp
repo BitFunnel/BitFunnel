@@ -116,7 +116,9 @@ namespace BitFunnel
                                    std::ostream& out) const
     {
         const Term::StreamId c_TODOStreamId = 0;
-        // std::unordered_map<Term::Hash, std::unordered_set<RowId>> hashToRowId;
+        // TODO: this should be a vector instead of a set. That change shouldn't
+        // really affect running time much, though, since we that should be
+        // dominated by the later phases.
         std::unordered_map<RowId, std::unordered_set<Term::Hash>> rowIdToHash;
 
         // auto & fileManager = m_index.GetFileManager();
