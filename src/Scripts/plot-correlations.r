@@ -11,7 +11,9 @@ ggplot(data=term_term, aes(x=bucket, y=count, fill=treatment)) + geom_bar(stat="
   scale_y_log10() +
   theme_bw() +
   theme(axis.text = element_text(size=40),
-        axis.title = element_text(size=40))
+        axis.title = element_text(size=40),
+        legend.title=element_text(size=40),
+        legend.text=element_text(size=40))
 dev.off()
 
 png(filename="term-all.png",width=1600,height=1200)
@@ -22,5 +24,7 @@ ggplot(data=term_all, aes(x=bucket, y=count, fill=treatment)) + geom_bar(stat="i
   scale_y_log10() +
   theme_bw() +
   theme(axis.text = element_text(size=40),
-        axis.title = element_text(size=40))
+        axis.title = element_text(size=40),
+        legend.title=element_text(size=40),
+        legend.text=element_text(size=40))
 dev.off()
