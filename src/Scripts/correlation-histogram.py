@@ -27,7 +27,7 @@ def bf_correlate_to_dicts(term_term_correlation,
 def dict_to_csv(dd, filename):
     with open(filename, 'w') as f:
         writer = csv.writer(f)
-        writer.writerow(["bucket","y","treatment"])
+        writer.writerow(["bucket","count","treatment"])
         for treatment,subdict in dd.items():
             for k, v in subdict.items():
                 writer.writerow([k,v,treatment])
