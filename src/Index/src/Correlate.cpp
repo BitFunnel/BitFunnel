@@ -23,7 +23,6 @@
 
 #include <ostream>
 #include <unordered_map>                        // TODO: consider changing.
-#include <unordered_set>                        // TODO: consider changing.
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
@@ -119,7 +118,7 @@ namespace BitFunnel
         // TODO: this should be a vector instead of a set. That change shouldn't
         // really affect running time much, though, since we that should be
         // dominated by the later phases.
-        std::unordered_map<RowId, std::unordered_set<Term::Hash>> rowIdToHash;
+        std::unordered_map<RowId, std::vector<Term::Hash>> rowIdToHash;
 
         // auto & fileManager = m_index.GetFileManager();
         for (auto const & termText : m_terms)
@@ -128,7 +127,7 @@ namespace BitFunnel
             RowIdSequence rows(term, m_index.GetTermTable(shardId));
             for (RowId row : rows)
             {
-                rowIdToHash[row].insert(term.GetRawHash());
+                rowIdToHash[row].push_back(term.GetRawHash());
             }
         }
 
