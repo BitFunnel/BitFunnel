@@ -31,4 +31,4 @@ fi
 echo "Configuring CMake for make with $debugType build."
 mkdir build-make
 cd build-make
-cmake -DCMAKE_BUILD_TYPE=$debugType -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Unix Makefiles" ..
+cmake -DCMAKE_BUILD_TYPE=$debugType -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Ninja" ..
