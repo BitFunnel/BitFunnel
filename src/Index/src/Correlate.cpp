@@ -75,7 +75,7 @@ namespace BitFunnel
             << "Output directory not set. ";
 
         Correlate correlate(index, terms);
-        // TODO: call methods here.
+        correlate.CorrelateRows(outDir);
     }
 
 
@@ -89,17 +89,10 @@ namespace BitFunnel
 
     void Correlate::CorrelateRows(char const * outDir) const
     {
-        auto & fileManager = m_index.GetFileManager();
         auto & ingestor = m_index.GetIngestor();
-
-        // // TODO: Create with factory?
-        // TermToText termToText(*fileManager.TermToText().OpenForRead());
 
         for (ShardId shardId = 0; shardId < ingestor.GetShardCount(); ++shardId)
         {
-            auto terms(Factories::CreateDocumentFrequencyTable(
-                *fileManager.DocFreqTable(shardId).OpenForRead()));
-
             auto fileSystem = Factories::CreateFileSystem();
             auto outFileManager =
                 Factories::CreateFileManager(outDir,
@@ -107,18 +100,14 @@ namespace BitFunnel
                                              outDir,
                                              *fileSystem);
 
-            // TODO: hoist this read out of loop?
             CorrelateShard(shardId,
-                           // termToText,
-                           *outFileManager->RowDensities(shardId).OpenForWrite());
+                           *outFileManager->Correlate(shardId).OpenForWrite());
         }
     }
 
 
-    void Correlate::CorrelateShard(
-                                   ShardId const & shardId,
-        // ITermToText const & termToText,
-                                   std::ostream& /*out*/) const
+    void Correlate::CorrelateShard(ShardId const & shardId,
+                                   std::ostream& out) const
     {
         const Term::StreamId c_TODOStreamId = 0;
         std::unordered_map<Term::Hash, std::unordered_set<RowId>> hashToRowId;
@@ -134,16 +123,35 @@ namespace BitFunnel
             }
         }
 
-        // for (auto const & outerTermText : m_terms)
-        // {
-        //     Term outerTerm(outerTermText.c_str(), c_TODOStreamId, m_index.GetConfiguration());
-        //     for (auto const & innerTermText : m_terms)
-        //     {
-        //         RowIdSequence outerRows(outerTerm, m_index.GetTermTable(shardId));
 
-        //     }
-
-        // }
+        for (auto const & outerTermText : m_terms)
+        {
+            Term outerTerm(outerTermText.c_str(),
+                           c_TODOStreamId,
+                           m_index.GetConfiguration());
+            out << outerTermText;
+            for (auto const & innerTermText : m_terms)
+            {
+                Term innerTerm(innerTermText.c_str(),
+                               c_TODOStreamId,
+                               m_index.GetConfiguration());
+                RowIdSequence outerRows(outerTerm, m_index.GetTermTable(shardId));
+                size_t intersectionSize = 0;
+                for (RowId row : outerRows)
+                {
+                    if (hashToRowId[innerTerm.GetRawHash()].find(row) !=
+                        hashToRowId[innerTerm.GetRawHash()].end())
+                    {
+                        ++intersectionSize;
+                    }
+                }
+                if (intersectionSize > 1 &&
+                    innerTermText != outerTermText)
+                {
+                    out << "," << innerTermText << "," << intersectionSize;
+                }
+            }
+            out << std::endl;
+        }
     }
-
 }
