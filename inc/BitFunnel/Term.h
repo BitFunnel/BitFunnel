@@ -163,10 +163,6 @@ namespace BitFunnel
         // rank.
         static double FrequencyAtRank(double frequency, Rank rank);
 
-        // Given a term frequency, find the maximum rank such that we don't
-        // exceed a density target.
-        static Rank GetMaxRank(double frequency, double target);
-
         // Static method that calculates IDF value from document frequency and
         // corpus document count.
         static IdfX10 ComputeIdfX10(size_t documentFrequency,
@@ -177,6 +173,16 @@ namespace BitFunnel
 
         // static method to calculate document frequency from Idf value.
         static unsigned ComputeDocumentFrequency(double corpusSize, double idf);
+
+        // TODO: should some of these static methods move to TermTreatments?
+        // Given a term frequency, find the maximum rank such that we don't
+        // exceed a density target.
+        static Rank ComputeMaxRank(double frequency, double target);
+
+        // Compute the number of rank 0 rows necessary assuming an ideal world
+        // (no row correlations) to reach a specified signal to noise ratio
+        // (snr).
+        static unsigned ComputeRowCount(double frequency, double density, double snr);
 
         // Computes the general hash, given a raw hash and a classification.
         // Made available as a public static method for use by NGramBuilder.

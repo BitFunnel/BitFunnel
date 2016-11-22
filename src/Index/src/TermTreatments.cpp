@@ -111,19 +111,8 @@ namespace BitFunnel
             }
             else
             {
-                // Determine the number of rows, k, required to reach the
-                // desired signal to noise ratio, snr, given a certain bit
-                // density.
-                // TODO: consider checking for oveflow?
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshorten-64-to-32"
-#endif
-                unsigned k = lround(ceil(log(frequency / snr) / log(density - frequency)) + 1);
+                unsigned k = Term::ComputeRowCount(frequency, density, snr);
                 configuration.push_front(RowConfiguration::Entry(0, k, false));
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
             }
 
             m_configurations.push_back(configuration);
@@ -174,15 +163,8 @@ namespace BitFunnel
                 // desired signal to noise ratio, snr, given a certain bit
                 // density.
                 // TODO: consider checking for overflow?
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshorten-64-to-32"
-#endif
-                unsigned k = lround(ceil(log(frequency / snr) / log(density - frequency)) + 1);
+                unsigned k = Term::ComputeRowCount(frequency, density, snr);
                 configuration.push_front(RowConfiguration::Entry(0, 2, false));
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
                 if (k > 2)
                 {
                     Rank rank = 3;
@@ -247,17 +229,9 @@ namespace BitFunnel
             else
             {
                 // TODO: fix other limitations so this can be higher than 6?
-                const Rank maxRank = (std::min)(Term::GetMaxRank(frequency, maxDensity), static_cast<Rank>(6u));
+                const Rank maxRank = (std::min)(Term::ComputeMaxRank(frequency, maxDensity), static_cast<Rank>(6u));
 
-                // TODO: consider checking for overflow?
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshorten-64-to-32"
-#endif
-                unsigned numRows = lround(ceil(log(frequency / snr) / log(density - frequency)) + 1);
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
+                unsigned numRows = Term::ComputeRowCount(frequency, density, snr);
                 configuration.push_front(RowConfiguration::Entry(0, 2, false));
                 numRows -= 2;
                 Rank rank = 1;

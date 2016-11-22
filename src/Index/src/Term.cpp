@@ -301,7 +301,13 @@ namespace BitFunnel
     }
 
 
-    Rank Term::GetMaxRank(double frequency, double target)
+    unsigned Term::ComputeDocumentFrequency(double corpusSize, double idf)
+    {
+        return static_cast<unsigned>(corpusSize / pow(10, idf));
+    }
+
+
+    Rank Term::ComputeMaxRank(double frequency, double target)
     {
         if (frequency <= 0)
         {
@@ -318,9 +324,17 @@ namespace BitFunnel
     }
 
 
-    unsigned Term::ComputeDocumentFrequency(double corpusSize, double idf)
+    unsigned Term::ComputeRowCount(double frequency, double density, double snr)
     {
-        return static_cast<unsigned>(corpusSize / pow(10, idf));
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#endif
+                return lround(ceil(log(frequency / snr) / log(density - frequency)) + 1);
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
     }
 
 
