@@ -67,6 +67,12 @@ namespace BitFunnel
     }
 
 
+    double TaskDistributor::GetTimeSinceFirstThread() const
+    {
+        return m_threadManager->GetTimeSinceFirstThread();
+    }
+
+
     void TaskDistributor::WaitForCompletion()
     {
         m_threadManager->WaitForThreads();

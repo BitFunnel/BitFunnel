@@ -58,6 +58,9 @@ namespace BitFunnel
         // no tasks remaining, the method will return false.
         virtual bool TryAllocateTask(size_t& taskId) = 0;
 
+        // Returns the time in seconds since the first thread started.
+        virtual double GetTimeSinceFirstThread() const = 0;
+
         // Waits for all tasks to complete.
         virtual void WaitForCompletion() = 0;
     };
