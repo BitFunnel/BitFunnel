@@ -225,8 +225,9 @@ namespace BitFunnel
             Factories::CreateTaskDistributor(processors,
                                              queries.size() * iterations);
 
+        Stopwatch stopwatch;
         distributor->WaitForCompletion();
-        double elapsedTime = distributor->GetTimeSinceFirstThread();
+        double elapsedTime = stopwatch.ElapsedTime();
 
         size_t queriesProcessed = 0;
         for (auto result : results)

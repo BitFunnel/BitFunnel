@@ -40,8 +40,7 @@ namespace BitFunnel
     {
         for (size_t i = 0 ; i < threads.size(); ++i)
         {
-            m_wrappers.emplace_back(ThreadWrapper(*this, *threads[i]));
-            m_threads.push_back(std::thread(ThreadEntryPoint, &m_wrappers[i]));
+            m_threads.push_back(std::thread(ThreadEntryPoint, threads[i].get()));
         }
     }
 
@@ -49,12 +48,6 @@ namespace BitFunnel
     ThreadManager::~ThreadManager()
     {
         // REVIEW: what should this do if threads are still running?
-    }
-
-
-    double ThreadManager::GetTimeSinceFirstThread() const
-    {
-        return m_stopwatch.ElapsedTime();
     }
 
 
@@ -67,20 +60,9 @@ namespace BitFunnel
     }
 
 
-    void ThreadManager::RecordThreadStart()
-    {
-        std::lock_guard<std::mutex> lock(m_firstThreadHasStartedLock);
-        if (!m_firstThreadHasStarted)
-        {
-            m_firstThreadHasStarted = true;
-            m_stopwatch.Reset();
-        }
-    }
-
-
     void ThreadManager::ThreadEntryPoint(void* data)
     {
-        ThreadWrapper* thread = static_cast<ThreadWrapper*>(data);
-        thread->Go();
+        IThreadBase* thread = static_cast<IThreadBase*>(data);
+        thread->EntryPoint();
     }
 }

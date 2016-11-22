@@ -22,12 +22,10 @@
 
 #pragma once
 
-#include <mutex>                                    // std::mutex embedded.
 #include <thread>                                   // std::thread embedded.
 #include <vector>                                   // std::vector embedded.
 
 #include "BitFunnel/Utilities/IThreadManager.h"     // Base class.
-#include "BitFunnel/Utilities/Stopwatch.h"          // Stopwatch embedded.
 #include "BitFunnel/NonCopyable.h"                  // Base class.
 
 
@@ -41,45 +39,12 @@ namespace BitFunnel
 
         ~ThreadManager();
 
-        //
-        // IThreadManager methods.
-        //
-
-        // Returns the time in seconds since the first thread started.
-        virtual double GetTimeSinceFirstThread() const override;
-
         // Wait for all threads to finish.
-        virtual void WaitForThreads() override;
+        void WaitForThreads();
 
     private:
-        void RecordThreadStart();
         static void ThreadEntryPoint(void* data);
 
-        std::mutex m_firstThreadHasStartedLock;
-        bool m_firstThreadHasStarted;
-        Stopwatch m_stopwatch;
-
-        class ThreadWrapper
-        {
-        public:
-            ThreadWrapper(ThreadManager& threadManager, IThreadBase& thread)
-              : m_threadManager(threadManager),
-                m_thread(thread)
-            {
-            }
-
-            void Go()
-            {
-                m_threadManager.RecordThreadStart();
-                m_thread.EntryPoint();
-            }
-
-        private:
-            ThreadManager & m_threadManager;
-            IThreadBase& m_thread;
-        };
-
-        std::vector<ThreadWrapper> m_wrappers;
         std::vector<std::thread> m_threads;
     };
 }

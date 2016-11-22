@@ -61,21 +61,14 @@ namespace BitFunnel
             const std::vector<std::unique_ptr<ITaskProcessor>>& processors,
             size_t taskCount);
 
-        //
-        // ITaskDistributor methods
-        //
-
         // TaskDistributorThreads call TryAllocateTask() to get their next task
         // assignment. If there is work remaining, taskId will be set to the id
         // of the assigned task and the method will return true. If there are
         // no tasks remaining, the method will return false.
         bool TryAllocateTask(size_t& taskId);
 
-        // Returns the time in seconds since the first thread started.
-        virtual double GetTimeSinceFirstThread() const override;
-
         // Wait for all tasks to complete.
-        virtual void WaitForCompletion() override;
+        void WaitForCompletion();
 
     private:
         std::vector<std::unique_ptr<ITaskProcessor>> const & m_processors;

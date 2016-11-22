@@ -41,9 +41,6 @@ namespace BitFunnel
     public:
         virtual ~IThreadManager() {}
 
-        // Returns the time in seconds since the first thread started.
-        virtual double GetTimeSinceFirstThread() const = 0;
-
         // Wait for all threads to exit.
         virtual void WaitForThreads() = 0;
     };
