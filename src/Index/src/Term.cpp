@@ -301,6 +301,22 @@ namespace BitFunnel
     }
 
 
+    Rank Term::GetMaxRank(double frequency, double target)
+    {
+        if (frequency <= 0)
+        {
+            // TODO: throw here?
+            return 0;
+        }
+
+        Rank result = 0;
+        while (FrequencyAtRank(frequency, result) < target)
+        {
+            ++result;
+        }
+        return (std::max)(result-1, static_cast<Rank>(0u));
+    }
+
 
     unsigned Term::ComputeDocumentFrequency(double corpusSize, double idf)
     {

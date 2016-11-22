@@ -216,4 +216,92 @@ namespace BitFunnel
         Term::IdfX10 idf = std::min(term.GetIdfSum(), local);
         return m_configurations[idf];
     }
+
+
+    //*************************************************************************
+    //
+    // TreatmentPrivateSharedRank0ToN
+    //
+    // Two rank 0 rows followed by rows of increasing rank until the bit density
+    // is > .5 or we run out of rows. Due to limitatons in other BitFunnel code,
+    // we also top out at rank 6.
+    //
+    //*************************************************************************
+    TreatmentPrivateSharedRank0ToN::TreatmentPrivateSharedRank0ToN(double density, double snr)
+    {
+        // TODO: what should maxDensity be? Note that this is different from the
+        // density liimt that's passed in.
+        const double maxDensity = 0.2;
+        // Fill up vector of RowConfigurations. GetTreatment() will use the
+        // IdfSum() value of the Term as an index into this vector.
+        for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
+        {
+            RowConfiguration configuration;
+
+            double frequency = Term::IdfX10ToFrequency(idf);
+            if (frequency > density)
+            {
+                // This term is so common that it must be assigned a private row.
+                configuration.push_front(RowConfiguration::Entry(0, 1, true));
+            }
+            else
+            {
+                // TODO: fix other limitations so this can be higher than 6?
+                const Rank maxRank = (std::min)(Term::GetMaxRank(frequency, maxDensity), static_cast<Rank>(6u));
+
+                // TODO: consider checking for overflow?
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#endif
+                unsigned numRows = lround(ceil(log(frequency / snr) / log(density - frequency)) + 1);
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+                configuration.push_front(RowConfiguration::Entry(0, 2, false));
+                numRows -= 2;
+                Rank rank = 1;
+                while (rank < maxRank && numRows > 0)
+                {
+                    double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
+                    if (frequencyAtRank >= density)
+                    {
+                        configuration.push_front(RowConfiguration::Entry(rank, 1, true));
+                    }
+                    else
+                    {
+                        configuration.push_front(RowConfiguration::Entry(rank, 1, false));
+                    }
+                    ++rank;
+                    --numRows;
+                }
+                double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
+                if (frequencyAtRank >= density)
+                {
+                    configuration.push_front(RowConfiguration::Entry(rank, numRows, true));
+                }
+                else
+                {
+                    configuration.push_front(RowConfiguration::Entry(rank, numRows, false));
+                }
+            }
+
+            m_configurations.push_back(configuration);
+
+            //std::cout << idf / 10.0 << ": ";
+            //m_configurations.back().Write(std::cout);
+            //std::cout << std::endl;
+        }
+    }
+
+
+    RowConfiguration TreatmentPrivateSharedRank0ToN::GetTreatment(Term term) const
+    {
+        // DESIGN NOTE: we can't c_maxIdfX10Value directly to min because min
+        // takes a reference and the compiler has already turned it into a
+        // constant, which we can't take a reference to.
+        auto local = Term::c_maxIdfX10Value;
+        Term::IdfX10 idf = std::min(term.GetIdfSum(), local);
+        return m_configurations[idf];
+    }
 }

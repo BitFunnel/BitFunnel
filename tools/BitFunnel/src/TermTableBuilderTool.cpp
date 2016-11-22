@@ -116,7 +116,10 @@ namespace BitFunnel
         auto terms(Factories::CreateDocumentFrequencyTable(
             *fileManager->DocFreqTable(shard).OpenForRead()));
 
-        auto treatment(Factories::CreateTreatmentPrivateSharedRank0And3(
+        // auto treatment(Factories::CreateTreatmentPrivateSharedRank0And3(
+        //     density, snr));
+
+        auto treatment(Factories::CreateTreatmentPrivateSharedRank0(
             density, snr));
 
         auto facts(Factories::CreateFactSet());

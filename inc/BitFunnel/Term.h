@@ -163,6 +163,10 @@ namespace BitFunnel
         // rank.
         static double FrequencyAtRank(double frequency, Rank rank);
 
+        // Given a term frequency, find the maximum rank such that we don't
+        // exceed a density target.
+        static Rank GetMaxRank(double frequency, double target);
+
         // Static method that calculates IDF value from document frequency and
         // corpus document count.
         static IdfX10 ComputeIdfX10(size_t documentFrequency,
