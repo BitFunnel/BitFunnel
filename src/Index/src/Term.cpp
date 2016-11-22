@@ -324,7 +324,7 @@ namespace BitFunnel
     }
 
 
-    unsigned Term::ComputeRowCount(double frequency, double density, double snr)
+    int Term::ComputeRowCount(double frequency, double density, double snr)
     {
 #ifdef __clang__
 #pragma clang diagnostic push

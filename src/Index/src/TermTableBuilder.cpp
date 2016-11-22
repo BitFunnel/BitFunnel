@@ -116,8 +116,9 @@ namespace BitFunnel
                 for (auto rcEntry : configuration)
                 {
                     // Assign the appropriate rows.
-                    m_rowAssigners[rcEntry.GetRank()]->AssignAdhoc(dfEntry.GetFrequency(),
-                                                                   rcEntry.GetRowCount());
+                    m_rowAssigners[rcEntry.GetRank()]->
+                        AssignAdhoc(dfEntry.GetFrequency(),
+                                    rcEntry.GetRowCount());
                 }
             }
             else
@@ -132,9 +133,10 @@ namespace BitFunnel
                 for (auto rcEntry : configuration)
                 {
                     // Assign the appropriate rows.
-                    m_rowAssigners[rcEntry.GetRank()]->AssignExplicit(dfEntry.GetFrequency(),
-                                                                      rcEntry.GetRowCount(),
-                                                                      rcEntry.IsPrivate());
+                    m_rowAssigners[rcEntry.GetRank()]->
+                        AssignExplicit(dfEntry.GetFrequency(),
+                                       rcEntry.GetRowCount(),
+                                       rcEntry.IsPrivate());
                 }
 
                 m_termTable.CloseTerm(dfEntry.GetTerm().GetRawHash());

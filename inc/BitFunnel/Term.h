@@ -182,7 +182,7 @@ namespace BitFunnel
         // Compute the number of rank 0 rows necessary assuming an ideal world
         // (no row correlations) to reach a specified signal to noise ratio
         // (snr).
-        static unsigned ComputeRowCount(double frequency, double density, double snr);
+        static int ComputeRowCount(double frequency, double density, double snr);
 
         // Computes the general hash, given a raw hash and a classification.
         // Made available as a public static method for use by NGramBuilder.

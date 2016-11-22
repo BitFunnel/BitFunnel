@@ -120,7 +120,7 @@ namespace BitFunnel
             }
             else
             {
-                unsigned k = Term::ComputeRowCount(frequency, density, snr);
+                int k = Term::ComputeRowCount(frequency, density, snr);
                 configuration.push_front(RowConfiguration::Entry(0, k, false));
             }
 
@@ -172,7 +172,7 @@ namespace BitFunnel
                 // desired signal to noise ratio, snr, given a certain bit
                 // density.
                 // TODO: consider checking for overflow?
-                unsigned k = Term::ComputeRowCount(frequency, density, snr);
+                int k = Term::ComputeRowCount(frequency, density, snr);
                 configuration.push_front(RowConfiguration::Entry(0, 2, false));
                 if (k > 2)
                 {
@@ -225,6 +225,9 @@ namespace BitFunnel
         const double maxDensity = 0.2;
         // Fill up vector of RowConfigurations. GetTreatment() will use the
         // IdfSum() value of the Term as an index into this vector.
+        //
+        // TODO: we should make sure we get "enough" rows if we end up with a
+        // high rank private row.
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
             RowConfiguration configuration;
@@ -240,7 +243,7 @@ namespace BitFunnel
                 // TODO: fix other limitations so this can be higher than 6?
                 const Rank maxRank = (std::min)(Term::ComputeMaxRank(frequency, maxDensity), static_cast<Rank>(6u));
 
-                unsigned numRows = Term::ComputeRowCount(frequency, density, snr);
+                int numRows = Term::ComputeRowCount(frequency, density, snr);
                 configuration.push_front(RowConfiguration::Entry(0, 2, false));
                 numRows -= 2;
                 Rank rank = 1;
@@ -249,23 +252,34 @@ namespace BitFunnel
                     double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
                     if (frequencyAtRank >= density)
                     {
-                        configuration.push_front(RowConfiguration::Entry(rank, 1, true));
+                        configuration.push_front(RowConfiguration::Entry(rank,
+                                                                         1,
+                                                                         true));
                     }
                     else
                     {
-                        configuration.push_front(RowConfiguration::Entry(rank, 1, false));
+                        configuration.push_front(RowConfiguration::Entry(rank,
+                                                                         1,
+                                                                         false));
                     }
                     ++rank;
                     --numRows;
                 }
-                double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
-                if (frequencyAtRank >= density)
+                if (numRows > 0)
                 {
-                    configuration.push_front(RowConfiguration::Entry(rank, numRows, true));
-                }
-                else
-                {
-                    configuration.push_front(RowConfiguration::Entry(rank, numRows, false));
+                    double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
+                    if (frequencyAtRank >= density)
+                    {
+                        configuration.push_front(RowConfiguration::Entry(rank,
+                                                                         1,
+                                                                         true));
+                    }
+                    else
+                    {
+                        configuration.push_front(RowConfiguration::Entry(rank,
+                                                                         numRows,
+                                                                         false));
+                    }
                 }
             }
 
