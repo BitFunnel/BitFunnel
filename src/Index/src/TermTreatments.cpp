@@ -62,6 +62,15 @@ namespace BitFunnel
     }
 
 
+    std::unique_ptr<ITermTreatment>
+        Factories::CreateTreatmentPrivateSharedRank0ToN(double density,
+                                                        double snr)
+    {
+        return
+            std::unique_ptr<ITermTreatment>(
+                new TreatmentPrivateSharedRank0ToN(density, snr));
+    }
+
 
     //*************************************************************************
     //

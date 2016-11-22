@@ -137,5 +137,8 @@ namespace BitFunnel
 
         std::unique_ptr<ITermTreatment>
             CreateTreatmentPrivateSharedRank0And3(double density, double snr);
+
+        std::unique_ptr<ITermTreatment>
+            CreateTreatmentPrivateSharedRank0ToN(double density, double snr);
     }
 }
