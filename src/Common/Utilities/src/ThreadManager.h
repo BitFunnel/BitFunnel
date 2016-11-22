@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <atomic>                                   // std::atomic embedded.
+#include <mutex>                                    // std::mutex embedded.
 #include <thread>                                   // std::thread embedded.
 #include <vector>                                   // std::vector embedded.
 
@@ -55,7 +55,8 @@ namespace BitFunnel
         void RecordThreadStart();
         static void ThreadEntryPoint(void* data);
 
-        std::atomic<bool> m_firstThreadStarted;
+        std::mutex m_firstThreadHasStartedLock;
+        bool m_firstThreadHasStarted;
         Stopwatch m_stopwatch;
 
         class ThreadWrapper

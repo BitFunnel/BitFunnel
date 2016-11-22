@@ -69,11 +69,10 @@ namespace BitFunnel
 
     void ThreadManager::RecordThreadStart()
     {
-        // TODO: Review std::memory_order choices.
-        // TODO: Consider using a simple std::mutex instead of compare_exchange.
-        bool expected(false);
-        if (m_firstThreadStarted.compare_exchange_strong(expected, true))
+        std::lock_guard<std::mutex> lock(m_firstThreadHasStartedLock);
+        if (!m_firstThreadHasStarted)
         {
+            m_firstThreadHasStarted = true;
             m_stopwatch.Reset();
         }
     }
