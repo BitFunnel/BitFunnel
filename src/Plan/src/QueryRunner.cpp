@@ -20,8 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>  // Used for DiagnosticStream ref; not actually used.
-#include <memory>  // Used for std::unique_ptr of diagnosticStream. Probably temporary.
+#include <condition_variable>
+#include <iostream>             // Used for DiagnosticStream ref; not actually used.
+#include <memory>               // Used for std::unique_ptr of diagnosticStream. Probably temporary.
+#include <mutex>
 #include <ostream>
 
 #include "BitFunnel/Configuration/Factories.h"
@@ -70,6 +72,68 @@ namespace BitFunnel
 
     //*************************************************************************
     //
+    // ThreadSynchronizer
+    //
+    // ThreadSynchronizer reduces the lag between the times various threads
+    // start to do work. Intended for aiding in performance measurement where
+    // we don't want to capture the OS thread startup time.
+    //
+    // Suspends the first n - 1 threads to call Wait().
+    // Wakes all threads on the nth call to Wait().
+    //
+    //*************************************************************************
+    class ThreadSynchronizer
+    {
+    public:
+        ThreadSynchronizer(size_t threadCount);
+
+        void Wait();
+
+        double GetElapsedTime() const;
+
+    private:
+        size_t m_threadCount;
+        std::mutex m_lock;
+        std::condition_variable m_wakeCondition;
+
+        Stopwatch m_stopwatch;
+    };
+
+
+    ThreadSynchronizer::ThreadSynchronizer(size_t threadCount)
+        : m_threadCount(threadCount)
+    {
+    }
+
+
+    void ThreadSynchronizer::Wait()
+    {
+        std::unique_lock<std::mutex> lock(m_lock);
+
+        --m_threadCount;
+        if (m_threadCount == 0)
+        {
+            m_stopwatch.Reset();
+            m_wakeCondition.notify_all();
+        }
+        else
+        {
+            while (m_threadCount > 0)
+            {
+                m_wakeCondition.wait(lock);
+            }
+        }
+    }
+
+
+    double ThreadSynchronizer::GetElapsedTime() const
+    {
+        return m_stopwatch.ElapsedTime();
+    }
+
+
+    //*************************************************************************
+    //
     // QueryProcessor
     //
     //*************************************************************************
@@ -81,7 +145,8 @@ namespace BitFunnel
                        std::vector<std::string> const & queries,
                        std::vector<QueryInstrumentation::Data> & results,
                        size_t maxResultCount,
-                       bool useNativeCode);
+                       bool useNativeCode,
+                       ThreadSynchronizer& synchronizer);
 
         //
         // ITaskProcessor methods
@@ -99,12 +164,15 @@ namespace BitFunnel
         std::vector<std::string> const & m_queries;
         std::vector<QueryInstrumentation::Data> & m_results;
         bool m_useNativeCode;
+        ThreadSynchronizer& m_synchronizer;
 
         std::vector<ResultsBuffer::Result> m_matches;
 
         ResultsBuffer m_resultsBuffer;
 
         QueryResources m_resources;
+
+        size_t m_queriesProcessed;
 
         static const size_t c_allocatorSize = 1ull << 16;
     };
@@ -115,21 +183,31 @@ namespace BitFunnel
                                    std::vector<std::string> const & queries,
                                    std::vector<QueryInstrumentation::Data> & results,
                                    size_t maxResultCount,
-                                   bool useNativeCode)
+                                   bool useNativeCode,
+                                   ThreadSynchronizer& synchronizer)
       : m_index(index),
         m_config(config),
         m_queries(queries),
         m_results(results),
         m_useNativeCode(useNativeCode),
+        m_synchronizer(synchronizer),
         m_matches(maxResultCount, {nullptr, 0}),
         m_resultsBuffer(index.GetIngestor().GetDocumentCount()),
-        m_resources(c_allocatorSize, c_allocatorSize)
+        m_resources(c_allocatorSize, c_allocatorSize),
+        m_queriesProcessed(0)
     {
     }
 
 
     void QueryProcessor::ProcessTask(size_t taskId)
     {
+        // If this is the first query, wait for other threads before continuing.
+        if (m_queriesProcessed == 0)
+        {
+            m_synchronizer.Wait();
+        }
+        ++m_queriesProcessed;
+
         QueryInstrumentation instrumentation;
         m_resources.Reset();
 
@@ -181,13 +259,16 @@ namespace BitFunnel
 
         size_t maxResultCount = index.GetIngestor().GetDocumentCount();
 
+        ThreadSynchronizer synchronizer(1);
+
         QueryProcessor
             processor(index,
                       *config,
                       queries,
                       results,
                       maxResultCount,
-                      useNativeCode);
+                      useNativeCode,
+                      synchronizer);
         processor.ProcessTask(0);
         processor.Finished();
 
@@ -209,6 +290,8 @@ namespace BitFunnel
 
         size_t maxResultCount = index.GetIngestor().GetDocumentCount();
 
+        ThreadSynchronizer synchronizer(threadCount);
+
         std::vector<std::unique_ptr<ITaskProcessor>> processors;
         for (size_t i = 0; i < threadCount; ++i) {
             processors.push_back(
@@ -218,16 +301,16 @@ namespace BitFunnel
                                        queries,
                                        results,
                                        maxResultCount,
-                                       useNativeCode)));
+                                       useNativeCode,
+                                       synchronizer)));
         }
 
         auto distributor =
             Factories::CreateTaskDistributor(processors,
                                              queries.size() * iterations);
 
-        Stopwatch stopwatch;
         distributor->WaitForCompletion();
-        double elapsedTime = stopwatch.ElapsedTime();
+        double elapsedTime = synchronizer.GetElapsedTime();
 
         size_t queriesProcessed = 0;
         for (auto result : results)
