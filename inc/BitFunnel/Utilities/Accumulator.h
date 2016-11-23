@@ -23,7 +23,7 @@
 #pragma once
 
 #include <algorithm>    // std::min(), std::max()
-#include <limits>       // infinity()
+#include <limits>       // infinity(), NaN
 
 #include "BitFunnel/Exceptions.h"
 
@@ -72,7 +72,9 @@ namespace BitFunnel
         {
             if (m_count == 0)
             {
-                return 0;
+                // We can legitimately have m_count == 0 if, for example, we
+                // have a rank that has no explicit rows but has adhoc rows.
+                return std::numeric_limits<double>::quiet_NaN();
             }
             else
             {
@@ -82,24 +84,22 @@ namespace BitFunnel
 
 
         // Returns the minimum value recorded.
-        // Throws if no values have been recorded.
         double GetMin() const
         {
             if (m_count == 0)
             {
-                throw RecoverableError("Accumulator::GetMin(): no recorded values.");
+                return std::numeric_limits<double>::quiet_NaN();
             }
             return m_min;
         }
 
 
         // Returns the maximum value recorded.
-        // Throws if no values have been recorded.
         double GetMax() const
         {
             if (m_count == 0)
             {
-                throw RecoverableError("Accumulator::GetMax(): no recorded values.");
+                return std::numeric_limits<double>::quiet_NaN();
             }
             return m_max;
         }

@@ -408,9 +408,7 @@ namespace BitFunnel
 
     RowIndex TermTableBuilder::RowAssigner::GetAdhocRowCount() const
     {
-        if (m_privateExplicitTermCount > 0 ||
-            m_sharedAdhocTermCount > 0 ||
-            m_sharedAdhocTermCount > 0)
+        if (m_termTable.IsRankUsed(m_rank))
         {
             double rowCount = std::max(static_cast<double>(GetMinAdhocRowCount()),
                                        ceil(m_adhocTotal / m_density));

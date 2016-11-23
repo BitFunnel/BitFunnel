@@ -171,7 +171,8 @@ namespace BitFunnel
     void TermTable::AddRowId(RowId row)
     {
         EnsureSealed(false);
-        // NOTE: we don't EnsureTermOpen because we could add system rows via AddRowId.
+        // NOTE: we don't EnsureTermOpen because we could add system rows via
+        // AddRowId.
         m_ranksInUse[row.GetRank()] = true;
         m_rowIds.push_back(row);
     }

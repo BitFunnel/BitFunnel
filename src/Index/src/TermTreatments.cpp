@@ -222,7 +222,7 @@ namespace BitFunnel
     {
         // TODO: what should maxDensity be? Note that this is different from the
         // density liimt that's passed in.
-        const double maxDensity = 0.2;
+        const double maxDensity = 0.5;
         // Fill up vector of RowConfigurations. GetTreatment() will use the
         // IdfSum() value of the Term as an index into this vector.
         //
