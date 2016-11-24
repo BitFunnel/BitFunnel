@@ -65,7 +65,8 @@ namespace BitFunnel
             std::istream& input,
             std::ostream& output,
             std::vector<std::string> const & columnNames,
-            bool plainTextOutput);
+            bool plainTextOutput,
+            bool escapeOutput);
 
     private:
         static void Usage(std::ostream& output);

@@ -251,15 +251,17 @@ namespace BitFunnel
     }
 
 
+    char const * QueryParser::m_escapeChars = " \t\f\v&|\\()\":-";
+
+
     char QueryParser::GetWithEscape()
     {
         char c = PeekChar();
-        char const * legalEscapes = " \t\f\v&|\\()\":-";
         if (c == '\\')
         {
             GetChar();
             c = PeekChar();
-            if (strchr(legalEscapes, c) != nullptr)
+            if (strchr(m_escapeChars, c) != nullptr)
             {
                 return GetChar();
             }
@@ -273,6 +275,23 @@ namespace BitFunnel
         {
             return GetChar();
         }
+    }
+
+
+    std::string QueryParser::Escape(char const * input)
+    {
+        std::string escaped;
+        while (*input != '\0')
+        {
+            if (strchr(m_escapeChars, *input) != nullptr)
+            {
+                escaped.push_back('\\');
+            }
+            escaped.push_back(*input);
+            input++;
+        }
+
+        return escaped;
     }
 
 

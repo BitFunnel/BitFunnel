@@ -22,6 +22,7 @@
 
 #include <algorithm>
 
+#include "BitFunnel/Plan/QueryParser.h"
 #include "CsvExtract.h"
 #include "CsvTsv/Csv.h"
 #include "LoggerInterfaces/Check.h"
@@ -37,6 +38,7 @@ namespace BitFunnel
         try
         {
             bool plainTextOutput = false;
+            bool escapeOutput = false;
 
             std::vector<std::string> columnNames;
 
@@ -47,6 +49,10 @@ namespace BitFunnel
                 if (arg == "-plaintext")
                 {
                     plainTextOutput = true;
+                }
+                else if (arg == "-escape")
+                {
+                    escapeOutput = true;
                 }
                 else
                 {
@@ -66,7 +72,7 @@ namespace BitFunnel
             CHECK_GT(columnNames.size(), 0u)
                 << "No column names specified.";
 
-            Filter(input, output, columnNames, plainTextOutput);
+            Filter(input, output, columnNames, plainTextOutput, escapeOutput);
         }
         catch (Logging::CheckException e)
         {
@@ -87,10 +93,14 @@ namespace BitFunnel
     void CsvExtract::Filter(std::istream& input,
                             std::ostream& output,
                             std::vector<std::string> const & columnNames,
-                            bool plainTextOutput)
+                            bool plainTextOutput,
+                            bool escapeOutput)
     {
         CHECK_GT(columnNames.size(), 0u)
             << "Expect at least one column to extract.";
+
+        CHECK_FALSE(plainTextOutput && escapeOutput)
+            << "-plaintext and -escape are mutually exclusive.";
 
         CsvTsv::CsvTableParser parser(input);
         CsvTsv::CsvTableFormatter formatter(output);
@@ -177,6 +187,15 @@ namespace BitFunnel
                     }
                     output << inputRow[inputIndex[i]];
                 }
+                else if (escapeOutput)
+                {
+                    if (i != 0)
+                    {
+                        output << ",";
+                    }
+                    output
+                        << QueryParser::Escape(inputRow[inputIndex[i]].c_str());
+                }
                 else
                 {
                     formatter.WriteField(inputRow[inputIndex[i]]);
@@ -191,13 +210,18 @@ namespace BitFunnel
     void CsvExtract::Usage(std::ostream& output)
     {
         output
-            << "CsvExtract [-plaintext] [<column number>]+" << std::endl
+            << "CsvExtract [-plaintext|-escape] [<column number>]+" << std::endl
             << std::endl
             << "  Reads a .csv file from standard input." << std::endl
             << "  Writes filtered .csv file to standard output." << std::endl
             << std::endl
             << "  The -plaintext option causes the output to be" << std::endl
             << "  without csv escaping." << std::endl
+            << std::endl
+            << "  The -escape option causes the output to be" << std::endl
+            << "  escaped for the BitFunnel Query Parser." << std::endl
+            << std::endl
+            << "  The -plaintext and -escape options are mutually exclusive." << std::endl
             << std::endl;
     }
 }

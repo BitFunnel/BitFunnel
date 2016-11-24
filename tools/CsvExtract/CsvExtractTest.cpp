@@ -47,7 +47,7 @@ namespace BitFunnel
 
         std::stringstream output;
 
-        CsvExtract::Filter(input, output, columns, false);
+        CsvExtract::Filter(input, output, columns, false, false);
 
         ASSERT_EQ(expected, output.str());
     }
@@ -75,7 +75,7 @@ namespace BitFunnel
 
         std::stringstream output;
 
-        CsvExtract::Filter(input, output, columns, false);
+        CsvExtract::Filter(input, output, columns, false, false);
 
         ASSERT_EQ(expected, output.str());
     }
@@ -93,7 +93,7 @@ namespace BitFunnel
 
         std::stringstream output;
 
-        ASSERT_THROW(CsvExtract::Filter(input, output, columns, false),
+        ASSERT_THROW(CsvExtract::Filter(input, output, columns, false, false),
                      Logging::CheckException);
     }
 
@@ -117,7 +117,7 @@ namespace BitFunnel
 
         std::stringstream output;
 
-        CsvExtract::Filter(input, output, columns, true);
+        CsvExtract::Filter(input, output, columns, true, false);
 
         ASSERT_EQ(expected, output.str());
     }
@@ -140,6 +140,37 @@ namespace BitFunnel
         std::string expected =
             "d,b\n"
             "4,\"2\n"
+            "s,q,1\n";
+
+        std::stringstream output;
+
+        BitFunnel::CsvExtract extractor;
+        extractor.Main(input,
+                       output,
+                       static_cast<int>(args.size()),
+                       args.data());
+
+        ASSERT_EQ(expected, output.str());
+    }
+
+
+    TEST(CsvExtractTest, ExtractEscapedCmdLineArg)
+    {
+        std::stringstream input;
+        input
+            << "a,b,c,d,e\n"
+            << "1,\"\"\"2\",3,4,5\n"
+            << "p,\"q,1\",r,s,t\n";
+
+        std::vector<char const *> args;
+        args.push_back("CsvExtract");
+        args.push_back("d");
+        args.push_back("-escape");
+        args.push_back("b");
+
+        std::string expected =
+            "d,b\n"
+            "4,\\\"2\n"
             "s,q,1\n";
 
         std::stringstream output;
@@ -197,7 +228,26 @@ namespace BitFunnel
 
         std::stringstream output;
 
-        ASSERT_THROW(CsvExtract::Filter(input, output, columns, false),
+        ASSERT_THROW(CsvExtract::Filter(input, output, columns, false, false),
+                     Logging::CheckException);
+    }
+
+
+    TEST(CsvExtractTest, EscapedAndPlainTextMutuallyExclusive)
+    {
+        std::stringstream input;
+        input
+            << "a,b,c,d,e\n"
+            << "1,2,3,4,5\n"
+            << "p,q,r,s,t\n";
+
+        std::vector<std::string> columns;
+        columns.push_back("d");
+        columns.push_back("b");
+
+        std::stringstream output;
+
+        ASSERT_THROW(CsvExtract::Filter(input, output, columns, true, true),
                      Logging::CheckException);
     }
 }

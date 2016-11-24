@@ -474,4 +474,15 @@ namespace BitFunnel
             VerifyQueryParser(c_testData[i].m_expected, c_testData[i].m_input, allocator);
         }
     }
+
+
+    TEST(QueryParser, Escaping)
+    {
+        char const * input = "A B\tC\fD\vE&F|G\\H(I)J\"K:L-M";
+        char const * expected = "A\\ B\\\tC\\\fD\\\vE\\&F\\|G\\\\H\\(I\\)J\\\"K\\:L\\-M";
+
+        auto observed = QueryParser::Escape(input);
+
+        EXPECT_EQ(expected, observed);
+    }
 }

@@ -23,6 +23,7 @@
 #pragma once
 
 #include <iosfwd>                   // std::istream parameter.
+#include <string>                   // std::string return value.
 
 #include "BitFunnel/Exceptions.h"   // Base class.
 #include "BitFunnel/Term.h"         // Term::StreamId parameter.
@@ -69,6 +70,10 @@ namespace BitFunnel
             // Character position where error occurred.
             size_t m_position;
         };
+
+        // Escapes a string that contains characters that would otherwise have
+        // special meaning to QueryParser.
+        static std::string Escape(char const * input);
 
     private:
         // OR:
@@ -122,5 +127,7 @@ namespace BitFunnel
         size_t m_currentPosition;
         bool m_haveChar;
         char m_nextChar;
+
+        static char const * m_escapeChars;
     };
 }
