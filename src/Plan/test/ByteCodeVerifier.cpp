@@ -77,7 +77,8 @@ namespace BitFunnel
             GetIterationsPerSlice(),
             m_rowOffsets.data(),
             nullptr,
-            instrumentation);
+            instrumentation,
+            nullptr);
 
         interpreter.Run();
 

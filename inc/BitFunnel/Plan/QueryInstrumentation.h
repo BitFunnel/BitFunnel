@@ -60,6 +60,11 @@ namespace BitFunnel
             m_data.m_quadwordCount += amount;
         }
 
+        inline void IncrementCacheLineCount(size_t amount)
+        {
+            m_data.m_cacheLineCount += amount;
+        }
+
         inline void FinishParsing()
         {
             m_data.m_parsingTime = m_stopwatch.ElapsedTime();
@@ -87,6 +92,7 @@ namespace BitFunnel
               : m_rowCount(0ull),
                 m_matchCount(0ull),
                 m_quadwordCount(0ull),
+                m_cacheLineCount(0ll),
                 m_parsingTime(0.0),
                 m_planningTime(0.0),
                 m_matchingTime(0.0)
@@ -98,6 +104,7 @@ namespace BitFunnel
                 m_rowCount = other.m_rowCount;
                 m_matchCount = other.m_matchCount;
                 m_quadwordCount = other.m_quadwordCount;
+                m_cacheLineCount = other.m_cacheLineCount;
                 m_parsingTime = other.m_parsingTime;
                 m_planningTime = other.m_planningTime;
                 m_matchingTime = other.m_matchingTime;
@@ -117,6 +124,11 @@ namespace BitFunnel
             inline size_t GetQuadwordCount()
             {
                 return m_quadwordCount;
+            }
+
+            inline size_t GetCacheLineCount()
+            {
+                return m_cacheLineCount;
             }
 
             inline double GetParsingTime()
@@ -143,6 +155,7 @@ namespace BitFunnel
             size_t m_rowCount;
             size_t m_matchCount;
             size_t m_quadwordCount;
+            size_t m_cacheLineCount;
             double m_parsingTime;
             double m_planningTime;
             double m_matchingTime;

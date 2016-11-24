@@ -35,13 +35,13 @@
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryParser.h"
 #include "BitFunnel/Plan/QueryRunner.h"
-#include "BitFunnel/Plan/QueryResources.h"
 #include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/ITaskDistributor.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "CsvTsv/Csv.h"
+#include "QueryResources.h"
 
 
 namespace BitFunnel
@@ -146,6 +146,7 @@ namespace BitFunnel
                        std::vector<QueryInstrumentation::Data> & results,
                        size_t maxResultCount,
                        bool useNativeCode,
+                       bool countCacheLines,
                        ThreadSynchronizer& synchronizer);
 
         //
@@ -184,6 +185,7 @@ namespace BitFunnel
                                    std::vector<QueryInstrumentation::Data> & results,
                                    size_t maxResultCount,
                                    bool useNativeCode,
+                                   bool countCacheLines,
                                    ThreadSynchronizer& synchronizer)
       : m_index(index),
         m_config(config),
@@ -196,6 +198,10 @@ namespace BitFunnel
         m_resources(c_allocatorSize, c_allocatorSize),
         m_queriesProcessed(0)
     {
+        if (countCacheLines)
+        {
+            m_resources.EnableCacheLineCounting(index);
+        }
     }
 
 
@@ -248,7 +254,8 @@ namespace BitFunnel
     QueryInstrumentation::Data QueryRunner::Run(
         char const * query,
         ISimpleIndex const & index,
-        bool useNativeCode)
+        bool useNativeCode,
+        bool countCacheLines)
     {
         std::vector<std::string> queries;
         queries.push_back(std::string(query));
@@ -268,6 +275,7 @@ namespace BitFunnel
                       results,
                       maxResultCount,
                       useNativeCode,
+                      countCacheLines,
                       synchronizer);
         processor.ProcessTask(0);
         processor.Finished();
@@ -282,7 +290,8 @@ namespace BitFunnel
         size_t threadCount,
         std::vector<std::string> const & queries,
         size_t iterations,
-        bool useNativeCode)
+        bool useNativeCode,
+        bool countCacheLines)
     {
         std::vector<QueryInstrumentation::Data> results(queries.size() * iterations);
 
@@ -302,6 +311,7 @@ namespace BitFunnel
                                        results,
                                        maxResultCount,
                                        useNativeCode,
+                                       countCacheLines,
                                        synchronizer)));
         }
 

@@ -49,6 +49,9 @@ namespace BitFunnel
 
         IFileSystem & GetFileSystem() const;
 
+        bool GetCacheLineCountMode() const;
+        void SetCacheLineCountMode(bool mode);
+
         bool GetCompilerMode() const;
         void SetCompilerMode(bool mode);
 
@@ -77,6 +80,7 @@ namespace BitFunnel
         std::unique_ptr<TaskPool> m_taskPool;
         std::unique_ptr<ISimpleIndex> m_index;
 
+        bool m_cacheLineCountMode;
         bool m_compilerMode;
         bool m_failOnException;
         size_t m_threadCount;

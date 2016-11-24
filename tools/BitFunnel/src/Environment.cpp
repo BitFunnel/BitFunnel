@@ -23,6 +23,7 @@
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "AnalyzeCommand.h"
+#include "CacheLineCountCommand.h"
 #include "CdCommand.h"
 #include "CompilerCommand.h"
 #include "CorrelateCommand.h"
@@ -68,6 +69,7 @@ namespace BitFunnel
     {
         m_taskFactory->RegisterCommand<Analyze>();
         m_taskFactory->RegisterCommand<Cache>();
+        m_taskFactory->RegisterCommand<CacheLineCountCommand>();
         m_taskFactory->RegisterCommand<Cd>();
         m_taskFactory->RegisterCommand<CompilerCommand>();
         m_taskFactory->RegisterCommand<Correlate>();
@@ -94,6 +96,18 @@ namespace BitFunnel
     IFileSystem & Environment::GetFileSystem() const
     {
         return m_fileSystem;
+    }
+
+
+    bool Environment::GetCacheLineCountMode() const
+    {
+        return m_cacheLineCountMode;
+    }
+
+
+    void Environment::SetCacheLineCountMode(bool mode)
+    {
+        m_cacheLineCountMode = mode;
     }
 
 

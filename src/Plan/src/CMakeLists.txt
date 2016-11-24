@@ -4,6 +4,7 @@ set(CPPFILES
     AbstractRow.cpp
     AbstractRowEnumerator.cpp
     ByteCodeInterpreter.cpp
+    CacheLineRecorder.cpp
     CompileNode.cpp
     MachineCodeGenerator.cpp
     MatchTreeCompiler.cpp
@@ -28,6 +29,7 @@ set(CPPFILES
     TermMatchTreeEvaluator.cpp
     TermPlan.cpp
     TermPlanConverter.cpp
+    VerifyOneQuery.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -38,6 +40,7 @@ set(POSIX_CPPFILES
 
 set(PRIVATE_HFILES
     ByteCodeInterpreter.h
+    CacheLineRecorder.h
     CompileNode.h
     MachineCodeGenerator.h
     MatchTreeCompiler.h
@@ -45,6 +48,7 @@ set(PRIVATE_HFILES
     MatchVerifier.h
     NativeCodeGenerator.h
     QueryPlanner.h
+    QueryResources.h
     RowSet.h
     RankDownCompiler.h
     RankZeroCompiler.h

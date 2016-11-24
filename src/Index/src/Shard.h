@@ -97,6 +97,9 @@ namespace BitFunnel
         // Shard have the same capacity.
         virtual DocIndex GetSliceCapacity() const override;
 
+        // Return the size of the slice buffer in bytes.
+        virtual size_t GetSliceBufferSize() const override;
+
         // Returns a vector of slice buffers for this shard.  The callers needs
         // to obtain a Token from ITokenManager to protect the pointer to the
         // list of slice buffers, as well as the buffers themselves.

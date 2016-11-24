@@ -52,13 +52,15 @@ namespace BitFunnel
         static QueryInstrumentation::Data Run(
             char const * query,
             ISimpleIndex const & index,
-            bool useNativeCode);
+            bool useNativeCode,
+            bool countCacheLines);
 
         static Statistics Run(ISimpleIndex const & index,
                               char const * outputDir,
                               size_t threadCount,
                               std::vector<std::string> const & queries,
                               size_t iterations,
-                              bool useNativeCode);
+                              bool useNativeCode,
+                              bool countCacheLines);
     };
 }

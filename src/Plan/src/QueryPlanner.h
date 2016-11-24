@@ -55,6 +55,7 @@ namespace BitFunnel
 
     private:
         void RunByteCodeInterpreter(ISimpleIndex const & index,
+                                    QueryResources & resources,
                                     QueryInstrumentation & instrumentation,
                                     CompileNode const & compileTree,
                                     Rank maxRank,

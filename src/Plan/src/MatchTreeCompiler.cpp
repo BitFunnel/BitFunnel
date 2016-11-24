@@ -21,11 +21,11 @@
 // THE SOFTWARE.
 
 
-#include "BitFunnel/Plan/QueryResources.h"
 #include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Utilities/Allocator.h"
 #include "MatchTreeCompiler.h"
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
+#include "QueryResources.h"
 
 using namespace NativeJIT;
 

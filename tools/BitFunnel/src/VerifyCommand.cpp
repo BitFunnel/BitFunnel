@@ -22,24 +22,11 @@
 
 #include <iostream>
 
-#include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
-#include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/IDiagnosticStream.h"
-#include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/Index/IDocumentCache.h"
-#include "BitFunnel/Index/IIngestor.h"
-#include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IMatchVerifier.h"
-#include "BitFunnel/Plan/QueryInstrumentation.h"
-#include "BitFunnel/Plan/QueryParser.h"
-#include "BitFunnel/Plan/QueryResources.h"
-#include "BitFunnel/Plan/ResultsBuffer.h"
-#include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
-#include "BitFunnel/Utilities/Allocator.h"
-#include "BitFunnel/Utilities/Factories.h"
+#include "BitFunnel/Plan/VerifyOneQuery.h"
 #include "BitFunnel/Utilities/ReadLines.h"
 #include "CsvTsv/Csv.h"
 #include "Environment.h"
@@ -85,91 +72,6 @@ namespace BitFunnel
     }
 
 
-    // TODO: this should be somewhere else.
-    std::unique_ptr<IMatchVerifier> VerifyOneQuery(
-        Environment & environment,
-        std::string query,
-        bool runVerification)
-    {
-        static const size_t c_allocatorSize = 1ull << 16;
-        Allocator allocator(c_allocatorSize);
-
-        auto streamConfiguration = Factories::CreateStreamConfiguration();
-
-        QueryParser parser(query.c_str(), *streamConfiguration, allocator);
-        auto tree = parser.Parse();
-
-        std::unique_ptr<IMatchVerifier> verifier =
-            Factories::CreateMatchVerifier(query);
-
-        if (tree == nullptr)
-        {
-            // std::cout << "Empty query." << std::endl;
-        }
-        else
-        {
-            // auto & environment = GetEnvironment();
-            auto & cache = environment.GetIngestor().GetDocumentCache();
-            auto & config = environment.GetConfiguration();
-            TermMatchTreeEvaluator evaluator(config);
-
-            size_t matchCount = 0;
-            size_t documentCount = 0;
-
-            if (runVerification)
-            {
-                for (auto entry : cache)
-                {
-                    ++documentCount;
-                    bool matches = evaluator.Evaluate(*tree, entry.first);
-
-                    if (matches)
-                    {
-                        ++matchCount;
-                        //std::cout
-                        //    << "  DocId(" << entry.second << ") "
-                        //    << std::endl;
-
-                        verifier->AddExpected(entry.second);
-                    }
-                }
-            }
-
-            // std::cout
-            //     << matchCount << " match(es) out of "
-            //     << documentCount << " documents."
-            //     << std::endl;
-
-            auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
-            // diagnosticStream->Enable("");
-
-            QueryInstrumentation instrumentation;
-
-            ResultsBuffer results(environment.GetSimpleIndex().GetIngestor().GetDocumentCount());
-
-            QueryResources resources;
-
-            Factories::RunQueryPlanner(*tree,
-                                       environment.GetSimpleIndex(),
-                                       resources,
-                                       *diagnosticStream,
-                                       instrumentation,
-                                       results,
-                                       environment.GetCompilerMode());
-
-            for (auto result : results)
-            {
-                DocumentHandle handle = Factories::CreateDocumentHandle(result.m_slice, result.m_index);
-                verifier->AddObserved(handle.GetDocId());
-            }
-
-            verifier->Verify();
-            //verifier->Print(std::cout);
-        }
-        return verifier;
-    }
-
-
     void Verify::Execute()
     {
         if (m_isSingleQuery)
@@ -178,7 +80,9 @@ namespace BitFunnel
                 << "Processing query \""
                 << m_query
                 << "\"" << std::endl;
-            auto verifier = VerifyOneQuery(GetEnvironment(), m_query, true);
+            auto verifier = VerifyOneQuery(GetEnvironment().GetSimpleIndex(),
+                                           m_query,
+                                           true);
             std::cout << "True positive count: "
                 << verifier->GetTruePositiveCount()
                 << std::endl
@@ -290,7 +194,9 @@ namespace BitFunnel
             uint64_t position = 0;
             for (const auto & query : queries)
             {
-                auto verifier = VerifyOneQuery(GetEnvironment(), query, !m_isOutput);
+                auto verifier = VerifyOneQuery(GetEnvironment().GetSimpleIndex(),
+                                               query,
+                                               !m_isOutput);
                 queryString = verifier->GetQuery();
 
                 if (!m_isOutput)

@@ -34,6 +34,7 @@
 namespace BitFunnel
 {
     class ByteCodeGenerator;
+    class CacheLineRecorder;
     class IDiagnosticStream;
     class QueryInstrumentation;
     class ResultsBuffer;
@@ -69,7 +70,8 @@ namespace BitFunnel
                             size_t iterationsPerSlice,
                             ptrdiff_t const * rowOffsets,
                             IDiagnosticStream * diagnosticStream,
-                            QueryInstrumentation & instrumentation);
+                            QueryInstrumentation & instrumentation,
+                            CacheLineRecorder * cacheLineRecorder);
 
         // Runs the instruction sequence for a specified number of iterations.
         // Each iteration processes a single quadword of row data at the
@@ -230,6 +232,7 @@ namespace BitFunnel
 
         IDiagnosticStream* m_diagnosticStream;
         QueryInstrumentation& m_instrumentation;
+        CacheLineRecorder * m_cacheLineRecorder;
     };
 
 

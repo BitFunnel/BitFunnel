@@ -20,37 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "BitFunnel/Plan/QueryInstrumentation.h"
-#include "CsvTsv/Csv.h"
+#pragma once
+
+#include "TaskBase.h"   // TaskBase base class.
 
 
 namespace BitFunnel
 {
-    // static
-    void QueryInstrumentation::Data::FormatHeader(
-        CsvTsv::CsvTableFormatter & formatter)
+    class CacheLineCountCommand : public TaskBase
     {
-        formatter.WriteField("rows");
-        formatter.WriteField("matches");
-        formatter.WriteField("quadwords");
-        formatter.WriteField("cachelines");
-        formatter.WriteField("parse");
-        formatter.WriteField("plan");
-        formatter.WriteField("match");
-        formatter.WriteRowEnd();
-    }
+    public:
+        CacheLineCountCommand(Environment & environment,
+                           Id id,
+                           char const * parameters);
 
+        virtual void Execute() override;
+        static ICommand::Documentation GetDocumentation();
 
-    void QueryInstrumentation::Data::Format(
-        CsvTsv::CsvTableFormatter & formatter) const
-    {
-        formatter.WriteField(m_rowCount);
-        formatter.WriteField(m_matchCount);
-        formatter.WriteField(m_quadwordCount);
-        formatter.WriteField(m_cacheLineCount);
-        formatter.WriteField(m_parsingTime);
-        formatter.WriteField(m_planningTime);
-        formatter.WriteField(m_matchingTime);
-        formatter.WriteRowEnd();
-    }
+    private:
+    };
 }

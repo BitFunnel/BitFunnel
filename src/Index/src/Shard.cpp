@@ -217,6 +217,12 @@ namespace BitFunnel
     }
 
 
+    size_t Shard::GetSliceBufferSize() const
+    {
+        return m_sliceBufferSize;
+    }
+
+
     RowId Shard::GetDocumentActiveRowId() const
     {
         return m_documentActiveRowId;

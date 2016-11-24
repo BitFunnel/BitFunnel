@@ -29,7 +29,6 @@
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/IPlanRows.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
-#include "BitFunnel/Plan/QueryResources.h"
 #include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Plan/RowPlan.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
@@ -45,6 +44,7 @@
 #include "MatchTreeRewriter.h"
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
 #include "QueryPlanner.h"
+#include "QueryResources.h"
 #include "RankDownCompiler.h"
 #include "RegisterAllocator.h"
 #include "RowSet.h"
@@ -87,7 +87,6 @@ namespace BitFunnel
                                ResultsBuffer & resultsBuffer,
                                bool useNativeCode)
       : m_resultsBuffer(resultsBuffer)
-        // m_useNativeCode(useNativeCode)
     {
         if (diagnosticStream.IsEnabled("planning/term"))
         {
@@ -198,6 +197,7 @@ namespace BitFunnel
         else
         {
             RunByteCodeInterpreter(index,
+                                   resources,
                                    instrumentation,
                                    compileTree,
                                    maxRank,
@@ -207,6 +207,7 @@ namespace BitFunnel
 
 
     void QueryPlanner::RunByteCodeInterpreter(ISimpleIndex const & index,
+                                              QueryResources & resources,
                                               QueryInstrumentation & instrumentation,
                                               CompileNode const & compileTree,
                                               Rank maxRank,
@@ -239,7 +240,8 @@ namespace BitFunnel
                                                iterationsPerSlice,
                                                rowSet.GetRowOffsets(shardId),
                                                nullptr,
-                                               instrumentation);
+                                               instrumentation,
+                                               resources.GetCacheLineRecorder());
 
                 intepreter.Run();
             }

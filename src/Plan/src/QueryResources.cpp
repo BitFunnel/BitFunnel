@@ -21,20 +21,30 @@
 // THE SOFTWARE.
 
 
-#include "BitFunnel/Plan/QueryResources.h"
+#include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Index/IShard.h"
+#include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Utilities/Allocator.h"
+#include "QueryResources.h"
 
 
 namespace BitFunnel
 {
     QueryResources::QueryResources(size_t treeAllocatorBytes,
                                    size_t codeAllocatorBytes)
-        : m_matchTreeAllocator(new BitFunnel::Allocator(treeAllocatorBytes)),
-          m_expressionTreeAllocator(new NativeJIT::Allocator(treeAllocatorBytes)),
-          m_codeAllocator(new NativeJIT::ExecutionBuffer(codeAllocatorBytes))
+      : m_matchTreeAllocator(new BitFunnel::Allocator(treeAllocatorBytes)),
+        m_expressionTreeAllocator(new NativeJIT::Allocator(treeAllocatorBytes)),
+        m_codeAllocator(new NativeJIT::ExecutionBuffer(codeAllocatorBytes))
     {
         m_code.reset(new NativeJIT::FunctionBuffer(*m_codeAllocator,
                                                    static_cast<unsigned>(codeAllocatorBytes)));
+    }
+
+
+    void QueryResources::EnableCacheLineCounting(ISimpleIndex const & index)
+    {
+        m_cacheLineRecorder.reset(
+            new CacheLineRecorder(index.GetIngestor().GetShard(0).GetSliceBufferSize()));
     }
 
 
@@ -44,5 +54,9 @@ namespace BitFunnel
         m_expressionTreeAllocator->Reset();
         // WARNING: Do not reset m_codeAllocator. It is used to provision m_code.
         m_code->Reset();
+        if (m_cacheLineRecorder != nullptr)
+        {
+            m_cacheLineRecorder->Reset();
+        }
     }
 }

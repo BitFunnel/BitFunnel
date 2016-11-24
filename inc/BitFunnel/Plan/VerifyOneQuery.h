@@ -20,37 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "BitFunnel/Plan/QueryInstrumentation.h"
-#include "CsvTsv/Csv.h"
+#pragma once
+
+#include <memory>   // std::unique_ptr return value.
+#include <string>   // std::string parameter.
 
 
 namespace BitFunnel
 {
-    // static
-    void QueryInstrumentation::Data::FormatHeader(
-        CsvTsv::CsvTableFormatter & formatter)
-    {
-        formatter.WriteField("rows");
-        formatter.WriteField("matches");
-        formatter.WriteField("quadwords");
-        formatter.WriteField("cachelines");
-        formatter.WriteField("parse");
-        formatter.WriteField("plan");
-        formatter.WriteField("match");
-        formatter.WriteRowEnd();
-    }
+    class IMatchVerifyer;
+    class ISimpleIndex;
 
-
-    void QueryInstrumentation::Data::Format(
-        CsvTsv::CsvTableFormatter & formatter) const
-    {
-        formatter.WriteField(m_rowCount);
-        formatter.WriteField(m_matchCount);
-        formatter.WriteField(m_quadwordCount);
-        formatter.WriteField(m_cacheLineCount);
-        formatter.WriteField(m_parsingTime);
-        formatter.WriteField(m_planningTime);
-        formatter.WriteField(m_matchingTime);
-        formatter.WriteRowEnd();
-    }
+    std::unique_ptr<IMatchVerifier> VerifyOneQuery(
+        ISimpleIndex const & index,
+        std::string query,
+        bool runVerification);
 }

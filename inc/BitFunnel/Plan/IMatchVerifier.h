@@ -22,11 +22,12 @@
 
 #pragma once
 
-#include <iosfwd>
-#include <string>
+#include <iosfwd>                       // std::ostream parameter.
+#include <string>                       // std::vector return value.
+#include <vector>                       // std::vector return value.
 
-#include "BitFunnel/BitFunnelTypes.h"  // DocId parameter.
-#include "BitFunnel/IInterface.h"      // IInterface base class.
+#include "BitFunnel/BitFunnelTypes.h"   // DocId parameter.
+#include "BitFunnel/IInterface.h"       // IInterface base class.
 
 namespace BitFunnel
 {

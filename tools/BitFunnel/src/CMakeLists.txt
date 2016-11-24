@@ -3,6 +3,7 @@
 set(CPPFILES
     AnalyzeCommand.cpp
     BitFunnelTool.cpp
+    CacheLineCountCommand.cpp
     CdCommand.cpp
     CompilerCommand.cpp
     CorrelateCommand.cpp
@@ -36,6 +37,7 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     AnalyzeCommand.h
     BitFunnelTool.h
+    CacheLineCountCommand.h
     CdCommand.h
     CompilerCommand.h
     CorrelateCommand.h

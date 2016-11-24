@@ -30,6 +30,7 @@
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/ResultsBuffer.h"
 #include "ByteCodeInterpreter.h"
+#include "CacheLineRecorder.h"
 #include "LoggerInterfaces/Check.h"
 
 
@@ -62,7 +63,8 @@ Decide on type of Slices
         size_t iterationsPerSlice,
         ptrdiff_t const * rowOffsets,
         IDiagnosticStream * diagnosticStream,
-        QueryInstrumentation& instrumentation)
+        QueryInstrumentation & instrumentation,
+        CacheLineRecorder * cacheLineRecorder)
       : m_code(code.GetCode()),
         m_jumpTable(code.GetJumpTable()),
         m_resultsBuffer(resultsBuffer),
@@ -72,7 +74,8 @@ Decide on type of Slices
         m_rowOffsets(rowOffsets),
         m_dedupe(),
         m_diagnosticStream(diagnosticStream),
-        m_instrumentation(instrumentation)
+        m_instrumentation(instrumentation),
+        m_cacheLineRecorder(cacheLineRecorder)
     {
     }
 
@@ -96,13 +99,28 @@ Decide on type of Slices
     bool ByteCodeInterpreter::ProcessOneSlice(size_t slice)
     {
         auto sliceBuffer = m_sliceBuffers[slice];
+
+        if (m_cacheLineRecorder != nullptr)
+        {
+            m_cacheLineRecorder->Reset();
+            m_cacheLineRecorder->SetBase(sliceBuffer); 
+        }
+
+        bool terminate = false;
+
         for (size_t i = 0; i < m_iterationsPerSlice; ++i)
         {
-            bool terminate = RunOneIteration(sliceBuffer, i);
+            terminate = RunOneIteration(sliceBuffer, i);
             if (terminate)
             {
-                return true;
+                break;
             }
+        }
+
+        if (m_cacheLineRecorder != nullptr)
+        {
+            m_instrumentation.IncrementCacheLineCount(
+                m_cacheLineRecorder->GetCacheLinesAccessed());
         }
 
         // false ==> ran to completion.
@@ -150,11 +168,18 @@ Decide on type of Slices
             {
             case Opcode::AndRow:
                 {
-                m_instrumentation.IncrementQuadwordCount();
+                    m_instrumentation.IncrementQuadwordCount();
                     uint64_t const * rowPtr =
                         reinterpret_cast<uint64_t const *>(
                             sliceBuffer + m_rowOffsets[row]);
-                    uint64_t value = *(rowPtr + (m_offset >> delta));
+
+                    auto ptr = rowPtr + (m_offset >> delta);
+                    if (m_cacheLineRecorder != nullptr)
+                    {
+                        m_cacheLineRecorder->RecordAccess(ptr);
+                    }
+
+                    uint64_t value = *ptr;
                     m_accumulator &= (inverted ? ~value : value);
                     m_zeroFlag = (m_accumulator == 0);
                     m_ip++;
@@ -174,7 +199,14 @@ Decide on type of Slices
                     uint64_t const * rowPtr =
                         reinterpret_cast<uint64_t const *>(
                             sliceBuffer + m_rowOffsets[row]);
-                    auto value = *(rowPtr + (m_offset >> delta));
+
+                    auto ptr = rowPtr + (m_offset >> delta);
+                    if (m_cacheLineRecorder != nullptr)
+                    {
+                        m_cacheLineRecorder->RecordAccess(ptr);
+                    }
+
+                    auto value = *ptr;
                     m_accumulator = (inverted ? ~value : value);
                     m_zeroFlag = (m_accumulator == 0);
                     m_ip++;
