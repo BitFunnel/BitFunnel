@@ -41,7 +41,7 @@ namespace BitFunnel
         void Reset();
 
     private:
-        size_t m_sliceBufferSize;
+        // size_t m_sliceBufferSize;
         size_t m_bitArraySize;
         std::unique_ptr<uint8_t[]> m_bitArray;
         char const * m_base;

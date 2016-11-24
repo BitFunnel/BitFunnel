@@ -43,8 +43,8 @@ namespace BitFunnel
 
 
     CacheLineRecorder::CacheLineRecorder(size_t sliceBufferSize)
-      : m_sliceBufferSize(sliceBufferSize),
-        m_base(nullptr)
+        // : m_sliceBufferSize(sliceBufferSize),
+        : m_base(nullptr)
     {
         size_t cacheLineCount =
             RoundUp(sliceBufferSize, c_bytesPerCacheLine) / c_bytesPerCacheLine;
