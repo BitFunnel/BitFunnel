@@ -22,13 +22,13 @@
 
 #include "gtest/gtest.h"
 
-#include "BitFunnel/Plan/RowMatchNode.h"
 #include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
 #include "CompileNode.h"
 #include "PlainTextCodeGenerator.h"
 #include "RankDownCompiler.h"
 #include "SameExceptForWhitespace.h"
+#include "RowMatchNode.h"
 #include "TextObjectParser.h"
 
 

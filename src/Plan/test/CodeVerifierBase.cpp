@@ -32,12 +32,12 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
-#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Term.h"
 #include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/Factories.h"  // TODO: only for diagnosticStream. Remove.
 #include "ByteCodeInterpreter.h"
 #include "CodeVerifierBase.h"
+#include "ResultsBuffer.h"
 
 
 namespace BitFunnel

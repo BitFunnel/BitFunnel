@@ -39,9 +39,13 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    AbstractRow.h
     ByteCodeInterpreter.h
     CacheLineRecorder.h
     CompileNode.h
+    ICodeGenerator.h
+    IPlanRows.h
+    IRowSet.h
     MachineCodeGenerator.h
     MatchTreeCompiler.h
     MatchTreeRewriter.h
@@ -49,11 +53,17 @@ set(PRIVATE_HFILES
     NativeCodeGenerator.h
     QueryPlanner.h
     QueryResources.h
+    ResultsBuffer.h
+    RowMatchNode.h
     RowSet.h
     RankDownCompiler.h
     RankZeroCompiler.h
     RegisterAllocator.h
+    RowPlan.h
     StringVector.h
+    TermPlan.h
+    TermPlanConverter.h
+    TermMatchTreeEvaluator.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

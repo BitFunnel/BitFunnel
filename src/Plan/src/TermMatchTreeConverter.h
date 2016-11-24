@@ -23,9 +23,9 @@
 #pragma once
 
 #include "BitFunnel/NonCopyable.h"
-#include "BitFunnel/Plan/RowMatchNode.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
-#include "BitFunnel/Term.h"  // needed for maxGramSize.
+#include "BitFunnel/Term.h"                 // Constant c_log2MaxGramSize.
+#include "RowMatchNode.h"
 // #include "BitFunnel/Stream.h"
 
 

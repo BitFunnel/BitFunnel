@@ -22,10 +22,10 @@
 
 #pragma once
 
-#include <ostream>                          // std::ostream parameter.
+#include <ostream>                  // std::ostream parameter.
 
-#include "BitFunnel/NonCopyable.h"          // Inherits from NonCopyable.
-#include "BitFunnel/Plan/ICodeGenerator.h"  // Inherits from ICodeGenerator.
+#include "BitFunnel/NonCopyable.h"  // Inherits from NonCopyable.
+#include "ICodeGenerator.h"         // Inherits from ICodeGenerator.
 
 
 namespace BitFunnel

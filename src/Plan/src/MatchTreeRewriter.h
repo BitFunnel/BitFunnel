@@ -22,8 +22,9 @@
 
 #pragma once
 
-#include "BitFunnel/NonCopyable.h"        // Inherits from NonCopyable.
-#include "BitFunnel/Plan/RowMatchNode.h"  // Uses RowMatchNode::Or, etc.
+#include "BitFunnel/NonCopyable.h"  // Inherits from NonCopyable.
+#include "RowMatchNode.h"           // Uses RowMatchNode::Or, etc.
+
 
 namespace BitFunnel
 {

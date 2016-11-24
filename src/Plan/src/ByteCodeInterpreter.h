@@ -27,7 +27,7 @@
 #include <vector>                           // std::vector embedded.
 
 #include "BitFunnel/BitFunnelTypes.h"       // Rank parameter.
-#include "BitFunnel/Plan/ICodeGenerator.h"  // Base class.
+#include "ICodeGenerator.h"                 // Base class.
 #include "LoggerInterfaces/Check.h"         // CHECK macro used in template code.
 
 

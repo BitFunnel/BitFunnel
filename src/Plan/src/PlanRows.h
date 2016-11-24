@@ -27,8 +27,8 @@
 
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/NonCopyable.h"
-#include "BitFunnel/Plan/IPlanRows.h"
 #include "FixedCapacityVector.h"
+#include "IPlanRows.h"
 
 
 namespace BitFunnel

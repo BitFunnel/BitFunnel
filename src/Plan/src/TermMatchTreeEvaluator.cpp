@@ -22,8 +22,8 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IDocument.h"
-#include "BitFunnel/Plan/TermMatchTreeEvaluator.h"
 #include "BitFunnel/Term.h"
+#include "TermMatchTreeEvaluator.h"
 
 
 namespace BitFunnel

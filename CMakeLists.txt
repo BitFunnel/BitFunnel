@@ -185,20 +185,12 @@ set(MOCKS_HFILES
 )
 
 set(PLAN_HFILES
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/AbstractRow.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/Factories.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/ICodeGenerator.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/IPlanRows.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/IRowSet.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/IMatchVerifier.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryInstrumentation.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryParser.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryRunner.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/ResultsBuffer.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/RowMatchNode.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/RowPlan.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/TermMatchNode.h
-  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/TermMatchTreeEvaluator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/VerifyOneQuery.h
 )
 

@@ -24,8 +24,8 @@
 
 #include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
-#include "BitFunnel/Plan/RowMatchNode.h"
-#include "BitFunnel/Plan/RowPlan.h"
+#include "RowMatchNode.h"
+#include "RowPlan.h"
 #include "TextObjectParser.h"
 
 

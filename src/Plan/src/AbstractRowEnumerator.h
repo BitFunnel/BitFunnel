@@ -25,9 +25,9 @@
 #include "BitFunnel/BitFunnelTypes.h"         // c_maxRankValue used in declaration.
 #include "BitFunnel/IEnumerator.h"            // Inherits from IEnumerator.
 #include "BitFunnel/Index/IFactSet.h"         // Embeds FactHandle.
-#include "BitFunnel/Plan/IPlanRows.h"         // AbstractRow as template parameter.
 #include "BitFunnel/NonCopyable.h"            // Inherits from NonCopyable.
 #include "FixedCapacityVector.h"              // FixedCapacityVector embedded.
+#include "IPlanRows.h"                        // AbstractRow as template parameter.
 
 
 namespace BitFunnel

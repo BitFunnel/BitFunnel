@@ -25,10 +25,10 @@
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "PlanRows.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
-#include "BitFunnel/Plan/RowPlan.h"
 #include "BitFunnel/Plan/TermMatchNode.h"
-#include "BitFunnel/Plan/TermPlanConverter.h"
+#include "RowPlan.h"
 #include "TermMatchTreeConverter.h"
+#include "TermPlanConverter.h"
 // #include "TermMatchTreeToFalsePositiveEvaluationTreeConverter.h"
 
 namespace BitFunnel

@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "AbstractRow.h"
 #include "BitFunnel/Allocators/IAllocator.h"
-#include "BitFunnel/Plan/AbstractRow.h"
-#include "BitFunnel/Plan/RowMatchNode.h"
 #include "BitFunnel/Utilities/IObjectFormatter.h"
 #include "BitFunnel/Utilities/IObjectParser.h"
 #include "LoggerInterfaces/Logging.h"
 #include "ObjectFormatter.h"
 #include "PlanNodeUtilities.h"
+#include "RowMatchNode.h"
 
 
 namespace BitFunnel

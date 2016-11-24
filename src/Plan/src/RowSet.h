@@ -23,8 +23,8 @@
 
 #pragma once
 
-#include "BitFunnel/Plan/IRowSet.h"
-#include "BitFunnel/NonCopyable.h"
+#include "BitFunnel/NonCopyable.h"  // Base class.
+#include "IRowSet.h"                // Base class.
 
 namespace BitFunnel
 {

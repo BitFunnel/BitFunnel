@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include "BitFunnel/Plan/AbstractRow.h" // Embeds AbstractRow.
-#include "BitFunnel/Plan/RowPlan.h"     // Inherits from RowPlanBase.
+#include "AbstractRow.h"    // Embeds AbstractRow.
+#include "RowPlan.h"        // RowPlanBase base class.
 
 
 namespace BitFunnel

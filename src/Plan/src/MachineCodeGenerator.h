@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include "BitFunnel/Plan/ICodeGenerator.h"     // Base class.
-#include "BitFunnel/NonCopyable.h"        // Base class.
+#include "BitFunnel/NonCopyable.h"      // Base class.
+#include "ICodeGenerator.h"             // Base class.
 
 
 namespace NativeJIT

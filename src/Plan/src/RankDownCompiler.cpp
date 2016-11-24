@@ -25,12 +25,12 @@
 #include <stddef.h>
 
 #include "BitFunnel/Allocators/IAllocator.h"
-#include "BitFunnel/Plan/ICodeGenerator.h"
-#include "BitFunnel/Plan/RowMatchNode.h"
 #include "CompileNode.h"
+#include "ICodeGenerator.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RankDownCompiler.h"
 #include "RankZeroCompiler.h"
+#include "RowMatchNode.h"
 
 
 namespace BitFunnel

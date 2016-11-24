@@ -24,9 +24,9 @@
 #include <stddef.h>     // For nullptr.
 
 #include "BitFunnel/Allocators/IAllocator.h"
-#include "BitFunnel/Plan/RowMatchNode.h"
 #include "LoggerInterfaces/Logging.h"
 #include "MatchTreeRewriter.h"
+#include "RowMatchNode.h"
 
 
 namespace BitFunnel

@@ -24,9 +24,9 @@
 
 #include <iosfwd>
 
-#include "BitFunnel/BitFunnelTypes.h"
-#include "BitFunnel/Index/RowId.h"
-#include "BitFunnel/Plan/AbstractRow.h"
+#include "AbstractRow.h"                // AbstractRow return value.
+#include "BitFunnel/BitFunnelTypes.h"   // ShardId parameter and return value.
+#include "BitFunnel/Index/RowId.h"      // RowId return value.
 
 
 namespace BitFunnel

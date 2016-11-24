@@ -31,8 +31,8 @@
 // #include "BitFunnel/Index/IShardIndex.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Plan/Factories.h"
-#include "BitFunnel/Plan/IPlanRows.h"
-#include "BitFunnel/Plan/IRowSet.h"
+#include "IPlanRows.h"
+#include "IRowSet.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RowSet.h"
 

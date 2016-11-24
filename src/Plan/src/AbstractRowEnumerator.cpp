@@ -24,7 +24,7 @@
 #include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/RowIdSequence.h"
-#include "BitFunnel/Plan/IPlanRows.h"
+#include "IPlanRows.h"
 // #include "BitFunnel/Stream.h"
 #include "LoggerInterfaces/Logging.h"
 

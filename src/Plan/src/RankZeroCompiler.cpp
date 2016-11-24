@@ -25,10 +25,10 @@
 #include <stddef.h>
 
 #include "BitFunnel/Allocators/IAllocator.h"
-#include "BitFunnel/Plan/RowMatchNode.h"
 #include "CompileNode.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RankZeroCompiler.h"
+#include "RowMatchNode.h"
 
 // TODO: get rid of dynamic cast?
 
