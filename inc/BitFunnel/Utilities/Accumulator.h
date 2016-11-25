@@ -74,6 +74,12 @@ namespace BitFunnel
             {
                 // We can legitimately have m_count == 0 if, for example, we
                 // have a rank that has no explicit rows but has adhoc rows.
+                //
+                // DESIGN NOTE: it's possible for quiet_NaN to not exist and we
+                // could check std::numeric_limits::has_quiet_NaN to make sure
+                // that quiet_NaN exists, but we don't currently support and
+                // have no plans to support any platform where this wouldn't
+                // work.
                 return std::numeric_limits<double>::quiet_NaN();
             }
             else
