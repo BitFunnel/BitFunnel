@@ -46,5 +46,15 @@ namespace BitFunnel
                 ASSERT_EQ(recorder.GetCacheLinesAccessed(), 1+i);
             }
         }
+
+        for (unsigned j = 0; j < c_lineSize; ++j)
+        {
+            recorder.Reset();
+            for (unsigned i = 0; i < c_vectorSize / c_lineSize; ++i)
+            {
+                recorder.RecordAccess(&tinyVector[i*c_lineSize+j]);
+                ASSERT_EQ(recorder.GetCacheLinesAccessed(), 1+i);
+            }
+        }
     }
 }
