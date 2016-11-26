@@ -82,7 +82,8 @@ namespace BitFunnel
                 << "\"" << std::endl;
             auto verifier = VerifyOneQuery(GetEnvironment().GetSimpleIndex(),
                                            m_query,
-                                           true);
+                                           true,
+                                           GetEnvironment().GetCompilerMode());
             std::cout << "True positive count: "
                 << verifier->GetTruePositiveCount()
                 << std::endl
@@ -196,7 +197,8 @@ namespace BitFunnel
             {
                 auto verifier = VerifyOneQuery(GetEnvironment().GetSimpleIndex(),
                                                query,
-                                               !m_isOutput);
+                                               !m_isOutput,
+                                               GetEnvironment().GetCompilerMode());
                 queryString = verifier->GetQuery();
 
                 if (!m_isOutput)

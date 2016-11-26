@@ -34,5 +34,6 @@ namespace BitFunnel
     std::unique_ptr<IMatchVerifier> VerifyOneQuery(
         ISimpleIndex const & index,
         std::string query,
-        bool runVerification);
+        bool runVerification,
+        bool compilerMode);
 }

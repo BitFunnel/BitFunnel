@@ -46,7 +46,8 @@ namespace BitFunnel
     std::unique_ptr<IMatchVerifier> VerifyOneQuery(
         ISimpleIndex const & index,
         std::string query,
-        bool runVerification)
+        bool runVerification,
+        bool compilerMode)
     {
         QueryResources resources;
         auto & allocator = resources.GetMatchTreeAllocator();
@@ -103,8 +104,6 @@ namespace BitFunnel
             QueryInstrumentation instrumentation;
 
             ResultsBuffer results(index.GetIngestor().GetDocumentCount());
-
-            bool compilerMode = true;
 
             Factories::RunQueryPlanner(*tree,
                                        index,
