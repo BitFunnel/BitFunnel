@@ -5,6 +5,7 @@ set(CPPFILES
     AbstractRowTest.cpp
     ByteCodeInterpreterTest.cpp
     ByteCodeVerifier.cpp
+    CacheLineRecorderTest.cpp
     CodeVerifierBase.cpp
     CompileNodeTest.cpp
     MatchTreeRewriterTest.cpp
