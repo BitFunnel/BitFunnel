@@ -24,7 +24,7 @@ names(df)[names(df) == 'variable'] <- 'access_type'
 png(filename="qwords.png",width=1600,height=1200)
 ggplot(df, aes(x=pos,y=value,colour=access_type)) +
 scale_fill_brewer(palette="Set1") + # doesn't work :-(
-theme_bw() +
+theme_minimal() +
 geom_point(alpha=1/150) +
 guides(colour = guide_legend(override.aes = list(alpha = 1))) +
 theme(axis.text = element_text(size=40),
@@ -40,7 +40,7 @@ names(df)[names(df) == 'variable'] <- 'access_type'
 png(filename="qwords-divided.png",width=1600,height=1200)
 ggplot(df, aes(x=pos,y=value,colour=access_type)) +
 scale_fill_brewer("Set1") + # doesn't work :-(
-theme_bw() +
+theme_minimal() +
 geom_point(alpha=1/150) +
 guides(colour = guide_legend(override.aes = list(alpha = 1))) +
 theme(axis.text = element_text(size=40),
