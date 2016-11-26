@@ -18,7 +18,7 @@ theme(axis.text = element_text(size=40),
       legend.text=element_text(size=40))
 dev.off()
 
-df_temp$queries.quadwords <- df_temp$queries.quadwords / 4
+df_temp$queries.quadwords <- df_temp$queries.quadwords / 8
 df <- melt(df_temp, id=c("pos"))
 
 png(filename="qwords-divided.png",width=1600,height=1200)
