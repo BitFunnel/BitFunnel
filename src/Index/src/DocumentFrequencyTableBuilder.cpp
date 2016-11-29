@@ -65,6 +65,13 @@ namespace BitFunnel
         }
 
         table.Write(output, termToText);
+
+        std::cout << "Raw DocumentFrequencyTable count: "
+                  << m_termCounts.size()
+                  << std::endl
+                  << "Saved DocumentFrequencyTable count: "
+                  << table.size()
+                  << std::endl;
     }
 
 
@@ -83,7 +90,7 @@ namespace BitFunnel
             if (frequency >= truncateBelowFrequency)
             {
                 const Term::Hash hash = entry.first.GetRawHash();
-                const Term::IdfX10 idf = 
+                const Term::IdfX10 idf =
                     Term::ComputeIdfX10(frequency, Term::c_maxIdfX10Value);
 
                 entries.push_back(std::make_pair(hash, idf));
@@ -95,6 +102,10 @@ namespace BitFunnel
         {
             IndexedIdfTable::WriteEntry(output, entry.first, entry.second);
         }
+
+        std::cout << "IndexedIdfTable count: "
+                  << entries.size()
+                  << std::endl;
     }
 
 
