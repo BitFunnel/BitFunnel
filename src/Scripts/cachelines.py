@@ -59,3 +59,4 @@ with open("/tmp/QueryPipelineStatistics.csv") as f:
                          qp_row[3], # quadwords
                          qp_row[4], # cachlines
                          expected_misses])
+        pos += 1
