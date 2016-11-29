@@ -52,6 +52,16 @@ namespace BitFunnel
             double value3 = 0.34567;
             StreamUtilities::WriteField<double>(writeStream, value3);
 
+            uint64_t hash0 = 0x12f70e0d32e20012ull;
+            uint64_t hash1 = 0xfb678589253f05caull;
+            uint64_t hash2 = 0xcacdd30424e06453ull;
+            uint64_t hash3 = 0xb29c1d8846fe8e26ull;
+            StreamUtilities::WriteField<uint64_t>(writeStream, hash0);
+            StreamUtilities::WriteField<uint64_t>(writeStream, hash1);
+            StreamUtilities::WriteField<uint64_t>(writeStream, hash2);
+            StreamUtilities::WriteField<uint64_t>(writeStream, hash3);
+
+
             std::string str = "abcdef";
             StreamUtilities::WriteString(writeStream, str);
 
@@ -82,6 +92,15 @@ namespace BitFunnel
             double value3Read = StreamUtilities::
                 ReadField<double>(readStream);
             EXPECT_EQ(value3, value3Read);
+
+            uint64_t hash0Read = StreamUtilities::ReadField<uint64_t>(readStream);
+            EXPECT_EQ(hash0, hash0Read);
+            uint64_t hash1Read = StreamUtilities::ReadField<uint64_t>(readStream);
+            EXPECT_EQ(hash1, hash1Read);
+            uint64_t hash2Read = StreamUtilities::ReadField<uint64_t>(readStream);
+            EXPECT_EQ(hash2, hash2Read);
+            uint64_t hash3Read = StreamUtilities::ReadField<uint64_t>(readStream);
+            EXPECT_EQ(hash3, hash3Read);
 
             std::string strRead;
             StreamUtilities::ReadString(readStream, strRead);

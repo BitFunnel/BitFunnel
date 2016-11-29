@@ -36,7 +36,8 @@ theme(axis.text = element_text(size=40),
 dev.off()
 
 queries$Quadwords <- queries$Quadwords / 8
-df <- melt(queries, measure.vars=c("Quadwords","Cachelines","ExpectedCachelines"), id.vars="TermPos")
+# df <- melt(queries, measure.vars=c("Quadwords","Cachelines","ExpectedCachelines"), id.vars="TermPos")
+df <- melt(queries, measure.vars=c("Quadwords","ExpectedCachelines"), id.vars="TermPos")
 names(df)[names(df) == 'variable'] <- 'AccessType'
 
 png(filename="qwords-divided.png",width=1600,height=1200)
