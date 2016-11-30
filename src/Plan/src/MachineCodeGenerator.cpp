@@ -306,12 +306,13 @@ namespace BitFunnel
 
     void MachineCodeGenerator::Report()
     {
-        // Free up two registers.
+        // Free up a register.
         m_code.Emit<OpCode::Push>(rcx);
 
         // Compute iteration number in rax.
         m_code.Emit<OpCode::Sub>(rcx, rdx);
         m_code.EmitImmediate<OpCode::Shr>(rcx, static_cast<uint8_t>(3));
+        m_code.Emit<OpCode::Sub>(rcx, rdi, NativeCodeGenerator::m_base);
 
         // Mark the quadword for this iteration.
         m_code.EmitImmediate<OpCode::Mov>(rax, 1);

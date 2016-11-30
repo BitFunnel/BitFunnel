@@ -76,7 +76,8 @@ namespace BitFunnel
 
         MatchTreeCompiler compiler(resources,
                                    compileNodeTree,
-                                   registers);
+                                   registers,
+                                   m_initialRank);
 
         ResultsBuffer results(m_index.GetIngestor().GetDocumentCount());
 

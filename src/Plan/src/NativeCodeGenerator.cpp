@@ -45,10 +45,12 @@ namespace BitFunnel
     NativeCodeGenerator::NativeCodeGenerator(
         Prototype& expression,
         CompileNode const & compileNodeTree,
-        RegisterAllocator const & registers)
+        RegisterAllocator const & registers,
+        Rank initialRank)
       : Node(expression),
         m_compileNodeTree(compileNodeTree),
-        m_registers(registers)
+        m_registers(registers),
+        m_initialRank(initialRank)
     {
     }
 
@@ -203,6 +205,16 @@ namespace BitFunnel
         //
 
         // TODO: Handle case where there are no rows.
+
+        // Store this iteration's base offset in m_base.
+        code.Emit<OpCode::Push>(rcx);
+        code.Emit<OpCode::Mov>(rax, rcx);
+        code.Emit<OpCode::Sub>(rax, rdx);
+        code.EmitImmediate<OpCode::Shr>(rax, static_cast<uint8_t>(3));
+        code.EmitImmediate<OpCode::Mov>(cl, static_cast<uint8_t>(m_initialRank));
+        code.Emit<OpCode::Shl>(rax);
+        code.Emit<OpCode::Mov>(rdi, m_base, rax);
+        code.Emit<OpCode::Pop>(rcx);
 
         {
             MachineCodeGenerator generator(m_registers, tree.GetCodeGenerator());
@@ -366,6 +378,7 @@ namespace BitFunnel
 
         // Compute DocIndex in r11.
         code.Emit<OpCode::Mov>(r11, r15);
+        code.Emit<OpCode::Add>(r11, rdi, NativeCodeGenerator::m_base);
         code.EmitImmediate<OpCode::Shl>(r11, static_cast<uint8_t>(6));
         code.Emit<OpCode::Add>(r11, r13);
 

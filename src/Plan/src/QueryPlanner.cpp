@@ -165,9 +165,8 @@ namespace BitFunnel
         // Compile the match tree into CompileNodes.
         RankDownCompiler compiler(resources.GetMatchTreeAllocator());
         compiler.Compile(rewritten);
-        const Rank maxRank = compiler.GetMaximumRank();
-        CompileNode const & compileTree = compiler.CreateTree(maxRank);
-        // CompileNode const & compileTree = compiler.CreateTree(c_maxRankValue);
+        const Rank initialRank = compiler.GetMaximumRank();
+        CompileNode const & compileTree = compiler.CreateTree(initialRank);
 
         if (diagnosticStream.IsEnabled("planning/compile"))
         {
@@ -191,7 +190,7 @@ namespace BitFunnel
                           resources,
                           instrumentation,
                           compileTree,
-                          maxRank,
+                          initialRank,
                           rowSet);
         }
         else
@@ -200,7 +199,7 @@ namespace BitFunnel
                                    resources,
                                    instrumentation,
                                    compileTree,
-                                   maxRank,
+                                   initialRank,
                                    rowSet);
         }
     }
@@ -210,7 +209,7 @@ namespace BitFunnel
                                               QueryResources & resources,
                                               QueryInstrumentation & instrumentation,
                                               CompileNode const & compileTree,
-                                              Rank maxRank,
+                                              Rank initialRank,
                                               RowSet const & rowSet)
     {
         // TODO: Clear results buffer here?
@@ -229,7 +228,7 @@ namespace BitFunnel
                 auto & sliceBuffers = shard.GetSliceBuffers();
 
                 // Iterations per slice calculation.
-                auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> maxRank;
+                auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> initialRank;
 
                 m_resultsBuffer.Reset();
 
@@ -257,7 +256,7 @@ namespace BitFunnel
                                      QueryResources & resources,
                                      QueryInstrumentation & instrumentation,
                                      CompileNode const & compileTree,
-                                     Rank maxRank,
+                                     Rank initialRank,
                                      RowSet const & rowSet)
     {
          // Perform register allocation on the compile tree.
@@ -269,7 +268,8 @@ namespace BitFunnel
 
          MatchTreeCompiler compiler(resources,
                                     compileTree,
-                                    registers);
+                                    registers,
+                                    initialRank);
 
 
          // TODO: Clear results buffer here?
@@ -288,7 +288,7 @@ namespace BitFunnel
                 auto & sliceBuffers = shard.GetSliceBuffers();
 
                 // Iterations per slice calculation.
-                auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> maxRank;
+                auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> initialRank;
 
 
                 m_resultsBuffer.Reset();

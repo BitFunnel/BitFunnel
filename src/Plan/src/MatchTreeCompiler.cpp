@@ -39,7 +39,8 @@ namespace BitFunnel
     //*************************************************************************
     MatchTreeCompiler::MatchTreeCompiler(QueryResources & resources,
                                          CompileNode const & tree,
-                                         RegisterAllocator const & registers)
+                                         RegisterAllocator const & registers,
+                                         Rank initialRank)
     {
         NativeCodeGenerator::Prototype expression(resources.GetExpressionTreeAllocator(),
                                                   resources.GetCode());
@@ -49,7 +50,8 @@ namespace BitFunnel
         auto & node =
             expression.PlacementConstruct<NativeCodeGenerator>(expression,
                                                                tree,
-                                                               registers);
+                                                               registers,
+                                                               initialRank);
         m_function = expression.Compile(node);
     }
 
@@ -65,6 +67,7 @@ namespace BitFunnel
             sliceBuffers,
             iterationsPerSlice,
             rowOffsets,
+            0,
             { 0 },
             results.m_capacity,
             0,

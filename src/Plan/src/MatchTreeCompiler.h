@@ -24,6 +24,7 @@
 
 #include <stddef.h>                             // size_t, ptrdiff_t parameters.
 
+#include "BitFunnel/BitFunnelTypes.h"           // Rank parameter.
 #include "NativeCodeGenerator.h"                // MatcherNode::Prototype::FunctionType type.
 #include "NativeJIT/CodeGen/FunctionBuffer.h"   // FunctionBuffer embedded.
 
@@ -52,7 +53,8 @@ namespace BitFunnel
     public:
         MatchTreeCompiler(QueryResources & resources,
                           CompileNode const & tree,
-                          RegisterAllocator const & registers);
+                          RegisterAllocator const & registers,
+                          Rank initialRank);
 
         size_t Run(size_t slicecount,
                    void * const * slicebuffers,

@@ -24,6 +24,7 @@
 
 #include <stddef.h>     // size_t, ptrdiff_t parameters.
 
+#include "BitFunnel/BitFunnelTypes.h"           // Rank parameter.
 #include "NativeJIT/CodeGen/FunctionBuffer.h"   // FunctionBuffer embedded.
 #include "NativeJIT/Function.h"                 // Function in typedef.
 #include "ResultsBuffer.h"                      // ResultsBuffer::Result type.
@@ -76,6 +77,7 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
             ptrdiff_t const * m_rowOffsets;
 
             // Dedupe buffer
+            size_t m_base;
             size_t m_dedupe[65];
 
             // Matches
@@ -93,7 +95,8 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
 
         NativeCodeGenerator(Prototype& expression,
                             CompileNode const & compileNodeTree,
-                            RegisterAllocator const & registers);
+                            RegisterAllocator const & registers,
+                            Rank initialRank);
 
         virtual ExpressionTree::Storage<size_t>
             CodeGenValue(ExpressionTree& tree) override;
@@ -104,6 +107,7 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
         static const int32_t m_sliceBuffers = OFFSET_OF(Parameters, m_sliceBuffers);
         static const int32_t m_iterationsPerSlice = OFFSET_OF(Parameters, m_iterationsPerSlice);
         static const int32_t m_rowOffsets = OFFSET_OF(Parameters, m_rowOffsets);
+        static const int32_t m_base = OFFSET_OF(Parameters, m_base);
         static const int32_t m_dedupe = OFFSET_OF(Parameters, m_dedupe);
         static const int32_t m_capacity = OFFSET_OF(Parameters, m_capacity);
         static const int32_t m_matchCount = OFFSET_OF(Parameters, m_matchCount);
@@ -120,6 +124,7 @@ static_cast<int32_t>(reinterpret_cast<uint64_t>(&((static_cast<object*>(nullptr)
 
         CompileNode const & m_compileNodeTree;
         RegisterAllocator const & m_registers;
+        const Rank m_initialRank;
 
         Register<8u, false> m_param1;
         Register<8u, false> m_return;
