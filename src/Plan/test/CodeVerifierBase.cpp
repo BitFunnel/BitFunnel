@@ -164,8 +164,8 @@ namespace BitFunnel
     // buffer pointers associated with the index.
     //
     void CodeVerifierBase::ExpectResult(uint64_t accumulator,
-                                          size_t offset,
-                                          size_t sliceNumber)
+                                        size_t offset,
+                                        size_t sliceNumber)
     {
         //// TODO: Remove temporary debugging output.
         //std::cout

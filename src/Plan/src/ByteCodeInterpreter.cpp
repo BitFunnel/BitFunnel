@@ -61,6 +61,7 @@ Decide on type of Slices
         size_t sliceCount,
         void * const * sliceBuffers,
         size_t iterationsPerSlice,
+        Rank initialRank,
         ptrdiff_t const * rowOffsets,
         IDiagnosticStream * diagnosticStream,
         QueryInstrumentation & instrumentation,
@@ -71,6 +72,7 @@ Decide on type of Slices
         m_sliceCount(sliceCount),
         m_sliceBuffers(sliceBuffers),
         m_iterationsPerSlice(iterationsPerSlice),
+        m_initialRank(initialRank),
         m_rowOffsets(rowOffsets),
         m_dedupe(),
         m_diagnosticStream(diagnosticStream),
@@ -132,12 +134,13 @@ Decide on type of Slices
         void const * voidSliceBuffer,
         size_t iteration)
     {
+        const size_t base = iteration << m_initialRank;
         char const * sliceBuffer =
             reinterpret_cast<char const *>(voidSliceBuffer);
 
-        bool calledAddResult = false;
-        m_ip = m_code.data();
-        m_offset = iteration;
+        uint64_t accumulator = 0ull;
+        auto ip = m_code.data();
+        size_t offset = iteration;
 
         if (m_diagnosticStream != nullptr && 
             m_diagnosticStream->IsEnabled("bytecode/opcode"))
@@ -147,20 +150,21 @@ Decide on type of Slices
             out << "ByteCode RunOneIteration:" << std::endl;
         }
 
-        while (m_ip->GetOpcode() != Opcode::End)
+        while (ip->GetOpcode() != Opcode::End)
         {
-            const Opcode opcode = m_ip->GetOpcode();
-            const unsigned row = m_ip->GetRow();
-            const unsigned delta = m_ip->GetDelta();
-            const bool inverted = m_ip->IsInverted();
+            const Opcode opcode = ip->GetOpcode();
+            const unsigned row = ip->GetRow();
+            const unsigned delta = ip->GetDelta();
+            const bool inverted = ip->IsInverted();
 
             if (m_diagnosticStream != nullptr &&
                 m_diagnosticStream->IsEnabled("bytecode/opcode"))
             {
                 std::ostream& out = m_diagnosticStream->GetStream();
-                out << "IP: " << std::hex << m_ip << std::dec << std::endl
+                out << "IP: " << std::hex << ip << std::dec << std::endl
                     << "Opcode: " << opcode << std::endl
-                    << "Offset: " << m_offset << std::endl
+                    << "Iteration: " << iteration << std::endl
+                    << "Offset: " << offset << std::endl
                     << "Row: " << row << std::endl
                     << "RowOffset: " << std::hex << m_rowOffsets[row] << std::dec << std::endl;
             }
@@ -173,22 +177,22 @@ Decide on type of Slices
                         reinterpret_cast<uint64_t const *>(
                             sliceBuffer + m_rowOffsets[row]);
 
-                    auto ptr = rowPtr + (m_offset >> delta);
+                    auto ptr = rowPtr + (offset >> delta);
                     if (m_cacheLineRecorder != nullptr)
                     {
                         m_cacheLineRecorder->RecordAccess(ptr);
                     }
 
                     uint64_t value = *ptr;
-                    m_accumulator &= (inverted ? ~value : value);
-                    m_zeroFlag = (m_accumulator == 0);
-                    m_ip++;
+                    accumulator &= (inverted ? ~value : value);
+                    m_zeroFlag = (accumulator == 0);
+                    ip++;
 
                     if (m_diagnosticStream != nullptr &&
                         m_diagnosticStream->IsEnabled("bytecode/loadrow"))
                     {
                         std::ostream& out = m_diagnosticStream->GetStream();
-                        out << "AndRow: " << std::hex << m_accumulator
+                        out << "AndRow: " << std::hex << accumulator
                             << std::dec << std::endl;
                     }
                 }
@@ -200,109 +204,108 @@ Decide on type of Slices
                         reinterpret_cast<uint64_t const *>(
                             sliceBuffer + m_rowOffsets[row]);
 
-                    auto ptr = rowPtr + (m_offset >> delta);
+                    auto ptr = rowPtr + (offset >> delta);
                     if (m_cacheLineRecorder != nullptr)
                     {
                         m_cacheLineRecorder->RecordAccess(ptr);
                     }
 
                     auto value = *ptr;
-                    m_accumulator = (inverted ? ~value : value);
-                    m_zeroFlag = (m_accumulator == 0);
-                    m_ip++;
+                    accumulator = (inverted ? ~value : value);
+                    m_zeroFlag = (accumulator == 0);
+                    ip++;
 
                     if (m_diagnosticStream != nullptr &&
                         m_diagnosticStream->IsEnabled("bytecode/loadrow"))
                     {
                         std::ostream& out = m_diagnosticStream->GetStream();
-                        out << "LoadRow: " << std::hex << m_accumulator
+                        out << "LoadRow: " << std::hex << accumulator
                             << std::dec << std::endl;
                     }
                 }
                 break;
             case Opcode::LeftShiftOffset:
-                m_offset <<= row;
-                m_ip++;
+                offset <<= row;
+                ip++;
                 break;
             case Opcode::RightShiftOffset:
-                m_offset >>= row;
-                m_ip++;
+                offset >>= row;
+                ip++;
                 break;
             case Opcode::IncrementOffset:
-                m_offset++;
-                m_ip++;
+                offset++;
+                ip++;
                 break;
             case Opcode::Push:
-                m_valueStack.push_back(m_accumulator);
-                m_ip++;
+                m_valueStack.push_back(accumulator);
+                ip++;
                 break;
             case Opcode::Pop:
-                m_accumulator = m_valueStack.back();
+                accumulator = m_valueStack.back();
                 m_valueStack.pop_back();
-                m_ip++;
+                ip++;
                 break;
             case Opcode::AndStack:
                 {
-                    m_accumulator &= m_valueStack.back();
+                    accumulator &= m_valueStack.back();
                     m_valueStack.pop_back();
-                    m_ip++;
+                    ip++;
                 }
                 break;
             case Opcode::Constant:
                 throw NotImplemented("Constant opcode not implemented.");
             case Opcode::Not:
-                m_accumulator = !m_accumulator;
-                m_ip++;
+                accumulator = !accumulator;
+                ip++;
                 break;
             case Opcode::OrStack:
                 {
-                    m_accumulator |= m_valueStack.back();
+                    accumulator |= m_valueStack.back();
                     m_valueStack.pop_back();
-                    m_ip++;
+                    ip++;
                 }
                 break;
             case Opcode::UpdateFlags:
                 m_zeroFlag = (m_valueStack.back() == 0);
-                m_ip++;
+                ip++;
                 break;
             case Opcode::Report:
                 // TODO: Combine accumulator with value stack.
-                if (m_accumulator != 0)
+                if (accumulator != 0)
                 {
-                    AddResult(m_accumulator, m_offset);
-                    calledAddResult = true;
+                    AddResult(accumulator, offset, base);
                 }
-                m_ip++;
+                ip++;
                 break;
             case Opcode::Call:
-                m_callStack.push_back(m_ip + 1);
-                m_ip = m_jumpTable[row];
+                m_callStack.push_back(ip + 1);
+                ip = m_jumpTable[row];
                 break;
             case Opcode::Jmp:
-                m_ip = m_jumpTable[row];
+                ip = m_jumpTable[row];
                 break;
             case Opcode::Jnz:
-                if (m_accumulator != 0ull)
+                if (accumulator != 0ull)
                 {
-                    m_ip = m_jumpTable[row];
+                    ip = m_jumpTable[row];
                 }
                 else
                 {
-                    m_ip++;
+                    ip++;
                 }
                 break;
             case Opcode::Jz:
-                if (m_accumulator == 0ull)
+                if (accumulator == 0ull)
                 {
-                    m_ip = m_jumpTable[row];
+                    ip = m_jumpTable[row];
                 }
                 else
                 {
-                    m_ip++;
+                    ip++;
                 }
                 break;
             case Opcode::Return:
-                m_ip = m_callStack.back();
+                ip = m_callStack.back();
                 m_callStack.pop_back();
                 break;
             default:
@@ -312,19 +315,25 @@ Decide on type of Slices
         }  // while
 
 
-        bool terminate = false;
-        if (calledAddResult)
-        {
-            terminate = FinishIteration(sliceBuffer);
-        }
+        bool terminate = FinishIteration(base, sliceBuffer);
 
         return terminate;
     }
-    
-    
+
     void ByteCodeInterpreter::AddResult(uint64_t accumulator,
-                                        size_t offset)
+                                        size_t offset,
+                                        size_t base)
     {
+        //std::cout
+        //    << "AddResult: "
+        //    << std::hex << accumulator << std::dec
+        //    << ", " << offset
+        //    << ", " << iteration
+        //    << std::endl;
+        offset -= base;
+        CHECK_LT(offset, 64)
+            << "Offset out of range.";
+
         // Set bit indicating that we're storing an accululator at offset.
         m_dedupe[0] |= (1ull << offset);
 
@@ -348,8 +357,12 @@ Decide on type of Slices
     }
 
 
-    bool ByteCodeInterpreter::FinishIteration(void const * sliceBuffer)
+    bool ByteCodeInterpreter::FinishIteration(size_t base,
+                                              void const * sliceBuffer)
     {
+        //std::cout
+        //    << "FinishIteration: " << base << std::endl;
+
         uint64_t map = m_dedupe[0];
         while (map != 0)
         {
@@ -361,10 +374,11 @@ Decide on type of Slices
             {
                 size_t bitPos = bsf(accumulator);
 
-                DocIndex docIndex = offset * c_bitsPerQuadword + bitPos;
+                DocIndex docIndex = (base + offset) * c_bitsPerQuadword + bitPos;
 
                 // TODO: find a better way to get the Slice pointer.
-                Slice* slice = *reinterpret_cast<Slice**>(const_cast<void*>(sliceBuffer));
+                Slice* slice =
+                    *reinterpret_cast<Slice**>(const_cast<void*>(sliceBuffer));
                 m_resultsBuffer.push_back(slice, docIndex);
 
                 // Clear the lowest bit set in the accumulator.

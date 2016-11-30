@@ -75,6 +75,7 @@ namespace BitFunnel
             m_slices.size(),
             m_slices.data(),
             GetIterationsPerSlice(),
+            m_initialRank,
             m_rowOffsets.data(),
             nullptr,
             instrumentation,

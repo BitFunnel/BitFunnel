@@ -238,6 +238,7 @@ namespace BitFunnel
                                                sliceBuffers.size(),
                                                sliceBuffers.data(),
                                                iterationsPerSlice,
+                                               0,
                                                rowSet.GetRowOffsets(shardId),
                                                nullptr,
                                                instrumentation,

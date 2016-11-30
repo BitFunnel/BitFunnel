@@ -117,7 +117,6 @@ namespace BitFunnel
 
     protected:
         ISimpleIndex const & m_index;
-    private:
         Rank m_initialRank;
 
         //

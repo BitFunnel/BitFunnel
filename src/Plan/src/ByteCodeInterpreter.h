@@ -68,6 +68,7 @@ namespace BitFunnel
                             size_t sliceCount,
                             void * const * sliceBuffers,
                             size_t iterationsPerSlice,
+                            Rank initialRank,
                             ptrdiff_t const * rowOffsets,
                             IDiagnosticStream * diagnosticStream,
                             QueryInstrumentation & instrumentation,
@@ -181,10 +182,16 @@ namespace BitFunnel
         // number. Returns true to indicate early termination.
         bool RunOneIteration(void const * sliceBuffer, size_t iteration);
 
+        // The 'base' parameter has the rank0 quadword position for the start
+        // of the current iteration. The accumulator corresponds to position
+        // 'base + offset'.
         void AddResult(uint64_t accumulator,
-                       size_t offset);
+                       size_t offset,
+                       size_t base);
 
-        bool FinishIteration(void const * sliceBuffer);
+        // The 'base' parameter has the rank0 quadword position for the start
+        // of this iteration.
+        bool FinishIteration(size_t base, void const * sliceBuffer);
 
         //
         // Cached constructor parameters.
@@ -198,6 +205,7 @@ namespace BitFunnel
         size_t m_sliceCount;
         void * const * m_sliceBuffers;
         size_t m_iterationsPerSlice;
+        size_t m_initialRank;
 
         ptrdiff_t const * m_rowOffsets;
 
@@ -205,17 +213,6 @@ namespace BitFunnel
         //
         // Virtual machine state.
         //
-
-        // Offset into the row due to rank down operation.
-        // Initial read is at offset == 0. A rank down operation forks the
-        // computation into offsets 0 and 1.
-        size_t m_offset;
-
-        // Instruction pointer.
-        Instruction const * m_ip;
-
-        // Accumulator register for logical operations on row data.
-        uint64_t m_accumulator;
 
         // Control flow call stack. Holds return addresses for calls.
         std::vector<Instruction const *> m_callStack;

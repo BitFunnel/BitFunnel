@@ -24,6 +24,7 @@
 
 #include "BitFunnel/BitFunnelTypes.h"
 #include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/ITermTable.h"
 #include "Environment.h"
 #include "StatusCommand.h"
@@ -65,6 +66,7 @@ namespace BitFunnel
                 << " bytes/document"
                 << std::endl;
         }
+        std::cout << std::endl;
 
         std::cout
             << "Total: "
@@ -83,6 +85,13 @@ namespace BitFunnel
                 << " rows."
                 << std::endl;
         }
+        std::cout << std::endl;
+
+        std::cout
+            << "Slice capacity: "
+            << GetEnvironment().GetIngestor().GetShard(0).GetSliceCapacity()
+            << std::endl;
+        std::cout << std::endl;
     }
 
 
