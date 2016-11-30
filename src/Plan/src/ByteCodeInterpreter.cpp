@@ -105,7 +105,7 @@ Decide on type of Slices
         if (m_cacheLineRecorder != nullptr)
         {
             m_cacheLineRecorder->Reset();
-            m_cacheLineRecorder->SetBase(sliceBuffer); 
+            m_cacheLineRecorder->SetBase(sliceBuffer);
         }
 
         bool terminate = false;
@@ -142,7 +142,7 @@ Decide on type of Slices
         auto ip = m_code.data();
         size_t offset = iteration;
 
-        if (m_diagnosticStream != nullptr && 
+        if (m_diagnosticStream != nullptr &&
             m_diagnosticStream->IsEnabled("bytecode/opcode"))
         {
             std::ostream& out = m_diagnosticStream->GetStream();
@@ -331,7 +331,7 @@ Decide on type of Slices
         //    << ", " << iteration
         //    << std::endl;
         offset -= base;
-        CHECK_LT(offset, 64)
+        CHECK_LT(offset, 64u)
             << "Offset out of range.";
 
         // Set bit indicating that we're storing an accululator at offset.
