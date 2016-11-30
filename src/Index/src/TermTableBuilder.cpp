@@ -124,7 +124,6 @@ namespace BitFunnel
             else
             {
                 m_termTable.OpenTerm();
-
                 //std::cout << "  Configuration: ";
                 //configuration.Write(std::cout);
                 //std::cout << std::endl;

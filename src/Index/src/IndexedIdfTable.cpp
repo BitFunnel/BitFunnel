@@ -40,7 +40,7 @@ namespace BitFunnel
     }
 
 
-    std::unique_ptr<IIndexedIdfTable> 
+    std::unique_ptr<IIndexedIdfTable>
         Factories::CreateIndexedIdfTable(std::istream & input,
                                          Term::IdfX10 defaultIdf)
     {
@@ -74,7 +74,6 @@ namespace BitFunnel
         {
             const Term::Hash hash(StreamUtilities::ReadField<Term::Hash>(input));
             const Term::IdfX10 idf(StreamUtilities::ReadField<Term::IdfX10>(input));
-
             m_terms.insert(std::make_pair(hash, idf));
         }
     }
@@ -89,8 +88,8 @@ namespace BitFunnel
 
     void IndexedIdfTable::WriteEntry(std::ostream& output, Term::Hash hash, Term::IdfX10 idf)
     {
-        StreamUtilities::WriteField<size_t>(output, hash);
-        StreamUtilities::WriteField<size_t>(output, idf);
+        StreamUtilities::WriteField<Term::Hash>(output, hash);
+        StreamUtilities::WriteField<Term::IdfX10>(output, idf);
     }
 
 
