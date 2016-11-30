@@ -23,6 +23,7 @@
 #include "BitFunnel/Index/Helpers.h"
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/Row.h"
+#include "Rounding.h"
 #include "Shard.h"
 
 
@@ -38,5 +39,16 @@ namespace BitFunnel
                                             capacity,
                                             schema,
                                             termTable);
+    }
+
+
+    // TODO: this should actually be much larger when the corpus is much larger
+    // for performance reasons.
+    size_t GetReasonableBlockSize(IDocumentDataSchema const & schema,
+                                  ITermTable const & termTable)
+    {
+        size_t minimumFunctionalSize = GetMinimumBlockSize(schema, termTable);
+        size_t cachelineSize = c_bytesPerCacheLine * c_bitsPerByte;
+        return RoundUp<size_t>(minimumFunctionalSize, cachelineSize);
     }
 }

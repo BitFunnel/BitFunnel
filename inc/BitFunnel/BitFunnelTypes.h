@@ -113,7 +113,7 @@ namespace BitFunnel
     static const size_t c_bitsPerQuadword = c_bitsPerByte * c_bytesPerQuadword;
 
 
-    // Number of bytes in a cache line. Note that this value could go to 128 if cache line pairing
-    // is enabled in the BIOS.
+    // Number of bytes in a cache line. Note that this value could go to 128 if
+    // cache line pairing is enabled in the BIOS.
     static const size_t c_bytesPerCacheLine = 64;
 }

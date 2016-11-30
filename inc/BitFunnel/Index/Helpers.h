@@ -34,4 +34,9 @@ namespace BitFunnel
     // configured by a specific schema and term table.
     size_t GetMinimumBlockSize(IDocumentDataSchema const & schema,
                                ITermTable const & termTable);
+
+    // Get a minimal block size that's a multiple of cacheline size.
+    // TODO: this number should get bigger as the corpus gets bigger.
+    size_t GetReasonableBlockSize(IDocumentDataSchema const & schema,
+                                  ITermTable const & termTable);
 }
