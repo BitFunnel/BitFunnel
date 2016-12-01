@@ -222,7 +222,7 @@ namespace BitFunnel
     {
         // TODO: what should maxDensity be? Note that this is different from the
         // density liimt that's passed in.
-        const double maxDensity = 0.5;
+        const double maxDensity = 0.15;
         // Fill up vector of RowConfigurations. GetTreatment() will use the
         // IdfSum() value of the Term as an index into this vector.
         //
@@ -247,7 +247,7 @@ namespace BitFunnel
                 configuration.push_front(RowConfiguration::Entry(0, 2, false));
                 numRows -= 2;
                 Rank rank = 1;
-                while (rank < maxRank && numRows > 0)
+                while (rank < maxRank)
                 {
                     double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
                     if (frequencyAtRank >= density)
@@ -265,19 +265,26 @@ namespace BitFunnel
                     ++rank;
                     --numRows;
                 }
-                if (numRows > 0)
+
+                double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
+                if (frequencyAtRank >= density)
                 {
-                    double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
-                    if (frequencyAtRank >= density)
+                    configuration.push_front(RowConfiguration::Entry(rank,
+                                                                     1,
+                                                                     true));
+                }
+                else
+                {
+                    if (numRows > 1)
                     {
                         configuration.push_front(RowConfiguration::Entry(rank,
-                                                                         1,
-                                                                         true));
+                                                                         numRows,
+                                                                         false));
                     }
                     else
                     {
                         configuration.push_front(RowConfiguration::Entry(rank,
-                                                                         numRows,
+                                                                         1,
                                                                          false));
                     }
                 }
