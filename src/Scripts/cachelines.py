@@ -8,10 +8,19 @@
 from collections import defaultdict
 import csv
 import math
+import sys
+
+args = sys.argv[1:]
+if len(args) != 3:
+    print("Required args: [DocFreqTable filename], [QueryPipelineStatistics filename], [output filename]")
+    sys.exit(1)
+docfreq_filename = args[0]
+querypipeline_filename = args[1]
+output_filename = args[2]
 
 frequency = defaultdict(float)
 
-with open("/tmp/wikipedia/config/DocFreqTable-0.csv") as f:
+with open(docfreq_filename) as f:
     reader = csv.reader(f)
     header = next(reader)
     assert header == ['hash','gramSize', 'streamId', 'frequency', 'text']
@@ -21,7 +30,7 @@ with open("/tmp/wikipedia/config/DocFreqTable-0.csv") as f:
 cachelines_per_row = 60 # TODO: don't hardcode this.
 density = 0.1 # TODO: don't hardcode this.
 
-with open("/tmp/QueryPipelineStatistics.csv") as f:
+with open(querypipeline_filename) as f:
     reader = csv.reader(f)
     qp_header = next(reader)
     assert qp_header == ['query',
@@ -32,7 +41,7 @@ with open("/tmp/QueryPipelineStatistics.csv") as f:
                          'parse',
                          'plan',
                          'match']
-    outf = open("/tmp/Memory.csv", 'w', newline='')
+    outf = open(output_filename, 'w', newline='')
     writer = csv.writer(outf)
     writer.writerow(['Query',
                      'TermPos',

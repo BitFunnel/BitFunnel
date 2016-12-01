@@ -7,7 +7,7 @@ setwd("~/dev/BitFunnel/src/Scripts")
 # for color information.
 
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) == 0) {
+if (length(args) != 3) {
    stop("Required args: inputFilename, outputFilename, outputFilename", call.=FALSE)
 }
 inputName = args[1]
@@ -35,7 +35,7 @@ theme(axis.text = element_text(size=40),
       legend.title=element_text(size=40),
       legend.text=element_text(size=40))
 dev.off()
-pp
+
 queries$Quadwords <- queries$Quadwords / 8
 df <- melt(queries, measure.vars=c("Quadwords","Cachelines","ExpectedCachelines"), id.vars="TermPos")
 names(df)[names(df) == 'variable'] <- 'AccessType'
