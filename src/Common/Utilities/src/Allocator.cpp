@@ -48,7 +48,9 @@ namespace BitFunnel
         m_bytesAllocated(0),
         m_buffer(new char[bufferSize])
     {
+#ifdef DEBUG
         DebugInitialize();
+#endif
     }
 
 
