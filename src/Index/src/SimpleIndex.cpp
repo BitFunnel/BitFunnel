@@ -362,7 +362,7 @@ namespace BitFunnel
                 GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(tempId));
             //        std::cout << "Blocksize: " << blockSize << std::endl;
 
-            const size_t initialBlockCount = 128;
+            const size_t initialBlockCount = 512;
             m_sliceAllocator =
                 Factories::CreateSliceBufferAllocator(blockSize,
                                                       initialBlockCount);
