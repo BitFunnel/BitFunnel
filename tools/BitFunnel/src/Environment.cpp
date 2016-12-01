@@ -57,6 +57,8 @@ namespace BitFunnel
         // Start one extra thread for the Recycler.
         m_taskPool(new TaskPool(threadCount + 1)),
         m_index(Factories::CreateSimpleIndex(fileSystem)),
+        m_cacheLineCountMode(false),
+        m_compilerMode(true),
         m_failOnException(false),
         m_threadCount(8)
     {
