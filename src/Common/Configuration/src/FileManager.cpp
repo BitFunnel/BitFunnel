@@ -90,6 +90,10 @@ namespace BitFunnel
                                                            statisticsDirectory,
                                                            "QueryPipelineStatistics",
                                                            ".csv" )),
+          m_querySummaryStatistics(new ParameterizedFile0(fileSystem,
+                                                          statisticsDirectory,
+                                                          "QuerySummaryStatistics",
+                                                          ".txt" )),
           m_rowDensities(
               new ParameterizedFile1(fileSystem,
                                      statisticsDirectory,
@@ -147,6 +151,12 @@ namespace BitFunnel
     FileDescriptor0 FileManager::QueryPipelineStatistics()
     {
         return FileDescriptor0(*m_queryPipelineStatistics);
+    }
+
+
+    FileDescriptor0 FileManager::QuerySummaryStatistics()
+    {
+        return FileDescriptor0(*m_querySummaryStatistics);
     }
 
 

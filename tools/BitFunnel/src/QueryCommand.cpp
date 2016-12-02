@@ -111,6 +111,17 @@ namespace BitFunnel
                                  GetEnvironment().GetCacheLineCountMode());
             std::cout << "Results:" << std::endl;
             statistics.Print(std::cout);
+
+            // TODO: unify this with the fileManager that's passed into
+            // QueryRunner::Run.
+            auto outFileManager =
+                Factories::CreateFileManager(GetEnvironment().GetOutputDir().c_str(),
+                                             GetEnvironment().GetOutputDir().c_str(),
+                                             GetEnvironment().GetOutputDir().c_str(),
+                                             GetEnvironment().GetSimpleIndex().GetFileSystem());
+
+            auto outSummary = outFileManager->QuerySummaryStatistics().OpenForWrite();
+            statistics.Print(*outSummary);
         }
     }
 
