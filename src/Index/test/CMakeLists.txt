@@ -14,6 +14,7 @@ set(CPPFILES
     TermTableTest.cpp
     TermTableBuilderTest.cpp
     TermToTextTest.cpp
+    TermTreatmentsTest.cpp
     TrackingSliceBufferAllocator.cpp
 )
 

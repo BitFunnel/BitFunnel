@@ -30,6 +30,19 @@ namespace BitFunnel
     {
         const size_t c_testingRange = 100;
 
+        TEST(Rounding, Trivial)
+        {
+            size_t const c_bytesPerCacheLine = 64;
+            size_t const c_bitsPerByte = 8;
+            size_t cachelineSize = c_bytesPerCacheLine * c_bitsPerByte;
+            EXPECT_EQ(RoundUp<size_t>(1, cachelineSize), cachelineSize);
+            EXPECT_EQ(RoundUp<size_t>(1, cachelineSize*32), cachelineSize*32);
+            EXPECT_EQ(RoundUp<size_t>(64, cachelineSize), cachelineSize);
+            EXPECT_EQ(RoundUp<size_t>(64, cachelineSize*32), cachelineSize*32);
+            EXPECT_EQ(RoundUp<size_t>(64*8, cachelineSize), cachelineSize);
+            EXPECT_EQ(RoundUp<size_t>(64*8, cachelineSize*32), cachelineSize*32);
+        }
+
         // This test go through all 2^n from n = 1 to n = 63.
         // For each 2^n, it tests the numbers in the following range
         // [2^(n-1), 2^(n-1) + 100],

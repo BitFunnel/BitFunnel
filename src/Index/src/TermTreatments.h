@@ -121,4 +121,20 @@ namespace BitFunnel
     private:
         std::vector<RowConfiguration> m_configurations;
     };
+
+
+    class TreatmentExperimental : public ITermTreatment
+    {
+    public:
+        TreatmentExperimental(double density, double snr);
+
+        //
+        // ITermTreatment methods.
+        //
+
+        virtual RowConfiguration GetTreatment(Term term) const override;
+
+    private:
+        std::vector<RowConfiguration> m_configurations;
+    };
 }

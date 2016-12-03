@@ -26,7 +26,6 @@
 #pragma warning(disable:4996)
 #endif
 
-#include <iostream>         // TODO: Remove this temporary include.
 #include <sstream>
 #include <unordered_map>
 #include <vector>
@@ -302,7 +301,7 @@ private:
                                      termTable,
                                      c_randomSkipDistance);
 
-            builder.Print(std::cout);
+            // builder.Print(std::cout);
 
             //
             // Verify that configured TermTable is the same as the expected

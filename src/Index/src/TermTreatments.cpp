@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <iostream>             // TODO: Remove this temporary include.
+#include <limits>  // NaN.
 #include <math.h>
 
 #include "BitFunnel/Index/Factories.h"
@@ -69,6 +70,17 @@ namespace BitFunnel
         return
             std::unique_ptr<ITermTreatment>(
                 new TreatmentPrivateSharedRank0ToN(density, snr));
+    }
+
+
+
+    std::unique_ptr<ITermTreatment>
+        Factories::CreateTreatmentExperimental(double density,
+                                               double snr)
+    {
+        return
+            std::unique_ptr<ITermTreatment>(
+                new TreatmentExperimental(density, snr));
     }
 
 
@@ -214,8 +226,8 @@ namespace BitFunnel
     // TreatmentPrivateSharedRank0ToN
     //
     // Two rank 0 rows followed by rows of increasing rank until the bit density
-    // is > .5 or we run out of rows. Due to limitatons in other BitFunnel code,
-    // we also top out at rank 6.
+    // is > some threshold. Due to limitatons in other BitFunnel code, we also
+    // top out at rank 6.
     //
     //*************************************************************************
     TreatmentPrivateSharedRank0ToN::TreatmentPrivateSharedRank0ToN(double density, double snr)
@@ -300,6 +312,154 @@ namespace BitFunnel
 
 
     RowConfiguration TreatmentPrivateSharedRank0ToN::GetTreatment(Term term) const
+    {
+        // DESIGN NOTE: we can't c_maxIdfX10Value directly to min because min
+        // takes a reference and the compiler has already turned it into a
+        // constant, which we can't take a reference to.
+        auto local = Term::c_maxIdfX10Value;
+        Term::IdfX10 idf = std::min(term.GetIdfSum(), local);
+        return m_configurations[idf];
+    }
+
+
+    // Try to solve for the optimal TermTreatment. This is basically a recursive
+    // brute force solution that, for any rank, either does a RankDown or
+    // inserts another row at currentRank. Note that the cost function here
+    // assumes that the machine has qword-sized memory accesses and that needs
+    // to be updated. Furthermore, the code is basically untested and may have
+    // logical errors.
+
+    // TODO: need to ensure enough rows that we don't have too much noise. As
+    // is, it would be legal to have a bunch of rank 6 rows and 2 rank 0 rows,
+    // which probably isn't sufficient.
+    std::pair<double, std::vector<int>> Temp(double frequency, double density, double snr, int currentRank, std::vector<int> rows, int maxRowsPerRank)
+    {
+        if (currentRank == 0)
+        {
+            rows[0] += 2;
+            // TODO: change cost calculation to account for cacheline size.
+            double cost = 0;
+
+            int lastRank = -1;
+            double residualNoise = std::numeric_limits<double>::quiet_NaN();
+            double lastFrequencyAtRank = std::numeric_limits<double>::quiet_NaN();
+            double weight = 1.0; // probability that we don't have all 0s in a qword.
+            for (int i = rows.size() - 1; i >= 0; --i)
+            {
+                if (rows[i] != 0)
+                {
+                    double frequencyAtRank = Term::FrequencyAtRank(frequency, i);
+                    double noiseAtRank = density - frequencyAtRank;
+                    // double intersectedNoiseAtRank = pow(noiseAtRank, rows[i]);
+                    double fullRowCost = 1.0 / (1 << i);
+                    for (int j = 0; j < rows[i]; ++j)
+                    {
+                        if (j == 0)
+                        {
+                            if (lastRank != -1)
+                            {
+                                int rankDown = lastRank - i;
+                                double rankDownBits = static_cast<double>(1 << rankDown);
+                                residualNoise =
+                                    (lastFrequencyAtRank * (rankDownBits - 1) / rankDownBits * noiseAtRank)
+                                    +
+                                    (residualNoise * noiseAtRank);
+                            }
+                            else
+                            {
+                                residualNoise = noiseAtRank;
+                            }
+                        }
+                        else
+                        {
+                            residualNoise *= noiseAtRank;
+                        }
+                        cost += weight * fullRowCost;
+                        double densityAtRank = residualNoise + frequencyAtRank;
+                        weight = 1 - pow(1 - densityAtRank, 64);
+
+                    }
+
+                    lastFrequencyAtRank = frequencyAtRank;
+                    lastRank = i;
+                }
+            }
+
+            // TODO: if we wanted to enforce a snr bound, we could set the cost
+            // of anything that doesn't hit our snr to infinity.  For something
+            // more nuance, we could add something to the cost function based on
+            // how much we missed our target by. That seems like a better idea.
+            return std::make_pair(cost, rows);
+        }
+
+        double frequencyAtRank = Term::FrequencyAtRank(frequency, currentRank);
+        if (frequencyAtRank > density)
+        {
+            // Add private row and rankDown.
+            ++rows[currentRank];
+            return Temp(frequency, density, snr, currentRank - 1, rows, maxRowsPerRank);
+        }
+        else if (rows[currentRank] >= maxRowsPerRank)
+        {
+            // rankDown
+            return Temp(frequency, density, snr, currentRank - 1, rows, maxRowsPerRank);
+        }
+        else
+        {
+            auto rankDown = Temp(frequency, density, snr, currentRank - 1, rows, maxRowsPerRank);
+            ++rows[currentRank];
+            auto newRow = Temp(frequency, density, snr, currentRank, rows, maxRowsPerRank);
+            return newRow.first < rankDown.first ? newRow : rankDown;
+        }
+    }
+
+
+    //*************************************************************************
+    //
+    // TreatmentExperimental
+    //
+    // Placeholder of experimental treatment.
+    //
+    //*************************************************************************
+    TreatmentExperimental::TreatmentExperimental(double density, double snr)
+    {
+        double maxDensity = 0.2;
+        Term::IdfX10 idf = 35;
+        double frequency = Term::IdfX10ToFrequency(idf);
+        const Rank maxRank = (std::min)(Term::ComputeMaxRank(frequency, maxDensity), static_cast<Rank>(c_maxRankValue));
+        const int c_maxRowsPerRank = 6;
+
+        std::vector<int> rowInputs(c_maxRankValue, 0);
+
+        for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
+        {
+            RowConfiguration configuration;
+            auto costRows = Temp(frequency, density, snr, maxRank, rowInputs, c_maxRowsPerRank);
+            auto rows = costRows.second;
+            for (Rank rank = 0; rank < rows.size(); ++rank)
+            {
+                if (rows[rank] > 0)
+                {
+                    double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
+                    if (frequencyAtRank > density)
+                    {
+                        configuration.push_front(RowConfiguration::Entry(rank, 1, true));
+                        // TODO: assert that our solver doesn't give us multiple
+                        // private rows.
+                    }
+                    else
+                    {
+                        configuration.push_front(RowConfiguration::Entry(rank, rows[rank], false));
+                    }
+                }
+            }
+
+            m_configurations.push_back(configuration);
+        }
+    }
+
+
+    RowConfiguration TreatmentExperimental::GetTreatment(Term term) const
     {
         // DESIGN NOTE: we can't c_maxIdfX10Value directly to min because min
         // takes a reference and the compiler has already turned it into a

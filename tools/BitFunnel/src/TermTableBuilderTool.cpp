@@ -125,6 +125,9 @@ namespace BitFunnel
         // auto treatment(Factories::CreateTreatmentPrivateSharedRank0ToN(
         //      density, snr));
 
+        // auto treatment(Factories::CreateTreatmentExperimental(
+        //    density, snr));
+
         auto facts(Factories::CreateFactSet());
 
         auto termTable(Factories::CreateTermTable());
