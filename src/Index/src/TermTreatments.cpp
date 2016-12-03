@@ -344,7 +344,7 @@ namespace BitFunnel
             double residualNoise = std::numeric_limits<double>::quiet_NaN();
             double lastFrequencyAtRank = std::numeric_limits<double>::quiet_NaN();
             double weight = 1.0; // probability that we don't have all 0s in a qword.
-            for (int i = rows.size() - 1; i >= 0; --i)
+            for (int i = static_cast<int>(rows.size()) - 1; i >= 0; --i)
             {
                 if (rows[i] != 0)
                 {
@@ -424,15 +424,15 @@ namespace BitFunnel
     TreatmentExperimental::TreatmentExperimental(double density, double snr)
     {
         double maxDensity = 0.2;
-        Term::IdfX10 idf = 35;
-        double frequency = Term::IdfX10ToFrequency(idf);
-        const Rank maxRank = (std::min)(Term::ComputeMaxRank(frequency, maxDensity), static_cast<Rank>(c_maxRankValue));
         const int c_maxRowsPerRank = 6;
 
         std::vector<int> rowInputs(c_maxRankValue, 0);
 
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
+            double frequency = Term::IdfX10ToFrequency(idf);
+            const Rank maxRank = (std::min)(Term::ComputeMaxRank(frequency, maxDensity), static_cast<Rank>(c_maxRankValue));
+
             RowConfiguration configuration;
             auto costRows = Temp(frequency, density, snr, maxRank, rowInputs, c_maxRowsPerRank);
             auto rows = costRows.second;
