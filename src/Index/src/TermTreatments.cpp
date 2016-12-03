@@ -332,6 +332,8 @@ namespace BitFunnel
     // TODO: need to ensure enough rows that we don't have too much noise. As
     // is, it would be legal to have a bunch of rank 6 rows and 2 rank 0 rows,
     // which probably isn't sufficient.
+
+    // TODO: converts rank to Rank type.
     std::pair<double, std::vector<int>> Temp(double frequency, double density, double snr, int currentRank, std::vector<int> rows, int maxRowsPerRank)
     {
         if (currentRank == 0)
@@ -434,7 +436,7 @@ namespace BitFunnel
             const Rank maxRank = (std::min)(Term::ComputeMaxRank(frequency, maxDensity), static_cast<Rank>(c_maxRankValue));
 
             RowConfiguration configuration;
-            auto costRows = Temp(frequency, density, snr, maxRank, rowInputs, c_maxRowsPerRank);
+            auto costRows = Temp(frequency, density, snr, static_cast<int>(maxRank), rowInputs, c_maxRowsPerRank);
             auto rows = costRows.second;
             for (Rank rank = 0; rank < rows.size(); ++rank)
             {
