@@ -359,7 +359,7 @@ namespace BitFunnel
             // TODO: Need a blockSize that works for all term tables.
             const ShardId tempId = 0;
             const size_t blockSize =
-                8 * GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(tempId));
+                GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(tempId));
             //        std::cout << "Blocksize: " << blockSize << std::endl;
 
             const size_t initialBlockCount = 512;
