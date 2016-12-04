@@ -309,18 +309,26 @@ namespace BitFunnel
 
     Rank Term::ComputeMaxRank(double frequency, double target)
     {
-        if (frequency <= 0)
+        if (frequency <= 0 || target >= 1.0)
         {
             // TODO: throw here?
             return 0;
         }
 
+        // TODO: simplify this convoluted logic.
         Rank result = 0;
         while (FrequencyAtRank(frequency, result) < target)
         {
             ++result;
         }
-        return (std::max)(result-1, static_cast<Rank>(0u));
+        if (result == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            return (std::max)(result-1, static_cast<Rank>(0u));
+        }
     }
 
 

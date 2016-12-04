@@ -13,6 +13,7 @@ set(CPPFILES
     SliceTest.cpp
     TermTableTest.cpp
     TermTableBuilderTest.cpp
+    TermTest.cpp
     TermToTextTest.cpp
     TermTreatmentsTest.cpp
     TrackingSliceBufferAllocator.cpp
