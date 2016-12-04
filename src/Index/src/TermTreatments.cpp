@@ -330,15 +330,23 @@ namespace BitFunnel
     // logical errors.
 
     // TODO: need to ensure enough rows that we don't have too much noise. As
-    // is, it would be legal to have a bunch of rank 6 rows and 2 rank 0 rows,
-    // which probably isn't sufficient.
+    // is, terms with relatively low max rank will end up with exactly 2 rank 0
+    // rows or something equally silly.
 
-    // TODO: converts rank to Rank type.
+    // TODO: convert ranks to Rank type.
     std::pair<double, std::vector<int>> Temp(double frequency, double density, double snr, int currentRank, std::vector<int> rows, int maxRowsPerRank)
     {
         if (currentRank == 0)
         {
-            rows[0] += 2;
+            if (frequency >= density)
+            {
+                rows[0] = 1;
+            }
+            else
+            {
+                rows[0] = 2;
+            }
+
             // TODO: change cost calculation to account for cacheline size.
             double cost = 0;
 
