@@ -123,6 +123,9 @@ namespace BitFunnel
     };
 
 
+    // TODO: remove prototype.
+    std::pair<double, std::vector<int>> Temp(double frequency, double density, double snr, int currentRank, std::vector<int> rows, int maxRowsPerRank);
+
     class TreatmentExperimental : public ITermTreatment
     {
     public:

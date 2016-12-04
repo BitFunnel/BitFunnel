@@ -297,7 +297,16 @@ namespace BitFunnel
     double Term::FrequencyAtRank(double frequency, Rank rank)
     {
         size_t rowCount = (1ull << rank);
-        return 1.0 - pow(1.0 - frequency, rowCount);
+        // We special case rank0 in order to avoid floating point rounding at
+        // rank 0.
+        if (rank == 0)
+        {
+            return frequency;
+        }
+        else
+        {
+            return 1.0 - pow(1.0 - frequency, rowCount);
+        }
     }
 
 
@@ -315,20 +324,12 @@ namespace BitFunnel
             return 0;
         }
 
-        // TODO: simplify this convoluted logic.
         Rank result = 0;
         while (FrequencyAtRank(frequency, result) < target)
         {
             ++result;
         }
-        if (result == 0)
-        {
-            return 0;
-        }
-        else
-        {
-            return (std::max)(result-1, static_cast<Rank>(0u));
-        }
+        return result;
     }
 
 

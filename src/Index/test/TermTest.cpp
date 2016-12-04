@@ -33,6 +33,7 @@ namespace BitFunnel
     {
         EXPECT_EQ(Term::FrequencyAtRank(1.0, 0u), 1.0);
         EXPECT_EQ(Term::FrequencyAtRank(1.0, 1u), 1.0);
+        EXPECT_EQ(Term::FrequencyAtRank(0.1, 0u), 0.1);
         EXPECT_EQ(Term::FrequencyAtRank(1.0, 10u), 1.0);
     }
 

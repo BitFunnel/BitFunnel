@@ -351,7 +351,7 @@ namespace BitFunnel
                 rows[0] = 2;
             }
 
-            // TODO: change cost calculation to account for cacheline size.
+            // TODO: change cost calculation to properly account for cacheline size.
             double cost = 0;
 
             int lastRank = -1;
@@ -363,15 +363,18 @@ namespace BitFunnel
                 if (rows[i] != 0)
                 {
                     double frequencyAtRank = Term::FrequencyAtRank(frequency, i);
-                    double noiseAtRank = density - frequencyAtRank;
+                    double noiseAtRank = (std::max)(density - frequencyAtRank, 0.0);
                     // double intersectedNoiseAtRank = pow(noiseAtRank, rows[i]);
                     double fullRowCost = 1.0 / (1 << i);
+
+                    // Intersection with each row at rank i.
                     for (int j = 0; j < rows[i]; ++j)
                     {
                         if (j == 0)
                         {
                             if (lastRank != -1)
                             {
+                                // RankDown.
                                 int rankDown = lastRank - i;
                                 double rankDownBits = static_cast<double>(1 << rankDown);
                                 residualNoise =
@@ -381,6 +384,7 @@ namespace BitFunnel
                             }
                             else
                             {
+                                // First intersection for this configuration.
                                 residualNoise = noiseAtRank;
                             }
                         }
@@ -390,7 +394,7 @@ namespace BitFunnel
                         }
                         cost += weight * fullRowCost;
                         double densityAtRank = residualNoise + frequencyAtRank;
-                        weight = 1 - pow(1 - densityAtRank, 64);
+                        weight = 1 - pow(1 - densityAtRank, 512);
 
                     }
 
@@ -437,7 +441,6 @@ namespace BitFunnel
     //*************************************************************************
     TreatmentExperimental::TreatmentExperimental(double density, double snr)
     {
-        double maxDensity = 0.2;
         const int c_maxRowsPerRank = 6;
 
         std::vector<int> rowInputs(c_maxRankValue + 1, 0);
@@ -445,11 +448,23 @@ namespace BitFunnel
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
             double frequency = Term::IdfX10ToFrequency(idf);
-            const Rank maxRank = (std::min)(Term::ComputeMaxRank(frequency, maxDensity), static_cast<Rank>(c_maxRankValue));
+            const Rank maxRank = (std::min)(Term::ComputeMaxRank(frequency, density), static_cast<Rank>(c_maxRankValue));
 
-            RowConfiguration configuration;
             auto costRows = Temp(frequency, density, snr, static_cast<int>(maxRank), rowInputs, c_maxRowsPerRank);
             auto rows = costRows.second;
+
+            std::cout << "idf:frequency" << static_cast<unsigned>(idf)
+                      << ":" << frequency << std::endl;
+            for (Rank rank = 0; rank < rows.size(); ++rank)
+            {
+                if (rows[rank] != 0)
+                {
+                    std::cout << rank << ":" << rows[rank] << std::endl;
+                }
+            }
+
+
+            RowConfiguration configuration;
             for (Rank rank = 0; rank < rows.size(); ++rank)
             {
                 if (rows[rank] > 0)

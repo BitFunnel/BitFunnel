@@ -25,6 +25,7 @@
 #include <iostream>  // TODO: remove.
 #include <math.h>  // TODO: remove.
 
+#include "BitFunnel/Term.h"
 #include "TermTreatments.h"
 
 namespace BitFunnel
@@ -32,5 +33,29 @@ namespace BitFunnel
     TEST(TreatmentExperimental, Dummy)
     {
         // TreatmentExperimental::TreatmentExperimental(0.1, 10.0);
+        double maxDensity = 0.2;
+        const int c_maxRowsPerRank = 6;
+        double snr = 10.0;
+        double density = 0.1;
+
+        std::vector<int> rowInputs(c_maxRankValue + 1, 0);
+
+        Term::IdfX10 idf = 10;
+        double frequency = Term::IdfX10ToFrequency(idf);
+        const Rank maxRank = (std::min)(Term::ComputeMaxRank(frequency, maxDensity), static_cast<Rank>(c_maxRankValue));
+
+
+        auto costRows = Temp(frequency, density, snr, static_cast<int>(maxRank), rowInputs, c_maxRowsPerRank);
+        auto rows = costRows.second;
+
+        std::cout << "idf:frequency" << static_cast<unsigned>(idf)
+                  << ":" << frequency << std::endl;
+        for (Rank rank = 0; rank < rows.size(); ++rank)
+        {
+            if (rows[rank] != 0)
+            {
+                std::cout << rank << ":" << rows[rank] << std::endl;
+            }
+        }
     }
 }
