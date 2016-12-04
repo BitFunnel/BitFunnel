@@ -436,7 +436,7 @@ namespace BitFunnel
         double maxDensity = 0.2;
         const int c_maxRowsPerRank = 6;
 
-        std::vector<int> rowInputs(c_maxRankValue, 0);
+        std::vector<int> rowInputs(c_maxRankValue + 1, 0);
 
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
