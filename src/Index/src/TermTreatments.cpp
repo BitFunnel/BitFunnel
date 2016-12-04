@@ -333,6 +333,10 @@ namespace BitFunnel
     // is, terms with relatively low max rank will end up with exactly 2 rank 0
     // rows or something equally silly.
 
+    // TODO: ensure that if we have a private row, we don't also add a higher
+    // rank private row? Or do we not need to do that because, if the cost
+    // function is working correctly, that will only happen if it makes sense?
+
     // TODO: convert ranks to Rank type.
     std::pair<double, std::vector<int>> Temp(double frequency, double density, double snr, int currentRank, std::vector<int> rows, int maxRowsPerRank)
     {
