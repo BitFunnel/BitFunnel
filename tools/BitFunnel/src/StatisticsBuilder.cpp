@@ -66,8 +66,8 @@ namespace BitFunnel
             "One chunk file per line. Paths are relative to working directory.");
 
         CmdLine::RequiredParameter<char const *> outputPath(
-            "outDir",
-            "Path to the output directory where files will be written. ");
+            "config",
+            "Path to the configuration directory where files will be written.");
 
         CmdLine::OptionalParameterList termToText(
             "text",

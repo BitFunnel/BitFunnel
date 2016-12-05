@@ -50,9 +50,9 @@ namespace BitFunnel
             "Ingest documents and compute statistics about them.");
 
         CmdLine::RequiredParameter<char const *> path(
-            "path",
-            "Path to a tmp directory. "
-            "Something like /tmp/ or c:\\temp\\, depending on platform..");
+            "config",
+            "Path to a configuration directory containing files produced by "
+            "the 'BitFunnel statistics' and 'BitFunnel termtable' commands.");
 
         // TODO: This parameter should be unsigned, but it doesn't seem to work
         // with CmdLineParser.

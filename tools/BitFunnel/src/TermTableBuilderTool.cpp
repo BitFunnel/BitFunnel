@@ -57,9 +57,9 @@ namespace BitFunnel
             "Generate a TermTable from a DocumentFrequencyTable.");
 
         CmdLine::RequiredParameter<char const *> tempPath(
-            "tempPath",
-            "Path to a tmp directory. "
-            "Something like /tmp/ or c:\\temp\\, depending on platform..");
+            "config",
+            "Path to configuration directory containing files generated "
+            "by the 'BitFunnel statistics'.command.");
 
 
         parser.AddParameter(tempPath);
