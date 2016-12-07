@@ -22,8 +22,8 @@ print("Plotting.")
 png(filename=out_name,width=1600,height=1200)
 ggplot(df, aes(x=Cachelines,y=MatchTime)) +
 theme_minimal() +
-geom_point(alpha=1/50) +
+geom_point(alpha=1/100) +
 theme(axis.text = element_text(size=40),
       axis.title = element_text(size=40)) +
-ylim(0, 0.00004)
+ylim(0, 0.0001)
 dev.off()
