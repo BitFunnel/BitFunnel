@@ -36,6 +36,7 @@ set(CPPFILES
     TermTableBuilder.cpp
     TermTableCollection.cpp
     TermToText.cpp
+    TermTreatmentFactory.cpp
     TermTreatments.cpp
 )
 
@@ -74,6 +75,7 @@ set(PRIVATE_HFILES
     TermTable.h
     TermTableBuilder.h
     TermTableCollection.h
+    TermTreatmentFactory.h
     TermTreatments.h
 )
 

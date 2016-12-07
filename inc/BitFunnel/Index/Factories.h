@@ -54,6 +54,7 @@ namespace BitFunnel
     class ITermTableBuilder;
     class ITermTableCollection;
     class ITermTreatment;
+    class ITermTreatmentFactory;
     class Slice;
 
     namespace Factories
@@ -129,6 +130,8 @@ namespace BitFunnel
         std::unique_ptr<ITermTableCollection>
             CreateTermTableCollection(IFileManager & fileManager,
                                       ShardId shardCount);
+
+        std::unique_ptr<ITermTreatmentFactory> CreateTreatmentFactory();
 
         std::unique_ptr<ITermTreatment> CreateTreatmentPrivateRank0();
 

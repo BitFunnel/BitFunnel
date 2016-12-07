@@ -170,6 +170,7 @@ set(INDEX_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTable.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTableCollection.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTreatment.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermTreatmentFactory.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/ITermToText.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/PackedRowIdSequence.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Index/Row.h

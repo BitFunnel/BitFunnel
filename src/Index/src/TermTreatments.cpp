@@ -39,7 +39,8 @@ namespace BitFunnel
     //*************************************************************************
     std::unique_ptr<ITermTreatment> Factories::CreateTreatmentPrivateRank0()
     {
-        return std::unique_ptr<ITermTreatment>(new TreatmentPrivateRank0());
+        const double ignore = 0.0;
+        return std::unique_ptr<ITermTreatment>(new TreatmentPrivateRank0(ignore, ignore));
     }
 
 
@@ -91,7 +92,7 @@ namespace BitFunnel
     // All terms get the same treatment - a single, private, rank 0 row.
     //
     //*************************************************************************
-    TreatmentPrivateRank0::TreatmentPrivateRank0()
+    TreatmentPrivateRank0::TreatmentPrivateRank0(double /*density*/, double /*snr*/)
     {
         // Same configuration for all terms - one private rank 0 row.
         m_configuration.push_front(RowConfiguration::Entry(0, 1, true));

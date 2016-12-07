@@ -39,13 +39,28 @@ namespace BitFunnel
     class TreatmentPrivateRank0 : public ITermTreatment
     {
     public:
-        TreatmentPrivateRank0();
+        TreatmentPrivateRank0(double density, double snr);
 
         //
         // ITermTreatment methods.
         //
 
         virtual RowConfiguration GetTreatment(Term term) const override;
+
+
+        //
+        // Static methods used by ITermTreatmentFactory
+        //
+        static char const * GetName()
+        {
+            return "PrivateRank0";
+        }
+
+
+        static char const * GetDescription()
+        {
+            return "Each term gets a single, private rank 0 row.";
+        }
 
     private:
         RowConfiguration m_configuration;
@@ -73,6 +88,21 @@ namespace BitFunnel
         //
 
         virtual RowConfiguration GetTreatment(Term term) const override;
+
+
+        //
+        // Static methods used by ITermTreatmentFactory
+        //
+        static char const * GetName()
+        {
+            return "PrivateSharedRank0";
+        }
+
+
+        static char const * GetDescription()
+        {
+            return "Each term gets either a private rank 0 row or a set of shared rank 0 rows.";
+        }
 
     private:
         std::vector<RowConfiguration> m_configurations;
@@ -102,6 +132,21 @@ namespace BitFunnel
 
         virtual RowConfiguration GetTreatment(Term term) const override;
 
+
+        //
+        // Static methods used by ITermTreatmentFactory
+        //
+        static char const * GetName()
+        {
+            return "PrivateSharedRank0And3";
+        }
+
+
+        static char const * GetDescription()
+        {
+            return "Each term gets either a private rank 0 row or or two shared rank 0 rows and a zero or more rank 3 rows.";
+        }
+
     private:
         std::vector<RowConfiguration> m_configurations;
     };
@@ -117,6 +162,21 @@ namespace BitFunnel
         //
 
         virtual RowConfiguration GetTreatment(Term term) const override;
+
+
+        //
+        // Static methods used by ITermTreatmentFactory
+        //
+        static char const * GetName()
+        {
+            return "PrivateSharedRank0ToN";
+        }
+
+
+        static char const * GetDescription()
+        {
+            return "Each term gets either a private rank 0 row or or two shared rank 0 rows and a zero or more higher rank rows.";
+        }
 
     private:
         std::vector<RowConfiguration> m_configurations;
@@ -136,6 +196,21 @@ namespace BitFunnel
         //
 
         virtual RowConfiguration GetTreatment(Term term) const override;
+
+
+        //
+        // Static methods used by ITermTreatmentFactory
+        //
+        static char const * GetName()
+        {
+            return "Experimental";
+        }
+
+
+        static char const * GetDescription()
+        {
+            return "Experimental flavor of the day.";
+        }
 
     private:
         std::vector<RowConfiguration> m_configurations;
