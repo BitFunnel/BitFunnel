@@ -124,7 +124,7 @@ namespace BitFunnel
             IConfiguration const & configuration =
                 environment.GetConfiguration();
             IIngestor & ingestor = environment.GetIngestor();
-            size_t threadCount = 1;
+            size_t threadCount = GetEnvironment().GetThreadCount();;
 
             NopFilter filter;
 
