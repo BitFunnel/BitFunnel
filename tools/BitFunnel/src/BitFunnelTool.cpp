@@ -29,6 +29,7 @@
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnelTool.h"
 #include "FilterChunks.h"
+#include "QueryLogBuilderTool.h"
 #include "REPL.h"
 #include "ShardBuilder.h"
 #include "StatisticsBuilder.h"
@@ -95,6 +96,10 @@ namespace BitFunnel
         {
             executable.reset(new FilterChunks(m_fileSystem));
         }
+        else if (strcmp(name, "querylog") == 0)
+        {
+            executable.reset(new QueryLogBuilderTool(m_fileSystem));
+        }
         else if (strcmp(name, "repl") == 0)
         {
             executable.reset(new REPL(m_fileSystem));
@@ -145,6 +150,8 @@ namespace BitFunnel
             << std::endl
             << "The most commonly used commands are" << std::endl
             << "   filter         Copy the corpus, filtering documents by predicate." << std::endl
+            << "   querylog       Generate a random query log." << std::endl
+            << "   shard          Compute shard definition based on histogram." << std::endl
             << "   statistics     Generate corpus statistics used to configure the index." << std::endl
             << "   termtable      Construct a term table based on generated corpus statistics." << std::endl
             << "   repl           Run interative read-eval-print console." << std::endl

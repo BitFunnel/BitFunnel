@@ -56,6 +56,7 @@ namespace BitFunnel
         //virtual FileDescriptor0 Model() override;
         //virtual FileDescriptor0 PlanDescriptors() override;
         //virtual FileDescriptor0 PostingCounts() override;
+        virtual FileDescriptor0 QueryLog() override;
         virtual FileDescriptor0 QueryPipelineStatistics() override;
         virtual FileDescriptor0 QuerySummaryStatistics() override;
         virtual FileDescriptor0 ShardDefinition() override;
@@ -95,6 +96,7 @@ namespace BitFunnel
         std::unique_ptr<IParameterizedFile0> m_documentHistogram;
         std::unique_ptr<IParameterizedFile1> m_indexedIdfTable;
         std::unique_ptr<IParameterizedFile0> m_manifest;
+        std::unique_ptr<IParameterizedFile0> m_queryLog;
         std::unique_ptr<IParameterizedFile0> m_queryPipelineStatistics;
         std::unique_ptr<IParameterizedFile0> m_querySummaryStatistics;
         std::unique_ptr<IParameterizedFile1> m_rowDensities;

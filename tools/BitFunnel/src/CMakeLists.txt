@@ -15,6 +15,8 @@ set(CPPFILES
     IngestCommands.cpp
     InterpreterCommand.cpp
     QueryCommand.cpp
+    QueryGenerator.cpp
+    QueryLogBuilderTool.cpp
     REPL.cpp
     ScriptCommand.cpp
     ShardBuilder.cpp
@@ -51,6 +53,8 @@ set(PRIVATE_HFILES
     InterpreterCommand.h
     ITask.h
     QueryCommand.h
+    QueryGenerator.h
+    QueryLogBuilderTool.h
     REPL.h
     ScriptCommand.h
     ShardBuilder.h

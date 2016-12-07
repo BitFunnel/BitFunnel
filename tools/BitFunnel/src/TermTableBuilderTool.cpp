@@ -56,13 +56,13 @@ namespace BitFunnel
             "TermTableBuilderTool",
             "Generate a TermTable from a DocumentFrequencyTable.");
 
-        CmdLine::RequiredParameter<char const *> tempPath(
+        CmdLine::RequiredParameter<char const *> config(
             "config",
             "Path to configuration directory containing files generated "
             "by the 'BitFunnel statistics'.command.");
 
 
-        parser.AddParameter(tempPath);
+        parser.AddParameter(config);
 
         int returnCode = 1;
 
@@ -76,7 +76,7 @@ namespace BitFunnel
                 double adhocFrequency = 0.001;
 
                 BuildTermTable(output,
-                               tempPath,
+                               config,
                                shard,
                                density,
                                snr,
@@ -100,7 +100,7 @@ namespace BitFunnel
 
     void TermTableBuilderTool::BuildTermTable(
         std::ostream& output,
-        char const * intermediateDirectory,
+        char const * configDirectory,
         ShardId shard,
         double density,
         double snr,
@@ -108,9 +108,9 @@ namespace BitFunnel
     {
         output << "Loading files for TermTable build." << std::endl;
 
-        auto fileManager = Factories::CreateFileManager(intermediateDirectory,
-                                                        intermediateDirectory,
-                                                        intermediateDirectory,
+        auto fileManager = Factories::CreateFileManager(configDirectory,
+                                                        configDirectory,
+                                                        configDirectory,
                                                         m_fileSystem);
 
         auto terms(Factories::CreateDocumentFrequencyTable(

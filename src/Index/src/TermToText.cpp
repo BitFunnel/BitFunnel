@@ -20,12 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "BitFunnel/Index/Factories.h"
 #include "CsvTsv/Csv.h"
 #include "TermToText.h"
 
 
 namespace BitFunnel
 {
+    std::unique_ptr<ITermToText> Factories::CreateTermToText(std::istream & input)
+    {
+        return std::unique_ptr<ITermToText>(new TermToText(input));
+    }
+
+
     TermToText::TermToText()
     {
     }

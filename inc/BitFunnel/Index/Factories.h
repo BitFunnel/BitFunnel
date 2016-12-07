@@ -53,6 +53,7 @@ namespace BitFunnel
     class ITermTableCollection;
     class ITermTableBuilder;
     class ITermTableCollection;
+    class ITermToText;
     class ITermTreatment;
     class ITermTreatmentFactory;
     class Slice;
@@ -132,6 +133,8 @@ namespace BitFunnel
                                       ShardId shardCount);
 
         std::unique_ptr<ITermTreatmentFactory> CreateTreatmentFactory();
+
+        std::unique_ptr<ITermToText> CreateTermToText(std::istream & input);
 
         std::unique_ptr<ITermTreatment> CreateTreatmentPrivateRank0();
 

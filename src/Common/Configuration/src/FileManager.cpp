@@ -86,10 +86,14 @@ namespace BitFunnel
                                             indexDirectory,
                                             "Manifest",
                                             ".txt" )),
+          m_queryLog(new ParameterizedFile0(fileSystem,
+                                            statisticsDirectory,
+                                            "QueryLog",
+                                            ".txt")),
           m_queryPipelineStatistics(new ParameterizedFile0(fileSystem,
                                                            statisticsDirectory,
                                                            "QueryPipelineStatistics",
-                                                           ".csv" )),
+                                                           ".csv")),
           m_querySummaryStatistics(new ParameterizedFile0(fileSystem,
                                                           statisticsDirectory,
                                                           "QuerySummaryStatistics",
@@ -145,6 +149,12 @@ namespace BitFunnel
     FileDescriptor0 FileManager::Manifest()
     {
         return FileDescriptor0(*m_manifest);
+    }
+
+
+    FileDescriptor0 FileManager::QueryLog()
+    {
+        return FileDescriptor0(*m_queryLog);
     }
 
 
