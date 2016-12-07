@@ -105,7 +105,8 @@ namespace BitFunnel
             std::vector<char const *> argv = {
                 "BitFunnel",
                 "termtable",
-                "config"
+                "config",
+                "PrivateSharedRank0And3"
             };
 
             tool.Main(std::cin,

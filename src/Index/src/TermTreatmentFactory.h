@@ -43,6 +43,10 @@ namespace BitFunnel
 
         virtual std::vector<std::string> const &
             GetTreatmentNames() const override;
+
+        virtual std::vector<std::string> const &
+            GetTreatmentDescriptions() const override;
+
         virtual std::unique_ptr<ITermTreatment>
             CreateTreatment(char const * name,
                             double density,

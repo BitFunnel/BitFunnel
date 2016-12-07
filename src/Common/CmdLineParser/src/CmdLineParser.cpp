@@ -294,4 +294,10 @@ namespace CmdLine
             }
         }
     }
+
+
+    bool CmdLineParser::HelpActivated() const
+    {
+        return m_help.IsActivated();
+    }
 }

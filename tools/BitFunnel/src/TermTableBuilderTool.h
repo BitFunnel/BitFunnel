@@ -44,7 +44,8 @@ namespace BitFunnel
     private:
         void BuildTermTable(
             std::ostream& output,
-            char const * intermediateDirectory,
+            char const * configDirectory,
+            char const * treatmentName,
             ShardId shard,
             double density,
             double snr,

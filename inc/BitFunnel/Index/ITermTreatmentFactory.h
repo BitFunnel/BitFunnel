@@ -43,6 +43,10 @@ namespace BitFunnel
     public:
         virtual std::vector<std::string> const &
             GetTreatmentNames() const = 0;
+
+        virtual std::vector<std::string> const &
+            GetTreatmentDescriptions() const = 0;
+
         virtual std::unique_ptr<ITermTreatment>
             CreateTreatment(char const * name,
                             double density,

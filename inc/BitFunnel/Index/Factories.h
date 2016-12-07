@@ -135,19 +135,5 @@ namespace BitFunnel
         std::unique_ptr<ITermTreatmentFactory> CreateTreatmentFactory();
 
         std::unique_ptr<ITermToText> CreateTermToText(std::istream & input);
-
-        std::unique_ptr<ITermTreatment> CreateTreatmentPrivateRank0();
-
-        std::unique_ptr<ITermTreatment>
-            CreateTreatmentPrivateSharedRank0(double density, double snr);
-
-        std::unique_ptr<ITermTreatment>
-            CreateTreatmentPrivateSharedRank0And3(double density, double snr);
-
-        std::unique_ptr<ITermTreatment>
-            CreateTreatmentPrivateSharedRank0ToN(double density, double snr);
-
-        std::unique_ptr<ITermTreatment>
-            CreateTreatmentExperimental(double density, double snr);
     }
 }

@@ -64,6 +64,8 @@ namespace CmdLine
         bool TryParse(std::ostream& error, int argc, char const* const* argv);
         void Usage(std::ostream& out, char const* argv) const;
 
+        bool HelpActivated() const;
+
     private:
         // DESIGN NOTE: the int arguments here are fallout from the int argument
         // in TryParse. See above for why TryParse takes an int argc.

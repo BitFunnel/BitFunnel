@@ -34,6 +34,7 @@
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/ITermTableBuilder.h"
 #include "BitFunnel/Index/ITermTreatment.h"
+#include "BitFunnel/Index/ITermTreatmentFactory.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "CmdLineParser/CmdLineParser.h"
 #include "TermTableBuilderTool.h"
@@ -62,7 +63,13 @@ namespace BitFunnel
             "by the 'BitFunnel statistics'.command.");
 
 
+        CmdLine::RequiredParameter<char const *> treatment(
+            "treatment",
+            "Name of the term treatment to use.");
+
+
         parser.AddParameter(config);
+        parser.AddParameter(treatment);
 
         int returnCode = 1;
 
@@ -77,6 +84,7 @@ namespace BitFunnel
 
                 BuildTermTable(output,
                                config,
+                               treatment,
                                shard,
                                density,
                                snr,
@@ -93,6 +101,18 @@ namespace BitFunnel
                 output << "Unexpected error.";
             }
         }
+        else if (parser.HelpActivated())
+        {
+            auto treatments = Factories::CreateTreatmentFactory();
+            auto names = treatments->GetTreatmentNames();
+            auto descriptions = treatments->GetTreatmentDescriptions();
+
+            std::cout << "Available term treatments:" << std::endl;
+            for (size_t i = 0; i < names.size(); ++i)
+            {
+                std::cout << "  " << names[i] << ": " << descriptions[i] << std::endl;
+            }
+        }
 
         return returnCode;
     }
@@ -101,6 +121,7 @@ namespace BitFunnel
     void TermTableBuilderTool::BuildTermTable(
         std::ostream& output,
         char const * configDirectory,
+        char const * treatmentName,
         ShardId shard,
         double density,
         double snr,
@@ -116,17 +137,8 @@ namespace BitFunnel
         auto terms(Factories::CreateDocumentFrequencyTable(
             *fileManager->DocFreqTable(shard).OpenForRead()));
 
-        auto treatment(Factories::CreateTreatmentPrivateSharedRank0And3(
-           density, snr));
-
-        // auto treatment(Factories::CreateTreatmentPrivateSharedRank0(
-        //     density, snr));
-
-        // auto treatment(Factories::CreateTreatmentPrivateSharedRank0ToN(
-        //      density, snr));
-
-        // auto treatment(Factories::CreateTreatmentExperimental(
-        //    density, snr));
+        auto treatments = Factories::CreateTreatmentFactory();
+        auto treatment(treatments->CreateTreatment(treatmentName, density, snr));
 
         auto facts(Factories::CreateFactSet());
 

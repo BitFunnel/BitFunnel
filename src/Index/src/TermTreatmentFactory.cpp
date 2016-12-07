@@ -49,10 +49,18 @@ namespace BitFunnel
         AddTreatment<TreatmentExperimental>();
     }
 
+
     std::vector<std::string> const &
         TermTreatmentFactory::GetTreatmentNames() const
     {
         return m_names;
+    }
+
+
+    std::vector<std::string> const &
+        TermTreatmentFactory::GetTreatmentDescriptions() const
+    {
+        return m_descriptions;
     }
 
 
