@@ -29,6 +29,6 @@ if [ "$#" -eq 1 ]; then
 fi
 
 echo "Configuring CMake for make with $debugType build."
-mkdir build-make
-cd build-make
+mkdir build-ninja
+cd build-ninja
 cmake -DCMAKE_BUILD_TYPE=$debugType -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Ninja" ..
