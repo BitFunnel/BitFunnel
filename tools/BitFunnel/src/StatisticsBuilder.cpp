@@ -106,7 +106,7 @@ namespace BitFunnel
             }
             catch (...)
             {
-                output << "Unexpected error.";
+                output << "Unexpected error." << std::endl;
             }
         }
 

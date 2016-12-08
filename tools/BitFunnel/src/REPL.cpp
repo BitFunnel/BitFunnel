@@ -105,7 +105,7 @@ namespace BitFunnel
                 // TODO: Do we really want to catch all exceptions here?
                 // Seems we want to at least print out the error message for BitFunnel exceptions.
 
-                output << "Unexpected error.";
+                output << "Unexpected error." << std::endl;
             }
         }
 

@@ -67,11 +67,10 @@ namespace BitFunnel
                 std::string name = "BitFunnel ";
                 name.append(argv[1]);
                 auto args = FilterArgs(argc, argv, name.c_str());
-                executable->Main(input,
+                returnCode = executable->Main(input,
                                  output,
                                  static_cast<int>(args.size()),
                                  args.data());
-                returnCode = 0;
             }
             else
             {
