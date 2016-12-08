@@ -101,12 +101,11 @@ namespace BitFunnel
             "Sample documents by posting count.");
         CmdLine::RequiredParameter<int> minCount(
             "min postings",
-            "minimum number of postings.",
+            "minimum number of postings (inclusive).",
             CmdLine::GreaterThanOrEqual(0));
         CmdLine::RequiredParameter<int> maxCount(
             "max postings",
-            "maximum number of postings.",
-            CmdLine::GreaterThan(0));
+            "maximum number of postings (inclusive).");
         size.AddParameter(minCount);
         size.AddParameter(maxCount);
 
@@ -134,7 +133,7 @@ namespace BitFunnel
 
                 if (size.IsActivated())
                 {
-                    CHECK_LT(minCount, maxCount)
+                    CHECK_LE(minCount, maxCount)
                         << "Invalid posting count range.";
                     filter.AddFilter(
                         std::unique_ptr<IDocumentFilter>(
