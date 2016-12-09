@@ -62,6 +62,9 @@ namespace BitFunnel
             "Path to configuration directory containing files generated "
             "by the 'BitFunnel statistics'.command.");
 
+        CmdLine::RequiredParameter<double> density(
+            "density",
+            "Target upper bound for bit density.");
 
         CmdLine::RequiredParameter<char const *> treatment(
             "treatment",
@@ -69,6 +72,7 @@ namespace BitFunnel
 
 
         parser.AddParameter(config);
+        parser.AddParameter(density);
         parser.AddParameter(treatment);
 
         int returnCode = 1;
@@ -78,7 +82,6 @@ namespace BitFunnel
             try
             {
                 ShardId shard = 0;
-                double density = 0.1;
                 double snr = 10.0;
                 double adhocFrequency = 0.001;
 

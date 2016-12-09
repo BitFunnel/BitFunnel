@@ -106,6 +106,7 @@ namespace BitFunnel
                 "BitFunnel",
                 "termtable",
                 "config",
+                "0.1",
                 "PrivateSharedRank0And3"
             };
 
