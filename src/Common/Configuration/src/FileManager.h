@@ -83,6 +83,7 @@ namespace BitFunnel
         //virtual FileDescriptor1 ScoreTable(size_t shard) override;
         virtual FileDescriptor1 RowDensities(size_t shard) override;
         virtual FileDescriptor1 TermTable(size_t shard) override;
+        virtual FileDescriptor1 TermTableStatistics(size_t shard) override;
 
         //virtual FileDescriptor2 IndexSlice(size_t shard, size_t slice) override;
 
@@ -102,6 +103,7 @@ namespace BitFunnel
         std::unique_ptr<IParameterizedFile1> m_rowDensities;
         std::unique_ptr<IParameterizedFile0> m_shardDefinition;
         std::unique_ptr<IParameterizedFile1> m_termTable;
+        std::unique_ptr<IParameterizedFile1> m_termTableStatistics;
         std::unique_ptr<IParameterizedFile0> m_termToText;
         std::unique_ptr<IParameterizedFile0> m_verificationResults;
     };

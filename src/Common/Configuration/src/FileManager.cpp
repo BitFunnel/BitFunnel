@@ -112,6 +112,10 @@ namespace BitFunnel
                                              indexDirectory,
                                              "TermTable",
                                              ".bin")),
+          m_termTableStatistics(new ParameterizedFile1(fileSystem,
+                                             indexDirectory,
+                                             "TermTableStatistics",
+                                             ".txt")),
           m_termToText(new ParameterizedFile0(fileSystem,
                                               statisticsDirectory,
                                               "TermToText",
@@ -232,6 +236,13 @@ namespace BitFunnel
     {
         return FileDescriptor1(*m_termTable, shard);
     }
+
+
+    FileDescriptor1 FileManager::TermTableStatistics(size_t shard)
+    {
+        return FileDescriptor1(*m_termTableStatistics, shard);
+    }
+
 
 
     //FileDescriptor1 FileManager::DocTable(size_t shard)

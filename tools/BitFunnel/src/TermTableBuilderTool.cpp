@@ -158,6 +158,7 @@ namespace BitFunnel
                                               *termTable));
 
         termTableBuilderTool->Print(output);
+        termTableBuilderTool->Print(*fileManager->TermTable(shard).OpenForWrite());
 
         output << "Writing TermTable files." << std::endl;
 
