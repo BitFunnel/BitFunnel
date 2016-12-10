@@ -60,7 +60,7 @@ namespace BitFunnel
         m_cacheLineCountMode(false),
         m_compilerMode(true),
         m_failOnException(false),
-        m_threadCount(8)
+        m_threadCount(threadCount)
     {
         m_index->ConfigureForServing(directory, gramSize, false);
         RegisterCommands();
