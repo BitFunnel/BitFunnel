@@ -65,7 +65,7 @@ namespace BitFunnel
     {
     public:
         // TODO: Remove this temporary method.
-        virtual void PrintStatistics(std::ostream& out) const = 0;
+        virtual void PrintStatistics(std::ostream& out, double time) const = 0;
 
         // Writes out the following data structions in locations defined by the
         // FileManager:

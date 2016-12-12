@@ -51,7 +51,7 @@ namespace BitFunnel
             << "Printing system status ..."
             << std::endl;
 
-        GetEnvironment().GetIngestor().PrintStatistics(std::cout);
+        GetEnvironment().GetIngestor().PrintStatistics(std::cout, 0.0);
 
         std::cout << std::endl;
 

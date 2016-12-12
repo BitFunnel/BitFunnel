@@ -28,8 +28,10 @@
 #include "BitFunnel/Chunks/IChunkProcessor.h"
 #include "BitFunnel/Data/Sonnets.h"
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IngestChunks.h"
 #include "BitFunnel/Utilities/ReadLines.h"
+#include "BitFunnel/Utilities/Stopwatch.h"
 #include "Environment.h"
 #include "IngestCommands.h"
 
@@ -69,6 +71,8 @@ namespace BitFunnel
 
     void Ingest::Execute()
     {
+        Stopwatch stopwatch;
+
         if (m_manifest && m_path.compare("sonnets") == 0)
         {
             Environment & environment = GetEnvironment();
@@ -124,7 +128,7 @@ namespace BitFunnel
             IConfiguration const & configuration =
                 environment.GetConfiguration();
             IIngestor & ingestor = environment.GetIngestor();
-            size_t threadCount = GetEnvironment().GetThreadCount();;
+            size_t threadCount = GetEnvironment().GetThreadCount();
 
             NopFilter filter;
 
@@ -141,6 +145,8 @@ namespace BitFunnel
 
             // std::cout << "Ingestion complete." << std::endl;
         }
+        double t = stopwatch.ElapsedTime();
+        GetEnvironment().GetIngestor().PrintStatistics(std::cout, t);
     }
 
 
