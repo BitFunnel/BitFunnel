@@ -24,6 +24,7 @@
 #include <ostream>
 #include <stddef.h>
 #include <vector>
+#include <cmath>
 
 #include "BitFunnel/Term.h"
 
