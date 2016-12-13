@@ -20,11 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
+#include <cmath>
 #include <iostream>
 #include <ostream>
 #include <stddef.h>
 #include <vector>
-#include <cmath>
 
 #include "BitFunnel/Term.h"
 
