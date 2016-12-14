@@ -4,8 +4,6 @@
 
 # Note: requires Python3.
 
-# TODO: remove hardcoded paths.
-
 # file format:
 # term,docId,[0-3]
 # 0: true positive
@@ -15,6 +13,15 @@
 
 from collections import defaultdict
 import csv
+import sys
+
+args = sys.argv[1:]
+if len(args) != 3:
+    print("Required args: [groundTruth filename], [unknown filename], [output filename]")
+
+groundtruth_filename = args[0]
+unknown_filename = args[1]
+output_filename = args[2]
 
 def get_true_matches(filename):
     true_matches = defaultdict(set)
@@ -25,9 +32,9 @@ def get_true_matches(filename):
                 true_matches[row[0]].add(row[1])
     return true_matches
 
-def process_unknowns(filename, true_matches):
-    with open(filename) as f:
-        cf = open("/tmp/sum.csv", 'w', newline='')
+def process_unknowns(unknown_filename, output_filename, true_matches):
+    with open(unknown_filename) as f:
+        cf = open(output_filename, 'w', newline='')
         writer = csv.writer(cf)
         writer.writerow(["Query","TermPos","TruePositives","FalsePositives","FalseNegatives","FalseRate"])
         reader = csv.reader(f)
@@ -66,7 +73,7 @@ def process_unknowns(filename, true_matches):
             last_term = row[0]
 
 def run():
-    true_matches = get_true_matches("/tmp/groundTruth.csv")
-    process_unknowns("/tmp/unknown.csv", true_matches)
+    true_matches = get_true_matches(groundtruth_filename)
+    process_unknowns(unknown_filename, output_filename, true_matches)
 
 run()
