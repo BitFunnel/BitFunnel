@@ -27,7 +27,7 @@ with open(docfreq_filename) as f:
     for dft_row in reader:
         frequency[dft_row[4]] = float(dft_row[3])
 
-cachelines_per_row = 60 # TODO: don't hardcode this.
+cachelines_per_row = 16232 # TODO: don't hardcode this.
 density = 0.1 # TODO: don't hardcode this.
 
 with open(querypipeline_filename) as f:
@@ -60,9 +60,12 @@ with open(querypipeline_filename) as f:
             expected_misses = cachelines_per_row
         else:
             # TODO: consider accounting for actual row density.
+            p = 1
+            expected_misses += cachelines_per_row # document active row first. May be wrong.
             for i in range(1, num_rows + 1):
-                p = 1 - math.pow((1 - math.pow(density - s, i)) * (1 - s), 512)
                 expected_misses += p * cachelines_per_row
+                p = 1 - math.pow(1 - s - math.pow(density - s, i), 64)
+                # p = 1 - math.pow((1 - math.pow(density - s, i)) * (1 - s), 512)
         writer.writerow([term,
                          pos,
                          qp_row[3], # quadwords

@@ -18,7 +18,8 @@ print("Reading input")
 queries <- read.csv(header=TRUE, file=inputName)
 
 # Create dataframe in fully normalized form.
-df <- melt(queries, measure.vars=c("Quadwords","Cachelines","ExpectedCachelines"), id.vars="TermPos")
+# df <- melt(queries, measure.vars=c("Quadwords","Cachelines","ExpectedCachelines"), id.vars="TermPos")
+df <- melt(queries, measure.vars=c("Quadwords","ExpectedCachelines"), id.vars="TermPos")
 
 # Rename meaningless column name.
 names(df)[names(df) == 'variable'] <- 'AccessType'
@@ -36,19 +37,33 @@ theme(axis.text = element_text(size=40),
       legend.text=element_text(size=40))
 dev.off()
 
-queries$Quadwords <- queries$Quadwords / 8
-df <- melt(queries, measure.vars=c("Quadwords","Cachelines","ExpectedCachelines"), id.vars="TermPos")
-names(df)[names(df) == 'variable'] <- 'AccessType'
+queries$residual <- (queries$ExpectedCachelines / queries$Quadwords)
 
 print("Creating plot.")
 png(filename=output1Name,width=1600,height=1200)
-ggplot(df, aes(x=TermPos,y=value,colour=AccessType)) +
-scale_fill_brewer("Set1") + # doesn't work :-(
+ggplot(queries, aes(x=TermPos,y=residual)) +
+scale_fill_brewer(palette="Set1") +
 theme_minimal() +
-geom_point(alpha=1/150) +
+geom_point(alpha=1/10) +
 guides(colour = guide_legend(override.aes = list(alpha = 1))) +
 theme(axis.text = element_text(size=40),
-      axis.title = element_text(size=40),
-      legend.title=element_text(size=40),
-      legend.text=element_text(size=40))
+      axis.title = element_text(size=40))
 dev.off()
+
+
+# queries$Quadwords <- queries$Quadwords / 8
+# df <- melt(queries, measure.vars=c("Quadwords","Cachelines","ExpectedCachelines"), id.vars="TermPos")
+# names(df)[names(df) == 'variable'] <- 'AccessType'
+
+# print("Creating plot.")
+# png(filename=output1Name,width=1600,height=1200)
+# ggplot(df, aes(x=TermPos,y=value,colour=AccessType)) +
+# scale_fill_brewer("Set1") + # doesn't work :-(
+# theme_minimal() +
+# geom_point(alpha=1/150) +
+# guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+# theme(axis.text = element_text(size=40),
+#       axis.title = element_text(size=40),
+#       legend.title=element_text(size=40),
+#       legend.text=element_text(size=40))
+# dev.off()

@@ -10,6 +10,7 @@ do
     outline=$dd
     # Build TermTable
     tools/BitFunnel/src/BitFunnel termtable ~/dev/wikipedia.100.200/config/ $dd PrivateSharedRank0
+    outline+=","
     outline+=`python3 ../src/Scripts/get-memory-usage.py  /home/danluu/dev/wikipedia.100.200/config/TermTableStatistics-0.txt`
 
     # Run BitFunnel for output
