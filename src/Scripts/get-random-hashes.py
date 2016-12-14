@@ -9,7 +9,7 @@ np.random.seed(0)
 # checking this in early because even a potentially non-optimal version is a
 # huge improvement.
 
-num_entries = 12;
+num_entries = 64;
 print("{")
 for _ in range(num_entries):
     print("0x" + str(binascii.hexlify(np.random.bytes(8)).decode()) + ",")

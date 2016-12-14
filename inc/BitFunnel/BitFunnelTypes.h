@@ -95,6 +95,9 @@ namespace BitFunnel
     // is pulled over from the old code, but hasn't been re-thought through.
     typedef uint8_t RowCount;
     static const RowCount c_maxRowsPerTerm = 12;
+    static const RowCount c_maxRandomHashes = 64;
+    static_assert(c_maxRandomHashes <= c_maxRandomHashes,
+                  "Need at least one hash per row");
 
     // TODO: make c_maxRowsPerQuery a product of c_maxRowsPerTerm and something
     // else. See TFS 567354.
