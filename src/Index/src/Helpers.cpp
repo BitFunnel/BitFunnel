@@ -48,7 +48,6 @@ namespace BitFunnel
                                   ITermTable const & termTable)
     {
         size_t minimumFunctionalSize = GetMinimumBlockSize(schema, termTable);
-        size_t cachelineSize = c_bytesPerCacheLine * c_bitsPerByte;
-        return RoundUp<size_t>(minimumFunctionalSize, cachelineSize);
+        return RoundUp<size_t>(minimumFunctionalSize, c_bitsPerPage);
     }
 }
