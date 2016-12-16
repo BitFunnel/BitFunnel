@@ -85,9 +85,6 @@ namespace BitFunnel
         value /= m_maxValue;
         value *= m_dft.size();
 
-        // Further adjustment to bias term frequencies towards more common terms.
-        // Note that 4 is just a magic number.
-        value /= 4;
         size_t index = static_cast<size_t>(value);
 
         auto entry = m_dft[index];
