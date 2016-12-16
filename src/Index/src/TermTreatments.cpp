@@ -406,13 +406,13 @@ namespace BitFunnel
             auto costRows = Temp(frequency, density, snr, static_cast<int>(maxRank), rowInputs, c_maxRowsPerRank);
             auto rows = costRows.second;
 
-            std::cout << "idf:frequency" << static_cast<unsigned>(idf)
-                      << ":" << frequency << std::endl;
+            // std::cout << "idf:frequency" << static_cast<unsigned>(idf)
+            //          << ":" << frequency << std::endl;
             for (Rank rank = 0; rank < rows.size(); ++rank)
             {
                 if (rows[rank] != 0)
                 {
-                    std::cout << rank << ":" << rows[rank] << std::endl;
+		  // std::cout << rank << ":" << rows[rank] << std::endl;
                 }
             }
 
