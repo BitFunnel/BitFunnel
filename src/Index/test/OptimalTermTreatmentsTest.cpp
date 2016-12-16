@@ -24,6 +24,7 @@
 #include "gtest/gtest.h"
 
 #include "OptimalTermTreatments.h"
+#include "TermTreatments.h"
 
 
 namespace BitFunnel
@@ -33,6 +34,19 @@ namespace BitFunnel
         // This test exists solely as a demonstration of the optimal term
         // treatment algorithm. It is currently disabled so that it doesn't
         // slow down the unit test suite.
-        // OptimalTermTreatments();
+        OptimalTermTreatments();
+    }
+
+
+    TEST(OptimalTermTreatmentsTest, Analyze)
+    {
+        double density = 0.1;
+        double snr = 10;
+
+        TreatmentPrivateSharedRank0And3 t1(density, snr);
+        AnalyzeTermTreatment(t1, density);
+
+        TreatmentExperimental t2(density, snr);
+        AnalyzeTermTreatment(t2, density);
     }
 }

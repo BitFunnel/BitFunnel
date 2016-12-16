@@ -25,5 +25,9 @@
 
 namespace BitFunnel
 {
+    class ITermTreatment;
+
     void OptimalTermTreatments();
+    void AnalyzeTermTreatment(ITermTreatment const & treatment,
+                              double density);
 }
