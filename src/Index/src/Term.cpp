@@ -339,7 +339,7 @@ namespace BitFunnel
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #endif
-                return lround(ceil(log(frequency / snr) / log(density - frequency)) + 1);
+                return lround(ceil(log(frequency / snr) / log(density - frequency)));
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
