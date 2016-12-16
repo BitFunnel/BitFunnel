@@ -195,7 +195,7 @@ namespace BitFunnel
                 // In private rows, we need one bit per document.
                 if (signalAtRank >= density)
                 {
-                    bitsPerDocument += 1.0;
+                    bitsPerDocument += 1.0 / fanout;
                 }
                 else
                 {
