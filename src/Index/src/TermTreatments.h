@@ -215,4 +215,35 @@ namespace BitFunnel
     private:
         std::vector<RowConfiguration> m_configurations;
     };
+
+
+    class TreatmentOptimal : public ITermTreatment
+    {
+    public:
+        TreatmentOptimal(double density, double snr);
+
+        //
+        // ITermTreatment methods.
+        //
+
+        virtual RowConfiguration GetTreatment(Term term) const override;
+
+
+        //
+        // Static methods used by ITermTreatmentFactory
+        //
+        static char const * GetName()
+        {
+            return "Experimental";
+        }
+
+
+        static char const * GetDescription()
+        {
+            return "Experimental flavor of the day.";
+        }
+
+    private:
+        std::vector<RowConfiguration> m_configurations;
+    };
 }

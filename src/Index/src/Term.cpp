@@ -296,7 +296,6 @@ namespace BitFunnel
 
     double Term::FrequencyAtRank(double frequency, Rank rank)
     {
-        size_t rowCount = (1ull << rank);
         // We special case rank0 in order to avoid floating point rounding at
         // rank 0.
         if (rank == 0)
@@ -305,6 +304,7 @@ namespace BitFunnel
         }
         else
         {
+            const size_t rowCount = (1ull << rank);
             return 1.0 - pow(1.0 - frequency, rowCount);
         }
     }

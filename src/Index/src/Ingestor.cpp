@@ -160,6 +160,11 @@ namespace BitFunnel
         // Add postingCount to the DocumentHistogramBuilder
         m_histogram.AddDocument(document.GetPostingCount());
 
+        if (document.GetPostingCount() <= 10)
+        {
+            std::cout << id << ": " << document.GetPostingCount() << std::endl;
+        }
+
         // Choose correct shard and then allocate handle.
         ShardId shardId = m_shardDefinition.GetShard(document.GetPostingCount());
         DocumentHandleInternal handle = m_shards[shardId]->AllocateDocument(id);

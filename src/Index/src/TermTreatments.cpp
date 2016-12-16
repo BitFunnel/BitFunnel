@@ -111,7 +111,8 @@ namespace BitFunnel
     // shared, depending on term frequency.
     //
     //*************************************************************************
-    TreatmentPrivateSharedRank0And3::TreatmentPrivateSharedRank0And3(double density, double snr)
+    TreatmentPrivateSharedRank0And3::TreatmentPrivateSharedRank0And3(double density,
+                                                                     double snr)
     {
         // Fill up vector of RowConfigurations. GetTreatment() will use the
         // IdfSum() value of the Term as an index into this vector.
@@ -285,7 +286,12 @@ namespace BitFunnel
     // function is working correctly, that will only happen if it makes sense?
 
     // TODO: convert ranks to Rank type.
-    std::pair<double, std::vector<int>> Temp(double frequency, double density, double snr, int currentRank, std::vector<int> rows, int maxRowsPerRank)
+    std::pair<double, std::vector<int>> Temp(double frequency,
+                                             double density,
+                                             double snr,
+                                             int currentRank,
+                                             std::vector<int> rows,
+                                             int maxRowsPerRank)
     {
         if (currentRank == 0)
         {
