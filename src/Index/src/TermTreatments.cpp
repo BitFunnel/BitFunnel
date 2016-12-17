@@ -328,12 +328,8 @@ namespace BitFunnel
                             if (lastRank != -1)
                             {
                                 // RankDown.
-                                int rankDown = lastRank - i;
-                                double rankDownBits = static_cast<double>(1 << rankDown);
-                                residualNoise =
-                                    (lastFrequencyAtRank * (rankDownBits - 1) / rankDownBits * noiseAtRank)
-                                    +
-                                    (residualNoise * noiseAtRank);
+                                double newNoise = lastFrequencyAtRank - frequencyAtRank;
+                                residualNoise = (newNoise + residualNoise) * noiseAtRank;
                             }
                             else
                             {
