@@ -32,94 +32,12 @@
 #include "BitFunnel/Index/ITermTreatment.h"
 #include "BitFunnel/Term.h"
 #include "LoggerInterfaces/Check.h"
+#include "OptimalTermTreatments.h"
 #include "TermTreatments.h"
 
 
 namespace BitFunnel
 {
-    //*************************************************************************
-    //
-    // TermTreatmentMetrics
-    //
-    // Stores the signal-to-noise ratio (SNR), expected number of quadwords
-    // accessed per matcher iteration, and number of bits per document used
-    // for terms with this treatment.
-    //
-    // Note that a TermTreatmentMetric constructed in the context of a
-    // particular combination of row configuration, density and signal.
-    //
-    //*************************************************************************
-    class TermTreatmentMetrics
-    {
-    public:
-        TermTreatmentMetrics()
-          : m_snr(0.0),
-            m_quadwords(0.0),
-            m_bits(0.0)
-        {
-        }
-
-
-        TermTreatmentMetrics(double snr, double quadwords, double bits)
-            : m_snr(snr),
-            m_quadwords(quadwords),
-            m_bits(bits)
-        {
-        }
-
-
-        double GetSNR() const
-        {
-            return m_snr;
-        }
-
-
-        double GetQuadwords() const
-        {
-            return m_quadwords;
-        }
-
-
-        double GetBits() const
-        {
-            return m_bits;
-        }
-
-
-        double GetDQ() const
-        {
-            return 1.0 / m_quadwords / m_bits;
-        }
-
-
-        static TermTreatmentMetrics NoResult()
-        {
-            return TermTreatmentMetrics();
-        }
-
-
-        bool IsValid() const
-        {
-            return !(m_snr == 0 && m_quadwords == 0 && m_bits == 0);
-        }
-
-
-        void Print(std::ostream& out)
-        {
-            out << "snr: " << m_snr
-                << ", qw: " << m_quadwords
-                << ", bits: " << m_bits
-                << ", dq: " << GetDQ()
-                << std::endl;
-        }
-
-    private:
-        double m_snr;
-        double m_quadwords;
-        double m_bits;
-    };
-
-
     // Computes the TermTreatmentMetrics for a single configuration, given
     // a particular density and signal. The configuration is a 6-digit number
     // where the 10^r digit has the number of rows at rank r. For example,
