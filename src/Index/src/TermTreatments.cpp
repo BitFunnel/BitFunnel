@@ -343,7 +343,7 @@ namespace BitFunnel
                         }
                         cost += weight * fullRowCost;
                         double densityAtRank = residualNoise + frequencyAtRank;
-                        weight = 1 - pow(1 - densityAtRank, 512);
+                        weight = 1 - pow(1 - densityAtRank, 64);
 
                     }
 
