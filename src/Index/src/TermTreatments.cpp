@@ -26,6 +26,8 @@
 #include <math.h>
 
 #include "BitFunnel/Term.h"
+#include "LoggerInterfaces/Check.h"
+#include "OptimalTermTreatments.h"
 #include "TermTreatments.h"
 
 
@@ -285,6 +287,87 @@ namespace BitFunnel
     // rank private row? Or do we not need to do that because, if the cost
     // function is working correctly, that will only happen if it makes sense?
 
+    TermTreatmentMetrics AnalyzeAlternate(std::vector<int> rows,
+                                          double density,
+                                          double signal)
+    {
+            // TODO: change cost calculation to properly account for cacheline size.
+        double cost = 0;
+
+        int lastRank = -1;
+        double residualNoise = std::numeric_limits<double>::quiet_NaN();
+        double lastSignalAtRank = std::numeric_limits<double>::quiet_NaN();
+        double weight = 1.0; // probability that we don't have all 0s in a qword.
+        for (int i = static_cast<int>(rows.size()) - 1; i >= 0; --i)
+        {
+            if (rows[i] != 0)
+            {
+                double signalAtRank = Term::FrequencyAtRank(signal, i);
+                double noiseAtRank = (std::max)(density - signalAtRank, 0.0);
+                // double intersectedNoiseAtRank = pow(noiseAtRank, rows[i]);
+                double fullRowCost = 1.0 / (1 << i);
+
+                // Intersection with each row at rank i.
+                for (int j = 0; j < rows[i]; ++j)
+                {
+                    if (j == 0)
+                    {
+                        if (lastRank != -1)
+                        {
+                            // RankDown.
+                            double newNoise = lastSignalAtRank - signalAtRank;
+                            residualNoise = (newNoise + residualNoise) * noiseAtRank;
+                        }
+                        else
+                        {
+                            // First intersection for this configuration.
+                            residualNoise = noiseAtRank;
+                        }
+                    }
+                    else
+                    {
+                        residualNoise *= noiseAtRank;
+                    }
+                    cost += weight * fullRowCost;
+                    double densityAtRank = residualNoise + signalAtRank;
+                    weight = 1 - pow(1 - densityAtRank, 64);
+
+                }
+
+                lastSignalAtRank = signalAtRank;
+                lastRank = i;
+            }
+        }
+
+        double bitsPerDocument = -1;
+        double computedSnr = -1;
+        return TermTreatmentMetrics(computedSnr,
+                                    cost,
+                                    bitsPerDocument);
+    }
+
+
+    // TODO: this is a temporary function to convert a vector to a size_t
+    // config.  This function should not exist at all because we should convert
+    // to not use a size_t and probably also not use a vector of int.
+    size_t SizeTFromRowVector(std::vector<int> rows)
+    {
+        size_t result = 0;
+
+        for (size_t rank = 0; rank < rows.size(); ++rank)
+        {
+            size_t digit = 1;
+            for (size_t i = 0; i < rank; ++i)
+            {
+                digit *= 10;
+            }
+            result += rows[rank] * digit;
+        }
+
+        return result;
+    }
+
+
     // TODO: convert ranks to Rank type.
     std::pair<double, std::vector<int>> Temp(double frequency,
                                              double density,
@@ -304,59 +387,28 @@ namespace BitFunnel
                 rows[0] = 2;
             }
 
-            // TODO: change cost calculation to properly account for cacheline size.
-            double cost = 0;
+            auto metrics0 = AnalyzeAlternate(rows, density, frequency);
+            size_t rowConfig = SizeTFromRowVector(rows);
+            auto metrics1 = Analyze(rowConfig, density, frequency, false);
 
-            int lastRank = -1;
-            double residualNoise = std::numeric_limits<double>::quiet_NaN();
-            double lastFrequencyAtRank = std::numeric_limits<double>::quiet_NaN();
-            double weight = 1.0; // probability that we don't have all 0s in a qword.
-            for (int i = static_cast<int>(rows.size()) - 1; i >= 0; --i)
+            double c0 = metrics0.GetQuadwords();
+            double c1 = metrics1.second.GetQuadwords();
+
+            if (!std::isinf(c0) && !std::isinf(c1))
             {
-                if (rows[i] != 0)
+                if (std::abs(c0-c1) > 0.001 ||
+                    std::isinf(c0) ^ std::isinf(c1))
                 {
-                    double frequencyAtRank = Term::FrequencyAtRank(frequency, i);
-                    double noiseAtRank = (std::max)(density - frequencyAtRank, 0.0);
-                    // double intersectedNoiseAtRank = pow(noiseAtRank, rows[i]);
-                    double fullRowCost = 1.0 / (1 << i);
-
-                    // Intersection with each row at rank i.
-                    for (int j = 0; j < rows[i]; ++j)
-                    {
-                        if (j == 0)
-                        {
-                            if (lastRank != -1)
-                            {
-                                // RankDown.
-                                double newNoise = lastFrequencyAtRank - frequencyAtRank;
-                                residualNoise = (newNoise + residualNoise) * noiseAtRank;
-                            }
-                            else
-                            {
-                                // First intersection for this configuration.
-                                residualNoise = noiseAtRank;
-                            }
-                        }
-                        else
-                        {
-                            residualNoise *= noiseAtRank;
-                        }
-                        cost += weight * fullRowCost;
-                        double densityAtRank = residualNoise + frequencyAtRank;
-                        weight = 1 - pow(1 - densityAtRank, 64);
-
-                    }
-
-                    lastFrequencyAtRank = frequencyAtRank;
-                    lastRank = i;
+                    std::cout << rowConfig << ":" << c0 << ":" << c1 << std::endl;
                 }
             }
 
+            // std::cout << metrics0.GetQuadwords() << ":" << metrics1.second.GetQuadwords() << std::endl;
             // TODO: if we wanted to enforce a snr bound, we could set the cost
             // of anything that doesn't hit our snr to infinity.  For something
             // more nuance, we could add something to the cost function based on
             // how much we missed our target by. That seems like a better idea.
-            return std::make_pair(cost, rows);
+            return std::make_pair(metrics0.GetQuadwords(), rows);
         }
 
         double frequencyAtRank = Term::FrequencyAtRank(frequency, currentRank);
