@@ -25,10 +25,18 @@
 #include <vector>                           // std::vector member.
 
 #include "BitFunnel/Index/ITermTreatment.h" // Base class.
-
+#include "OptimalTermTreatments.h"  // Temporary, for TermTreatmentMetrics.
 
 namespace BitFunnel
 {
+    TermTreatmentMetrics AnalyzeAlternate(std::vector<int> rows,
+                                          double density,
+                                          double signal);
+
+
+    size_t SizeTFromRowVector(std::vector<int> rows);
+
+
     //*************************************************************************
     //
     // TreatmentPrivateRank0

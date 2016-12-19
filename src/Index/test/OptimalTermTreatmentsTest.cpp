@@ -36,7 +36,27 @@ namespace BitFunnel
         // This test exists solely as a demonstration of the optimal term
         // treatment algorithm. It is currently disabled so that it doesn't
         // slow down the unit test suite.
-        OptimalTermTreatments();
+        // OptimalTermTreatments();
+    }
+
+
+    TEST(OptimalTermTreatmentsTest, Analyzer)
+    {
+        const double c_density = 0.1;
+        const double c_signal = 0.00125893;
+        std::vector<int> rows = {2, 0, 0, 0, 0, 1};
+        auto metrics0 = AnalyzeAlternate(rows, c_density, c_signal);
+        size_t rowConfig = SizeTFromRowVector(rows);
+        auto metrics1 = Analyze(rowConfig, c_density, c_signal, false);
+
+        double c0 = metrics0.GetQuadwords();
+        double c1 = metrics1.second.GetQuadwords();
+
+        ASSERT_FALSE(std::isinf(c0));
+        ASSERT_FALSE(std::isinf(c1));
+        ASSERT_FALSE(std::isnan(c0));
+        ASSERT_FALSE(std::isnan(c1));
+        ASSERT_LE(std::abs(c0-c1), 0.005);
     }
 
 
