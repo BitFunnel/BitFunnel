@@ -294,7 +294,7 @@ namespace BitFunnel
             // TODO: change cost calculation to properly account for cacheline size.
         double cost = 0;
 
-        int lastRank = -1;
+        bool firstIntersection = true;
         double residualNoise = std::numeric_limits<double>::quiet_NaN();
         double lastSignalAtRank = std::numeric_limits<double>::quiet_NaN();
         double weight = 1.0; // probability that we don't have all 0s in a qword.
@@ -312,7 +312,7 @@ namespace BitFunnel
                 {
                     if (j == 0)
                     {
-                        if (lastRank != -1)
+                        if (!firstIntersection)
                         {
                             // RankDown.
                             double newNoise = lastSignalAtRank - signalAtRank;
@@ -331,11 +331,10 @@ namespace BitFunnel
                     cost += weight * fullRowCost;
                     double densityAtRank = residualNoise + signalAtRank;
                     weight = 1 - pow(1 - densityAtRank, 64);
-
                 }
 
                 lastSignalAtRank = signalAtRank;
-                lastRank = i;
+                firstIntersection = false;
             }
         }
 
