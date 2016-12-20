@@ -60,6 +60,8 @@ namespace BitFunnel
         double c0 = metrics0.GetQuadwords();
         double c1 = metrics1.second.GetQuadwords();
 
+
+        // Manual computation for AnalyzeAlternate formulation.
         double initialNoise = c_density - c_debug_signal;
         double noiseAtZero = c_density - c_signal;
 
@@ -75,6 +77,7 @@ namespace BitFunnel
         double PNonZeroAfterR5R0 = ProbNotZero(densityAfterR5R0);
         double PNonZeroAfterR5R0R0 = ProbNotZero(densityAfterR5R0R0);
 
+        std::cout << "==============================" << std::endl;
         std::cout << "signal:debug_signal " << c_signal << ":" << c_debug_signal << std::endl;
         std::cout << "qword0:qword1 " << c0 << ":" << c1 << std::endl;
         std::cout << "noise0:noise1:noise2 "
