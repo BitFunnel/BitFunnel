@@ -84,6 +84,10 @@ namespace BitFunnel
             double signalAtRank = Term::FrequencyAtRank(signal, rank);
             double correlatedNoise = signalAtRank - signal;
             uncorrelatedNoise += (previousCorrelatedNoise - correlatedNoise);
+            std::cout << "-----rank:uncorrelatedNoise:correlatedNoise "
+                      << rank << ":"
+                      << uncorrelatedNoise << ":"
+                      << correlatedNoise << std::endl;
 
             // TODO: Can't comment this out since it protects against negative noise.
             //if (signalAtRank > density)
@@ -105,9 +109,13 @@ namespace BitFunnel
                 uncorrelatedNoise *= noise;
 
                 double totalNoise = uncorrelatedNoise + correlatedNoise;
-                double bitIsZero = 1.0 - signal - totalNoise;
+                double bitIsZero = 1.0 - signalAtRank - totalNoise;
                 //double bitIsZero = (1.0 - totalNoise) * (1.0 - signal);   // Incorrect formulation.
                 pQuadwordRead = 1.0 - pow(bitIsZero, 64);
+                std::cout << "totalNoise:totalBits:PNonZero "
+                          << totalNoise << ":"
+                          << totalNoise + signal << ":"
+                          << pQuadwordRead << std::endl;
 
                 // TODO: bitsPerDocument below is wrong for private rows.
                 // In private rows, we need one bit per document.
