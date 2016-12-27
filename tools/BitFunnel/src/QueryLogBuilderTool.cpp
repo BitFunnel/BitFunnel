@@ -134,7 +134,7 @@ namespace BitFunnel
         std::vector<double> termCountDistribution;
         termCountDistribution.push_back(0);     // No empty queries.
 
-        const size_t maxTermCount = 6;
+        const size_t maxTermCount = 8;
         double cumulativeDistribution = 0;
 
         for (size_t i = 1; i <= maxTermCount; ++i)
