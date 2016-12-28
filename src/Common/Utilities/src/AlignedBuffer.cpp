@@ -25,7 +25,7 @@
 
 #include "AlignedBuffer.h"
 #include "BitFunnel/Exceptions.h"
-#include "LoggerInterfaces/Logging.h"
+#include "LoggerInterfaces/Check.h"
 
 #ifdef BITFUNNEL_PLATFORM_WINDOWS
 #include <Windows.h>   // For VirtualAlloc/VirtualFree.
@@ -47,7 +47,7 @@ namespace BitFunnel
         size_t padding = 1ULL << alignment;
         m_actualSize = m_requestedSize + padding;
         m_rawBuffer = VirtualAlloc(nullptr, m_actualSize, MEM_COMMIT, PAGE_READWRITE);
-        LogAssertB(m_rawBuffer != nullptr, "VirtualAlloc() failed.");
+        CHECK_NE(m_rawBuffer, nullptr) <<  "VirtualAlloc() failed.";
         m_alignedBuffer = (char *)(((size_t)m_rawBuffer + padding -1) & ~(padding -1));
 #else
         // TODO: detect non-4k size?
@@ -55,7 +55,7 @@ namespace BitFunnel
 
         // mmap will give us something page aligned and we assume that alignment
         // is sufficient.
-        LogAssertB(alignment <= c_pageSize, "Alignment > 4096.\n");
+        CHECK_LE(alignment, c_pageSize) << "Alignment > 4096.\n";
         m_actualSize = m_requestedSize;
         m_rawBuffer = mmap(nullptr, size,
                            PROT_READ | PROT_WRITE,
@@ -72,11 +72,9 @@ namespace BitFunnel
         if (m_rawBuffer == MAP_FAILED)
 #pragma GCC diagnostic pop
         {
-            std::stringstream errorMessage;
-            errorMessage << "AlignedBuffer Failed to mmap: "
-                         << std::strerror(errno)
-                         << std::endl;
-            throw FatalError(errorMessage.str());
+            CHECK_FAIL << "AlignedBuffer Failed to mmap: "
+		       << std::strerror(errno)
+		       << std::endl;
         }
         m_alignedBuffer = m_rawBuffer;
 #endif
