@@ -82,13 +82,14 @@ namespace BitFunnel
         m_nextValue++;
 
         // Convert random value to an index into the document frequency table.
+	// double old_value = value;
         value /= m_maxValue;
-        value *= m_dft.size();
-
+        value *= m_dft.size() - 1;
         size_t index = static_cast<size_t>(value);
 
         auto entry = m_dft[index];
 
+        // std::cout << old_value << "," << value << "," << m_maxValue << "," << m_dft.size() << "," << index << "," << std::hex << entry.GetTerm().GetRawHash() << std::dec << std::endl;
         query.append(m_terms.Lookup(entry.GetTerm().GetRawHash()));
     }
 }
