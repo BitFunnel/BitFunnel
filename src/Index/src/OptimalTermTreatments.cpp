@@ -78,6 +78,7 @@ namespace BitFunnel
 
         size_t row = 0;
         // NOTE: For loop uses signed type because it counts down to 0.
+        bool firstIntersection = true;
         for (int rank = static_cast<int>(rowsAtRank.size()) - 1; rank >= 0; --rank)
         {
             unsigned fanout = 1u << rank;
@@ -106,7 +107,15 @@ namespace BitFunnel
             {
                 expectedQuadwordReads += pQuadwordRead / fanout;
 
-                uncorrelatedNoise *= noise;
+                if (firstIntersection)
+                {
+                    uncorrelatedNoise = noise;
+                    firstIntersection = false;
+                }
+                else
+                {
+                    uncorrelatedNoise *= noise;
+                }
 
                 double totalNoise = uncorrelatedNoise + correlatedNoise;
                 double bitIsZero = 1.0 - signalAtRank - totalNoise;
