@@ -104,7 +104,7 @@ namespace BitFunnel
         ASSERT_FALSE(std::isinf(c1));
         ASSERT_FALSE(std::isnan(c0));
         ASSERT_FALSE(std::isnan(c1));
-        ASSERT_LE(std::abs(c0-c1), 0.005);
+        ASSERT_LE(std::abs(c0-c1), 0.00000001);
     }
 
 
