@@ -118,12 +118,12 @@ namespace BitFunnel
                 }
 
                 double totalNoise = uncorrelatedNoise + correlatedNoise;
-                double bitIsZero = 1.0 - signalAtRank - totalNoise;
+                double bitIsZero = 1.0 - signal - totalNoise;
                 //double bitIsZero = (1.0 - totalNoise) * (1.0 - signal);   // Incorrect formulation.
                 pQuadwordRead = 1.0 - pow(bitIsZero, 64);
                 std::cout << "totalNoise:totalBits:PNonZero "
                           << totalNoise << ":"
-                          << totalNoise + signal << ":"
+                          << 1.0 - bitIsZero << ":"
                           << pQuadwordRead << std::endl;
 
                 // TODO: bitsPerDocument below is wrong for private rows.
