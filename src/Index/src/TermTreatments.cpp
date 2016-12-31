@@ -395,7 +395,7 @@ namespace BitFunnel
 
             if (!std::isinf(c0) && !std::isinf(c1))
             {
-                if (std::abs(c0-c1) > 0.005 ||
+                if (std::abs(c0-c1) > 0.00000001 ||
                     std::isinf(c0) ^ std::isinf(c1))
                 {
                     std::cout << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
