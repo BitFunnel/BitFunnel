@@ -51,7 +51,6 @@ namespace BitFunnel
     {
         const double c_density = 0.1;
         const double c_signal = 0.00125893;
-        const double c_debug_signal = Term::FrequencyAtRank(c_signal, 5);
         std::vector<int> rows = {2, 0, 0, 0, 0, 1};
         auto metrics0 = AnalyzeAlternate(rows, c_density, c_signal);
         size_t rowConfig = SizeTFromRowVector(rows);
@@ -61,43 +60,44 @@ namespace BitFunnel
         double c1 = metrics1.second.GetQuadwords();
 
 
-        // Manual computation for AnalyzeAlternate formulation.
-        double initialNoise = c_density - c_debug_signal;
-        double noiseAtZero = c_density - c_signal;
+        // // Manual computation for AnalyzeAlternate formulation.
+        // const double c_debug_signal = Term::FrequencyAtRank(c_signal, 5);
+        // double initialNoise = c_density - c_debug_signal;
+        // double noiseAtZero = c_density - c_signal;
 
-        double rankDownSignalDelta = c_debug_signal - c_signal;
-        double noiseAfterR5R0 = (rankDownSignalDelta + initialNoise) * noiseAtZero;
-        double noiseAfterR5R0R0 = noiseAfterR5R0 * noiseAtZero;
+        // double rankDownSignalDelta = c_debug_signal - c_signal;
+        // double noiseAfterR5R0 = (rankDownSignalDelta + initialNoise) * noiseAtZero;
+        // double noiseAfterR5R0R0 = noiseAfterR5R0 * noiseAtZero;
 
-        double initialDensity = c_density;
-        double densityAfterR5R0 = c_signal + noiseAfterR5R0;
-        double densityAfterR5R0R0 = c_signal + noiseAfterR5R0R0;
+        // double initialDensity = c_density;
+        // double densityAfterR5R0 = c_signal + noiseAfterR5R0;
+        // double densityAfterR5R0R0 = c_signal + noiseAfterR5R0R0;
 
-        double initialPNonZero = ProbNotZero(initialDensity);
-        double PNonZeroAfterR5R0 = ProbNotZero(densityAfterR5R0);
-        double PNonZeroAfterR5R0R0 = ProbNotZero(densityAfterR5R0R0);
+        // double initialPNonZero = ProbNotZero(initialDensity);
+        // double PNonZeroAfterR5R0 = ProbNotZero(densityAfterR5R0);
+        // double PNonZeroAfterR5R0R0 = ProbNotZero(densityAfterR5R0R0);
 
-        std::cout << "==============================" << std::endl;
-        std::cout << "signal:debug_signal " << c_signal << ":" << c_debug_signal << std::endl;
-        std::cout << "qword0:qword1 " << c0 << ":" << c1 << std::endl;
-        std::cout << "noise0:noise1:noise2 "
-                  << initialNoise << ":"
-                  << noiseAfterR5R0 << ":"
-                  << noiseAfterR5R0R0 << std::endl;
+        // std::cout << "==============================" << std::endl;
+        // std::cout << "signal:debug_signal " << c_signal << ":" << c_debug_signal << std::endl;
+        // std::cout << "qword0:qword1 " << c0 << ":" << c1 << std::endl;
+        // std::cout << "noise0:noise1:noise2 "
+        //           << initialNoise << ":"
+        //           << noiseAfterR5R0 << ":"
+        //           << noiseAfterR5R0R0 << std::endl;
 
-        std::cout << "density0:density1:density2 "
-                  << initialDensity << ":"
-                  << densityAfterR5R0 << ":"
-                  << densityAfterR5R0R0 << std::endl;
+        // std::cout << "density0:density1:density2 "
+        //           << initialDensity << ":"
+        //           << densityAfterR5R0 << ":"
+        //           << densityAfterR5R0R0 << std::endl;
 
-        std::cout << "P0:P1:P2 "
-                  << initialPNonZero << ":"
-                  << PNonZeroAfterR5R0 << ":"
-                  << PNonZeroAfterR5R0R0 << std::endl;
+        // std::cout << "P0:P1:P2 "
+        //           << initialPNonZero << ":"
+        //           << PNonZeroAfterR5R0 << ":"
+        //           << PNonZeroAfterR5R0R0 << std::endl;
 
 
-        std::cout << "ExpectedQwords: " << (1.0 / (1 << 5))
-            + initialPNonZero + PNonZeroAfterR5R0 << std::endl;
+        // std::cout << "ExpectedQwords: " << (1.0 / (1 << 5))
+        //     + initialPNonZero + PNonZeroAfterR5R0 << std::endl;
 
 
         ASSERT_FALSE(std::isinf(c0));
