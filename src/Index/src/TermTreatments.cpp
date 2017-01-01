@@ -301,13 +301,18 @@ namespace BitFunnel
         double memoryCost = 0;
         for (int i = static_cast<int>(rows.size()) - 1; i >= 0; --i)
         {
-            if (rows[i] != 0)
+            double signalAtRank = Term::FrequencyAtRank(signal, i);
+            double noiseAtRank = (std::max)(density - signalAtRank, 0.0);
+            // double intersectedNoiseAtRank = pow(noiseAtRank, rows[i]);
+            double fullRowCost = 1.0 / (1 << i);
+            double newNoise = lastSignalAtRank - signalAtRank;
+            lastSignalAtRank = signalAtRank;
+            if (rows[i] == 0)
             {
-                double signalAtRank = Term::FrequencyAtRank(signal, i);
-                double noiseAtRank = (std::max)(density - signalAtRank, 0.0);
-                // double intersectedNoiseAtRank = pow(noiseAtRank, rows[i]);
-                double fullRowCost = 1.0 / (1 << i);
-
+                residualNoise += newNoise;
+            }
+            else
+            {
                 // Intersection with each row at rank i.
                 for (int j = 0; j < rows[i]; ++j)
                 {
@@ -324,7 +329,6 @@ namespace BitFunnel
                         if (!firstIntersection)
                         {
                             // RankDown.
-                            double newNoise = lastSignalAtRank - signalAtRank;
                             residualNoise = (newNoise + residualNoise) * noiseAtRank;
                         }
                         else
@@ -342,7 +346,6 @@ namespace BitFunnel
                     weight = 1 - pow(1 - densityAtRank, 64);
                 }
 
-                lastSignalAtRank = signalAtRank;
                 firstIntersection = false;
             }
         }

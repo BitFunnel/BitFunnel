@@ -93,6 +93,22 @@ namespace BitFunnel
     }
 
 
+    TEST(OptimalTermTreatmentsTest, PrivateRank0)
+    {
+        const double c_density = 0.1;
+        const double c_signal = 0.8;
+        std::vector<int> rows = {1};
+        auto metrics0 = AnalyzeAlternate(rows, c_density, c_signal);
+        size_t rowConfig = SizeTFromRowVector(rows);
+        auto metrics1 = Analyze(rowConfig, c_density, c_signal, false);
+
+        double c0 = metrics0.GetSNR();
+        double c1 = metrics1.second.GetSNR();
+
+        ASSERT_TRUE(std::isinf(c0));
+        ASSERT_TRUE(std::isinf(c1));
+    }
+
     // Can't work right now because Analyze converts a row configuration into a size_t.
     // TEST(OptimalTermTreatmentsTest, SNRManyRank0)
     // {
@@ -109,6 +125,28 @@ namespace BitFunnel
     //     ASSERT_GT(c0, 1000.0);
     //     ASSERT_GT(c1, 1000.0);
     // }
+
+
+    TEST(OptimalTermTreatmentsTest, PrivateRank6)
+    {
+        const double c_density = 0.1;
+        const double c_signal = 0.1;
+        std::vector<int> rows = {0, 0, 0, 0, 0, 0, 1};
+        auto metrics0 = AnalyzeAlternate(rows, c_density, c_signal);
+        size_t rowConfig = SizeTFromRowVector(rows);
+        auto metrics1 = Analyze(rowConfig, c_density, c_signal, false);
+
+        const double c_signalAt6 = Term::FrequencyAtRank(c_signal, 6);
+        ASSERT_LE(c_signalAt6, 1.0);
+        const double c_noise = c_signalAt6 - c_signal;
+        const double c_expectedSNR = c_signal / c_noise;
+
+        double c0 = metrics0.GetSNR();
+        double c1 = metrics1.second.GetSNR();
+
+        EXPECT_LE(std::abs(c0-c_expectedSNR), 0.00000001);
+        EXPECT_LE(std::abs(c1-c_expectedSNR), 0.00000001);
+    }
 
 
     // TEST(OptimalTermTreatmentsTest, SNRSingleRank6)
