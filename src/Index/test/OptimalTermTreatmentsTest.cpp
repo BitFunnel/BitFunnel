@@ -47,7 +47,7 @@ namespace BitFunnel
     }
 
 
-    TEST(OptimalTermTreatmentsTest, SNRSingleRank0)
+    TEST(OptimalTermTreatmentsTest, SingleRank0)
     {
         const double c_density = 0.1;
         const double c_signal = 0.05;
@@ -56,19 +56,30 @@ namespace BitFunnel
         size_t rowConfig = SizeTFromRowVector(rows);
         auto metrics1 = Analyze(rowConfig, c_density, c_signal, false);
 
-        double c0 = metrics0.GetSNR();
-        double c1 = metrics1.second.GetSNR();
+        double snr0 = metrics0.GetSNR();
+        double snr1 = metrics1.second.GetSNR();
 
-        ASSERT_FALSE(std::isinf(c0));
-        ASSERT_FALSE(std::isinf(c1));
-        ASSERT_FALSE(std::isnan(c0));
-        ASSERT_FALSE(std::isnan(c1));
-        EXPECT_LE(std::abs(c0-1.0), 0.00000001);
-        EXPECT_LE(std::abs(c1-1.0), 0.00000001);
+        ASSERT_FALSE(std::isinf(snr0));
+        ASSERT_FALSE(std::isinf(snr1));
+        ASSERT_FALSE(std::isnan(snr0));
+        ASSERT_FALSE(std::isnan(snr1));
+        EXPECT_LE(std::abs(snr0-1.0), 0.00000001);
+        EXPECT_LE(std::abs(snr1-1.0), 0.00000001);
+
+        double bits0 = metrics0.GetBits();
+        double bits1 = metrics1.second.GetBits();
+        const double c_expectedBits = c_signal / c_density;
+
+        ASSERT_FALSE(std::isinf(bits0));
+        ASSERT_FALSE(std::isinf(bits1));
+        ASSERT_FALSE(std::isnan(bits0));
+        ASSERT_FALSE(std::isnan(bits1));
+        EXPECT_LE(std::abs(bits0-c_expectedBits), 0.00000001);
+        EXPECT_LE(std::abs(bits1-c_expectedBits), 0.00000001);
     }
 
 
-    TEST(OptimalTermTreatmentsTest, SNRTwoRank0)
+    TEST(OptimalTermTreatmentsTest, TwoRank0)
     {
         const double c_density = 0.1;
         const double c_signal = 0.05;
@@ -77,19 +88,30 @@ namespace BitFunnel
         size_t rowConfig = SizeTFromRowVector(rows);
         auto metrics1 = Analyze(rowConfig, c_density, c_signal, false);
 
-        double c0 = metrics0.GetSNR();
-        double c1 = metrics1.second.GetSNR();
+        double snr0 = metrics0.GetSNR();
+        double snr1 = metrics1.second.GetSNR();
 
         double singleRowNoise = (c_density - c_signal);
         double expectedNoise = singleRowNoise * singleRowNoise;
-        double expectedSNR = c_signal / expectedNoise;
+        const double c_expectedSNR = c_signal / expectedNoise;
 
-        ASSERT_FALSE(std::isinf(c0));
-        ASSERT_FALSE(std::isinf(c1));
-        ASSERT_FALSE(std::isnan(c0));
-        ASSERT_FALSE(std::isnan(c1));
-        EXPECT_LE(std::abs(c0-expectedSNR), 0.00000001);
-        EXPECT_LE(std::abs(c1-expectedSNR), 0.00000001);
+        ASSERT_FALSE(std::isinf(snr0));
+        ASSERT_FALSE(std::isinf(snr1));
+        ASSERT_FALSE(std::isnan(snr0));
+        ASSERT_FALSE(std::isnan(snr1));
+        EXPECT_LE(std::abs(snr0-c_expectedSNR), 0.00000001);
+        EXPECT_LE(std::abs(snr1-c_expectedSNR), 0.00000001);
+
+        double bits0 = metrics0.GetBits();
+        double bits1 = metrics1.second.GetBits();
+        const double c_expectedBits = 2.0 * c_signal / c_density;
+
+        ASSERT_FALSE(std::isinf(bits0));
+        ASSERT_FALSE(std::isinf(bits1));
+        ASSERT_FALSE(std::isnan(bits0));
+        ASSERT_FALSE(std::isnan(bits1));
+        EXPECT_LE(std::abs(bits0-c_expectedBits), 0.00000001);
+        EXPECT_LE(std::abs(bits1-c_expectedBits), 0.00000001);
     }
 
 
@@ -102,11 +124,22 @@ namespace BitFunnel
         size_t rowConfig = SizeTFromRowVector(rows);
         auto metrics1 = Analyze(rowConfig, c_density, c_signal, false);
 
-        double c0 = metrics0.GetSNR();
-        double c1 = metrics1.second.GetSNR();
+        double snr0 = metrics0.GetSNR();
+        double snr1 = metrics1.second.GetSNR();
 
-        ASSERT_TRUE(std::isinf(c0));
-        ASSERT_TRUE(std::isinf(c1));
+        ASSERT_TRUE(std::isinf(snr0));
+        ASSERT_TRUE(std::isinf(snr1));
+
+        double bits0 = metrics0.GetBits();
+        double bits1 = metrics1.second.GetBits();
+        const double c_expectedBits = 1.0;
+
+        ASSERT_FALSE(std::isinf(bits0));
+        ASSERT_FALSE(std::isinf(bits1));
+        ASSERT_FALSE(std::isnan(bits0));
+        ASSERT_FALSE(std::isnan(bits1));
+        EXPECT_LE(std::abs(bits0-c_expectedBits), 0.00000001);
+        EXPECT_LE(std::abs(bits1-c_expectedBits), 0.00000001);
     }
 
     // Can't work right now because Analyze converts a row configuration into a size_t.
@@ -141,11 +174,22 @@ namespace BitFunnel
         const double c_noise = c_signalAt6 - c_signal;
         const double c_expectedSNR = c_signal / c_noise;
 
-        double c0 = metrics0.GetSNR();
-        double c1 = metrics1.second.GetSNR();
+        double snr0 = metrics0.GetSNR();
+        double snr1 = metrics1.second.GetSNR();
 
-        EXPECT_LE(std::abs(c0-c_expectedSNR), 0.00000001);
-        EXPECT_LE(std::abs(c1-c_expectedSNR), 0.00000001);
+        EXPECT_LE(std::abs(snr0-c_expectedSNR), 0.00000001);
+        EXPECT_LE(std::abs(snr1-c_expectedSNR), 0.00000001);
+
+        double bits0 = metrics0.GetBits();
+        double bits1 = metrics1.second.GetBits();
+        const double c_expectedBits = 1.0 / 64;
+
+        ASSERT_FALSE(std::isinf(bits0));
+        ASSERT_FALSE(std::isinf(bits1));
+        ASSERT_FALSE(std::isnan(bits0));
+        ASSERT_FALSE(std::isnan(bits1));
+        EXPECT_LE(std::abs(bits0-c_expectedBits), 0.00000001);
+        EXPECT_LE(std::abs(bits1-c_expectedBits), 0.00000001);
     }
 
 

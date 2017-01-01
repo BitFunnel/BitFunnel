@@ -322,7 +322,7 @@ namespace BitFunnel
                     }
                     else
                     {
-                        memoryCost += 1.0 / density;
+                        memoryCost += signalAtRank / density;
                     }
                     if (j == 0)
                     {
