@@ -391,13 +391,24 @@ namespace BitFunnel
 
             double c0 = metrics0.GetQuadwords();
             double c1 = metrics1.second.GetQuadwords();
-
             if (!std::isinf(c0) && !std::isinf(c1))
             {
                 if (std::abs(c0-c1) > 0.00000001 ||
                     std::isinf(c0) ^ std::isinf(c1))
                 {
-                    std::cout << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
+                    std::cout << "Qword mismatch: " << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
+                }
+            }
+
+
+            c0 = metrics0.GetSNR();
+            c1 = metrics1.second.GetSNR();
+            if (!std::isinf(c0) && !std::isinf(c1))
+            {
+                if (std::abs(c0-c1) > 0.1 ||
+                    std::isinf(c0) ^ std::isinf(c1))
+                {
+                    std::cout << "SNR mismatch: " << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
                 }
             }
 

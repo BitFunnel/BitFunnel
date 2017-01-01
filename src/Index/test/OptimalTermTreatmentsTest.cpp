@@ -47,6 +47,91 @@ namespace BitFunnel
     }
 
 
+    TEST(OptimalTermTreatmentsTest, SNRSingleRank0)
+    {
+        const double c_density = 0.1;
+        const double c_signal = 0.05;
+        std::vector<int> rows = {1};
+        auto metrics0 = AnalyzeAlternate(rows, c_density, c_signal);
+        size_t rowConfig = SizeTFromRowVector(rows);
+        auto metrics1 = Analyze(rowConfig, c_density, c_signal, false);
+
+        double c0 = metrics0.GetSNR();
+        double c1 = metrics1.second.GetSNR();
+
+        ASSERT_FALSE(std::isinf(c0));
+        ASSERT_FALSE(std::isinf(c1));
+        ASSERT_FALSE(std::isnan(c0));
+        ASSERT_FALSE(std::isnan(c1));
+        EXPECT_LE(std::abs(c0-1.0), 0.00000001);
+        EXPECT_LE(std::abs(c1-1.0), 0.00000001);
+    }
+
+
+    TEST(OptimalTermTreatmentsTest, SNRTwoRank0)
+    {
+        const double c_density = 0.1;
+        const double c_signal = 0.05;
+        std::vector<int> rows = {2};
+        auto metrics0 = AnalyzeAlternate(rows, c_density, c_signal);
+        size_t rowConfig = SizeTFromRowVector(rows);
+        auto metrics1 = Analyze(rowConfig, c_density, c_signal, false);
+
+        double c0 = metrics0.GetSNR();
+        double c1 = metrics1.second.GetSNR();
+
+        double singleRowNoise = (c_density - c_signal);
+        double expectedNoise = singleRowNoise * singleRowNoise;
+        double expectedSNR = c_signal / expectedNoise;
+
+        ASSERT_FALSE(std::isinf(c0));
+        ASSERT_FALSE(std::isinf(c1));
+        ASSERT_FALSE(std::isnan(c0));
+        ASSERT_FALSE(std::isnan(c1));
+        EXPECT_LE(std::abs(c0-expectedSNR), 0.00000001);
+        EXPECT_LE(std::abs(c1-expectedSNR), 0.00000001);
+    }
+
+
+    // Can't work right now because Analyze converts a row configuration into a size_t.
+    // TEST(OptimalTermTreatmentsTest, SNRManyRank0)
+    // {
+    //     const double c_density = 0.1;
+    //     const double c_signal = 0.05;
+    //     std::vector<int> rows = {10000000};
+    //     auto metrics0 = AnalyzeAlternate(rows, c_density, c_signal);
+    //     size_t rowConfig = SizeTFromRowVector(rows);
+    //     auto metrics1 = Analyze(rowConfig, c_density, c_signal, false);
+
+    //     double c0 = metrics0.GetSNR();
+    //     double c1 = metrics1.second.GetSNR();
+
+    //     ASSERT_GT(c0, 1000.0);
+    //     ASSERT_GT(c1, 1000.0);
+    // }
+
+
+    // TEST(OptimalTermTreatmentsTest, SNRSingleRank6)
+    // {
+    //     const double c_density = 0.1;
+    //     const double c_signal = 0.00001;
+    //     std::vector<int> rows = {0, 0, 0, 0, 0, 0, 1000};
+    //     auto metrics0 = AnalyzeAlternate(rows, c_density, c_signal);
+    //     size_t rowConfig = SizeTFromRowVector(rows);
+    //     auto metrics1 = Analyze(rowConfig, c_density, c_signal, false);
+
+    //     double c0 = metrics0.GetSNR();
+    //     double c1 = metrics1.second.GetSNR();
+
+    //     ASSERT_FALSE(std::isinf(c0));
+    //     ASSERT_FALSE(std::isinf(c1));
+    //     ASSERT_FALSE(std::isnan(c0));
+    //     ASSERT_FALSE(std::isnan(c1));
+    //     EXPECT_LE(std::abs(c0-1.0), 0.00000001);
+    //     EXPECT_LE(std::abs(c1-1.0), 0.00000001);
+    // }
+
+
     TEST(OptimalTermTreatmentsTest, Analyzer)
     {
         const double c_density = 0.1;
