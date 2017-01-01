@@ -292,12 +292,13 @@ namespace BitFunnel
                                           double signal)
     {
             // TODO: change cost calculation to properly account for cacheline size.
-        double cost = 0;
+        double scanCost = 0;
 
         bool firstIntersection = true;
         double residualNoise = std::numeric_limits<double>::quiet_NaN();
         double lastSignalAtRank = std::numeric_limits<double>::quiet_NaN();
         double weight = 1.0; // probability that we don't have all 0s in a qword.
+        double memoryCost = 0;
         for (int i = static_cast<int>(rows.size()) - 1; i >= 0; --i)
         {
             if (rows[i] != 0)
@@ -310,6 +311,14 @@ namespace BitFunnel
                 // Intersection with each row at rank i.
                 for (int j = 0; j < rows[i]; ++j)
                 {
+                    if (signalAtRank > density)
+                    {
+                        memoryCost += fullRowCost;
+                    }
+                    else
+                    {
+                        memoryCost += 1.0 / density;
+                    }
                     if (j == 0)
                     {
                         if (!firstIntersection)
@@ -328,7 +337,7 @@ namespace BitFunnel
                     {
                         residualNoise *= noiseAtRank;
                     }
-                    cost += weight * fullRowCost;
+                    scanCost += weight * fullRowCost;
                     double densityAtRank = residualNoise + signalAtRank;
                     weight = 1 - pow(1 - densityAtRank, 64);
                 }
@@ -338,11 +347,10 @@ namespace BitFunnel
             }
         }
 
-        double bitsPerDocument = -1;
-        double computedSnr = -1;
+        double computedSnr = signal / residualNoise;
         return TermTreatmentMetrics(computedSnr,
-                                    cost,
-                                    bitsPerDocument);
+                                    scanCost,
+                                    memoryCost);
     }
 
 
@@ -375,17 +383,8 @@ namespace BitFunnel
                                              std::vector<int> rows,
                                              int maxRowsPerRank)
     {
-        if (currentRank == 0)
+        if (currentRank == -1)
         {
-            if (frequency >= density)
-            {
-                rows[0] = 1;
-            }
-            else
-            {
-                rows[0] = 2;
-            }
-
             auto metrics0 = AnalyzeAlternate(rows, density, frequency);
             size_t rowConfig = SizeTFromRowVector(rows);
             auto metrics1 = Analyze(rowConfig, density, frequency, false);
