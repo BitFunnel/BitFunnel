@@ -277,8 +277,8 @@ namespace BitFunnel
 
     TEST(OptimalTermTreatmentsTest, Analyze)
     {
-        double density = 0.1;
-        double snr = 10;
+        // double density = 0.1;
+        // double snr = 10;
 
         // std::cout << "================================================================ Rank0" << std::endl;
         // TreatmentPrivateSharedRank0 t0(density, snr);
