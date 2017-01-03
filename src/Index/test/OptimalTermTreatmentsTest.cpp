@@ -275,25 +275,25 @@ namespace BitFunnel
     }
 
 
-    // TEST(OptimalTermTreatmentsTest, Analyze)
-    // {
-    //     double density = 0.1;
-    //     double snr = 10;
+    TEST(OptimalTermTreatmentsTest, Analyze)
+    {
+        double density = 0.1;
+        double snr = 10;
 
-    //     std::cout << "================================================================ Rank0" << std::endl;
-    //     TreatmentPrivateSharedRank0 t0(density, snr);
-    //     AnalyzeTermTreatment(t0, density);
+        // std::cout << "================================================================ Rank0" << std::endl;
+        // TreatmentPrivateSharedRank0 t0(density, snr);
+        // AnalyzeTermTreatment(t0, density);
 
-    //     std::cout << "================================================================ Rank0And3" << std::endl;
-    //     TreatmentPrivateSharedRank0And3 t1(density, snr);
-    //     AnalyzeTermTreatment(t1, density);
+        // std::cout << "================================================================ Rank0And3" << std::endl;
+        // TreatmentPrivateSharedRank0And3 t1(density, snr);
+        // AnalyzeTermTreatment(t1, density);
 
-    //     std::cout << "================================================================ Experimental" << std::endl;
-    //     TreatmentExperimental t2(density, snr);
-    //     AnalyzeTermTreatment(t2, density);
+        // std::cout << "================================================================ Experimental" << std::endl;
+        // TreatmentExperimental t2(density, snr);
+        // AnalyzeTermTreatment(t2, density);
 
-    //     std::cout << "================================================================ Optimal" << std::endl;
-    //     TreatmentOptimal t3(density, snr);
-    //     AnalyzeTermTreatment(t3, density);
-    // }
+        // std::cout << "================================================================ Optimal" << std::endl;
+        // TreatmentOptimal t3(density, snr);
+        // AnalyzeTermTreatment(t3, density);
+    }
 }

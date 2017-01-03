@@ -428,15 +428,15 @@ namespace BitFunnel
             }
 
             // std::cout << metrics0.GetQuadwords() << ":" << metrics1.second.GetQuadwords() << std::endl;
-	    double cost;
-	    if (metrics0.GetSNR() < snr)
-	    {
-      	        cost = std::numeric_limits<double>::infinity();		
-	    }
-	    else
-	    {
-	      cost = metrics0.GetDQ();
-	    }
+            double cost;
+            if (metrics0.GetSNR() < snr)
+            {
+                cost = -std::numeric_limits<double>::infinity();
+            }
+            else
+            {
+              cost = metrics0.GetDQ();
+            }
             return std::make_pair(cost, rows);
         }
 
@@ -489,7 +489,7 @@ namespace BitFunnel
             {
                 if (rows[rank] != 0)
                 {
-		  // std::cout << rank << ":" << rows[rank] << std::endl;
+                  // std::cout << rank << ":" << rows[rank] << std::endl;
                 }
             }
 
