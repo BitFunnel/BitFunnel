@@ -408,18 +408,35 @@ namespace BitFunnel
             c1 = metrics1.second.GetSNR();
             if (!std::isinf(c0) && !std::isinf(c1))
             {
-                if (std::abs(c0-c1) > 0.1 ||
+                if (std::abs(c0-c1) > 0.00000001 ||
                     std::isinf(c0) ^ std::isinf(c1))
                 {
                     std::cout << "SNR mismatch: " << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
                 }
             }
 
+
+            c0 = metrics0.GetDQ();
+            c1 = metrics1.second.GetDQ();
+            if (!std::isinf(c0) && !std::isinf(c1))
+            {
+                if (std::abs(c0-c1) > 0.00000001 ||
+                    std::isinf(c0) ^ std::isinf(c1))
+                {
+                    std::cout << "DQ mismatch: " << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
+                }
+            }
+
             // std::cout << metrics0.GetQuadwords() << ":" << metrics1.second.GetQuadwords() << std::endl;
-            // TODO: if we wanted to enforce a snr bound, we could set the cost
-            // of anything that doesn't hit our snr to infinity.  For something
-            // more nuance, we could add something to the cost function based on
-            // how much we missed our target by. That seems like a better idea.
+	    double cost;
+	    if (metrics0.GetSNR() < snr)
+	    {
+      	        cost = std::numeric_limits<double>::infinity();		
+	    }
+	    else
+	    {
+	      cost = metrics0.GetDQ();
+	    }
             return std::make_pair(metrics0.GetQuadwords(), rows);
         }
 
