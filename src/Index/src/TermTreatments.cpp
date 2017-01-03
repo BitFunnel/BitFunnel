@@ -437,7 +437,7 @@ namespace BitFunnel
 	    {
 	      cost = metrics0.GetDQ();
 	    }
-            return std::make_pair(metrics0.GetQuadwords(), rows);
+            return std::make_pair(cost, rows);
         }
 
         double frequencyAtRank = Term::FrequencyAtRank(frequency, currentRank);
