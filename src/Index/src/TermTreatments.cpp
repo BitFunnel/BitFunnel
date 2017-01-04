@@ -389,53 +389,52 @@ namespace BitFunnel
         if (currentRank == -1)
         {
             auto metrics0 = AnalyzeAlternate(rows, density, frequency);
-            size_t rowConfig = SizeTFromRowVector(rows);
-            auto metrics1 = Analyze(rowConfig, density, frequency, false);
+            // size_t rowConfig = SizeTFromRowVector(rows);
+            // auto metrics1 = Analyze(rowConfig, density, frequency, false);
 
-            double c0 = metrics0.GetQuadwords();
-            double c1 = metrics1.second.GetQuadwords();
-            if (!std::isinf(c0) && !std::isinf(c1))
-            {
-                if (std::abs(c0-c1) > 0.00000001 ||
-                    std::isinf(c0) ^ std::isinf(c1))
-                {
-                    std::cout << "Qword mismatch: " << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
-                }
-            }
-
-
-            c0 = metrics0.GetSNR();
-            c1 = metrics1.second.GetSNR();
-            if (!std::isinf(c0) && !std::isinf(c1))
-            {
-                if (std::abs(c0-c1) > 0.00000001 ||
-                    std::isinf(c0) ^ std::isinf(c1))
-                {
-                    std::cout << "SNR mismatch: " << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
-                }
-            }
+            // double c0 = metrics0.GetQuadwords();
+            // double c1 = metrics1.second.GetQuadwords();
+            // if (!std::isinf(c0) && !std::isinf(c1))
+            // {
+            //     if (std::abs(c0-c1) > 0.00000001 ||
+            //         std::isinf(c0) ^ std::isinf(c1))
+            //     {
+            //         std::cout << "Qword mismatch: " << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
+            //     }
+            // }
 
 
-            c0 = metrics0.GetDQ();
-            c1 = metrics1.second.GetDQ();
-            if (!std::isinf(c0) && !std::isinf(c1))
-            {
-                if (std::abs(c0-c1) > 0.00000001 ||
-                    std::isinf(c0) ^ std::isinf(c1))
-                {
-                    std::cout << "DQ mismatch: " << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
-                }
-            }
+            // c0 = metrics0.GetSNR();
+            // c1 = metrics1.second.GetSNR();
+            // if (!std::isinf(c0) && !std::isinf(c1))
+            // {
+            //     if (std::abs(c0-c1) > 0.00000001 ||
+            //         std::isinf(c0) ^ std::isinf(c1))
+            //     {
+            //         std::cout << "SNR mismatch: " << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
+            //     }
+            // }
 
-            // std::cout << metrics0.GetQuadwords() << ":" << metrics1.second.GetQuadwords() << std::endl;
+
+            // c0 = metrics0.GetDQ();
+            // c1 = metrics1.second.GetDQ();
+            // if (!std::isinf(c0) && !std::isinf(c1))
+            // {
+            //     if (std::abs(c0-c1) > 0.00000001 ||
+            //         std::isinf(c0) ^ std::isinf(c1))
+            //     {
+            //         std::cout << "DQ mismatch: " << frequency << ":" << rowConfig << ":" << c0 << ":" << c1 << std::endl;
+            //     }
+            // }
+
             double cost;
-            if (metrics0.GetSNR() < snr)
+            if (metrics0.GetSNR() < snr || std::isnan(metrics0.GetSNR()))
             {
-                cost = -std::numeric_limits<double>::infinity();
+                cost = std::numeric_limits<double>::infinity();
             }
             else
             {
-              cost = metrics0.GetDQ();
+              cost = -metrics0.GetDQ();
             }
             return std::make_pair(cost, rows);
         }
