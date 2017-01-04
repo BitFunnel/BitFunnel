@@ -185,7 +185,7 @@ namespace BitFunnel
                                         std::numeric_limits<double>::infinity());
 
         // Enumerate all row configurations.
-        for (size_t configuration = 1; configuration <= 99999; ++configuration)
+        for (size_t configuration = 1; configuration <= 999999; ++configuration)
         {
             auto result = Analyze(configuration, density, signal, false);
             if (result.first)
