@@ -134,8 +134,7 @@ namespace BitFunnel
                     // Assign the appropriate rows.
                     m_rowAssigners[rcEntry.GetRank()]->
                         AssignExplicit(dfEntry.GetFrequency(),
-                                       rcEntry.GetRowCount(),
-                                       rcEntry.IsPrivate());
+                                       rcEntry.GetRowCount());
                 }
 
                 m_termTable.CloseTerm(dfEntry.GetTerm().GetRawHash());
@@ -282,13 +281,12 @@ namespace BitFunnel
 
 
     void TermTableBuilder::RowAssigner::AssignExplicit(double frequency,
-                                                       RowIndex count,
-                                                       bool isPrivate)
+                                                       RowIndex count)
     {
         // Compute the frequency at rank.
         double f = Term::FrequencyAtRank(frequency, m_rank);
 
-        if (isPrivate || f >= m_density)
+        if (f >= m_density)
         {
             // A private row was requested or this term was found to have
             // sufficient frequency to warrant a private row.

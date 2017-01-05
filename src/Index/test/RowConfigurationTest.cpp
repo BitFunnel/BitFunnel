@@ -41,15 +41,13 @@ namespace BitFunnel
         // Create RowConfiguration::Entry and get fields.
         TEST(Entry, Construct)
         {
-            RowConfiguration::Entry e1(1u, 2u, false);
+            RowConfiguration::Entry e1(1u, 2u);
             EXPECT_EQ(e1.GetRank(), 1u);
             EXPECT_EQ(e1.GetRowCount(), 2u);
-            EXPECT_FALSE(e1.IsPrivate());
 
-            RowConfiguration::Entry e(6u, 5u, true);
+            RowConfiguration::Entry e(6u, 5u);
             EXPECT_EQ(e.GetRank(), 6u);
             EXPECT_EQ(e.GetRowCount(), 5u);
-            EXPECT_TRUE(e.IsPrivate());
         }
 
 
@@ -57,17 +55,16 @@ namespace BitFunnel
         TEST(Entry, Throw)
         {
             // Rank is too large.
-            ASSERT_THROW(RowConfiguration::Entry(c_maxRankValue + 1, 1u, true),
+            ASSERT_THROW(RowConfiguration::Entry(c_maxRankValue + 1, 1u),
                          RecoverableError);
 
             // RowCount is too large.
             ASSERT_THROW(RowConfiguration::Entry(0u,
-                                                 RowConfiguration::Entry::c_maxRowCount + 1,
-                                                 true),
+                                                 RowConfiguration::Entry::c_maxRowCount + 1),
                          RecoverableError);
 
             // RowCount is zero.
-            ASSERT_THROW(RowConfiguration::Entry(1u, 0u, true),
+            ASSERT_THROW(RowConfiguration::Entry(1u, 0u),
                          RecoverableError);
         }
 
@@ -95,7 +92,7 @@ namespace BitFunnel
             // push_front, iterate, and verify contents for up to c_maxRankValue + 1 entries.
             for (unsigned i = 0; i <= c_maxRankValue ; ++i)
             {
-                RowConfiguration::Entry e(i, i + 1, (i & 1) == 1);
+                RowConfiguration::Entry e(i, i + 1);
                 expected.push_front(e);
                 observed.push_front(e);
 
@@ -104,7 +101,7 @@ namespace BitFunnel
             }
 
             // Ensure 9th entry generates an exception, now that RowConfiguration is full.
-            RowConfiguration::Entry e2(1, 2, false);
+            RowConfiguration::Entry e2(1, 2);
             ASSERT_THROW(observed.push_front(e2), RecoverableError);
         }
 
@@ -112,10 +109,10 @@ namespace BitFunnel
         TEST(RowConfiguration, ThrowOnDuplicateRank)
         {
             RowConfiguration c;
-            c.push_front(RowConfiguration::Entry(1, 2, false));
+            c.push_front(RowConfiguration::Entry(1, 2));
 
             // Adding a second entry with the same rank should trigger an exception.
-            ASSERT_THROW(c.push_front(RowConfiguration::Entry(1, 3, true)),
+            ASSERT_THROW(c.push_front(RowConfiguration::Entry(1, 3)),
                          RecoverableError);
         }
     }

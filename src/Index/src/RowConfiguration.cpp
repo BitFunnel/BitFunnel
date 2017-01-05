@@ -34,7 +34,7 @@ namespace BitFunnel
     // RowConfiguration::Entry
     //
     //*************************************************************************
-    RowConfiguration::Entry::Entry(Rank rank, RowIndex rowCount, bool isPrivate)
+    RowConfiguration::Entry::Entry(Rank rank, RowIndex rowCount)
     {
         if (rank > c_maxRankValue || rowCount > c_maxRowCount)
         {
@@ -48,7 +48,9 @@ namespace BitFunnel
             throw error;
         }
 
-        m_data = static_cast<uint8_t>(rowCount | (rank << c_log2MaxRowCount) | (isPrivate ? 0x80 : 0));
+        static_assert(c_log2MaxRowCount + c_log2MaxRankValue <= 8,
+                      "Bit width overflow against uint8_t");
+        m_data = static_cast<uint8_t>(rowCount | (rank << c_log2MaxRowCount));
     }
 
 
@@ -76,14 +78,6 @@ namespace BitFunnel
     }
 
 
-    bool RowConfiguration::Entry::IsPrivate() const
-    {
-        // No need to compute mask here because IsPrivate is always the high
-        // order bit.
-        return (m_data & 0x80) != 0;
-    }
-
-
     bool RowConfiguration::Entry::operator==(Entry const & other) const
     {
         return m_data == other.m_data;
@@ -94,8 +88,7 @@ namespace BitFunnel
     {
         output
             << "(" << GetRank()
-            << ", " << GetRowCount()
-            << ", " << (IsPrivate() ? "private)" : "shared)");
+            << ", " << GetRowCount();
     }
 
 

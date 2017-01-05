@@ -71,9 +71,9 @@ namespace BitFunnel
             m_current = RowConfiguration();
         }
 
-        void AddEntry(Rank rank, RowIndex count, bool isPrivate)
+        void AddEntry(Rank rank, RowIndex count)
         {
-            m_current.push_front(RowConfiguration::Entry(rank, count, isPrivate));
+            m_current.push_front(RowConfiguration::Entry(rank, count));
         }
 
         void CloseConfiguration(Term::Hash hash)
@@ -157,7 +157,7 @@ namespace BitFunnel
             // First term configured as private rank 0 so it should go in its
             // own row.
             m_termTreatment.OpenConfiguration();
-            m_termTreatment.AddEntry(0, 1, true);
+            m_termTreatment.AddEntry(0, 1);
             m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
@@ -167,7 +167,7 @@ namespace BitFunnel
             // Second term is configurated as a single shared rank 0 row, but
             // will be placed in its own row because of its high density of 0.7.
             m_termTreatment.OpenConfiguration();
-            m_termTreatment.AddEntry(0, 1, false);
+            m_termTreatment.AddEntry(0, 1);
             m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
@@ -178,7 +178,7 @@ namespace BitFunnel
             // density of 0.07 is low enough that it will share with the fifth
             // row.
             m_termTreatment.OpenConfiguration();
-            m_termTreatment.AddEntry(0, 1, false);
+            m_termTreatment.AddEntry(0, 1);
             m_termTreatment.CloseConfiguration(hash);
 
             RowIndex third = rows[0];
@@ -190,7 +190,7 @@ namespace BitFunnel
             // density of 0.05 is low enough that it will share with the sixth
             // and seventh rows.
             m_termTreatment.OpenConfiguration();
-            m_termTreatment.AddEntry(0, 1, false);
+            m_termTreatment.AddEntry(0, 1);
             m_termTreatment.CloseConfiguration(hash);
 
             RowIndex fourth = rows[0];
@@ -202,7 +202,7 @@ namespace BitFunnel
             // density of 0.02 is low enough that it will share with the
             // third row.
             m_termTreatment.OpenConfiguration();
-            m_termTreatment.AddEntry(0, 1, false);
+            m_termTreatment.AddEntry(0, 1);
             m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
@@ -213,7 +213,7 @@ namespace BitFunnel
             // density of 0.01 is low enough that it will share with the third
             // and fourth rows.
             m_termTreatment.OpenConfiguration();
-            m_termTreatment.AddEntry(0, 2, false);
+            m_termTreatment.AddEntry(0, 2);
             m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();
@@ -225,8 +225,8 @@ namespace BitFunnel
             // rank 4. Seventh row's frequency of 0.01 is great enough to
             // require a private row at rank 4.
             m_termTreatment.OpenConfiguration();
-            m_termTreatment.AddEntry(4, 1, false);
-            m_termTreatment.AddEntry(0, 1, false);
+            m_termTreatment.AddEntry(4, 1);
+            m_termTreatment.AddEntry(0, 1);
             m_termTreatment.CloseConfiguration(hash);
 
             m_termTable.OpenTerm();

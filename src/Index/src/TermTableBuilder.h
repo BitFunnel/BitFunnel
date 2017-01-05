@@ -123,7 +123,7 @@ namespace BitFunnel
                         ITermTable & termTable,
                         RandomInt<unsigned>& random);
 
-            void AssignExplicit(double frequency, RowIndex count, bool isPrivate);
+            void AssignExplicit(double frequency, RowIndex count);
             void AssignAdhoc(double frequency, RowIndex count);
 
             RowIndex GetExplicitRowCount() const;

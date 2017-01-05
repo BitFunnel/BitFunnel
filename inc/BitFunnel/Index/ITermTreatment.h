@@ -99,7 +99,7 @@ namespace BitFunnel
         class Entry
         {
         public:
-            Entry(Rank rank, RowIndex rowCount, bool isPrivate);
+            Entry(Rank rank, RowIndex rowCount);
 
             Rank GetRank() const;
             RowIndex GetRowCount() const;

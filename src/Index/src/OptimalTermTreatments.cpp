@@ -265,7 +265,7 @@ namespace BitFunnel
             size_t count = configuration % 10;
             if (count != 0)
             {
-                rc.push_front(RowConfiguration::Entry(rank, count, false));
+                rc.push_front(RowConfiguration::Entry(rank, count));
             }
             configuration /= 10;
             rank++;
@@ -351,7 +351,7 @@ namespace BitFunnel
                     << ": " << std::setprecision(6) << signal
                     << " ==> private row" << std::endl;
                 RowConfiguration configuration;
-                configuration.push_front(RowConfiguration::Entry(0, 1, true));
+                configuration.push_front(RowConfiguration::Entry(0, 1));
                 m_configurations.push_back(configuration);
             }
         }

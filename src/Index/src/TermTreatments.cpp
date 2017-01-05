@@ -43,7 +43,7 @@ namespace BitFunnel
     TreatmentPrivateRank0::TreatmentPrivateRank0(double /*density*/, double /*snr*/)
     {
         // Same configuration for all terms - one private rank 0 row.
-        m_configuration.push_front(RowConfiguration::Entry(0, 1, true));
+        m_configuration.push_front(RowConfiguration::Entry(0, 1));
 
         //std::cout << "Single configuration: ";
         //m_configuration.Write(std::cout);
@@ -77,12 +77,12 @@ namespace BitFunnel
             if (frequency >= density)
             {
                 // This term is so common that it must be assigned a private row.
-                configuration.push_front(RowConfiguration::Entry(0, 1, true));
+                configuration.push_front(RowConfiguration::Entry(0, 1));
             }
             else
             {
                 int k = Term::ComputeRowCount(frequency, density, snr);
-                configuration.push_front(RowConfiguration::Entry(0, k, false));
+                configuration.push_front(RowConfiguration::Entry(0, k));
             }
 
             m_configurations.push_back(configuration);
@@ -126,7 +126,7 @@ namespace BitFunnel
             if (frequency > density)
             {
                 // This term is so common that it must be assigned a private row.
-                configuration.push_front(RowConfiguration::Entry(0, 1, true));
+                configuration.push_front(RowConfiguration::Entry(0, 1));
             }
             else
             {
@@ -135,18 +135,18 @@ namespace BitFunnel
                 // density.
                 // TODO: consider checking for overflow?
                 int k = Term::ComputeRowCount(frequency, density, snr);
-                configuration.push_front(RowConfiguration::Entry(0, 2, false));
+                configuration.push_front(RowConfiguration::Entry(0, 2));
                 if (k > 2)
                 {
                     Rank rank = 3;
                     double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
                     if (frequencyAtRank >= density)
                     {
-                        configuration.push_front(RowConfiguration::Entry(rank, 1, true));
+                        configuration.push_front(RowConfiguration::Entry(rank, 1));
                     }
                     else
                     {
-                        configuration.push_front(RowConfiguration::Entry(rank, k - 2, false));
+                        configuration.push_front(RowConfiguration::Entry(rank, k - 2));
                     }
                 }
             }
@@ -198,7 +198,7 @@ namespace BitFunnel
             if (frequency > density)
             {
                 // This term is so common that it must be assigned a private row.
-                configuration.push_front(RowConfiguration::Entry(0, 1, true));
+                configuration.push_front(RowConfiguration::Entry(0, 1));
             }
             else
             {
@@ -206,7 +206,7 @@ namespace BitFunnel
                 const Rank maxRank = (std::min)(Term::ComputeMaxRank(frequency, maxDensity), static_cast<Rank>(6u));
 
                 int numRows = Term::ComputeRowCount(frequency, density, snr);
-                configuration.push_front(RowConfiguration::Entry(0, 2, false));
+                configuration.push_front(RowConfiguration::Entry(0, 2));
                 numRows -= 2;
                 Rank rank = 1;
                 while (rank < maxRank)
@@ -215,14 +215,12 @@ namespace BitFunnel
                     if (frequencyAtRank >= density)
                     {
                         configuration.push_front(RowConfiguration::Entry(rank,
-                                                                         1,
-                                                                         true));
+                                                                         1));
                     }
                     else
                     {
                         configuration.push_front(RowConfiguration::Entry(rank,
-                                                                         1,
-                                                                         false));
+                                                                         1));
                     }
                     ++rank;
                     --numRows;
@@ -232,22 +230,19 @@ namespace BitFunnel
                 if (frequencyAtRank >= density)
                 {
                     configuration.push_front(RowConfiguration::Entry(rank,
-                                                                     1,
-                                                                     true));
+                                                                     1));
                 }
                 else
                 {
                     if (numRows > 1)
                     {
                         configuration.push_front(RowConfiguration::Entry(rank,
-                                                                         numRows,
-                                                                         false));
+                                                                         numRows));
                     }
                     else
                     {
                         configuration.push_front(RowConfiguration::Entry(rank,
-                                                                         1,
-                                                                         false));
+                                                                         1));
                     }
                 }
             }
@@ -501,13 +496,13 @@ namespace BitFunnel
                     double frequencyAtRank = Term::FrequencyAtRank(frequency, rank);
                     if (frequencyAtRank > density)
                     {
-                        configuration.push_front(RowConfiguration::Entry(rank, 1, true));
+                        configuration.push_front(RowConfiguration::Entry(rank, 1));
                         // TODO: assert that our solver doesn't give us multiple
                         // private rows.
                     }
                     else
                     {
-                        configuration.push_front(RowConfiguration::Entry(rank, rows[rank], false));
+                        configuration.push_front(RowConfiguration::Entry(rank, rows[rank]));
                     }
                 }
             }
