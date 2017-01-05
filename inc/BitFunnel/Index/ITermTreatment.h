@@ -109,7 +109,7 @@ namespace BitFunnel
 
             void Write(std::ostream& output) const;
 
-            static const size_t c_log2MaxRowCount = 4;
+            static const size_t c_log2MaxRowCount = 5;
             static const size_t c_maxRowCount = (1ull << c_log2MaxRowCount) - 1;
 
         private:

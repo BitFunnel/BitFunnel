@@ -85,16 +85,16 @@ namespace BitFunnel
 
     // RowIndex is the ordinal position of a row in a row table.
     // The RowIndex of the first row is zero.
-    // RowIndex is limited to fit within a 25-bit field. This constraint exists
+    // RowIndex is limited to fit within a 24-bit field. This constraint exists
     // to bound the size of RowId and PackedRowIdSequence to fit into 4-bytes.
     typedef size_t RowIndex;
-    static const size_t c_log2MaxRowIndexValue = 25;
+    static const size_t c_log2MaxRowIndexValue = 24;
     static const size_t c_maxRowIndexValue = (1ul << c_log2MaxRowIndexValue) - 1;
 
     // TODO: do we really need RowCount and RowIndex to be seperate types? This
     // is pulled over from the old code, but hasn't been re-thought through.
     typedef uint8_t RowCount;
-    static const RowCount c_maxRowsPerTerm = 12;
+    static const RowCount c_maxRowsPerTerm = 15;
     static const RowCount c_maxRandomHashes = 64;
     static_assert(c_maxRandomHashes <= c_maxRandomHashes,
                   "Need at least one hash per row");
