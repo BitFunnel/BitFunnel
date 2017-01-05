@@ -13,7 +13,7 @@ for dir in base_dir:
     treatment = re.sub(r'/tmp/','',dir)
     treatment = re.sub(r'/threads','',treatment)
     treatment = re.sub(r'100.200','',treatment)
-    for i in range(1, 17):
+    for i in range(2, 17, 2):
         summary_name = "{}/{}/QuerySummaryStatistics.txt".format(dir, i)
         with open(summary_name) as f:
             lines = f.readlines()

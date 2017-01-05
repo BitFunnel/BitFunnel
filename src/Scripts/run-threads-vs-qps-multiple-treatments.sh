@@ -5,18 +5,17 @@
 set -e
 set -x
 
-tools/BitFunnel/src/BitFunnel termtable /tmp/wikipedia.100.200/config/ PrivateSharedRank0 
-tools/BitFunnel/src/BitFunnel repl /tmp/wikipedia.100.200/config/  -script /tmp/script.threads
+tools/BitFunnel/src/BitFunnel termtable /home/danluu/dev/wikipedia.100.150/config/ 0.1 PrivateSharedRank0 
+tools/BitFunnel/src/BitFunnel repl /home/danluu/dev/wikipedia.100.150/config/  -script /home/danluu/dev/wikipedia.100.150/script.query.generated.threads
 
-cp -r /tmp/threads /tmp/rank0.100.200/
+cp -r /tmp/threads /tmp/rank0/
 
 
-tools/BitFunnel/src/BitFunnel termtable /tmp/wikipedia.100.200/config/ PrivateSharedRank0And3
-tools/BitFunnel/src/BitFunnel repl /tmp/wikipedia.100.200/config/  -script /tmp/script.threads
+# tools/BitFunnel/src/BitFunnel termtable /home/danluu/dev/wikipedia.100.150/config/ PrivateSharedRank0And3
+# tools/BitFunnel/src/BitFunnel repl /home/danluu/dev/wikipedia.100.150/config/  -script /home/danluu/dev/script.threads
+# cp -r /home/danluu/dev/threads /home/danluu/dev/rank3rank0.100.150/
 
-cp -r /tmp/threads /tmp/rank3rank0.100.200/
+tools/BitFunnel/src/BitFunnel termtable /home/danluu/dev/wikipedia.100.150/config/ 0.1 Optimal
+tools/BitFunnel/src/BitFunnel repl /home/danluu/dev/wikipedia.100.150/config/  -script /home/danluu/dev/wikipedia.100.150/script.query.generated.threads
 
-tools/BitFunnel/src/BitFunnel termtable /tmp/wikipedia.100.200/config/ Experimental
-tools/BitFunnel/src/BitFunnel repl /tmp/wikipedia.100.200/config/  -script /tmp/script.threads
-
-cp -r /tmp/threads /tmp/rankn.100.200/
+cp -r /tmp/threads /tmp/rankN/
