@@ -47,6 +47,7 @@ namespace BitFunnel
         AddTreatment<TreatmentPrivateSharedRank0And3>();
         AddTreatment<TreatmentPrivateSharedRank0ToN>();
         AddTreatment<TreatmentExperimental>();
+        AddTreatment<TreatmentOptimal>();
     }
 
 

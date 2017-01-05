@@ -239,17 +239,17 @@ namespace BitFunnel
             // treatments with higher rank rows.
             if (signal < density)
             {
-                std::cout
-                    << std::setprecision(2) << "idf " << 0.1 * idf
-                    << ": " << std::setprecision(6);
+                // std::cout
+                //     << std::setprecision(2) << "idf " << 0.1 * idf
+                //     << ": " << std::setprecision(6);
                 FindBestTreatment(density, signal, snr);
             }
             else
             {
-                std::cout
-                    << "idf " << std::setprecision(2) << 0.1 * idf
-                    << ": " << std::setprecision(6) << signal
-                    << " ==> private row" << std::endl;
+                // std::cout
+                //     << "idf " << std::setprecision(2) << 0.1 * idf
+                //     << ": " << std::setprecision(6) << signal
+                //     << " ==> private row" << std::endl;
             }
         }
     }

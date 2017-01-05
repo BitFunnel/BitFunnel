@@ -242,13 +242,13 @@ namespace BitFunnel
         //
         static char const * GetName()
         {
-            return "Experimental";
+            return "Optimal";
         }
 
 
         static char const * GetDescription()
         {
-            return "Experimental flavor of the day.";
+            return "Optimal TermTreatment, given some assumptions.";
         }
 
     private:
