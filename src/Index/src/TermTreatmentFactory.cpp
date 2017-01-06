@@ -68,14 +68,15 @@ namespace BitFunnel
     std::unique_ptr<ITermTreatment>
         TermTreatmentFactory::CreateTreatment(char const * name,
                                               double density,
-                                              double snr) const
+                                              double snr,
+                                              int variant) const
     {
         size_t i = 0;
         for (i = 0; i < m_names.size(); ++i)
         {
             if (m_names[i] == name)
             {
-                return m_creators[i](density, snr);
+                return m_creators[i](density, snr, variant);
             }
         }
 

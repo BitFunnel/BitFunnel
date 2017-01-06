@@ -175,7 +175,7 @@ namespace BitFunnel
     }
 
 
-    size_t FindBestTreatment(double density, double signal, double snr)
+    size_t FindBestTreatment(double density, double signal, double snr, int variant)
     {
         // Variables used to track the best row configuration and its
         // TermTreatmentMetrics.
@@ -196,12 +196,32 @@ namespace BitFunnel
                 // We only consider configurations that result in a snr above the threshold.
                 if (metrics.GetSNR() >= snr)
                 {
-                    // configuration is a candidate.
-                    if (metrics.GetDQ() > bestResult.GetDQ())
+                    if (variant == 1)
                     {
-                        // configuration is the best candidate seen so far.
-                        bestResult = metrics;
-                        bestConfiguration = configuration;
+                        // variant 1: optimize for Q.
+                        if (metrics.GetQuadwords() < bestResult.GetQuadwords())
+                        {
+                            bestResult = metrics;
+                            bestConfiguration = configuration;
+                        }
+                    }
+                    else if (variant == 2)
+                    {
+                        // variant 2: optimize for D.
+                        if (metrics.GetBits() < bestResult.GetBits())
+                        {
+                            bestResult = metrics;
+                            bestConfiguration = configuration;
+                        }
+                    }
+                    else
+                    {
+                        // default variant: optimize for DQ.
+                        if (metrics.GetDQ() > bestResult.GetDQ())
+                        {
+                            bestResult = metrics;
+                            bestConfiguration = configuration;
+                        }
                     }
                 }
             }
@@ -228,6 +248,7 @@ namespace BitFunnel
     {
         const double density = 0.1;
         const double snr = 10.0;
+        int variant = 0;
 
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
@@ -242,7 +263,7 @@ namespace BitFunnel
                 // std::cout
                 //     << std::setprecision(2) << "idf " << 0.1 * idf
                 //     << ": " << std::setprecision(6);
-                FindBestTreatment(density, signal, snr);
+                FindBestTreatment(density, signal, snr, variant);
             }
             else
             {
@@ -327,7 +348,7 @@ namespace BitFunnel
     // TreatmentOptimal
     //
     //*************************************************************************
-    TreatmentOptimal::TreatmentOptimal(double density, double snr)
+    TreatmentOptimal::TreatmentOptimal(double density, double snr, int variant)
     {
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
@@ -341,7 +362,7 @@ namespace BitFunnel
                 std::cout
                     << std::setprecision(2) << "idf " << 0.1 * idf
                     << ": " << std::setprecision(6);
-                auto config = FindBestTreatment(density, signal, snr);
+                auto config = FindBestTreatment(density, signal, snr, variant);
                 m_configurations.push_back(RowConfigurationFromSizeT(config));
             }
             else

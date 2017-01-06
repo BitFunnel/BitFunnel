@@ -47,7 +47,7 @@ namespace BitFunnel
     class TreatmentPrivateRank0 : public ITermTreatment
     {
     public:
-        TreatmentPrivateRank0(double density, double snr);
+        TreatmentPrivateRank0(double density, double snr, int variant);
 
         //
         // ITermTreatment methods.
@@ -89,7 +89,7 @@ namespace BitFunnel
     class TreatmentPrivateSharedRank0 : public ITermTreatment
     {
     public:
-        TreatmentPrivateSharedRank0(double density, double snr);
+        TreatmentPrivateSharedRank0(double density, double snr, int variant);
 
         //
         // ITermTreatment methods.
@@ -132,7 +132,7 @@ namespace BitFunnel
     class TreatmentPrivateSharedRank0And3 : public ITermTreatment
     {
     public:
-        TreatmentPrivateSharedRank0And3(double density, double snr);
+        TreatmentPrivateSharedRank0And3(double density, double snr, int variant);
 
         //
         // ITermTreatment methods.
@@ -163,7 +163,7 @@ namespace BitFunnel
     class TreatmentPrivateSharedRank0ToN : public ITermTreatment
     {
     public:
-        TreatmentPrivateSharedRank0ToN(double density, double snr);
+        TreatmentPrivateSharedRank0ToN(double density, double snr, int variant);
 
         //
         // ITermTreatment methods.
@@ -197,7 +197,7 @@ namespace BitFunnel
     class TreatmentExperimental : public ITermTreatment
     {
     public:
-        TreatmentExperimental(double density, double snr);
+        TreatmentExperimental(double density, double snr, int variant);
 
         //
         // ITermTreatment methods.
@@ -228,7 +228,7 @@ namespace BitFunnel
     class TreatmentOptimal : public ITermTreatment
     {
     public:
-        TreatmentOptimal(double density, double snr);
+        TreatmentOptimal(double density, double snr, int variant);
 
         //
         // ITermTreatment methods.

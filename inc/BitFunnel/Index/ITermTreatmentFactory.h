@@ -50,6 +50,7 @@ namespace BitFunnel
         virtual std::unique_ptr<ITermTreatment>
             CreateTreatment(char const * name,
                             double density,
-                            double snr) const = 0;
+                            double snr,
+                            int variant) const = 0;
     };
 }

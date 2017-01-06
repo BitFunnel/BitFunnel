@@ -40,7 +40,9 @@ namespace BitFunnel
     // All terms get the same treatment - a single, private, rank 0 row.
     //
     //*************************************************************************
-    TreatmentPrivateRank0::TreatmentPrivateRank0(double /*density*/, double /*snr*/)
+    TreatmentPrivateRank0::TreatmentPrivateRank0(double /*density*/,
+                                                 double /*snr*/,
+                                                 int /*variant*/)
     {
         // Same configuration for all terms - one private rank 0 row.
         m_configuration.push_front(RowConfiguration::Entry(0, 1));
@@ -65,7 +67,9 @@ namespace BitFunnel
     // depending on term frequency.
     //
     //*************************************************************************
-    TreatmentPrivateSharedRank0::TreatmentPrivateSharedRank0(double density, double snr)
+    TreatmentPrivateSharedRank0::TreatmentPrivateSharedRank0(double density,
+                                                             double snr,
+                                                             int /*variant*/)
     {
         // Fill up vector of RowConfigurations. GetTreatment() will use the
         // IdfSum() value of the Term as an index into this vector.
@@ -114,7 +118,8 @@ namespace BitFunnel
     //
     //*************************************************************************
     TreatmentPrivateSharedRank0And3::TreatmentPrivateSharedRank0And3(double density,
-                                                                     double snr)
+                                                                     double snr,
+                                                                     int /*variant*/)
     {
         // Fill up vector of RowConfigurations. GetTreatment() will use the
         // IdfSum() value of the Term as an index into this vector.
@@ -180,7 +185,9 @@ namespace BitFunnel
     // top out at rank 6.
     //
     //*************************************************************************
-    TreatmentPrivateSharedRank0ToN::TreatmentPrivateSharedRank0ToN(double density, double snr)
+    TreatmentPrivateSharedRank0ToN::TreatmentPrivateSharedRank0ToN(double density,
+                                                                   double snr,
+                                                                   int /*variant*/)
     {
         // TODO: what should maxDensity be? Note that this is different from the
         // density liimt that's passed in.
@@ -463,7 +470,9 @@ namespace BitFunnel
     // Placeholder of experimental treatment.
     //
     //*************************************************************************
-    TreatmentExperimental::TreatmentExperimental(double density, double snr)
+    TreatmentExperimental::TreatmentExperimental(double density,
+                                                 double snr,
+                                                 int /*variant*/)
     {
         const int c_maxRowsPerRank = 6;
 

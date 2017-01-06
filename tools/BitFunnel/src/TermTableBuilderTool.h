@@ -49,7 +49,8 @@ namespace BitFunnel
             ShardId shard,
             double density,
             double snr,
-            double adhocFrequency) const;
+            double adhocFrequency,
+            int variant) const;
 
         //
         // Constructor parameters.
