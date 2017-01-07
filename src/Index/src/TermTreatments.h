@@ -254,4 +254,42 @@ namespace BitFunnel
     private:
         std::vector<RowConfiguration> m_configurations;
     };
+
+
+    //*************************************************************************
+    //
+    // TreatmentPrivateRank0
+    //
+    // Every term gets the same treatment: a single, private, rank 0 row.
+    //
+    //*************************************************************************
+    class TreatmentClassicBitsliced : public ITermTreatment
+    {
+    public:
+        TreatmentClassicBitsliced(double density, double snr, int variant);
+
+        //
+        // ITermTreatment methods.
+        //
+
+        virtual RowConfiguration GetTreatment(Term term) const override;
+
+
+        //
+        // Static methods used by ITermTreatmentFactory
+        //
+        static char const * GetName()
+        {
+            return "ClassicBitsliced";
+        }
+
+
+        static char const * GetDescription()
+        {
+            return "Bitsliced signature file";
+        }
+
+    private:
+        RowConfiguration m_configuration;
+    };
 }

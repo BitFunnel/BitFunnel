@@ -530,4 +530,30 @@ namespace BitFunnel
         Term::IdfX10 idf = std::min(term.GetIdfSum(), local);
         return m_configurations[idf];
     }
+
+
+    //*************************************************************************
+    //
+    // TreatmentClassicBitsliced
+    //
+    // Every term gets the same number of rows, just like in classic bitsliced
+    // signature files.
+    //
+    //*************************************************************************
+    TreatmentClassicBitsliced::TreatmentClassicBitsliced(double density,
+                                                         double snr,
+                                                         int /*variant*/)
+    {
+        Term::IdfX10 idf = 40;
+        double frequency = Term::IdfX10ToFrequency(idf);
+        int k = Term::ComputeRowCount(frequency, density, snr);
+        m_configuration.push_front(RowConfiguration::Entry(0, k));
+    }
+
+
+    RowConfiguration TreatmentClassicBitsliced::GetTreatment(Term /*term*/) const
+    {
+        return m_configuration;
+    }
+
 }
