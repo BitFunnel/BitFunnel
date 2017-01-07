@@ -94,7 +94,7 @@ namespace BitFunnel
     // TODO: do we really need RowCount and RowIndex to be seperate types? This
     // is pulled over from the old code, but hasn't been re-thought through.
     typedef uint8_t RowCount;
-    static const RowCount c_maxRowsPerTerm = 15;
+    static const RowCount c_maxRowsPerTerm = 31;
     static const RowCount c_maxRandomHashes = 64;
     static_assert(c_maxRandomHashes <= c_maxRandomHashes,
                   "Need at least one hash per row");

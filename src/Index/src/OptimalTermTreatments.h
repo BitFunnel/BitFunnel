@@ -80,7 +80,7 @@ namespace BitFunnel
 
         double GetDQ() const
         {
-            return 1.0 / m_quadwords / m_bits;
+            return 1.0 / (m_quadwords * m_bits);
         }
 
 
