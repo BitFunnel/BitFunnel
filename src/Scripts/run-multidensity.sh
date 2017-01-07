@@ -5,10 +5,10 @@ set -x
 
 echo "Bash version ${BASH_VERSION}..."
 
-outline = "treatment,variant,density,bits,qps"
+outline="treatment,variant,density,bits,qps"
 echo $outline >> /tmp/multidensity.csv
 
-for dd in `seq 0.05 0.05 0.30`
+for dd in `seq 0.05 0.05 0.25`
 do
     outline=Rank0
     outline+=","
