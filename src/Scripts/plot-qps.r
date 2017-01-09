@@ -12,13 +12,12 @@ print("Reading input")
 df <- read.csv(header=TRUE, file=inputName)
 
 print("Creating plot.")
-png(filename=outputName,width=1600,height=1200)
-ggplot(df, aes(x=Threads, y=QPS, fill=Treatment)) +
+# png(filename=outputName,width=1600,height=1200)
+pdf(outputName)
+ggplot(df, aes(x=Threads, y=QPS)) +
 geom_bar(stat="identity", position="dodge") +
 theme_minimal() +
-scale_fill_brewer(palette="Set1") + 
+# scale_fill_brewer(palette="Set1") + 
 theme(axis.text = element_text(size=40),
-      axis.title = element_text(size=40),
-      legend.title=element_text(size=40),
-      legend.text=element_text(size=40))      
+      axis.title = element_text(size=40))
 dev.off()
