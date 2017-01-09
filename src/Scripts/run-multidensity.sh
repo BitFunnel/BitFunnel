@@ -15,7 +15,7 @@ do
     outline+=","
     outline+=$dd
     # Build TermTable
-    tools/BitFunnel/src/BitFunnel termtable ~/dev/wikipedia.100.150/config/ $dd Optimal
+    tools/BitFunnel/src/BitFunnel termtable ~/dev/wikipedia.100.150/config/ $dd $treatment
     outline+=","
     outline+=`python3 ../src/Scripts/get-memory-usage.py  /home/danluu/dev/wikipedia.100.150/config/TermTableStatistics-0.txt`
 
