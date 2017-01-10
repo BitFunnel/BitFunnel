@@ -12,9 +12,10 @@ with open(filename) as f:
     reader = csv.reader(f)
     header = next(reader)
     # assert header == ['treatment','variant', 'density', 'bits', 'qps']
-    assert header == ['Treatment','Density', 'Bytes', 'QPS']
+    # assert header == ['Treatment','Density', 'Bytes', 'QPS']
+    assert header == ['Treatment','Density', 'Bytes', 'SNR', 'QPS']
     # header[1] = 'target'
-    header[-2] = 'Size ratio'
+    header[-3] = 'Size (MB)'
     header[-1] = 'kQPS'
     header.append('DQ')
     writer = csv.writer(sys.stdout, delimiter= '&')
@@ -43,16 +44,16 @@ with open(filename) as f:
         elif row[0] == "Optimal":
             row[0] = "GeneralizedBlocked"
 
-
-        dq = "{0:.0f}".format(float(row[-1]) / float(row[-2]))
+        dq = "{0:.0f}".format(float(row[-1]) / float(row[-3]))
         row.append(dq)
 
-        row[-3] = str(float(row[-3]) / 1297.97)
+        # row[-4] = str(float(row[-4]) / 1297.97)
+        row[-4] = str(float(row[-4]) * 651587 / 1000000)
 
         # convert from qps to kqps.
         row[-2] = "{0:.0f}".format(float(row[-2])/1000)
 
-        row[-3] = "{0:.2f}".format(float(row[-3]))
+        row[-4] = "{0:.2f}".format(float(row[-4]))
 
         row[-1] += "\\\\"
         writer.writerow(row)

@@ -90,7 +90,7 @@ namespace BitFunnel
             {
                 ShardId shard = 0;
                 double snr = 10.0;
-                double adhocFrequency = 0.001;
+                double adhocFrequency = density;
 
                 // Check if treatmentName starts with Classic. This is a bit of
                 // a hack and we should probably just take adhocFrequency
@@ -101,6 +101,13 @@ namespace BitFunnel
                 {
                     adhocFrequency = 1.0;
                 }
+
+                std::string optimal("Optimal");
+                if (treatmentName.compare(0, optimal.length(), optimal) == 0)
+                {
+                    adhocFrequency = 0.01;
+                }
+
 
                 BuildTermTable(output,
                                config,

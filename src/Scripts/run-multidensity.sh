@@ -6,10 +6,12 @@ set -x
 echo "Bash version ${BASH_VERSION}..."
 
 #outline="treatment,variant,density,bits,qps"
-outline="Treatment,Density,Bits,QPS,TruePos,FalsePos"
+outline="Treatment,Density,Bits,SNR,QPS"
 echo $outline >> /tmp/multidensity.csv
 
-for treatment in ClassicBitsliced PrivateSharedRank0 Optimal; do
+# for treatment in ClassicBitsliced PrivateSharedRank0 Optimal; do
+# for treatment in PrivateSharedRank0 Optimal; do
+for treatment in Optimal; do
     for dd in `seq 0.05 0.05 0.25`; do
     outline=$treatment
     outline+=","
