@@ -9,9 +9,8 @@ echo "Bash version ${BASH_VERSION}..."
 outline="Treatment,Density,Bits,QPS,TruePos,FalsePos"
 echo $outline >> /tmp/multidensity.csv
 
-for dd in `seq 0.05 0.05 0.25`
-do
-    for treatment in ClassicBitsliced PrivateSharedRank0 Optimal; do
+for treatment in ClassicBitsliced PrivateSharedRank0 Optimal; do
+    for dd in `seq 0.05 0.05 0.25`; do
     outline=$treatment
     outline+=","
     outline+=$dd
