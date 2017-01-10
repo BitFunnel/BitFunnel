@@ -6,7 +6,7 @@ set -x
 echo "Bash version ${BASH_VERSION}..."
 
 #outline="treatment,variant,density,bits,qps"
-outline="Treatment,Density,Bits,QPS"
+outline="Treatment,Density,Bytes,QPS"
 echo $outline >> /tmp/multidensity.csv
 
 for dd in `seq 0.05 0.05 0.25`

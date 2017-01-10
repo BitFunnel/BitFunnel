@@ -92,6 +92,16 @@ namespace BitFunnel
                 double snr = 10.0;
                 double adhocFrequency = 0.001;
 
+                // Check if treatmentName starts with Classic. This is a bit of
+                // a hack and we should probably just take adhocFrequency
+                // directly.
+                std::string treatmentName(treatment);
+                std::string classic("Classic");
+                if (treatmentName.compare(0, classic.length(), classic) == 0)
+                {
+                    adhocFrequency = 1.0;
+                }
+
                 BuildTermTable(output,
                                config,
                                treatment,
