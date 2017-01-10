@@ -12,11 +12,11 @@ with open(filename) as f:
     reader = csv.reader(f)
     header = next(reader)
     # assert header == ['treatment','variant', 'density', 'bits', 'qps']
-    assert header == ['treatment','density', 'bits', 'qps']
+    assert header == ['Treatment','Density', 'Bytes', 'QPS']
     # header[1] = 'target'
-    header[-2] = 'size ratio'
-    header[-1] = 'kqps'
-    header.append('dq')
+    header[-2] = 'Size ratio'
+    header[-1] = 'kQPS'
+    header.append('DQ')
     writer = csv.writer(sys.stdout, delimiter= '&')
 
     header[-1] += "\\\\"
@@ -56,4 +56,3 @@ with open(filename) as f:
 
         row[-1] += "\\\\"
         writer.writerow(row)
-
