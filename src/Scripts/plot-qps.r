@@ -14,10 +14,10 @@ df <- read.csv(header=TRUE, file=inputName)
 print("Creating plot.")
 # png(filename=outputName,width=1600,height=1200)
 pdf(outputName)
-ggplot(df, aes(x=Threads, y=QPS)) +
+ggplot(df, aes(x=Threads, y=kQPS)) +
 geom_bar(stat="identity", position="dodge") +
 theme_minimal() +
 # scale_fill_brewer(palette="Set1") + 
-theme(axis.text = element_text(size=40),
-      axis.title = element_text(size=40))
+theme(axis.text = element_text(size=20),
+      axis.title = element_text(size=20))
 dev.off()

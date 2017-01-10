@@ -8,7 +8,7 @@ if len(args) == 0:
 
 base_dir = args
 
-print("Threads,QPS,Treatment")
+print("Threads,kQPS,Treatment")
 for dir in base_dir:
     treatment = re.sub(r'/tmp/','',dir)
     treatment = re.sub(r'/threads','',treatment)
@@ -18,5 +18,5 @@ for dir in base_dir:
         with open(summary_name) as f:
             lines = f.readlines()
             assert lines[5][0:3] == "QPS"
-            qps = float(re.split(': ', lines[5])[1].rstrip())
+            qps = float(re.split(': ', lines[5])[1].rstrip())/1000
             print("{},{},{}".format(i,qps, treatment))
