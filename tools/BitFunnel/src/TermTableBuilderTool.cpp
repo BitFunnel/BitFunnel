@@ -76,11 +76,18 @@ namespace BitFunnel
             0u,
             CmdLine::GreaterThan(-1));
 
+        CmdLine::OptionalParameter<double> snr(
+            "snr",
+            "Set signal-to-noise ratio.",
+            0.0,
+            CmdLine::GreaterThan(0.0));
+
 
         parser.AddParameter(config);
         parser.AddParameter(density);
         parser.AddParameter(treatment);
         parser.AddParameter(variant);
+        parser.AddParameter(snr);
 
         int returnCode = 1;
 
@@ -89,7 +96,6 @@ namespace BitFunnel
             try
             {
                 ShardId shard = 0;
-                double snr = 10.0;
                 double adhocFrequency = density;
 
                 // Check if treatmentName starts with Classic. This is a bit of
