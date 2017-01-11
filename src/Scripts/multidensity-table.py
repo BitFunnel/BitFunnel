@@ -23,7 +23,7 @@ with open(filename) as f:
     header[-1] += "\\\\"
     writer.writerow(header)
 
-    print("\\midrule")
+    last_treatment = ""
     for row in reader:
     #     if row[0] == "Rank0":
     #         row[1] = "N/A"
@@ -43,17 +43,20 @@ with open(filename) as f:
             row[0] = "FreqConscious"
         elif row[0] == "Optimal":
             row[0] = "GeneralizedBlocked"
+        if row[0] != last_treatment:
+            print("\\midrule")
+            last_treatment = row[0]
+
+        # row[-4] = str(float(row[-4]) / 1297.97)
+        row[-3] = str(float(row[-3]) * 651587 / 1000000)
 
         dq = "{0:.0f}".format(float(row[-1]) / float(row[-3]))
         row.append(dq)
 
-        # row[-4] = str(float(row[-4]) / 1297.97)
-        row[-4] = str(float(row[-4]) * 651587 / 1000000)
-
         # convert from qps to kqps.
         row[-2] = "{0:.0f}".format(float(row[-2])/1000)
 
-        row[-4] = "{0:.2f}".format(float(row[-4]))
+        row[-4] = "{0:.0f}".format(float(row[-4]))
 
         row[-1] += "\\\\"
         writer.writerow(row)
