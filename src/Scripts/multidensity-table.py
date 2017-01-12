@@ -11,11 +11,9 @@ filename = "/tmp/multidensity-temp.csv"
 with open(filename) as f:
     reader = csv.reader(f)
     header = next(reader)
-    # assert header == ['treatment','variant', 'density', 'bits', 'qps']
-    # assert header == ['Treatment','Density', 'Bytes', 'QPS']
-    assert header == ['Treatment','Density', 'Bytes', 'SNR', 'QPS']
-    # header[1] = 'target'
-    header[-3] = 'Size (MB)'
+    # assert header == ['Treatment','Density', 'Bytes', 'SNR', 'QPS']
+    assert header == ['Treatment','Density', 'Bytes', 'QPS']
+    header[-2] = 'Size (MB)'
     header[-1] = 'kQPS'
     header.append('DQ')
     writer = csv.writer(sys.stdout, delimiter= '&')
@@ -48,15 +46,15 @@ with open(filename) as f:
             last_treatment = row[0]
 
         # row[-4] = str(float(row[-4]) / 1297.97)
-        row[-3] = str(float(row[-3]) * 651587 / 1000000)
+        row[-2] = str(float(row[-2]) * 651587 / 1000000)
 
-        dq = "{0:.0f}".format(float(row[-1]) / float(row[-3]))
+        dq = "{0:.0f}".format(float(row[-1]) / float(row[-2]))
         row.append(dq)
 
         # convert from qps to kqps.
         row[-2] = "{0:.0f}".format(float(row[-2])/1000)
 
-        row[-4] = "{0:.0f}".format(float(row[-4]))
+        row[-3] = "{0:.0f}".format(float(row[-3]))
 
         row[-1] += "\\\\"
         writer.writerow(row)
