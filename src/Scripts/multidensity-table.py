@@ -44,7 +44,7 @@ with open(filename) as f:
         elif row[0] == "Optimal":
             row[0] = "GeneralizedBlocked"
         if row[0] != last_treatment:
-            print("\\midrule")
+            print("\\hline")
             last_treatment = row[0]
 
         # row[-4] = str(float(row[-4]) / 1297.97)

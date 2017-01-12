@@ -31,7 +31,7 @@ with open(filename) as f:
         if row[0] != last_querylog:
             if row[0] == "generated":
                 print("Unigram&Lucene&311&N/A&31&100\\\\")
-            print("\\midrule")
+            print("\\hline")
             last_querylog = row[0]
 
         # Overwrite Phi with QueryLog
