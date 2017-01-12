@@ -17,8 +17,7 @@ with open(filename) as f:
     # header[1] = 'target'
     header[-3] = 'Size (MB)'
     header[-1] = 'kQPS'
-    header[0] = 'System'
-    header[1] = 'Query Log'
+    header[1] = 'System'
     header.append('DQ')
     writer = csv.writer(sys.stdout, delimiter= '&')
 
@@ -30,20 +29,21 @@ with open(filename) as f:
     #         print("Error: expected Rank0 or RankN treatment")
     #         assert False
         if row[0] != last_querylog:
+            if row[0] == "generated":
+                print("Unigram&Lucene&311&N/A&31&100\\\\")
             print("\\midrule")
             last_querylog = row[0]
 
         # Overwrite Phi with QueryLog
-        row[1] = row[0]
-        if row[1] == "docfreq":
-            row[1] = "Unigram"
-        elif row[1] == "generated":
-            row[1] = "Multiterm"
+        if row[0] == "docfreq":
+            row[0] = "Unigram"
+        elif row[0] == "generated":
+            row[0] = "Multiterm"
         else:
             print("Error: expected docfreq or generated query log")
             assert False
 
-        row[0] = "BitFunnel"
+        row[1] = "BitFunnel"
 
         # row[-4] = str(float(row[-4]) / 1297.97)
         row[-3] = str(float(row[-3]) * 651587 / 1000000)
@@ -58,4 +58,5 @@ with open(filename) as f:
 
         row[-1] += "\\\\"
         writer.writerow(row)
-    print("\\midrule")
+    print("Multiterm&Lucene&311&N/A&4.5&15\\\\")
+
