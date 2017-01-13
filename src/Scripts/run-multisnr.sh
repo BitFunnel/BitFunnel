@@ -8,7 +8,7 @@ echo "Bash version ${BASH_VERSION}..."
 outline="Query Log,Phi,Bytes,SNR,QPS"
 echo $outline >> /tmp/multisnr.csv
 
-for snr in 10000.0 10.0 100.0 1000.0; do
+for snr in 10.0 100.0 1200.0 20000.0; do
     # Build TermTable
     tools/BitFunnel/src/BitFunnel termtable ~/dev/wikipedia.100.150/config/ 0.15 Optimal -snr $snr
 
