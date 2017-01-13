@@ -11,6 +11,8 @@
         "./Configure_Make.sh",
         "cd build-make",
         "make -j ${PARALLEL}",
+      ],
+      "testcmd": [
         "make test"
       ]
     },
@@ -26,6 +28,20 @@
         "cd build-ninja",
         "cmake -DCMAKE_BUILD_TYPE=RELEASE -G Ninja ..",
         "ninja"
+      ]
+    },
+    "osx": {
+      "buildenv": "osx",
+      "homebrew": {
+        "formulae": ["cmake"]
+      },
+      "buildcmd": [
+        "./Configure_Make.sh",
+        "cd build-make",
+        "make -j ${PARALLEL}",
+      ],
+      "testcmd": [
+        "make test"
       ]
     },
   },
