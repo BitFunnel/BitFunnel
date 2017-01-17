@@ -15,11 +15,11 @@ print("Creating plot.")
 # png(filename=outputName,width=1600,height=1200)
 # pdf(outputName)
 ggplot(df, aes(x=Threads, y=kQPS)) +
-geom_bar(stat="identity", position="dodge") +
-theme_minimal() +
+geom_bar(stat="identity", position="dodge", fill = "#000000") +
+theme_bw() +
 theme(aspect.ratio=1/2) +
 # scale_fill_brewer(palette="Set1") + 
-theme(axis.text = element_text(size=20),
-      axis.title = element_text(size=20))
+theme(axis.text = element_text(size=20, color="black"),
+      axis.title = element_text(size=20, color="black"))
 # dev.off()
 ggsave(outputName, width = 10, height=5)
