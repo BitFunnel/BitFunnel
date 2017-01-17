@@ -39,23 +39,23 @@ names(df)[names(df) == 'compiler.match'] <- 'MatchTime'
 #       axis.title = element_text(size=40))
 # dev.off()
 
-print("Computing cacheline regression.")
-df <- data.frame(interpreter$cachelines, compiler$matches, compiler$match)
-names(df)[names(df) == 'interpreter.cachelines'] <- 'Cachelines'
-names(df)[names(df) == 'compiler.matches'] <- 'Matches'
-names(df)[names(df) == 'compiler.match'] <- 'Time'
+# print("Computing cacheline regression.")
+# df <- data.frame(interpreter$cachelines, compiler$matches, compiler$match)
+# names(df)[names(df) == 'interpreter.cachelines'] <- 'Cachelines'
+# names(df)[names(df) == 'compiler.matches'] <- 'Matches'
+# names(df)[names(df) == 'compiler.match'] <- 'Time'
 
-fit <- lm(Time ~ Matches, data=df)
-print(summary(fit))
+# fit <- lm(Time ~ Matches, data=df)
+# print(summary(fit))
 
-fit <- lm(Time ~ Cachelines, data=df)
-print(summary(fit))
+# fit <- lm(Time ~ Cachelines, data=df)
+# print(summary(fit))
 
-fit <- lm(Time ~ ., data=df)
-print(summary(fit))
+# fit <- lm(Time ~ ., data=df)
+# print(summary(fit))
 
-print("Residual plot.")
-df <- augment(fit)
+# print("Residual plot.")
+# df <- augment(fit)
 
 # # TODO: don't hardcode filename.
 # png(filename="time-residual.png",width=1600,height=1200)
@@ -82,7 +82,36 @@ fit <- lm(Time ~ ., data=df)
 print(summary(fit))
 
 
-df <- data.frame(interpreter$cachelines, compiler$match)
+df <- data.frame(interpreter$quadwords, compiler$match)
 names(df)[names(df) == 'interpreter.quadwords'] <- 'Quadwords'
 names(df)[names(df) == 'compiler.match'] <- 'MatchTime'
+
+print("Plotting quadwords vs. time.")
+# png(filename=out_name1,width=1600,height=1200)
+ggplot(df, aes(x=Quadwords,y=MatchTime)) +
+theme_minimal() +
+geom_smooth(method = "lm", se = FALSE) + 
+theme(aspect.ratio=1/2) +
+geom_point(alpha=1/10) +
+theme(axis.text.x=element_blank(),
+	axis.text.y=element_blank(),
+      axis.title = element_text(size=20)) +
+ylim(0, 0.0005)
+# dev.off()
+ggsave(out_name1, width = 10, height=5)
+
+# df <- data.frame(interpreter$matches, compiler$match)
+# names(df)[names(df) == 'interpreter.matches'] <- 'Matches'
+# names(df)[names(df) == 'compiler.match'] <- 'MatchTime'
+
+# print("Plotting quadwords vs. time.")
+# png(filename=out_name1,width=1600,height=1200)
+# ggplot(df, aes(x=Matches,y=MatchTime)) +
+# theme_minimal() +
+# geom_point(alpha=1/10) +
+# theme(axis.text = element_text(size=40),
+#       axis.title = element_text(size=40)) +
+# ylim(0, 0.002)      
+# dev.off()
+
 
