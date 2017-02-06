@@ -93,10 +93,10 @@ theme_minimal() +
 geom_smooth(method = "lm", se = FALSE) + 
 theme(aspect.ratio=1/2) +
 geom_point(alpha=1/10) +
-theme(axis.text.x=element_blank(),
-	axis.text.y=element_blank(),
+theme(axis.text = element_text(size=20),
       axis.title = element_text(size=20)) +
-ylim(0, 0.0005)
+# ylim(0, 0.0005) +
+scale_y_continuous(name="Match Time (us)", labels=c("0", "100", "200", "300", "400", "500"), breaks=c(0, 0.0001, 0.0002, 0.0003, 0.0004, 0.0005), limits=c(0, 0.0005)) +
 # dev.off()
 ggsave(out_name1, width = 10, height=5)
 
