@@ -200,7 +200,7 @@ namespace BitFunnel
         // of primes less than or equal to maxDocId.
         auto termTableCollection =
             Factories::CreateTermTableCollection();
-        // TODO: don't create the exact same TermTable for each shard.
+        // TODO: don't create the exact same TermTable for each shard?
         for (unsigned i = 0; i < shardCount; ++i)
         {
             auto termTable =
@@ -227,6 +227,16 @@ namespace BitFunnel
         auto index = Factories::CreateSimpleIndex(fileSystem);
         index->SetTermTableCollection(std::move(termTableCollection));
         index->SetSliceBufferAllocator(std::move(sliceAllocator));
+
+        // This hardcodes things so that we basically have 2 shards with fixed settings.
+        // TODO: don't hardcode this once very basic shard support works.
+        std::stringstream shardText;
+        if (shardCount > 1)
+        {
+            shardText << "5";
+        }
+        auto shardDefinition = Factories::CreateShardDefinition(shardText);
+        index->SetShardDefinition(std::move(shardDefinition));
 
         const Term::GramSize gramSize = 1;
         const bool generateTermToText = false;
