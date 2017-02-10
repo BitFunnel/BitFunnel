@@ -50,6 +50,7 @@ namespace BitFunnel
         std::unique_ptr<ISimpleIndex>
             CreatePrimeFactorsIndex(IFileSystem & fileSystem,
                                     DocId maxDocId,
-                                    Term::StreamId streamId);
+                                    Term::StreamId streamId,
+                                    ShardId shardCount);
     }
 }

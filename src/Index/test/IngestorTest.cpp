@@ -46,17 +46,17 @@ namespace BitFunnel
 {
     static const Term::StreamId c_streamId = 0;
 
-
     class SyntheticIndex
     {
     public:
-        SyntheticIndex(unsigned documentCount)
+        SyntheticIndex(unsigned documentCount, ShardId numShards)
         {
             m_documentCount = documentCount;
             m_fileSystem = Factories::CreateFileSystem();
             m_index = Factories::CreatePrimeFactorsIndex(*m_fileSystem,
                                                          m_documentCount,
-                                                         c_streamId);
+                                                         c_streamId,
+                                                         numShards);
         }
 
 
@@ -180,7 +180,8 @@ namespace BitFunnel
     TEST(Ingestor, Basic)
     {
         const int c_documentCount = 64;
-        SyntheticIndex index(c_documentCount);
+        const ShardId c_numShards = 1;
+        SyntheticIndex index(c_documentCount, c_numShards);
 
         for (unsigned i = 0; i < c_documentCount + 1; i++)
         {
@@ -214,7 +215,8 @@ namespace BitFunnel
     TEST(Ingestor, DocFrequency2)
     {
         const int c_maxDocId = 2;
-        SyntheticIndex index(c_maxDocId);
+        const ShardId c_numShards = 1;
+        SyntheticIndex index(c_maxDocId, c_numShards);
         std::stringstream stream;
         index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
 
@@ -243,7 +245,8 @@ namespace BitFunnel
     TEST(Ingestor, DocFrequency63)
     {
         const int c_maxDocId = 63;
-        SyntheticIndex index(c_maxDocId);
+        const ShardId c_numShards = 1;
+        SyntheticIndex index(c_maxDocId, c_numShards);
         std::stringstream stream;
         index.GetIngestor().GetShard(0).TemporaryWriteDocumentFrequencyTable(stream, nullptr);
 

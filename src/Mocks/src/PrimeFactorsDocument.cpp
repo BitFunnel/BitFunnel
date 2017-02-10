@@ -192,16 +192,21 @@ namespace BitFunnel
     std::unique_ptr<ISimpleIndex>
         Factories::CreatePrimeFactorsIndex(IFileSystem & fileSystem,
                                            DocId maxDocId,
-                                           Term::StreamId streamId)
+                                           Term::StreamId streamId,
+                                           ShardId shardCount)
     {
         // Create special PrimeFactors TermTables containing explicit,
         // private row mappings for terms "0", "1", and the text representation
         // of primes less than or equal to maxDocId.
         auto termTableCollection =
             Factories::CreateTermTableCollection();
-        auto termTable =
-            Factories::CreatePrimeFactorsTermTable(maxDocId, streamId);
-        termTableCollection->AddTermTable(std::move(termTable));
+        // TODO: don't create the exact same TermTable for each shard.
+        for (unsigned i = 0; i < shardCount; ++i)
+        {
+            auto termTable =
+                Factories::CreatePrimeFactorsTermTable(maxDocId, streamId);
+            termTableCollection->AddTermTable(std::move(termTable));
+        }
 
         // Need to create our own slice buffer allocator because matcher tests
         // are more comprehensive if there are at least two quadwords in every

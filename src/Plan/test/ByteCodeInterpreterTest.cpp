@@ -40,7 +40,7 @@ namespace BitFunnel
     // TODO: This constant is in ByteCodeVerifier as well.
     static const Term::StreamId c_streamId = 0;
 
-
+    const ShardId c_numShards = 1;
     static std::unique_ptr<IFileSystem> g_fileSystem;
     static std::unique_ptr<ISimpleIndex> g_index;
 
@@ -67,7 +67,8 @@ namespace BitFunnel
         {
             g_index = Factories::CreatePrimeFactorsIndex(*g_fileSystem,
                                                          c_maxDocId,
-                                                         c_streamId);
+                                                         c_streamId,
+                                                         c_numShards);
         }
 
         return *g_index;

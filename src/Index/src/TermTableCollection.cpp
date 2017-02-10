@@ -97,7 +97,7 @@ namespace BitFunnel
         return *m_termTables.at(shard);
     }
 
-    
+
     size_t TermTableCollection::size() const
     {
         return m_termTables.size();
