@@ -260,4 +260,20 @@ namespace BitFunnel
         EXPECT_EQ(docFreqHistogram[21], 1u);
         EXPECT_EQ(docFreqHistogram[31], 1u);
     }
+
+
+    // TODO: this test only passes because multi-shard support is so
+    // non-existent that it's as if we only have one shard.
+    TEST(Ingestor, BasicMultiShard)
+    {
+        const int c_documentCount = 64;
+        const ShardId c_numShards = 2;
+        SyntheticIndex index(c_documentCount, c_numShards);
+
+        for (unsigned i = 0; i < c_documentCount + 1; i++)
+        {
+            index.VerifyQuery(i);
+        }
+    }
+
 }
