@@ -80,11 +80,9 @@ namespace BitFunnel
     }
 
 
-    const ITermTable& PlanRows::GetTermTable(ShardId /*shard*/) const
+    const ITermTable& PlanRows::GetTermTable(ShardId shard) const
     {
-        // TODO: may need to support multiple term tables.
-        // return *m_index.GetTermTables().GetTermTable(shard);
-        return m_index.GetTermTable0();
+        return m_index.GetTermTable(shard);
     }
 
 
