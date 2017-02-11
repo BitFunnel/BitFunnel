@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>     // TODO: Remove this temporary header.
 #include <memory>
 
 #include "BitFunnel/Configuration/IShardDefinition.h"
@@ -164,11 +163,11 @@ namespace BitFunnel
         ShardId shardId = m_shardDefinition.GetShard(document.GetPostingCount());
         DocumentHandleInternal handle = m_shards[shardId]->AllocateDocument(id);
 
-        //std::cout
+        // std::cout
         //    << "IIngestor::Add("
-        //    << id << "): "
-        //    << handle.GetIndex() << ", "
-        //    << std::hex << handle.GetSlice() << std::dec
+        //    << id << "):"
+        //    << " postingCount: " << document.GetPostingCount()
+        //    << " shardId: " << shardId
         //    << std::endl;
 
         document.Ingest(handle);

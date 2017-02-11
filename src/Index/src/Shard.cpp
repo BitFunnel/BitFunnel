@@ -356,6 +356,9 @@ namespace BitFunnel
                            DocIndex index,
                            void* sliceBuffer)
     {
+        // std::cout << "AddPosting shard:docIndex "
+        //           << m_shardId << ":" << index << std::endl;
+
         if (m_docFrequencyTableBuilder.get() != nullptr)
         {
             m_docFrequencyTableBuilder->OnTerm(term);

@@ -228,12 +228,14 @@ namespace BitFunnel
         index->SetTermTableCollection(std::move(termTableCollection));
         index->SetSliceBufferAllocator(std::move(sliceAllocator));
 
-        // This hardcodes things so that we basically have 2 shards with fixed settings.
-        // TODO: don't hardcode this once very basic shard support works.
         std::stringstream shardText;
-        if (shardCount > 1)
+        for (unsigned i = 0; i < shardCount-1; ++i)
         {
-            shardText << "5";
+            shardText << 2 + i;
+            if (i != shardCount - 1)
+            {
+                shardText << ",";
+            }
         }
         auto shardDefinition = Factories::CreateShardDefinition(shardText);
         index->SetShardDefinition(std::move(shardDefinition));
