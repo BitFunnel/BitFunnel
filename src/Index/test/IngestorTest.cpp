@@ -276,14 +276,22 @@ namespace BitFunnel
     TEST(Ingestor, BasicMultiShard)
     {
         const int c_maxDocId = 63;
-        const ShardId c_numShards = 2;
-        SyntheticIndex index(c_maxDocId, c_numShards);
+        // Note: we'll need to allocate more memory if we want to add more
+        // shards.
+        for (ShardId numShards = 1; numShards < 4; ++numShards)
+        {
+            SyntheticIndex index(c_maxDocId, numShards);
 
-        // for (unsigned i = 0; i < c_maxDocId + 1; i++)
-        // {
-        //     index.VerifyQuery(i);
-        // }
-        index.VerifyQuery(1u);
+            // We don't look at docId 0 because it matches everything, which
+            // will cause it to match all documents in all shards. It's possible
+            // that we should fix that by changing how PrimeFactorsDocument
+            // works.
+            for (unsigned i = 1; i < c_maxDocId + 1; i++)
+            {
+                std::cout << i << std::endl;
+                index.VerifyQuery(i);
+            }
+        }
     }
 
 }

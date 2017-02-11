@@ -231,12 +231,14 @@ namespace BitFunnel
         std::stringstream shardText;
         for (unsigned i = 0; i < shardCount-1; ++i)
         {
-            shardText << 2 + i;
-            if (i != shardCount - 1)
+            shardText << 1 + i;
+            if (i != shardCount - 2)
             {
-                shardText << ",";
+                shardText << std::endl;
             }
         }
+
+        std::cout << shardText.str() << std::endl;
         auto shardDefinition = Factories::CreateShardDefinition(shardText);
         index->SetShardDefinition(std::move(shardDefinition));
 
