@@ -40,7 +40,6 @@ namespace BitFunnel
     // TODO: This constant is in ByteCodeVerifier as well.
     static const Term::StreamId c_streamId = 0;
 
-    const ShardId c_numShards = 1;
     static std::unique_ptr<IFileSystem> g_fileSystem;
     static std::unique_ptr<ISimpleIndex> g_index;
 
@@ -54,7 +53,7 @@ namespace BitFunnel
     // Returns the ISimpleIndex that is shared by all of the tests
     // in this file.
     //
-    ISimpleIndex const & GetIndex()
+    ISimpleIndex const & GetIndex(ShardId numShards)
     {
         // Create the IFileSystem on first call.
         if (g_fileSystem.get() == nullptr)
@@ -68,7 +67,7 @@ namespace BitFunnel
             g_index = Factories::CreatePrimeFactorsIndex(*g_fileSystem,
                                                          c_maxDocId,
                                                          c_streamId,
-                                                         c_numShards);
+                                                         numShards);
         }
 
         return *g_index;
@@ -82,6 +81,8 @@ namespace BitFunnel
     //*************************************************************************
     TEST(ByteCodeInterpreter, AndRowJzDelta0)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -95,7 +96,7 @@ namespace BitFunnel
 
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("2");
         verifier.DeclareRow("3");
@@ -116,6 +117,8 @@ namespace BitFunnel
 
     TEST(ByteCodeInterpreter, AndRowJzDelta0Inverted)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -128,7 +131,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("2");
         verifier.DeclareRow("3");
@@ -149,6 +152,8 @@ namespace BitFunnel
 
     TEST(ByteCodeInterpreter, AndRowJzDelta1)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(1, 0, 0, false),"
@@ -161,7 +166,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         // IMPORTANT: row0 must be a row whose value differs
         // across adjacent quadwords in order to correctly
@@ -189,6 +194,8 @@ namespace BitFunnel
 
     TEST(ByteCodeInterpreter, AndRowJzDelta1Inverted)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(1, 0, 0, false),"
@@ -201,7 +208,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         // IMPORTANT: row0 must be a row whose value differs
         // across adjacent quadwords in order to correctly
@@ -229,6 +236,8 @@ namespace BitFunnel
 
     TEST(ByteCodeInterpreter, AndRowJzMatches)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -244,7 +253,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("2");
         verifier.DeclareRow("3");
@@ -276,6 +285,8 @@ namespace BitFunnel
     //
     TEST(ByteCodeInterpreter, LoadRowJzRank0Delta0)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -285,7 +296,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
 
@@ -314,6 +325,8 @@ namespace BitFunnel
     //
     TEST(ByteCodeInterpreter, LoadRowJzRank0Delta0Inverted)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, true),"
@@ -323,7 +336,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("5");
 
@@ -345,6 +358,8 @@ namespace BitFunnel
     //
     TEST(ByteCodeInterpreter, LoadRowJzRank0Delta1)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 1, false),"
@@ -354,7 +369,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("7");
 
@@ -376,6 +391,8 @@ namespace BitFunnel
     //
     TEST(ByteCodeInterpreter, LoadRowJzRank0Delta1Inverted)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 1, true),"
@@ -385,7 +402,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("11");
 
@@ -413,6 +430,8 @@ namespace BitFunnel
     //
     TEST(ByteCodeInterpreter, LoadRowDelta0)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -422,7 +441,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -446,6 +465,8 @@ namespace BitFunnel
     //
     TEST(ByteCodeInterpreter, LoadRowDelta0Inverted)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -455,7 +476,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -479,6 +500,8 @@ namespace BitFunnel
     //
     TEST(ByteCodeInterpreter, LoadRowDelta1)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -488,7 +511,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -512,6 +535,8 @@ namespace BitFunnel
     //
     TEST(ByteCodeInterpreter, LoadRowDelta1Inverted)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -521,7 +546,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -548,6 +573,8 @@ namespace BitFunnel
 
     TEST(ByteCodeInterpreter, OrMatches)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "Or {"
             "  Children: ["
@@ -567,7 +594,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -598,6 +625,8 @@ namespace BitFunnel
     // seems complex.
     TEST(ByteCodeInterpreter, OutOfOrderMatches)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "RankDown {"
             "  Delta: 2,"
@@ -617,7 +646,7 @@ namespace BitFunnel
 
 
         const Rank initialRank = 2;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -648,6 +677,8 @@ namespace BitFunnel
     //*************************************************************************
     TEST(ByteCodeInterpreter, RankDownDelta1)
     {
+        ShardId c_numShards = 1;
+
         char const * text =
             "RankDown {"
             "  Delta: 1,"
@@ -660,7 +691,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 1;
-        ByteCodeVerifier verifier(GetIndex(), initialRank);
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
 

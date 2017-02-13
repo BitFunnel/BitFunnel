@@ -50,7 +50,7 @@ namespace BitFunnel
     // static const DocId c_maxDocId = 1664;
 
     // TODO: This should come from a shared header.
-    extern ISimpleIndex const & GetIndex();
+    extern ISimpleIndex const & GetIndex(ShardId numShards);
 
 
     //*************************************************************************
@@ -60,6 +60,7 @@ namespace BitFunnel
     //*************************************************************************
     TEST(NativeCode, AndRowJzDelta0)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -73,7 +74,7 @@ namespace BitFunnel
 
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("5");
         verifier.DeclareRow("7");
@@ -94,6 +95,7 @@ namespace BitFunnel
 
     TEST(NativeCode, AndRowJzDelta0Inverted)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -106,7 +108,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("2");
         verifier.DeclareRow("3");
@@ -127,6 +129,7 @@ namespace BitFunnel
 
     TEST(NativeCode, AndRowJzDelta1)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(1, 0, 0, false),"
@@ -139,7 +142,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         // IMPORTANT: row0 must be a row whose value differs
         // across adjacent quadwords in order to correctly
@@ -167,6 +170,7 @@ namespace BitFunnel
 
     TEST(NativeCode, AndRowJzDelta1Inverted)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(1, 0, 0, false),"
@@ -179,7 +183,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         // IMPORTANT: row0 must be a row whose value differs
         // across adjacent quadwords in order to correctly
@@ -207,6 +211,7 @@ namespace BitFunnel
 
     TEST(NativeCode, AndRowJzMatches)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -222,7 +227,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("2");
         verifier.DeclareRow("3");
@@ -254,6 +259,7 @@ namespace BitFunnel
     //
     TEST(NativeCode, LoadRowJzRank0Delta0)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -263,7 +269,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
 
@@ -292,6 +298,7 @@ namespace BitFunnel
     //
     TEST(NativeCode, LoadRowJzRank0Delta0Inverted)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, true),"
@@ -301,7 +308,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("5");
 
@@ -323,6 +330,7 @@ namespace BitFunnel
     //
     TEST(NativeCode, LoadRowJzRank0Delta1)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 1, false),"
@@ -332,7 +340,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("7");
 
@@ -354,6 +362,7 @@ namespace BitFunnel
     //
     TEST(NativeCode, LoadRowJzRank0Delta1Inverted)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 1, true),"
@@ -363,7 +372,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("11");
 
@@ -391,6 +400,7 @@ namespace BitFunnel
     //
     TEST(NativeCode, LoadRowDelta0)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -400,7 +410,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -424,6 +434,7 @@ namespace BitFunnel
     //
     TEST(NativeCode, LoadRowDelta0Inverted)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -433,7 +444,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -457,6 +468,7 @@ namespace BitFunnel
     //
     TEST(NativeCode, LoadRowDelta1)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -466,7 +478,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -490,6 +502,7 @@ namespace BitFunnel
     //
     TEST(NativeCode, LoadRowDelta1Inverted)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "LoadRowJz {"
             "  Row: Row(0, 0, 0, false),"
@@ -499,7 +512,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -526,6 +539,7 @@ namespace BitFunnel
 
     TEST(NativeCode, OrMatches)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "Or {"
             "  Children: ["
@@ -545,7 +559,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 0;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -576,6 +590,7 @@ namespace BitFunnel
     // seems complex.
     TEST(NativeCode, OutOfOrderMatches)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "RankDown {"
             "  Delta: 2,"
@@ -595,7 +610,7 @@ namespace BitFunnel
 
 
         const Rank initialRank = 2;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.DeclareRow("3");
         verifier.DeclareRow("5");
@@ -627,6 +642,7 @@ namespace BitFunnel
     //*************************************************************************
     TEST(NativeCode, RankDownDelta1)
     {
+        ShardId c_numShards = 1;
         char const * text =
             "RankDown {"
             "  Delta: 1,"
@@ -639,7 +655,7 @@ namespace BitFunnel
             "}";
 
         const Rank initialRank = 1;
-        NativeCodeVerifier verifier(GetIndex(), initialRank);
+        NativeCodeVerifier verifier(GetIndex(c_numShards), initialRank);
 
         verifier.VerboseMode(true);
 
