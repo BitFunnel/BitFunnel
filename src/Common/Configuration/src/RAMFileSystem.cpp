@@ -37,6 +37,7 @@ namespace BitFunnel
         RAMFileSystem::OpenForWrite(char const * filename,
                                     std::ios_base::openmode mode)
     {
+        // std::cout << "OpeningForWrite: " << filename << std::endl;
         auto buffer = EnsureStream(filename, true);
         std::unique_ptr<std::stringstream> stream(new std::stringstream(mode));
         (static_cast<std::ostream*>(stream.get()))->rdbuf(buffer);
@@ -48,6 +49,7 @@ namespace BitFunnel
         RAMFileSystem::OpenForRead(char const * filename,
                                    std::ios_base::openmode mode)
     {
+        // std::cout << "OpeningForRead: " << filename << std::endl;
         auto buffer = EnsureStream(filename, false);
         std::unique_ptr<std::istream> stream(new std::stringstream(mode));
         stream->rdbuf(buffer);
