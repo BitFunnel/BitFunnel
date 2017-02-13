@@ -115,6 +115,42 @@ namespace BitFunnel
     }
 
 
+    TEST(ByteCodeInterpreter, AndRowJzDelta0Shards2)
+    {
+        ShardId c_numShards = 2;
+
+        char const * text =
+            "LoadRowJz {"
+            "  Row: Row(0, 0, 0, false),"
+            "  Child: AndRowJz {"
+            "    Row: Row(1, 0, 0, false),"
+            "    Child: Report {"
+            "      Child: "
+            "    }"
+            "  }"
+            "}";
+
+
+        const Rank initialRank = 0;
+        ByteCodeVerifier verifier(GetIndex(c_numShards), initialRank);
+
+        verifier.DeclareRow("2");
+        verifier.DeclareRow("3");
+
+        for (auto iteration : verifier.GetIterations())
+        {
+            const size_t slice = verifier.GetSliceNumber(iteration);
+            const size_t offset = verifier.GetOffset(iteration);
+
+            const uint64_t row0 = verifier.GetRowData(0, offset, slice);
+            const uint64_t row1 = verifier.GetRowData(1, offset, slice);
+            verifier.ExpectResult(row0 & row1, offset, slice);
+        }
+
+        verifier.Verify(text);
+    }
+
+
     TEST(ByteCodeInterpreter, AndRowJzDelta0Inverted)
     {
         ShardId c_numShards = 1;
