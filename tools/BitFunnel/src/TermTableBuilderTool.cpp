@@ -93,9 +93,25 @@ namespace BitFunnel
 
         if (parser.TryParse(output, argc, argv))
         {
+            auto fileManager = Factories::CreateFileManager(config,
+                                                            config,
+                                                            config,
+                                                            m_fileSystem);
+
+
+            // Pull out ShardDefinition to get number of shards. Equivalent code
+            // also exists in SimpleIndex, but we don't want to use that
+            // directly since we don't want to stand up an Index/Ingestor to
+            // build the TermTable.
+            ShardId shardCount = 0;
+            {
+                auto input = fileManager->ShardDefinition().OpenForRead();
+                auto shardDefinition = Factories::CreateShardDefinition(*input);
+                shardCount = shardDefinition->GetShardCount();
+            }
+
             try
             {
-                ShardId shard = 0;
                 double adhocFrequency = density;
 
                 // Check if treatmentName starts with Classic. This is a bit of
@@ -115,14 +131,18 @@ namespace BitFunnel
                 }
 
 
-                BuildTermTable(output,
-                               config,
-                               treatment,
-                               shard,
-                               density,
-                               snr,
-                               adhocFrequency,
-                               variant);
+                for (ShardId shard = 0; shard < shardCount; ++shard)
+                {
+
+                    BuildTermTable(output,
+                                   *fileManager,
+                                   treatment,
+                                   shard,
+                                   density,
+                                   snr,
+                                   adhocFrequency,
+                                   variant);
+                }
 
                 returnCode = 0;
             }
@@ -154,7 +174,7 @@ namespace BitFunnel
 
     void TermTableBuilderTool::BuildTermTable(
         std::ostream& output,
-        char const * configDirectory,
+        IFileManager& fileManager,
         char const * treatmentName,
         ShardId shard,
         double density,
@@ -162,15 +182,11 @@ namespace BitFunnel
         double adhocFrequency,
         int variant) const
     {
-        output << "Loading files for TermTable build." << std::endl;
-
-        auto fileManager = Factories::CreateFileManager(configDirectory,
-                                                        configDirectory,
-                                                        configDirectory,
-                                                        m_fileSystem);
+        output << "Loading files for TermTable build: "
+               << shard << std::endl;
 
         auto terms(Factories::CreateDocumentFrequencyTable(
-            *fileManager->DocFreqTable(shard).OpenForRead()));
+            *fileManager.DocFreqTable(shard).OpenForRead()));
 
         auto treatments = Factories::CreateTreatmentFactory();
         auto treatment(treatments->CreateTreatment(treatmentName, density, snr, variant));
@@ -190,11 +206,11 @@ namespace BitFunnel
                                               *termTable));
 
         termTableBuilderTool->Print(output);
-        termTableBuilderTool->Print(*fileManager->TermTableStatistics(shard).OpenForWrite());
+        termTableBuilderTool->Print(*fileManager.TermTableStatistics(shard).OpenForWrite());
 
         output << "Writing TermTable files." << std::endl;
 
-        termTable->Write(*fileManager->TermTable(shard).OpenForWrite());
+        termTable->Write(*fileManager.TermTable(shard).OpenForWrite());
 
         output << "Done." << std::endl;
     }
