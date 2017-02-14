@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream>
+
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/Helpers.h"
@@ -187,11 +189,14 @@ namespace BitFunnel
             m_schema = Factories::CreateDocumentDataSchema();
         }
 
-        // TODO: Load shard definition from file.
+        // TODO: consider making this work if no ShardDefinition exists.
+        std::cout << "--------------------shardDefinition check" << std::endl;
         if (m_shardDefinition.get() == nullptr)
         {
+            auto input = m_fileManager->ShardDefinition().OpenForRead();
             m_shardDefinition =
-                Factories::CreateShardDefinition();
+               Factories::CreateShardDefinition(*input);
+            std::cout << "--------------------shardDefinition creation" << std::endl;
         }
 
         if (m_termTables.get() == nullptr)
