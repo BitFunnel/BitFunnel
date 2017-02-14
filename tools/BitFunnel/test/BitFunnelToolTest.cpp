@@ -179,7 +179,7 @@ namespace BitFunnel
             // discussion.
 
             // According to FileManager, ShardDefinition is in statisticsDirectory.
-            auto shardDefinition = fileSystem->OpenForWrite("statistics/ShardDefinition.csv");
+            auto shardDefinition = fileSystem->OpenForWrite("config/ShardDefinition.csv");
             *shardDefinition << "3";
         }
 
