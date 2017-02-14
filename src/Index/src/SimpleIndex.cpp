@@ -190,13 +190,11 @@ namespace BitFunnel
         }
 
         // TODO: consider making this work if no ShardDefinition exists.
-        std::cout << "--------------------shardDefinition check" << std::endl;
         if (m_shardDefinition.get() == nullptr)
         {
             auto input = m_fileManager->ShardDefinition().OpenForRead();
             m_shardDefinition =
                Factories::CreateShardDefinition(*input);
-            std::cout << "--------------------shardDefinition creation" << std::endl;
         }
 
         if (m_termTables.get() == nullptr)
