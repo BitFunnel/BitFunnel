@@ -36,5 +36,6 @@ namespace BitFunnel
         virtual const char* GetTypeName() const = 0;
 
         virtual void Format(IObjectFormatter& formatter) const = 0;
+		virtual ~IPersistableObject();
     };
 }
