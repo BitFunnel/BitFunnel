@@ -27,8 +27,10 @@
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Data/Sonnets.h"
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnelTool.h"
 #include "CmdLineParser/CmdLineParser.h"
+#include "LoggerInterfaces/Check.h"
 
 
 namespace BitFunnel
@@ -120,16 +122,20 @@ namespace BitFunnel
             std::vector<char const *> argv = {
                 "BitFunnel",
                 "termtable",
-                "config"
+                "config",
+                "0.1",
+                "PrivateSharedRank0ToN"
             };
 
             std::stringstream ignore;
             std::ostream& out = (verbose) ? std::cout : ignore;
 
-            tool.Main(std::cin,
-                      out,
-                      static_cast<int>(argv.size()),
-                      argv.data());
+            auto result = tool.Main(std::cin,
+                                    out,
+                                    static_cast<int>(argv.size()),
+                                    argv.data());
+
+            CHECK_EQ(result, 0) << "TermTableBuilder failed.";
 
             std::cout
                 << "Index is now configured."
@@ -183,7 +189,21 @@ int main(int argc, char** argv)
 
     if (parser.TryParse(std::cout, argc, argv))
     {
-        BitFunnel::Run(verbose.IsActivated());
+        try
+        {
+            BitFunnel::Run(verbose.IsActivated());
+        }
+        catch (BitFunnel::RecoverableError e)
+        {
+            std::cout << "Error: " << e.what() << std::endl;
+        }
+        catch (...)
+        {
+            // TODO: Do we really want to catch all exceptions here?
+            // Seems we want to at least print out the error message for BitFunnel exceptions.
+
+            std::cout << "Unexpected error." << std::endl;
+        }
     }
 
     return returnCode;
