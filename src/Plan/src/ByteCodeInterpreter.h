@@ -351,7 +351,7 @@ namespace BitFunnel
 
         virtual void Report() override;
 
-        // Constrol flow primitives.
+        // Control flow primitives.
         virtual ICodeGenerator::Label AllocateLabel() override;
         virtual void PlaceLabel(Label label) override;
         virtual void Call(Label label) override;
