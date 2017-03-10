@@ -271,9 +271,9 @@ namespace BitFunnel
             // The following shard-aware code causes problems when the
             // input file is missing. See issue 308.
             //      https://github.com/BitFunnel/BitFunnel/issues/308
-            //auto input = m_fileManager->ShardDefinition().OpenForRead();
-            //m_shardDefinition =
-            //    Factories::CreateShardDefinition(*input);
+            auto input = m_fileManager->ShardDefinition().OpenForRead();
+            m_shardDefinition =
+               Factories::CreateShardDefinition(*input);
         }
 
         if (m_termTables.get() == nullptr)
