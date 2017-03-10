@@ -41,6 +41,7 @@ namespace BitFunnel
     {
     public:
         Environment(IFileSystem& fileSystem,
+                    std::ostream& output,
                     char const * directory,
                     size_t gramSize,
                     size_t threadCount);
@@ -60,6 +61,8 @@ namespace BitFunnel
 
         std::string const & GetOutputDir() const;
         void SetOutputDir(std::string dir);
+
+        std::ostream & GetOutputStream() const;
 
         size_t GetThreadCount() const;
         void SetThreadCount(size_t threadCount);
@@ -85,5 +88,6 @@ namespace BitFunnel
         bool m_failOnException;
         size_t m_threadCount;
         std::string m_outputDir;
+        std::ostream& m_output;
     };
 }

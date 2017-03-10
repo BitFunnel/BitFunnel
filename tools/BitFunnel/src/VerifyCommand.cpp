@@ -74,9 +74,11 @@ namespace BitFunnel
 
     void Verify::Execute()
     {
+        std::ostream& output = GetEnvironment().GetOutputStream();
+
         if (m_isSingleQuery)
         {
-            std::cout
+            output
                 << "Processing query \""
                 << m_query
                 << "\"" << std::endl;
@@ -84,7 +86,7 @@ namespace BitFunnel
                                            m_query,
                                            true,
                                            GetEnvironment().GetCompilerMode());
-            std::cout << "True positive count: "
+            output << "True positive count: "
                 << verifier->GetTruePositiveCount()
                 << std::endl
                 << "False positive count: "
@@ -95,46 +97,46 @@ namespace BitFunnel
                 << std::endl;
             if (verifier->GetTruePositiveCount() > 0)
             {
-                std::cout << "True positives: ";
+                output << "True positives: ";
                 size_t counter = 0;
                 for (const auto doc : verifier->GetTruePositives())
                 {
                     if (counter != 0)
                     {
-                        std::cout << ", ";
+                        output << ", ";
                     }
-                    std::cout << doc;
+                    output << doc;
                     ++counter;
                 }
-                std::cout << std::endl;
-                std::cout << std::endl;
+                output << std::endl;
+                output << std::endl;
             }
 
             if (verifier->GetFalsePositiveCount() > 0)
             {
-                std::cout << "False positives:" << std::endl;
+                output << "False positives:" << std::endl;
                 for (const auto doc : verifier->GetFalsePositives())
                 {
-                    std::cout << doc << ",";
+                    output << doc << ",";
                 }
-                std::cout << std::endl;
+                output << std::endl;
             }
 
             if (verifier->GetFalseNegativeCount() > 0)
             {
-                std::cout << "False negatives:" << std::endl;
+                output << "False negatives:" << std::endl;
                 for (const auto doc : verifier->GetFalseNegatives())
                 {
-                    std::cout << doc << ",";
+                    output << doc << ",";
                 }
-                std::cout << std::endl;
+                output << std::endl;
 
                 throw RecoverableError("MatchVerifier: false negative detected.");
             }
         }
         else
         {
-            std::cout
+            output
                 << "Processing queries from log at \""
                 << m_query
                 << "\"" << std::endl;

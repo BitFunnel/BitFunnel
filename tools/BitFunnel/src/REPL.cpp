@@ -147,6 +147,7 @@ namespace BitFunnel
                 << std::endl;
 
             Environment environment(m_fileSystem,
+                                    output,
                                     directory,
                                     gramSize,
                                     threadCount);

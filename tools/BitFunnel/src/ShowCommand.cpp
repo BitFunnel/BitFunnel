@@ -73,26 +73,28 @@ namespace BitFunnel
 
     void Show::Execute()
     {
+        std::ostream& output = GetEnvironment().GetOutputStream();
+
         if (m_mode == Mode::Cache)
         {
             auto & environment = GetEnvironment();
             Term term(m_term.c_str(), 0, environment.GetConfiguration());
             auto & cache = environment.GetIngestor().GetDocumentCache();
 
-            std::cout << "DocId, Contains" << std::endl;
+            output << "DocId, Contains" << std::endl;
             for (auto entry : cache)
             {
-                std::cout
+                output
                     << "  DocId(" << entry.second << ") ";
                 if (entry.first.Contains(term))
                 {
-                    std::cout << "contains ";
+                    output << "contains ";
                 }
                 else
                 {
-                    std::cout << "does not contain ";
+                    output << "does not contain ";
                 }
-                std::cout << m_term << std::endl;
+                output << m_term << std::endl;
             }
         }
         else
@@ -102,7 +104,7 @@ namespace BitFunnel
             Term term(m_term.c_str(), 0, environment.GetConfiguration());
             RowIdSequence rows(term, environment.GetTermTable());
 
-            std::cout
+            output
                 << "Term("
                 << "\"" << m_term << "\""
                 << ")" << std::endl;
@@ -128,33 +130,33 @@ namespace BitFunnel
             }
 
             // Print out 100s digit of DocId.
-            std::cout << "                 d ";
+            output << "                 d ";
             for (auto id : ids)
             {
-                std::cout << id / 100;
+                output << id / 100;
             }
-            std::cout << std::endl;
+            output << std::endl;
 
             // Print ouf 10s digit of DocId.
-            std::cout << "                 o ";
+            output << "                 o ";
             for (auto id : ids)
             {
-                std::cout << (id / 10 % 10);
+                output << (id / 10 % 10);
             }
-            std::cout << std::endl;
+            output << std::endl;
 
             // Print out 1s digit of DocId.
-            std::cout << "                 c ";
+            output << "                 c ";
             for (auto id : ids)
             {
-                std::cout << (id % 10);
+                output << (id % 10);
             }
-            std::cout << std::endl;
+            output << std::endl;
 
             // Print out RowIds and their bits.
             for (auto row : rows)
             {
-                std::cout
+                output
                     << "  RowId("
                     << row.GetRank()
                     << ", "
@@ -164,18 +166,18 @@ namespace BitFunnel
 
                 if (m_mode == Mode::Rows)
                 {
-                    std::cout << ": ";
+                    output << ": ";
                     for (auto id : ids)
                     {
                         if (ingestor.Contains(id))
                         {
                             auto handle = ingestor.GetHandle(id);
-                            std::cout << (handle.GetBit(row) ? "1" : "0");
+                            output << (handle.GetBit(row) ? "1" : "0");
                         }
                     }
                 }
 
-                std::cout << std::endl;
+                output << std::endl;
             }
         }
     }

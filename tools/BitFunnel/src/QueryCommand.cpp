@@ -67,9 +67,11 @@ namespace BitFunnel
 
     void Query::Execute()
     {
+        std::ostream& output = GetEnvironment().GetOutputStream();
+
         if (m_isSingleQuery)
         {
-            std::cout
+            output
                 << "Processing query \""
                 << m_query
                 << "\"" << std::endl;
@@ -79,8 +81,8 @@ namespace BitFunnel
                                  GetEnvironment().GetCompilerMode(),
                                  GetEnvironment().GetCacheLineCountMode());
 
-            std::cout << "Results:" << std::endl;
-            CsvTsv::CsvTableFormatter formatter(std::cout);
+            output << "Results:" << std::endl;
+            CsvTsv::CsvTableFormatter formatter(output);
             QueryInstrumentation::Data::FormatHeader(formatter);
             instrumentation.Format(formatter);
         }
@@ -91,7 +93,7 @@ namespace BitFunnel
                 << "Please use the 'cd' command to set an "
                 << "output directory";
 
-            std::cout
+            output
                 << "Processing queries from log at \""
                 << m_query
                 << "\"" << std::endl;
@@ -109,8 +111,8 @@ namespace BitFunnel
                                  c_iterations,
                                  GetEnvironment().GetCompilerMode(),
                                  GetEnvironment().GetCacheLineCountMode());
-            std::cout << "Results:" << std::endl;
-            statistics.Print(std::cout);
+            output << "Results:" << std::endl;
+            statistics.Print(output);
 
             // TODO: unify this with the fileManager that's passed into
             // QueryRunner::Run.

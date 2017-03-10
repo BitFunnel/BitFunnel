@@ -47,6 +47,7 @@
 namespace BitFunnel
 {
     Environment::Environment(IFileSystem& fileSystem,
+                             std::ostream& output,
                              char const * directory,
                              size_t gramSize,
                              size_t threadCount)
@@ -60,7 +61,8 @@ namespace BitFunnel
         m_cacheLineCountMode(false),
         m_compilerMode(true),
         m_failOnException(false),
-        m_threadCount(threadCount)
+        m_threadCount(threadCount),
+        m_output(output)
     {
         m_index->ConfigureForServing(directory, gramSize, false);
         RegisterCommands();
@@ -146,6 +148,12 @@ namespace BitFunnel
     void Environment::SetOutputDir(std::string dir)
     {
         m_outputDir = dir;
+    }
+
+
+    std::ostream & Environment::GetOutputStream() const
+    {
+        return m_output;
     }
 
 
