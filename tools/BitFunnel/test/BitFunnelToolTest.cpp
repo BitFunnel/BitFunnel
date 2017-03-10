@@ -275,10 +275,29 @@ namespace BitFunnel
                 << "verify one blood" << std::endl
                 << "show rows blood" << std::endl;
 
+            std::stringstream output;
             tool.Main(input,
-                      std::cout,
+                      output,
                       static_cast<int>(argv.size()),
                       argv.data());
+
+            // TODO: this is an extremely brittle way to check if we have false
+            // positives. This is being done this way because it appears that
+            // it's a standard pattern for our commands to entire write to a
+            // file or write to a stream. In order to make commands more easily
+            // tstable, we should probably return a data structure and have the
+            // REPL print out a readable form of the data structure.
+            std::string text = output.str();
+
+            // TODO: only print out text on failure.
+            std::cout << text;
+
+            size_t false_positive_found = text.find("False positives:");
+            if (false_positive_found != std::string::npos)
+            {
+                FAIL() << "Found false positives.";
+            }
+
         }
     }
 }
