@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream>  // TODO: remove.
 #include <memory>
 
 #include "BitFunnel/Configuration/IShardDefinition.h"
@@ -72,6 +73,7 @@ namespace BitFunnel
         // Create shards based on shard definition in m_shardDefinition..
         for (ShardId shardId = 0; shardId < m_shardDefinition.GetShardCount(); ++shardId)
         {
+            std::cout << "Creating shard: " << shardId << std::endl;
             m_shards.push_back(
                 std::unique_ptr<Shard>(
                     new Shard(shardId,
