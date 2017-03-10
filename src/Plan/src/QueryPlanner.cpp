@@ -182,6 +182,17 @@ namespace BitFunnel
 
         RowSet rowSet(index, *m_planRows, resources.GetMatchTreeAllocator());
         rowSet.LoadRows();
+
+        if (diagnosticStream.IsEnabled("planning/rowset"))
+        {
+            std::ostream& out = diagnosticStream.GetStream();
+            out << "--------------------" << std::endl;
+            out << "Row Set:" << std::endl;
+            out << "  ShardCount: " << rowSet.GetShardCount() << std::endl;
+            out << "  Row Count: " << rowSet.GetRowCount() << std::endl;
+
+        }
+
         instrumentation.SetRowCount(rowSet.GetRowCount());
 
         if (useNativeCode)
