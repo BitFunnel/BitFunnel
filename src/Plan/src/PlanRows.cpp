@@ -22,6 +22,7 @@
 
 
 #include "BitFunnel/Allocators/IAllocator.h"
+#include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Utilities/StreamUtilities.h"
 #include "BitFunnel/Plan/Factories.h"
@@ -68,9 +69,8 @@ namespace BitFunnel
 
     ShardId PlanRows::GetShardCount() const
     {
-        // TODO: must eventually support multiple shards.
         // return static_cast<unsigned>(m_index.GetShardCount());
-        return 1;
+        return m_index.GetIngestor().GetShardCount();
     }
 
 

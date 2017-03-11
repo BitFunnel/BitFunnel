@@ -128,6 +128,7 @@ namespace BitFunnel
 
             out << "--------------------" << std::endl;
             out << "IPlanRows:" << std::endl;
+            out << "  ShardCount: " << m_planRows->GetShardCount() << std::endl;
             for (ShardId shard = 0 ; shard < m_planRows->GetShardCount(); ++shard)
             {
                 for (unsigned id = 0 ; id < m_planRows->GetRowCount(); ++id)
@@ -135,7 +136,7 @@ namespace BitFunnel
                     RowId row = m_planRows->PhysicalRow(shard, id);
 
                     out
-                        << "(" << shard << ", " << id << "): "
+                        << "  (" << shard << ", " << id << "): "
                         << "RowId(" << ", " << row.GetRank()
                         << ", " << row.GetIndex() << ")" << std::endl;
                 }
