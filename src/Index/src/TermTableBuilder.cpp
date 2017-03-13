@@ -428,7 +428,7 @@ namespace BitFunnel
         output << "===================================" << std::endl;
         output << "RowAssigner for rank " << m_rank << std::endl;
 
-        if (m_sharedExplicitTermCount + m_sharedAdhocTermCount == 0)
+        if (m_sharedExplicitTermCount + m_sharedAdhocTermCount + m_privateExplicitRowCount == 0)
         {
             output << "  No terms" << std::endl;
         }
