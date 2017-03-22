@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #include <iostream>
-#include <memory>
 #include <sstream>
 
 #include "BitFunnel/Configuration/Factories.h"
@@ -163,7 +162,7 @@ namespace BitFunnel
 }
 
 
-int main(int argc, char** argv)
+int main(int argc, const char *const *argv)
 {
     CmdLine::CmdLineParser parser(
         "TheBard",
@@ -179,7 +178,7 @@ int main(int argc, char** argv)
     // with CmdLineParser.
     CmdLine::OptionalParameter<int> gramSize(
         "gramsize",
-        "Set the maximum ngram size for phrases.",
+        "Set the maximum n-gram size for phrases.",
         1u);
 
     parser.AddParameter(verbose);
