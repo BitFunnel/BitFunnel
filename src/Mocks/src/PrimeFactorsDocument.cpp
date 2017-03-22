@@ -21,21 +21,18 @@
 // THE SOFTWARE.
 
 #include <iostream>     // TODO: Remove
-#include <string>
 
 #include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocument.h"
-#include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/ITermTableCollection.h"
 #include "BitFunnel/Mocks/Factories.h"
-#include "BitFunnel/Term.h"
 #include "LoggerInterfaces/Check.h"
 #include "Primes.h"
 
