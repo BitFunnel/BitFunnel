@@ -10,7 +10,7 @@
       "buildcmd": [
         "./Configure_Make.sh",
         "cd build-make",
-        "make -j ${PARALLEL}",
+        "make -j ${PARALLEL}"
       ],
       "testcmd": [
         "make test"
@@ -38,12 +38,12 @@
       "buildcmd": [
         "./Configure_Make.sh",
         "cd build-make",
-        "make -j ${PARALLEL}",
+        "make -j ${PARALLEL}"
       ],
       "testcmd": [
         "make test"
       ]
-    },
+    }
   },
 
   "artifacts": [
