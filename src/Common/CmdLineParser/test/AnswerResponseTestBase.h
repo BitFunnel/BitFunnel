@@ -46,7 +46,6 @@ namespace CmdLine
 
     protected:
         void AddCase(const char* input, const char* expected);
-        virtual void InitializeCases() = 0;
         virtual void RunOneCase(const std::string& input,
                                 const std::string& expected) = 0;
         void ReportResponse(const std::string& input,
