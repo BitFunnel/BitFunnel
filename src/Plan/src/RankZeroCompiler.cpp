@@ -22,7 +22,6 @@
 
 
 #include <new>
-#include <stddef.h>
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "CompileNode.h"

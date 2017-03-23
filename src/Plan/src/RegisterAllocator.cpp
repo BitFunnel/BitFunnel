@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #include <algorithm>            // For std::max().
-#include <new>
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "CompileNode.h"
