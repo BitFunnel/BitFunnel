@@ -37,7 +37,6 @@
 #include "ScriptCommand.h"
 #include "ShowCommand.h"
 #include "StatusCommand.h"
-#include "TaskBase.h"          // TaskBase base class.
 #include "TaskFactory.h"
 #include "TaskPool.h"
 #include "ThreadsCommand.h"

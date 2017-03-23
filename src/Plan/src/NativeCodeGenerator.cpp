@@ -29,10 +29,8 @@
 #include "NativeJIT/CodeGen/FunctionBuffer.h"
 #include "NativeJIT/CodeGenHelpers.h"
 #include "NativeJIT/Function.h"
-#include "NativeJIT/CodeGen/Register.h"
 #include "NativeCodeGenerator.h"
 #include "RegisterAllocator.h"
-#include "Temporary/Allocator.h"
 
 
 namespace BitFunnel

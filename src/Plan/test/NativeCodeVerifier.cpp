@@ -30,7 +30,6 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
-#include "BitFunnel/Term.h"
 #include "BitFunnel/Utilities/Allocator.h"
 #include "CompileNode.h"
 #include "MatchTreeCompiler.h"
@@ -38,7 +37,6 @@
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
 #include "QueryResources.h"
 #include "RegisterAllocator.h"
-#include "ResultsBuffer.h"
 #include "RowMatchNode.h"
 #include "TextObjectParser.h"
 

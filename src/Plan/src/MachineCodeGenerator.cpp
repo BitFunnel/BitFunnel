@@ -23,8 +23,6 @@
 #include "LoggerInterfaces/Check.h"
 #include "MachineCodeGenerator.h"
 #include "NativeCodeGenerator.h"
-#include "NativeJIT/CodeGen/FunctionBuffer.h"
-#include "NativeJIT/CodeGen/X64CodeGenerator.h"
 #include "RegisterAllocator.h"
 
 using namespace NativeJIT;

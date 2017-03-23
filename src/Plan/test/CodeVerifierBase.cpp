@@ -25,15 +25,11 @@
 
 #include "gtest/gtest.h"
 
-#include "BitFunnel/IDiagnosticStream.h" // TODO: remove.
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
-#include "BitFunnel/Plan/QueryInstrumentation.h"
-#include "BitFunnel/Term.h"
-#include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/Factories.h"  // TODO: only for diagnosticStream. Remove.
 #include "ByteCodeInterpreter.h"
 #include "CodeVerifierBase.h"

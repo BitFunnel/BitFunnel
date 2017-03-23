@@ -30,9 +30,7 @@
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Mocks/Factories.h"
-#include "BitFunnel/Term.h"                     // Only needed for streamId
 #include "NativeCodeVerifier.h"
-#include "Primes.h"
 
 
 namespace BitFunnel

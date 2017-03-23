@@ -25,10 +25,7 @@
 #include "AbstractRow.h"
 #include "CompileNode.h"
 #include "CompileNodeUtilities.h"
-#include "BitFunnel/Utilities/IObjectFormatter.h"
-#include "BitFunnel/Utilities/IObjectParser.h"
 #include "ICodeGenerator.h"
-#include "LoggerInterfaces/Logging.h"
 
 
 namespace BitFunnel
