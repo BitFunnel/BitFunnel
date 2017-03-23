@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #include <iostream>
-#include <limits>
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IDiagnosticStream.h"
@@ -30,7 +29,6 @@
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "ByteCodeInterpreter.h"
 #include "CacheLineRecorder.h"
-#include "LoggerInterfaces/Check.h"
 #include "ResultsBuffer.h"
 
 
