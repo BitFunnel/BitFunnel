@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <limits>
 
-#include "BitFunnel/Term.h"
 #include "BitFunnel/Utilities/IPersistableObject.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
 #include "LoggerInterfaces/Logging.h"

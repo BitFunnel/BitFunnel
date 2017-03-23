@@ -23,7 +23,6 @@
 #include <iostream>
 
 #include "BitFunnel/Configuration/Factories.h"
-#include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Index/Factories.h"

@@ -27,7 +27,6 @@
 #include "gtest/gtest.h"
 
 #include "BitFunnel/Utilities/Factories.h"
-#include "BitFunnel/Utilities/IThreadManager.h"
 #include "LoggerInterfaces/ConsoleLogger.h"
 #include "LoggerInterfaces/Logging.h"
 #include "TokenManager.h"

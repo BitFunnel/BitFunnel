@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #include <iostream>
-#include <string>
 
 #include "Environment.h"
 #include "ThreadsCommand.h"

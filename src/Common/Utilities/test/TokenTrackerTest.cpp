@@ -27,7 +27,6 @@
 #include "gtest/gtest.h"
 
 #include "BitFunnel/Utilities/ITaskDistributor.h"
-#include "BitFunnel/Utilities/ITaskProcessor.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "TokenTracker.h"
 

@@ -22,9 +22,6 @@
 
 #include "gtest/gtest.h"
 
-#include <iostream>  // TODO: remove.
-#include <math.h>  // TODO: remove.
-
 #include "BitFunnel/Term.h"
 #include "TermTreatments.h"
 
