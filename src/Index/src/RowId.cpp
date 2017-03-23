@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 
-#include "LoggerInterfaces/Logging.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/RowId.h"
 

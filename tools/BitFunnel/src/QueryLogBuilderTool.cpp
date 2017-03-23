@@ -27,7 +27,6 @@
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocumentFrequencyTable.h"
 #include "BitFunnel/Index/ITermToText.h"

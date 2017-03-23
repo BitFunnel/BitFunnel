@@ -22,9 +22,6 @@
 
 #include <condition_variable>
 #include <iostream>             // Used for DiagnosticStream ref; not actually used.
-#include <memory>               // Used for std::unique_ptr of diagnosticStream. Probably temporary.
-#include <mutex>
-#include <ostream>
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
@@ -37,8 +34,6 @@
 #include "BitFunnel/Plan/QueryRunner.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/Allocator.h"
-#include "BitFunnel/Utilities/ITaskDistributor.h"
-#include "BitFunnel/Utilities/Stopwatch.h"
 #include "CsvTsv/Csv.h"
 #include "QueryResources.h"
 #include "ResultsBuffer.h"

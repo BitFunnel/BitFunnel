@@ -23,11 +23,7 @@
 
 #include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
 #include "BitFunnel/Index/ITermTable.h"
-#include "BitFunnel/Index/PackedRowIdSequence.h"
-#include "BitFunnel/Index/RowId.h"
 #include "BitFunnel/Index/RowIdSequence.h"
-#include "BitFunnel/Term.h"
-#include "LoggerInterfaces/Logging.h"
 
 
 namespace BitFunnel

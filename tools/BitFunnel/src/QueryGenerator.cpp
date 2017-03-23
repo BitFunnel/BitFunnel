@@ -23,7 +23,6 @@
 #include <iostream>
 
 #include <random>
-#include <string>
 
 #include "BitFunnel/Index/IDocumentFrequencyTable.h"
 #include "BitFunnel/Index/ITermToText.h"

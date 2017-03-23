@@ -21,12 +21,9 @@
 // THE SOFTWARE.
 
 #include <algorithm>    // For std::max.
-#include <new>
-#include <stddef.h>
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "CompileNode.h"
-#include "ICodeGenerator.h"
 #include "LoggerInterfaces/Logging.h"
 #include "RankDownCompiler.h"
 #include "RankZeroCompiler.h"

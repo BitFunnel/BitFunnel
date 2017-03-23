@@ -22,8 +22,6 @@
 
 #include <iostream> // TODO: remove.
 
-#include <cctype>
-#include <istream>
 #include <sstream>
 
 #include "BitFunnel/Allocators/IAllocator.h"

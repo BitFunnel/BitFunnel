@@ -28,8 +28,6 @@
 #include "Environment.h"
 #include "LoggerInterfaces/Check.h"
 #include "REPL.h"
-#include "TaskFactory.h"
-#include "TaskPool.h"
 
 
 namespace BitFunnel

@@ -22,8 +22,6 @@
 
 #include "gtest/gtest.h"
 
-#include <sstream>
-
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Plan/QueryParser.h"
