@@ -124,10 +124,10 @@ namespace BitFunnel
                           "Instruction::m_opcode does not have enough bits.");
 
             static const uint32_t c_rowBits = 10;
-            // static const size_t c_maxRowValue = (1ull << c_rowBits) - 1;
+            static const size_t c_maxRowValue = (1ull << c_rowBits) - 1;
 
             static const uint32_t c_deltaBits = 4;
-            // static const size_t c_maxDeltaValue = (1ull << c_deltaBits) - 1;
+            static const size_t c_maxDeltaValue = (1ull << c_deltaBits) - 1;
 
         public:
             Instruction(Opcode opcode, size_t row = 0ul, size_t delta = 0ul, bool inverted = false)
@@ -221,7 +221,7 @@ namespace BitFunnel
         std::vector<uint64_t> m_valueStack;
 
         // TODO: Formalize definition and usage of zero flag.
-        // bool m_zeroFlag;
+        bool m_zeroFlag;
 
         // Dedupe buffer. First entry is bitmap indicating which of the
         // remaining 64 entries correspond to accumulators with matches.
