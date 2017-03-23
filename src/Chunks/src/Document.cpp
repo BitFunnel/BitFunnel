@@ -28,7 +28,6 @@
 #include "BitFunnel/Index/DocumentHandle.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "Document.h"
-#include "LoggerInterfaces/Logging.h"
 
 
 namespace BitFunnel

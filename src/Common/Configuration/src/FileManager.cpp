@@ -25,7 +25,6 @@
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "FileManager.h"
-#include "LoggerInterfaces/Logging.h"
 #include "ParameterizedFile.h"
 
 

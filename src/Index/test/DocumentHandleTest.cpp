@@ -35,7 +35,6 @@
 #include "DocumentDataSchema.h"
 #include "IndexUtils.h"
 #include "Shard.h"
-#include "Slice.h"
 #include "TrackingSliceBufferAllocator.h"
 
 // TODO: put test scaffolding into a class. This hasn't been done because we're

@@ -22,12 +22,9 @@
 
 
 #include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/Index/RowIdSequence.h"
 #include "DocumentHandleInternal.h"
 #include "DocTableDescriptor.h"
-#include "LoggerInterfaces/Logging.h"
 #include "Shard.h"
-#include "Slice.h"
 
 
 namespace BitFunnel

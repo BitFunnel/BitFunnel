@@ -22,7 +22,6 @@
 
 
 #include "CsvTsv/Csv.h"
-#include "CsvTsv/Table.h"
 #include "DocumentHistogramBuilder.h"
 
 namespace BitFunnel

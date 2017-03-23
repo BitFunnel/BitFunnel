@@ -22,8 +22,6 @@
 
 #include "CsvTsv/Csv.h"
 
-#include <cstring>
-
 namespace CsvTsv
 {
     const char* c_headerCommentText = "#Fields:";
