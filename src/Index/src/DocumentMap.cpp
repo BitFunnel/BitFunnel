@@ -73,8 +73,6 @@ namespace BitFunnel
     {
         std::lock_guard<std::mutex> lock(m_lock);
 
-        DocumentHandleInternal handle;
-
         auto it = m_docIdToDocHandle.find(id);
         bool found = (it != m_docIdToDocHandle.end());
         if (found)
