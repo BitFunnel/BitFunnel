@@ -24,7 +24,6 @@
 #include "gtest/gtest.h"
 
 #include <cmath>
-#include <iostream>
 
 #include "OptimalTermTreatments.h"
 #include "TermTreatments.h"

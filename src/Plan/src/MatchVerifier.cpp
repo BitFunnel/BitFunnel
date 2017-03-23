@@ -22,9 +22,7 @@
 
 #include <algorithm>
 #include <ostream>
-#include <string>
 
-#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "MatchVerifier.h"
 

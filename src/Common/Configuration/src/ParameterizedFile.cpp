@@ -23,7 +23,6 @@
 
 #include <cstring>
 #include <fstream>
-#include <istream>
 // #include <Windows.h>                // For DeleteFile.
 
 #include "BitFunnel/Configuration/IFileSystem.h"

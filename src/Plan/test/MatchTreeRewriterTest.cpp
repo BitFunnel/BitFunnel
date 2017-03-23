@@ -25,7 +25,6 @@
 #include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
 #include "MatchTreeRewriter.h"
-#include "RowMatchNode.h"
 #include "SameExceptForWhitespace.h"
 #include "TextObjectParser.h"
 

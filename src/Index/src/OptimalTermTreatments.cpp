@@ -24,13 +24,9 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <ostream>
-#include <stddef.h>
-#include <utility>
 #include <vector>
 
 #include "BitFunnel/Index/ITermTreatment.h"
-#include "BitFunnel/Term.h"
 #include "LoggerInterfaces/Check.h"
 #include "OptimalTermTreatments.h"
 #include "TermTreatments.h"

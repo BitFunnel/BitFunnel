@@ -21,12 +21,10 @@
 // THE SOFTWARE.
 
 #include <new>          // For placement new.
-#include <stddef.h>     // For nullptr.
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "LoggerInterfaces/Logging.h"
 #include "MatchTreeRewriter.h"
-#include "RowMatchNode.h"
 
 
 namespace BitFunnel
