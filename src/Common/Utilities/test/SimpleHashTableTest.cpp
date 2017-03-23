@@ -22,6 +22,7 @@
 
 
 #include <map>
+#include <memory>
 
 #include "gtest/gtest.h"
 
