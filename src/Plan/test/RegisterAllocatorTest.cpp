@@ -29,7 +29,6 @@
 #include "MatchTreeRewriter.h"
 #include "RankDownCompiler.h"
 #include "RegisterAllocator.h"
-#include "RowMatchNode.h"
 #include "TextObjectParser.h"
 
 
