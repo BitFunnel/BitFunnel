@@ -22,11 +22,9 @@
 
 #include <cstring>
 #include <iostream>
-#include <memory>
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
-#include "BitFunnel/Exceptions.h"
 #include "BitFunnelTool.h"
 #include "FilterChunks.h"
 #include "QueryLogBuilderTool.h"
