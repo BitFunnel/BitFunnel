@@ -22,8 +22,8 @@
 
 
 #include <algorithm>
-#include <iostream>
 #include <functional>
+#include <iostream>
 #include <random>
 
 #include "NativeJIT/CodeGen/CallingConvention.h"
