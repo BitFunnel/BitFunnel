@@ -22,18 +22,14 @@
 
 #include <fstream>
 #include <iostream>
-#include <memory>
-#include <string>
 #include <vector>
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Chunks/DocumentFilters.h"
 #include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Chunks/IChunkManifestIngestor.h"
-#include "BitFunnel/Chunks/IChunkProcessor.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Exceptions.h"
-#include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IConfiguration.h"
 #include "BitFunnel/Index/IIngestor.h"

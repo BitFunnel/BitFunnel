@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #include <iostream>
-#include <memory>
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"

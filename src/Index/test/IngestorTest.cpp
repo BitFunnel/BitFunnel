@@ -24,8 +24,6 @@
 #include <iostream>  // TODO: remove.
 
 #include <cmath>
-#include <limits>
-#include <memory>
 #include <vector>
 #include <unordered_map>
 
@@ -39,7 +37,6 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Mocks/Factories.h"
-#include "BitFunnel/Term.h"
 #include "DocumentFrequencyTable.h"
 #include "Primes.h"
 

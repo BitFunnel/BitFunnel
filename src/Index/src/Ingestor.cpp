@@ -21,14 +21,12 @@
 // THE SOFTWARE.
 
 #include <iostream>  // TODO: remove.
-#include <memory>
 
 #include "BitFunnel/Configuration/IShardDefinition.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocument.h"
-#include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
 #include "BitFunnel/Index/ITermTableCollection.h"

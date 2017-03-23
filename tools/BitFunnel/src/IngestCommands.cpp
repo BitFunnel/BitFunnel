@@ -25,7 +25,6 @@
 #include "BitFunnel/Chunks/DocumentFilters.h"
 #include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Chunks/IChunkManifestIngestor.h"
-#include "BitFunnel/Chunks/IChunkProcessor.h"
 #include "BitFunnel/Data/Sonnets.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IIngestor.h"
