@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #include <array>
+#include <atomic>
 #include <chrono>
 #include <thread>
 #include <ostream>
