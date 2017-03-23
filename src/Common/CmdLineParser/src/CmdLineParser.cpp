@@ -22,7 +22,6 @@
 
 #include <algorithm>        // For std::min() or std::max()
 #include <sstream>
-#include <stdexcept>
 
 #include "CmdLineParser/CmdLineParser.h"
 #include "CmdLineParser/FormattingUtilities.h"

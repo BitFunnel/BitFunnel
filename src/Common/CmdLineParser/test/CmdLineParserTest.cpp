@@ -22,11 +22,8 @@
 
 #include <cassert> // TODO: consider replacing with something else.
 #include <iostream>
-#include <limits>
 #include <sstream>
 #include <vector>
-
-#include <string.h> // For strncpy
 
 #include "CmdLineParserTest.h"
 #include "CmdLineParser/CmdLineParser.h"

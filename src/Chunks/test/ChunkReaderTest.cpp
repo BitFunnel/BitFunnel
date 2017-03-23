@@ -22,7 +22,6 @@
 
 
 #include <functional>
-#include <stddef.h>
 #include <vector>
 
 #include "gtest/gtest.h"
