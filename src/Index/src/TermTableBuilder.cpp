@@ -23,14 +23,10 @@
 #include <algorithm>
 #include <iostream>     // TODO: Remove this temporary include.
 #include <math.h>
-#include <ostream>
 
 #include "BitFunnel/BitFunnelTypes.h"
-#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
-#include "BitFunnel/Index/IFactSet.h"
 #include "BitFunnel/Index/ITermTable.h"
-#include "BitFunnel/Index/ITermTreatment.h"
 #include "BitFunnel/Utilities/Stopwatch.h"
 #include "DocumentFrequencyTable.h"
 #include "LoggerInterfaces/Check.h"

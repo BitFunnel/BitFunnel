@@ -25,13 +25,11 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <string>
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/IsSpace.h"
 #include "TaskBase.h"
-#include "TaskFactory.h"
 
 
 namespace BitFunnel

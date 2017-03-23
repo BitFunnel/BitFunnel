@@ -22,7 +22,6 @@
 
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IDocument.h"
-#include "BitFunnel/Term.h"
 #include "TermMatchTreeEvaluator.h"
 
 
