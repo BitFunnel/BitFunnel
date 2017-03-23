@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #include <algorithm>    // std::min() or std::max()
-#include <limits>       // std::numeric_limits<float>::infinity()
 
 #include "BitFunnel/Configuration/IShardDefinition.h"
 #include "BitFunnel/Index/Factories.h"

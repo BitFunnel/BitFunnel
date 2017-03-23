@@ -23,7 +23,6 @@
 #include <cstring>
 
 #include "BitFunnel/Utilities/IObjectFormatter.h"
-#include "BitFunnel/Utilities/IObjectParser.h"
 #include "LoggerInterfaces/Logging.h"
 #include "PlanNodeUtilities.h"
 #include "RowMatchNode.h"

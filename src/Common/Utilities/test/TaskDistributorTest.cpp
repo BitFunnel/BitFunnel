@@ -21,14 +21,12 @@
 // THE SOFTWARE.
 
 #include <array>
-#include <atomic>
 #include <chrono>
 #include <thread>
 #include <ostream>
 #include <vector>
 
 #include "BitFunnel/Utilities/Factories.h"
-#include "BitFunnel/Utilities/ITaskProcessor.h"
 #include "TaskDistributor.h"
 #include "gtest/gtest.h"
 

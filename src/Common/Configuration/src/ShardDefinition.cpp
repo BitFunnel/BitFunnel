@@ -21,10 +21,8 @@
 // THE SOFTWARE.
 
 #include <istream>
-#include <ostream>
 
 #include "BitFunnel/Configuration/Factories.h"
-#include "BitFunnel/Exceptions.h"
 #include "CsvTsv/Csv.h"
 #include "ShardDefinition.h"
 

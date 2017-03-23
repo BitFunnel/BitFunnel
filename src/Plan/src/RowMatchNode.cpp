@@ -25,7 +25,6 @@
 #include "BitFunnel/Utilities/IObjectFormatter.h"
 #include "BitFunnel/Utilities/IObjectParser.h"
 #include "LoggerInterfaces/Logging.h"
-#include "ObjectFormatter.h"
 #include "PlanNodeUtilities.h"
 #include "RowMatchNode.h"
 

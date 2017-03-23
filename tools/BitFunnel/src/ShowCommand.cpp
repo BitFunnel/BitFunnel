@@ -27,10 +27,8 @@
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/IDocument.h"
 #include "BitFunnel/Index/IDocumentCache.h"
-#include "BitFunnel/Index/DocumentHandle.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/RowIdSequence.h"
-#include "BitFunnel/Term.h"
 #include "Environment.h"
 #include "ShowCommand.h"
 

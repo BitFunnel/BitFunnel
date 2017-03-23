@@ -26,7 +26,6 @@
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
-#include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/DocumentHandle.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IDocument.h"
@@ -35,14 +34,12 @@
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
-#include "BitFunnel/Index/Token.h"
 #include "CsvTsv/Csv.h"
 #include "DocumentHandleInternal.h"
 #include "LoggerInterfaces/Check.h"
 #include "RowTableAnalyzer.h"
 #include "RowTableDescriptor.h"
 #include "Shard.h"
-#include "Slice.h"
 #include "TermToText.h"
 
 

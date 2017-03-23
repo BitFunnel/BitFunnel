@@ -27,7 +27,6 @@
 #include "BitFunnel/Index/Row.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Index/Token.h"
-#include "BitFunnel/Term.h"
 #include "IRecyclable.h"
 #include "LoggerInterfaces/Check.h"
 #include "LoggerInterfaces/Logging.h"

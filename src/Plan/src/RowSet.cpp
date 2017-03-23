@@ -33,7 +33,6 @@
 #include "BitFunnel/Plan/Factories.h"
 #include "IPlanRows.h"
 #include "IRowSet.h"
-#include "LoggerInterfaces/Logging.h"
 #include "RowSet.h"
 
 

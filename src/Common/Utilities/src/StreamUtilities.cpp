@@ -23,8 +23,6 @@
 
 #include <inttypes.h>
 #include <fstream>
-#include <limits>
-#include <string>
 #include <vector>
 
 #include "BitFunnel/Utilities/StreamUtilities.h"

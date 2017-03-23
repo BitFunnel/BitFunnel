@@ -34,7 +34,6 @@
 #include "DocumentDataSchema.h"
 #include "IndexUtils.h"
 #include "Shard.h"
-#include "Slice.h"
 #include "TrackingSliceBufferAllocator.h"
 
 

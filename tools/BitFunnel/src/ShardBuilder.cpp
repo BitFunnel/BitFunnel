@@ -29,7 +29,6 @@
 #include "BitFunnel/Index/IDocumentHistogram.h"
 #include "BitFunnel/Index/IShardCostFunction.h"
 #include "BitFunnel/Index/ShardDefinitionBuilder.h"
-#include "BitFunnel/IFileManager.h"
 #include "CmdLineParser/CmdLineParser.h"
 #include "ShardBuilder.h"
 

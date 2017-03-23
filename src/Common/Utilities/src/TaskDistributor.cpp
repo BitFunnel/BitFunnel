@@ -21,10 +21,8 @@
 // THE SOFTWARE.
 
 #include "BitFunnel/Utilities/Factories.h"
-#include "BitFunnel/Utilities/ITaskProcessor.h"
 #include "TaskDistributor.h"
 #include "TaskDistributorThread.h"
-#include "ThreadManager.h"
 
 
 namespace BitFunnel

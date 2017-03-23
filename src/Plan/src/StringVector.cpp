@@ -21,9 +21,6 @@
 // THE SOFTWARE.
 
 #include <algorithm>    // For std::min() or std::max()
-#include <cstring>      // For memcpy.
-#include <new>
-#include <stddef.h>     // For nullptr.
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/Utilities/IObjectFormatter.h"

@@ -22,8 +22,6 @@
 
 
 #include <istream>
-#include <limits>
-#include <stddef.h>
 
 #include "BitFunnel/Utilities/StandardInputStream.h"
 #include "LoggerInterfaces/Logging.h"

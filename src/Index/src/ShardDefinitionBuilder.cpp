@@ -23,11 +23,8 @@
 #include <memory>
 
 #include "BitFunnel/Configuration/Factories.h"
-#include "BitFunnel/Configuration/IShardDefinition.h"
-#include "BitFunnel/Index/IDocumentHistogram.h"
 #include "BitFunnel/Index/IShardCostFunction.h"
 #include "BitFunnel/Index/ShardDefinitionBuilder.h"
-#include "LoggerInterfaces/Logging.h"
 #include "SingleSourceShortestPath.h"
 
 

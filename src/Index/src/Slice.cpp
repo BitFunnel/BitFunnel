@@ -23,7 +23,6 @@
 
 #include "LoggerInterfaces/Logging.h"
 #include "Shard.h"
-#include "Slice.h"
 
 
 namespace BitFunnel
