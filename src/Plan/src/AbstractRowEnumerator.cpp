@@ -21,12 +21,9 @@
 // THE SOFTWARE.
 
 #include "AbstractRowEnumerator.h"
-#include "BitFunnel/Index/IFactSet.h"  // For FactHandle.
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/RowIdSequence.h"
-#include "IPlanRows.h"
 // #include "BitFunnel/Stream.h"
-#include "LoggerInterfaces/Logging.h"
 
 // TODO: port this to use C++ iterator interface?
 

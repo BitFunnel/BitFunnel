@@ -30,8 +30,7 @@
 #ifdef BITFUNNEL_PLATFORM_WINDOWS
 #include <Windows.h>   // For VirtualAlloc/VirtualFree.
 #else
-#include <cerrno>
-#include <sstream>
+
 #include <sys/mman.h>  // For mmap/munmap.
 #endif
 

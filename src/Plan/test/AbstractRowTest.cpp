@@ -22,10 +22,7 @@
 
 #include "gtest/gtest.h"
 
-#include <sstream>
-
 #include "AbstractRow.h"
-#include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/TextObjectFormatter.h"
 #include "RowMatchNode.h"
 #include "TextObjectParser.h"
