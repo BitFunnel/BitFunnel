@@ -2,6 +2,7 @@
 
 set(CPPFILES
     Sonnets.cpp
+    SimpleData.cpp
 )
 
 set(WINDOWS_CPPFILES
