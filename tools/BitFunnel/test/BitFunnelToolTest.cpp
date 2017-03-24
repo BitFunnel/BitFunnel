@@ -378,6 +378,140 @@ namespace BitFunnel
     }
 
 
+    // TODO: refactor this copied code into common code.
+    TEST(BitFunnelTool, ThreeToolsEndToEndSimpleInterpreterMultiShard)
+    {
+        //
+        // This test is going to run out of a RAM filesystem.
+        //
+        auto fileSystem = BitFunnel::Factories::CreateRAMFileSystem();
+        auto fileManager =
+            BitFunnel::Factories::CreateFileManager(
+                "config",
+                "statistics",
+                "index",
+                *fileSystem);
+
+        //
+        // Create ShardDefinition
+        //
+        {
+            // This should cause the test to fail because sharding is
+            // incompletely implemented. However, that doesn't seem to happen
+            // because it's so incompletely implemented that we don't even read
+            // this file. Neither StatisticsBuilder nor TermTableBuilder are
+            // shard aware.
+            //
+            // TODO: have tools actually use ShardDefinition. See #291 for more
+            // discussion.
+
+            // According to FileManager, ShardDefinition is in statisticsDirectory.
+            auto shardDefinition = fileSystem->OpenForWrite("config/ShardDefinition.csv");
+            *shardDefinition << "2";
+        }
+
+
+        //
+        // Initialize RAM filesystem with input files.
+        //
+        {
+            // Open the manifest file.
+            auto manifest = fileSystem->OpenForWrite("manifest.txt");
+
+            for (size_t i = 0; i < SimpleData::chunks.size(); ++i)
+            {
+                // Create chunk file name, and write chunk data.
+                std::stringstream name;
+                name << "simpledata" << i;
+                auto out = fileSystem->OpenForWrite(name.str().c_str());
+                out->write(SimpleData::chunks[i].second,
+                           static_cast<std::streamsize>(Sonnets::chunks[i].first));
+
+                // Add chunk file to manifest.
+                *manifest << name.str() << std::endl;
+            }
+
+            auto script = fileSystem->OpenForWrite("testScript");
+            *script << "failOnException" << std::endl
+                    << "cache chunk simpledata0" << std::endl
+                    << "cache chunk simpledata1" << std::endl;
+        }
+
+        //
+        // Create the BitFunnelTool based on the RAM filesystem.
+        //
+        BitFunnel::BitFunnelTool tool(*fileSystem);
+
+        //
+        // Use the tool to run the statistics builder.
+        //
+        {
+            std::vector<char const *> argv = {
+                "BitFunnel",
+                "statistics",
+                "manifest.txt",
+                "config"
+            };
+
+            tool.Main(std::cin,
+                      std::cout,
+                      static_cast<int>(argv.size()),
+                      argv.data());
+        }
+
+
+        //
+        // Use the tool to run the TermTable builder.
+        //
+        {
+            std::vector<char const *> argv = {
+                "BitFunnel",
+                "termtable",
+                "config",
+                "0.1",
+                "PrivateSharedRank0And3"
+            };
+
+            tool.Main(std::cin,
+                      std::cout,
+                      static_cast<int>(argv.size()),
+                      argv.data());
+        }
+
+
+        //
+        // Use the tool to run the REPL.
+        //
+        {
+            std::vector<char const *> argv = {
+                "BitFunnel",
+                "repl",
+                "config",
+                // -script and testScript must be on seperate lines because
+                // tokens are delimited by whitespace.
+                "-script",
+                "testScript"
+            };
+
+            // Create an input stream with commands to
+            // load a chunk, verify a query, and inspect
+            // some rows.
+            std::stringstream input;
+            input
+                // This first line is run via -script.
+                // << "cache chunk sonnet0" << std::endl
+                << "interpreter" << std::endl
+                << "verify one five" << std::endl
+                << "show rows five" << std::endl;
+
+            tool.Main(input,
+                      std::cout,
+                      static_cast<int>(argv.size()),
+                      argv.data());
+        }
+    }
+
+
     // // TODO: extract logic into class/function instead of copy-pasting above
     // // test.
     // TEST(BitFunnelTool, ThreeToolsEndToEndInterpreterMultiShard)
