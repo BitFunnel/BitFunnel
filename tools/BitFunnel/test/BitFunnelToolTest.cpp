@@ -648,7 +648,7 @@ namespace BitFunnel
         {
             // According to FileManager, ShardDefinition is in statisticsDirectory.
             auto shardDefinition = fileSystem->OpenForWrite("config/ShardDefinition.csv");
-            // NOTE: we'll get false negatives and false positives if we change this to 40.
+            // NOTE: we'll get false negatives and false positives if we change this to 3.
             *shardDefinition << "2";
         }
 
