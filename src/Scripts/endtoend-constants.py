@@ -4,10 +4,11 @@ from num2words import num2words
 # {'one'}, {'one', 'two'}, {'one', 'two', 'three'}, ...
 
 def print_numbers(num):
-    all_numbers = ""
+    all_numbers = "\""
     for i in range(1, num+1):
         english_number = num2words(i).replace(' ','-')
         all_numbers += english_number + "\\0"
+    all_numbers += "\""
     print(all_numbers)
 
 def print_doc(id, name):

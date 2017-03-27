@@ -147,6 +147,7 @@ set(CHUNKS_HFILES
 
 set(DATA_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Data/SimpleData.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Data/Sequential.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Data/Sonnets.h
 )
 

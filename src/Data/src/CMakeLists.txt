@@ -1,8 +1,9 @@
 # BitFunnel/src/Data/src
 
 set(CPPFILES
-    Sonnets.cpp
     SimpleData.cpp
+    Sequential.cpp
+    Sonnets.cpp
 )
 
 set(WINDOWS_CPPFILES
