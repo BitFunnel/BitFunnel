@@ -262,8 +262,8 @@ namespace BitFunnel
                 << "show rows four" << std::endl
                 << "verify one sixteen" << std::endl
                 << "show rows sixteen" << std::endl
-                << "verify one sixty-four" << std::endl
-                << "show rows sixty-four" << std::endl;
+                << "verify one sixty\\-four" << std::endl
+                << "show rows sixty\\-four" << std::endl;
 
 
             tool.Main(input,
