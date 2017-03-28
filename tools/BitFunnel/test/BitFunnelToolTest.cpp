@@ -649,7 +649,7 @@ namespace BitFunnel
             // According to FileManager, ShardDefinition is in statisticsDirectory.
             auto shardDefinition = fileSystem->OpenForWrite("config/ShardDefinition.csv");
             // NOTE: we'll get false negatives and false positives if we change this to 3.
-            *shardDefinition << "2";
+            *shardDefinition << "3";
         }
 
 
@@ -742,16 +742,16 @@ namespace BitFunnel
                 // This first line is run via -script.
                 // << "cache chunk sonnet0" << std::endl
                 << "interpreter" << std::endl
-                << "verify one one" << std::endl
                 << "show rows one" << std::endl
-                << "verify one four" << std::endl
+                << "verify one one" << std::endl
                 << "show rows four" << std::endl
                 << "verify one four" << std::endl
                 << "show rows four" << std::endl
-                << "verify one sixteen" << std::endl
+                << "verify one four" << std::endl
                 << "show rows sixteen" << std::endl
-                << "verify one sixty\\-four" << std::endl
-                << "show rows sixty\\-four" << std::endl;
+                << "verify one sixteen" << std::endl
+                << "show rows sixty\\-four" << std::endl
+                << "verify one sixty\\-four" << std::endl;
 
 
             tool.Main(input,
