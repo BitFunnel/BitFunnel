@@ -224,6 +224,7 @@ namespace BitFunnel
         m_code.Seal();
 
         instrumentation.FinishPlanning();
+        m_resultsBuffer.Reset();
 
         // Get token before we GetSliceBuffers.
         {
@@ -236,8 +237,6 @@ namespace BitFunnel
 
                 // Iterations per slice calculation.
                 auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> initialRank;
-
-                m_resultsBuffer.Reset();
 
                 ByteCodeInterpreter intepreter(m_code,
                                                m_resultsBuffer,
@@ -285,6 +284,8 @@ namespace BitFunnel
 
         instrumentation.FinishPlanning();
 
+        m_resultsBuffer.Reset();
+
         // Get token before we GetSliceBuffers.
         {
             auto token = index.GetIngestor().GetTokenManager().RequestToken();
@@ -297,8 +298,6 @@ namespace BitFunnel
                 // Iterations per slice calculation.
                 auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> initialRank;
 
-
-                m_resultsBuffer.Reset();
 
                 size_t quadwordCount = compiler.Run(sliceBuffers.size(),
                                                     sliceBuffers.data(),
