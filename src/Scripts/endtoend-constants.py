@@ -5,13 +5,13 @@ from num2words import num2words
 
 num_docs = 192
 
+# This prints numbers one per line because of VC++'s string length limit.
+# See https://github.com/BitFunnel/BitFunnel/issues/382. It would be
+# possible to print up to the length limit, but this is simpler.
 def print_numbers(num):
-    all_numbers = "\""
     for i in range(1, num+1):
-        english_number = num2words(i).replace(' ','-')
-        all_numbers += english_number + "\\0"
-    all_numbers += "\""
-    print(all_numbers)
+        english_number = num2words(i).replace(' ','-') + "\\0"
+        print('\"{}\"'.format(english_number))
 
 def print_doc(id, name):
     print('\"{0:0>16x}\\0\"'.format(id))
