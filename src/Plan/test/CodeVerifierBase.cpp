@@ -195,7 +195,7 @@ namespace BitFunnel
 
                 if (m_expected.find(id) != m_expected.end())
                 {
-                    std::cout << "  Duplicate id " << id << std::endl;
+                    // std::cout << "  Duplicate id " << id << std::endl;
                 }
 
                 m_expected.insert(id);
