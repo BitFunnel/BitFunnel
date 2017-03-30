@@ -318,7 +318,135 @@ namespace BitFunnel
                     << "verify one sixty\\-one" << std::endl
                     << "verify one sixty\\-two" << std::endl
                     << "verify one sixty\\-three" << std::endl
-                    << "verify one sixty\\-four" << std::endl;
+                    << "verify one sixty\\-four" << std::endl
+                    << "verify one sixty\\-five" << std::endl
+                    << "verify one sixty\\-six" << std::endl
+                    << "verify one sixty\\-seven" << std::endl
+                    << "verify one sixty\\-eight" << std::endl
+                    << "verify one sixty\\-nine" << std::endl
+                    << "verify one seventy" << std::endl
+                    << "verify one seventy\\-one" << std::endl
+                    << "verify one seventy\\-two" << std::endl
+                    << "verify one seventy\\-three" << std::endl
+                    << "verify one seventy\\-four" << std::endl
+                    << "verify one seventy\\-five" << std::endl
+                    << "verify one seventy\\-six" << std::endl
+                    << "verify one seventy\\-seven" << std::endl
+                    << "verify one seventy\\-eight" << std::endl
+                    << "verify one seventy\\-nine" << std::endl
+                    << "verify one eighty" << std::endl
+                    << "verify one eighty\\-one" << std::endl
+                    << "verify one eighty\\-two" << std::endl
+                    << "verify one eighty\\-three" << std::endl
+                    << "verify one eighty\\-four" << std::endl
+                    << "verify one eighty\\-five" << std::endl
+                    << "verify one eighty\\-six" << std::endl
+                    << "verify one eighty\\-seven" << std::endl
+                    << "verify one eighty\\-eight" << std::endl
+                    << "verify one eighty\\-nine" << std::endl
+                    << "verify one ninety" << std::endl
+                    << "verify one ninety\\-one" << std::endl
+                    << "verify one ninety\\-two" << std::endl
+                    << "verify one ninety\\-three" << std::endl
+                    << "verify one ninety\\-four" << std::endl
+                    << "verify one ninety\\-five" << std::endl
+                    << "verify one ninety\\-six" << std::endl
+                    << "verify one ninety\\-seven" << std::endl
+                    << "verify one ninety\\-eight" << std::endl
+                    << "verify one ninety\\-nine" << std::endl
+                    << "verify one one\\-hundred" << std::endl
+                    << "verify one one\\-hundred\\-and\\-one" << std::endl
+                    << "verify one one\\-hundred\\-and\\-two" << std::endl
+                    << "verify one one\\-hundred\\-and\\-three" << std::endl
+                    << "verify one one\\-hundred\\-and\\-four" << std::endl
+                    << "verify one one\\-hundred\\-and\\-five" << std::endl
+                    << "verify one one\\-hundred\\-and\\-six" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seven" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eight" << std::endl
+                    << "verify one one\\-hundred\\-and\\-nine" << std::endl
+                    << "verify one one\\-hundred\\-and\\-ten" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eleven" << std::endl
+                    << "verify one one\\-hundred\\-and\\-twelve" << std::endl
+                    << "verify one one\\-hundred\\-and\\-thirteen" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fourteen" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fifteen" << std::endl
+                    << "verify one one\\-hundred\\-and\\-sixteen" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seventeen" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eighteen" << std::endl
+                    << "verify one one\\-hundred\\-and\\-nineteen" << std::endl
+                    << "verify one one\\-hundred\\-and\\-twenty" << std::endl
+                    << "verify one one\\-hundred\\-and\\-twenty\\-one" << std::endl
+                    << "verify one one\\-hundred\\-and\\-twenty\\-two" << std::endl
+                    << "verify one one\\-hundred\\-and\\-twenty\\-three" << std::endl
+                    << "verify one one\\-hundred\\-and\\-twenty\\-four" << std::endl
+                    << "verify one one\\-hundred\\-and\\-twenty\\-five" << std::endl
+                    << "verify one one\\-hundred\\-and\\-twenty\\-six" << std::endl
+                    << "verify one one\\-hundred\\-and\\-twenty\\-seven" << std::endl
+                    << "verify one one\\-hundred\\-and\\-twenty\\-eight" << std::endl
+                    << "verify one one\\-hundred\\-and\\-twenty\\-nine" << std::endl
+                    << "verify one one\\-hundred\\-and\\-thirty" << std::endl
+                    << "verify one one\\-hundred\\-and\\-thirty\\-one" << std::endl
+                    << "verify one one\\-hundred\\-and\\-thirty\\-two" << std::endl
+                    << "verify one one\\-hundred\\-and\\-thirty\\-three" << std::endl
+                    << "verify one one\\-hundred\\-and\\-thirty\\-four" << std::endl
+                    << "verify one one\\-hundred\\-and\\-thirty\\-five" << std::endl
+                    << "verify one one\\-hundred\\-and\\-thirty\\-six" << std::endl
+                    << "verify one one\\-hundred\\-and\\-thirty\\-seven" << std::endl
+                    << "verify one one\\-hundred\\-and\\-thirty\\-eight" << std::endl
+                    << "verify one one\\-hundred\\-and\\-thirty\\-nine" << std::endl
+                    << "verify one one\\-hundred\\-and\\-forty" << std::endl
+                    << "verify one one\\-hundred\\-and\\-forty\\-one" << std::endl
+                    << "verify one one\\-hundred\\-and\\-forty\\-two" << std::endl
+                    << "verify one one\\-hundred\\-and\\-forty\\-three" << std::endl
+                    << "verify one one\\-hundred\\-and\\-forty\\-four" << std::endl
+                    << "verify one one\\-hundred\\-and\\-forty\\-five" << std::endl
+                    << "verify one one\\-hundred\\-and\\-forty\\-six" << std::endl
+                    << "verify one one\\-hundred\\-and\\-forty\\-seven" << std::endl
+                    << "verify one one\\-hundred\\-and\\-forty\\-eight" << std::endl
+                    << "verify one one\\-hundred\\-and\\-forty\\-nine" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fifty" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fifty\\-one" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fifty\\-two" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fifty\\-three" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fifty\\-four" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fifty\\-five" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fifty\\-six" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fifty\\-seven" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fifty\\-eight" << std::endl
+                    << "verify one one\\-hundred\\-and\\-fifty\\-nine" << std::endl
+                    << "verify one one\\-hundred\\-and\\-sixty" << std::endl
+                    << "verify one one\\-hundred\\-and\\-sixty\\-one" << std::endl
+                    << "verify one one\\-hundred\\-and\\-sixty\\-two" << std::endl
+                    << "verify one one\\-hundred\\-and\\-sixty\\-three" << std::endl
+                    << "verify one one\\-hundred\\-and\\-sixty\\-four" << std::endl
+                    << "verify one one\\-hundred\\-and\\-sixty\\-five" << std::endl
+                    << "verify one one\\-hundred\\-and\\-sixty\\-six" << std::endl
+                    << "verify one one\\-hundred\\-and\\-sixty\\-seven" << std::endl
+                    << "verify one one\\-hundred\\-and\\-sixty\\-eight" << std::endl
+                    << "verify one one\\-hundred\\-and\\-sixty\\-nine" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seventy" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seventy\\-one" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seventy\\-two" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seventy\\-three" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seventy\\-four" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seventy\\-five" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seventy\\-six" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seventy\\-seven" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seventy\\-eight" << std::endl
+                    << "verify one one\\-hundred\\-and\\-seventy\\-nine" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eighty" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eighty\\-one" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eighty\\-two" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eighty\\-three" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eighty\\-four" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eighty\\-five" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eighty\\-six" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eighty\\-seven" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eighty\\-eight" << std::endl
+                    << "verify one one\\-hundred\\-and\\-eighty\\-nine" << std::endl
+                    << "verify one one\\-hundred\\-and\\-ninety" << std::endl
+                    << "verify one one\\-hundred\\-and\\-ninety\\-one" << std::endl
+                    << "verify one one\\-hundred\\-and\\-ninety\\-two" << std::endl;
 
 
             tool.Main(input,
@@ -576,151 +704,9 @@ namespace BitFunnel
 
 
     // TODO: refactor this copied code into common code.
-    TEST(BitFunnelTool, ThreeToolsEndToEndSimpleInterpreterMultiShard)
-    {
-        std::stringstream output;
-        //
-        // This test is going to run out of a RAM filesystem.
-        //
-        auto fileSystem = BitFunnel::Factories::CreateRAMFileSystem();
-        auto fileManager =
-            BitFunnel::Factories::CreateFileManager(
-                "config",
-                "statistics",
-                "index",
-                *fileSystem);
-
-        //
-        // Create ShardDefinition
-        //
-        {
-            // According to FileManager, ShardDefinition is in statisticsDirectory.
-            auto shardDefinition = fileSystem->OpenForWrite("config/ShardDefinition.csv");
-            *shardDefinition << "2";
-        }
-
-
-        //
-        // Initialize RAM filesystem with input files.
-        //
-        {
-            // Open the manifest file.
-            auto manifest = fileSystem->OpenForWrite("manifest.txt");
-
-            for (size_t i = 0; i < SimpleData::chunks.size(); ++i)
-            {
-                // Create chunk file name, and write chunk data.
-                std::stringstream name;
-                name << "simpledata" << i;
-                auto out = fileSystem->OpenForWrite(name.str().c_str());
-                out->write(SimpleData::chunks[i].second,
-                           static_cast<std::streamsize>(Sonnets::chunks[i].first));
-
-                // Add chunk file to manifest.
-                *manifest << name.str() << std::endl;
-            }
-
-            auto script = fileSystem->OpenForWrite("testScript");
-            *script << "failOnException" << std::endl
-                    << "cache chunk simpledata0" << std::endl
-                    << "cache chunk simpledata1" << std::endl;
-        }
-
-        //
-        // Create the BitFunnelTool based on the RAM filesystem.
-        //
-        BitFunnel::BitFunnelTool tool(*fileSystem);
-
-        //
-        // Use the tool to run the statistics builder.
-        //
-        {
-            std::vector<char const *> argv = {
-                "BitFunnel",
-                "statistics",
-                "manifest.txt",
-                "config"
-            };
-
-            tool.Main(std::cin,
-                      output,
-                      static_cast<int>(argv.size()),
-                      argv.data());
-        }
-
-
-        //
-        // Use the tool to run the TermTable builder.
-        //
-        {
-            std::vector<char const *> argv = {
-                "BitFunnel",
-                "termtable",
-                "config",
-                "0.1",
-                "PrivateSharedRank0And3"
-            };
-
-            tool.Main(std::cin,
-                      output,
-                      static_cast<int>(argv.size()),
-                      argv.data());
-        }
-
-
-        //
-        // Use the tool to run the REPL.
-        //
-        {
-            std::vector<char const *> argv = {
-                "BitFunnel",
-                "repl",
-                "config",
-                // -script and testScript must be on seperate lines because
-                // tokens are delimited by whitespace.
-                "-script",
-                "testScript"
-            };
-
-            // Create an input stream with commands to
-            // load a chunk, verify a query, and inspect
-            // some rows.
-            std::stringstream input;
-            input
-                // This first line is run via -script.
-                // << "cache chunk sonnet0" << std::endl
-                << "interpreter" << std::endl
-                << "verify one five" << std::endl
-                << "show rows five" << std::endl;
-
-            tool.Main(input,
-                      output,
-                      static_cast<int>(argv.size()),
-                      argv.data());
-
-            // TODO: this is an extremely brittle way to check if we have false
-            // positives. This is being done this way because it appears that
-            // it's a standard pattern for our commands to entire write to a
-            // file or write to a stream. In order to make commands more easily
-            // tstable, we should probably return a data structure and have the
-            // REPL print out a readable form of the data structure.
-            std::string text = output.str();
-
-            size_t false_positive_found = text.find("False positives:");
-            if (false_positive_found != std::string::npos)
-            {
-                // TODO: only print out text on failure.
-                std::cout << text;
-                FAIL() << "Found false positives.";
-            }
-        }
-    }
-
-
-    // TODO: refactor this copied code into common code.
     TEST(BitFunnelTool, ThreeToolsEndToEndSequentialInterpreterMultiShard)
     {
-        for (int shardSplit = 1; shardSplit < 64; shardSplit += 5) {
+        for (int shardSplit = 1; shardSplit < 64; shardSplit += 10) {
             //
             // This test is going to run out of a RAM filesystem.
             //
@@ -895,7 +881,135 @@ namespace BitFunnel
                         << "verify one sixty\\-one" << std::endl
                         << "verify one sixty\\-two" << std::endl
                         << "verify one sixty\\-three" << std::endl
-                        << "verify one sixty\\-four" << std::endl;
+                        << "verify one sixty\\-four" << std::endl
+                        << "verify one sixty\\-five" << std::endl
+                        << "verify one sixty\\-six" << std::endl
+                        << "verify one sixty\\-seven" << std::endl
+                        << "verify one sixty\\-eight" << std::endl
+                        << "verify one sixty\\-nine" << std::endl
+                        << "verify one seventy" << std::endl
+                        << "verify one seventy\\-one" << std::endl
+                        << "verify one seventy\\-two" << std::endl
+                        << "verify one seventy\\-three" << std::endl
+                        << "verify one seventy\\-four" << std::endl
+                        << "verify one seventy\\-five" << std::endl
+                        << "verify one seventy\\-six" << std::endl
+                        << "verify one seventy\\-seven" << std::endl
+                        << "verify one seventy\\-eight" << std::endl
+                        << "verify one seventy\\-nine" << std::endl
+                        << "verify one eighty" << std::endl
+                        << "verify one eighty\\-one" << std::endl
+                        << "verify one eighty\\-two" << std::endl
+                        << "verify one eighty\\-three" << std::endl
+                        << "verify one eighty\\-four" << std::endl
+                        << "verify one eighty\\-five" << std::endl
+                        << "verify one eighty\\-six" << std::endl
+                        << "verify one eighty\\-seven" << std::endl
+                        << "verify one eighty\\-eight" << std::endl
+                        << "verify one eighty\\-nine" << std::endl
+                        << "verify one ninety" << std::endl
+                        << "verify one ninety\\-one" << std::endl
+                        << "verify one ninety\\-two" << std::endl
+                        << "verify one ninety\\-three" << std::endl
+                        << "verify one ninety\\-four" << std::endl
+                        << "verify one ninety\\-five" << std::endl
+                        << "verify one ninety\\-six" << std::endl
+                        << "verify one ninety\\-seven" << std::endl
+                        << "verify one ninety\\-eight" << std::endl
+                        << "verify one ninety\\-nine" << std::endl
+                        << "verify one one\\-hundred" << std::endl
+                        << "verify one one\\-hundred\\-and\\-one" << std::endl
+                        << "verify one one\\-hundred\\-and\\-two" << std::endl
+                        << "verify one one\\-hundred\\-and\\-three" << std::endl
+                        << "verify one one\\-hundred\\-and\\-four" << std::endl
+                        << "verify one one\\-hundred\\-and\\-five" << std::endl
+                        << "verify one one\\-hundred\\-and\\-six" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seven" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eight" << std::endl
+                        << "verify one one\\-hundred\\-and\\-nine" << std::endl
+                        << "verify one one\\-hundred\\-and\\-ten" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eleven" << std::endl
+                        << "verify one one\\-hundred\\-and\\-twelve" << std::endl
+                        << "verify one one\\-hundred\\-and\\-thirteen" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fourteen" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fifteen" << std::endl
+                        << "verify one one\\-hundred\\-and\\-sixteen" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seventeen" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eighteen" << std::endl
+                        << "verify one one\\-hundred\\-and\\-nineteen" << std::endl
+                        << "verify one one\\-hundred\\-and\\-twenty" << std::endl
+                        << "verify one one\\-hundred\\-and\\-twenty\\-one" << std::endl
+                        << "verify one one\\-hundred\\-and\\-twenty\\-two" << std::endl
+                        << "verify one one\\-hundred\\-and\\-twenty\\-three" << std::endl
+                        << "verify one one\\-hundred\\-and\\-twenty\\-four" << std::endl
+                        << "verify one one\\-hundred\\-and\\-twenty\\-five" << std::endl
+                        << "verify one one\\-hundred\\-and\\-twenty\\-six" << std::endl
+                        << "verify one one\\-hundred\\-and\\-twenty\\-seven" << std::endl
+                        << "verify one one\\-hundred\\-and\\-twenty\\-eight" << std::endl
+                        << "verify one one\\-hundred\\-and\\-twenty\\-nine" << std::endl
+                        << "verify one one\\-hundred\\-and\\-thirty" << std::endl
+                        << "verify one one\\-hundred\\-and\\-thirty\\-one" << std::endl
+                        << "verify one one\\-hundred\\-and\\-thirty\\-two" << std::endl
+                        << "verify one one\\-hundred\\-and\\-thirty\\-three" << std::endl
+                        << "verify one one\\-hundred\\-and\\-thirty\\-four" << std::endl
+                        << "verify one one\\-hundred\\-and\\-thirty\\-five" << std::endl
+                        << "verify one one\\-hundred\\-and\\-thirty\\-six" << std::endl
+                        << "verify one one\\-hundred\\-and\\-thirty\\-seven" << std::endl
+                        << "verify one one\\-hundred\\-and\\-thirty\\-eight" << std::endl
+                        << "verify one one\\-hundred\\-and\\-thirty\\-nine" << std::endl
+                        << "verify one one\\-hundred\\-and\\-forty" << std::endl
+                        << "verify one one\\-hundred\\-and\\-forty\\-one" << std::endl
+                        << "verify one one\\-hundred\\-and\\-forty\\-two" << std::endl
+                        << "verify one one\\-hundred\\-and\\-forty\\-three" << std::endl
+                        << "verify one one\\-hundred\\-and\\-forty\\-four" << std::endl
+                        << "verify one one\\-hundred\\-and\\-forty\\-five" << std::endl
+                        << "verify one one\\-hundred\\-and\\-forty\\-six" << std::endl
+                        << "verify one one\\-hundred\\-and\\-forty\\-seven" << std::endl
+                        << "verify one one\\-hundred\\-and\\-forty\\-eight" << std::endl
+                        << "verify one one\\-hundred\\-and\\-forty\\-nine" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fifty" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fifty\\-one" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fifty\\-two" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fifty\\-three" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fifty\\-four" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fifty\\-five" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fifty\\-six" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fifty\\-seven" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fifty\\-eight" << std::endl
+                        << "verify one one\\-hundred\\-and\\-fifty\\-nine" << std::endl
+                        << "verify one one\\-hundred\\-and\\-sixty" << std::endl
+                        << "verify one one\\-hundred\\-and\\-sixty\\-one" << std::endl
+                        << "verify one one\\-hundred\\-and\\-sixty\\-two" << std::endl
+                        << "verify one one\\-hundred\\-and\\-sixty\\-three" << std::endl
+                        << "verify one one\\-hundred\\-and\\-sixty\\-four" << std::endl
+                        << "verify one one\\-hundred\\-and\\-sixty\\-five" << std::endl
+                        << "verify one one\\-hundred\\-and\\-sixty\\-six" << std::endl
+                        << "verify one one\\-hundred\\-and\\-sixty\\-seven" << std::endl
+                        << "verify one one\\-hundred\\-and\\-sixty\\-eight" << std::endl
+                        << "verify one one\\-hundred\\-and\\-sixty\\-nine" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seventy" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seventy\\-one" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seventy\\-two" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seventy\\-three" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seventy\\-four" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seventy\\-five" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seventy\\-six" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seventy\\-seven" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seventy\\-eight" << std::endl
+                        << "verify one one\\-hundred\\-and\\-seventy\\-nine" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eighty" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eighty\\-one" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eighty\\-two" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eighty\\-three" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eighty\\-four" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eighty\\-five" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eighty\\-six" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eighty\\-seven" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eighty\\-eight" << std::endl
+                        << "verify one one\\-hundred\\-and\\-eighty\\-nine" << std::endl
+                        << "verify one one\\-hundred\\-and\\-ninety" << std::endl
+                        << "verify one one\\-hundred\\-and\\-ninety\\-one" << std::endl
+                        << "verify one one\\-hundred\\-and\\-ninety\\-two" << std::endl;
 
 
                 tool.Main(input,
