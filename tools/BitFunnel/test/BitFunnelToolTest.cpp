@@ -253,19 +253,71 @@ namespace BitFunnel
             input
                 // This first line is run via -script.
                 // << "cache chunk sonnet0" << std::endl
-                << "interpreter" << std::endl
-                << "verify one one" << std::endl
-                << "show rows one" << std::endl
-                << "verify one four" << std::endl
-                << "show rows four" << std::endl
-                << "verify one four" << std::endl
-                << "show rows four" << std::endl
-                << "verify one sixteen" << std::endl
-                << "show rows sixteen" << std::endl
-                << "verify one thirty\\-two" << std::endl
-                << "show rows thirty\\-two" << std::endl
-                << "verify one sixty\\-four" << std::endl
-                << "show rows sixty\\-four" << std::endl;
+                    << "interpreter" << std::endl
+                    << "verify one one" << std::endl
+                    << "verify one two" << std::endl
+                    << "verify one three" << std::endl
+                    << "verify one four" << std::endl
+                    << "verify one five" << std::endl
+                    << "verify one six" << std::endl
+                    << "verify one seven" << std::endl
+                    << "verify one eight" << std::endl
+                    << "verify one nine" << std::endl
+                    << "verify one ten" << std::endl
+                    << "verify one eleven" << std::endl
+                    << "verify one twelve" << std::endl
+                    << "verify one thirteen" << std::endl
+                    << "verify one fourteen" << std::endl
+                    << "verify one fifteen" << std::endl
+                    << "verify one sixteen" << std::endl
+                    << "verify one seventeen" << std::endl
+                    << "verify one eighteen" << std::endl
+                    << "verify one nineteen" << std::endl
+                    << "verify one twenty" << std::endl
+                    << "verify one twenty-one" << std::endl
+                    << "verify one twenty-two" << std::endl
+                    << "verify one twenty-three" << std::endl
+                    << "verify one twenty-four" << std::endl
+                    << "verify one twenty-five" << std::endl
+                    << "verify one twenty-six" << std::endl
+                    << "verify one twenty-seven" << std::endl
+                    << "verify one twenty-eight" << std::endl
+                    << "verify one twenty-nine" << std::endl
+                    << "verify one thirty" << std::endl
+                    << "verify one thirty-one" << std::endl
+                    << "verify one thirty-two" << std::endl
+                    << "verify one thirty-three" << std::endl
+                    << "verify one thirty-four" << std::endl
+                    << "verify one thirty-five" << std::endl
+                    << "verify one thirty-six" << std::endl
+                    << "verify one thirty-seven" << std::endl
+                    << "verify one thirty-eight" << std::endl
+                    << "verify one thirty-nine" << std::endl
+                    << "verify one forty" << std::endl
+                    << "verify one forty-one" << std::endl
+                    << "verify one forty-two" << std::endl
+                    << "verify one forty-three" << std::endl
+                    << "verify one forty-four" << std::endl
+                    << "verify one forty-five" << std::endl
+                    << "verify one forty-six" << std::endl
+                    << "verify one forty-seven" << std::endl
+                    << "verify one forty-eight" << std::endl
+                    << "verify one forty-nine" << std::endl
+                    << "verify one fifty" << std::endl
+                    << "verify one fifty-one" << std::endl
+                    << "verify one fifty-two" << std::endl
+                    << "verify one fifty-three" << std::endl
+                    << "verify one fifty-four" << std::endl
+                    << "verify one fifty-five" << std::endl
+                    << "verify one fifty-six" << std::endl
+                    << "verify one fifty-seven" << std::endl
+                    << "verify one fifty-eight" << std::endl
+                    << "verify one fifty-nine" << std::endl
+                    << "verify one sixty" << std::endl
+                    << "verify one sixty-one" << std::endl
+                    << "verify one sixty-two" << std::endl
+                    << "verify one sixty-three" << std::endl
+                    << "verify one sixty-four" << std::endl;
 
 
             tool.Main(input,
@@ -746,13 +798,69 @@ namespace BitFunnel
                         // << "cache chunk sonnet0" << std::endl
                         << "interpreter" << std::endl
                         << "verify one one" << std::endl
-                        << "show rows one" << std::endl
+                        << "verify one two" << std::endl
+                        << "verify one three" << std::endl
+                        << "verify one four" << std::endl
+                        << "verify one five" << std::endl
+                        << "verify one six" << std::endl
+                        << "verify one seven" << std::endl
+                        << "verify one eight" << std::endl
+                        << "verify one nine" << std::endl
+                        << "verify one ten" << std::endl
+                        << "verify one eleven" << std::endl
+                        << "verify one twelve" << std::endl
+                        << "verify one thirteen" << std::endl
+                        << "verify one fourteen" << std::endl
+                        << "verify one fifteen" << std::endl
                         << "verify one sixteen" << std::endl
-                        << "show rows sixteen" << std::endl
-                        << "verify one thirty\\-two" << std::endl
-                        << "show rows thirty\\-two" << std::endl
-                        << "verify one sixty\\-four" << std::endl
-                        << "show rows sixty\\-four" << std::endl;
+                        << "verify one seventeen" << std::endl
+                        << "verify one eighteen" << std::endl
+                        << "verify one nineteen" << std::endl
+                        << "verify one twenty" << std::endl
+                        << "verify one twenty-one" << std::endl
+                        << "verify one twenty-two" << std::endl
+                        << "verify one twenty-three" << std::endl
+                        << "verify one twenty-four" << std::endl
+                        << "verify one twenty-five" << std::endl
+                        << "verify one twenty-six" << std::endl
+                        << "verify one twenty-seven" << std::endl
+                        << "verify one twenty-eight" << std::endl
+                        << "verify one twenty-nine" << std::endl
+                        << "verify one thirty" << std::endl
+                        << "verify one thirty-one" << std::endl
+                        << "verify one thirty-two" << std::endl
+                        << "verify one thirty-three" << std::endl
+                        << "verify one thirty-four" << std::endl
+                        << "verify one thirty-five" << std::endl
+                        << "verify one thirty-six" << std::endl
+                        << "verify one thirty-seven" << std::endl
+                        << "verify one thirty-eight" << std::endl
+                        << "verify one thirty-nine" << std::endl
+                        << "verify one forty" << std::endl
+                        << "verify one forty-one" << std::endl
+                        << "verify one forty-two" << std::endl
+                        << "verify one forty-three" << std::endl
+                        << "verify one forty-four" << std::endl
+                        << "verify one forty-five" << std::endl
+                        << "verify one forty-six" << std::endl
+                        << "verify one forty-seven" << std::endl
+                        << "verify one forty-eight" << std::endl
+                        << "verify one forty-nine" << std::endl
+                        << "verify one fifty" << std::endl
+                        << "verify one fifty-one" << std::endl
+                        << "verify one fifty-two" << std::endl
+                        << "verify one fifty-three" << std::endl
+                        << "verify one fifty-four" << std::endl
+                        << "verify one fifty-five" << std::endl
+                        << "verify one fifty-six" << std::endl
+                        << "verify one fifty-seven" << std::endl
+                        << "verify one fifty-eight" << std::endl
+                        << "verify one fifty-nine" << std::endl
+                        << "verify one sixty" << std::endl
+                        << "verify one sixty-one" << std::endl
+                        << "verify one sixty-two" << std::endl
+                        << "verify one sixty-three" << std::endl
+                        << "verify one sixty-four" << std::endl;
 
 
                 tool.Main(input,
@@ -764,157 +872,157 @@ namespace BitFunnel
     }
 
 
-    // // TODO: extract logic into class/function instead of copy-pasting above
-    // // test.
-    // TEST(BitFunnelTool, ThreeToolsEndToEndInterpreterMultiShard)
-    // {
-    //     //
-    //     // This test is going to run out of a RAM filesystem.
-    //     //
-    //     auto fileSystem = BitFunnel::Factories::CreateRAMFileSystem();
-    //     auto fileManager =
-    //         BitFunnel::Factories::CreateFileManager(
-    //             "config",
-    //             "statistics",
-    //             "index",
-    //             *fileSystem);
-
-
-    //     //
-    //     // Create ShardDefinition
-    //     //
-    //     {
-    //         // This should cause the test to fail because sharding is
-    //         // incompletely implemented. However, that doesn't seem to happen
-    //         // because it's so incompletely implemented that we don't even read
-    //         // this file. Neither StatisticsBuilder nor TermTableBuilder are
-    //         // shard aware.
-    //         //
-    //         // TODO: have tools actually use ShardDefinition. See #291 for more
-    //         // discussion.
-
-    //         // According to FileManager, ShardDefinition is in statisticsDirectory.
-    //         auto shardDefinition = fileSystem->OpenForWrite("config/ShardDefinition.csv");
-    //         *shardDefinition << "50";
-    //     }
-
-    //     //
-    //     // Initialize RAM filesystem with input files.
-    //     //
-    //     {
-    //         // Open the manifest file.
-    //         auto manifest = fileSystem->OpenForWrite("manifest.txt");
-
-    //         // Iterate over sequence of Shakespeare sonnet chunk data.
-    //         for (size_t i = 0; i < Sonnets::chunks.size(); ++i)
-    //         {
-    //             // Create chunk file name, and write chunk data.
-    //             std::stringstream name;
-    //             name << "sonnet" << i;
-    //             auto out = fileSystem->OpenForWrite(name.str().c_str());
-    //             out->write(Sonnets::chunks[i].second,
-    //                        static_cast<std::streamsize>(Sonnets::chunks[i].first));
-
-    //             // Add chunk file to manifest.
-    //             *manifest << name.str() << std::endl;
-    //         }
-
-    //         auto script = fileSystem->OpenForWrite("testScript");
-    //         *script << "failOnException" << std::endl
-    //                 << "cache chunk sonnet0" << std::endl;
-    //     }
-
-    //     //
-    //     // Create the BitFunnelTool based on the RAM filesystem.
-    //     //
-    //     BitFunnel::BitFunnelTool tool(*fileSystem);
-
-    //     //
-    //     // Use the tool to run the statistics builder.
-    //     //
-    //     {
-    //         std::vector<char const *> argv = {
-    //             "BitFunnel",
-    //             "statistics",
-    //             "manifest.txt",
-    //             "config"
-    //         };
-
-    //         tool.Main(std::cin,
-    //                   std::cout,
-    //                   static_cast<int>(argv.size()),
-    //                   argv.data());
-    //     }
-
-
-    //     //
-    //     // Use the tool to run the TermTable builder.
-    //     //
-    //     {
-    //         std::vector<char const *> argv = {
-    //             "BitFunnel",
-    //             "termtable",
-    //             "config",
-    //             "0.1",
-    //             "PrivateSharedRank0And3"
-    //         };
-
-    //         tool.Main(std::cin,
-    //                   std::cout,
-    //                   static_cast<int>(argv.size()),
-    //                   argv.data());
-    //     }
-
-
-    //     //
-    //     // Use the tool to run the REPL.
-    //     //
-    //     {
-    //         std::vector<char const *> argv = {
-    //             "BitFunnel",
-    //             "repl",
-    //             "config",
-    //             // -script and testScript must be on seperate lines because
-    //             // tokens are delimited by whitespace.
-    //             "-script",
-    //             "testScript"
-    //         };
-
-    //         // Create an input stream with commands to
-    //         // load a chunk, verify a query, and inspect
-    //         // some rows.
-    //         std::stringstream input;
-    //         input
-    //             // This first line is run via -script.
-    //             // << "cache chunk sonnet0" << std::endl
-    //             << "interpreter" << std::endl
-    //             << "verify one blood" << std::endl
-    //             << "show rows blood" << std::endl;
-
-    //         std::stringstream output;
-    //         tool.Main(input,
-    //                   output,
-    //                   static_cast<int>(argv.size()),
-    //                   argv.data());
-
-    //         // TODO: this is an extremely brittle way to check if we have false
-    //         // positives. This is being done this way because it appears that
-    //         // it's a standard pattern for our commands to entire write to a
-    //         // file or write to a stream. In order to make commands more easily
-    //         // tstable, we should probably return a data structure and have the
-    //         // REPL print out a readable form of the data structure.
-    //         std::string text = output.str();
-
-    //         // TODO: only print out text on failure.
-    //         std::cout << text;
-
-    //         size_t false_positive_found = text.find("False positives:");
-    //         if (false_positive_found != std::string::npos)
-    //         {
-    //             FAIL() << "Found false positives.";
-    //         }
-    //     }
-    // }
+//     // TODO: extract logic into class/function instead of copy-pasting above
+//     // test.
+//     TEST(BitFunnelTool, ThreeToolsEndToEndInterpreterMultiShard)
+//     {
+//         //
+//         // This test is going to run out of a RAM filesystem.
+//         //
+//         auto fileSystem = BitFunnel::Factories::CreateRAMFileSystem();
+//         auto fileManager =
+//             BitFunnel::Factories::CreateFileManager(
+//                 "config",
+//                 "statistics",
+//                 "index",
+//                 *fileSystem);
+//
+//
+//         //
+//         // Create ShardDefinition
+//         //
+//         {
+//             // This should cause the test to fail because sharding is
+//             // incompletely implemented. However, that doesn't seem to happen
+//             // because it's so incompletely implemented that we don't even read
+//             // this file. Neither StatisticsBuilder nor TermTableBuilder are
+//             // shard aware.
+//             //
+//             // TODO: have tools actually use ShardDefinition. See #291 for more
+//             // discussion.
+//
+//             // According to FileManager, ShardDefinition is in statisticsDirectory.
+//             auto shardDefinition = fileSystem->OpenForWrite("config/ShardDefinition.csv");
+//             *shardDefinition << "50";
+//         }
+//
+//         //
+//         // Initialize RAM filesystem with input files.
+//         //
+//         {
+//             // Open the manifest file.
+//             auto manifest = fileSystem->OpenForWrite("manifest.txt");
+//
+//             // Iterate over sequence of Shakespeare sonnet chunk data.
+//             for (size_t i = 0; i < Sonnets::chunks.size(); ++i)
+//             {
+//                 // Create chunk file name, and write chunk data.
+//                 std::stringstream name;
+//                 name << "sonnet" << i;
+//                 auto out = fileSystem->OpenForWrite(name.str().c_str());
+//                 out->write(Sonnets::chunks[i].second,
+//                            static_cast<std::streamsize>(Sonnets::chunks[i].first));
+//
+//                 // Add chunk file to manifest.
+//                 *manifest << name.str() << std::endl;
+//             }
+//
+//             auto script = fileSystem->OpenForWrite("testScript");
+//             *script << "failOnException" << std::endl
+//                     << "cache chunk sonnet0" << std::endl;
+//         }
+//
+//         //
+//         // Create the BitFunnelTool based on the RAM filesystem.
+//         //
+//         BitFunnel::BitFunnelTool tool(*fileSystem);
+//
+//         //
+//         // Use the tool to run the statistics builder.
+//         //
+//         {
+//             std::vector<char const *> argv = {
+//                 "BitFunnel",
+//                 "statistics",
+//                 "manifest.txt",
+//                 "config"
+//             };
+//
+//             tool.Main(std::cin,
+//                       std::cout,
+//                       static_cast<int>(argv.size()),
+//                       argv.data());
+//         }
+//
+//
+//         //
+//         // Use the tool to run the TermTable builder.
+//         //
+//         {
+//             std::vector<char const *> argv = {
+//                 "BitFunnel",
+//                 "termtable",
+//                 "config",
+//                 "0.1",
+//                 "PrivateSharedRank0And3"
+//             };
+//
+//             tool.Main(std::cin,
+//                       std::cout,
+//                       static_cast<int>(argv.size()),
+//                       argv.data());
+//         }
+//
+//
+//         //
+//         // Use the tool to run the REPL.
+//         //
+//         {
+//             std::vector<char const *> argv = {
+//                 "BitFunnel",
+//                 "repl",
+//                 "config",
+//                 // -script and testScript must be on seperate lines because
+//                 // tokens are delimited by whitespace.
+//                 "-script",
+//                 "testScript"
+//             };
+//
+//             // Create an input stream with commands to
+//             // load a chunk, verify a query, and inspect
+//             // some rows.
+//             std::stringstream input;
+//             input
+//                 // This first line is run via -script.
+//                 // << "cache chunk sonnet0" << std::endl
+//                 << "interpreter" << std::endl
+//                 << "verify one blood" << std::endl
+//                 << "show rows blood" << std::endl;
+//
+//             std::stringstream output;
+//             tool.Main(input,
+//                       output,
+//                       static_cast<int>(argv.size()),
+//                       argv.data());
+//
+//             // TODO: this is an extremely brittle way to check if we have false
+//             // positives. This is being done this way because it appears that
+//             // it's a standard pattern for our commands to entire write to a
+//             // file or write to a stream. In order to make commands more easily
+//             // tstable, we should probably return a data structure and have the
+//             // REPL print out a readable form of the data structure.
+//             std::string text = output.str();
+//
+//             // TODO: only print out text on failure.
+//             std::cout << text;
+//
+//             size_t false_positive_found = text.find("False positives:");
+//             if (false_positive_found != std::string::npos)
+//             {
+//                 FAIL() << "Found false positives.";
+//             }
+//         }
+//     }
 
 
     // // TODO: extract logic into class/function instead of copy-pasting above

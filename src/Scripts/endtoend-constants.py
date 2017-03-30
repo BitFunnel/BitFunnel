@@ -20,3 +20,12 @@ def print_doc(id, name):
 
 for i in range (1, 64+1):
     print_doc(i, 'Sequential')
+
+print('//')
+print('//')
+print('//')
+
+for i in range (1, 64+1):
+    # print('<< "show rows {}" << std::endl'.format(num2words(i).replace(' ','-')))
+    print('<< "verify one {}" << std::endl'.format(num2words(i).replace(' ','-')))
+
