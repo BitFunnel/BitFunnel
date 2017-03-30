@@ -262,6 +262,8 @@ namespace BitFunnel
                 << "show rows four" << std::endl
                 << "verify one sixteen" << std::endl
                 << "show rows sixteen" << std::endl
+                << "verify one thirty\\-two" << std::endl
+                << "show rows thirty\\-two" << std::endl
                 << "verify one sixty\\-four" << std::endl
                 << "show rows sixty\\-four" << std::endl;
 
@@ -386,6 +388,7 @@ namespace BitFunnel
                       static_cast<int>(argv.size()),
                       argv.data());
         }
+
     }
 
 
@@ -630,134 +633,133 @@ namespace BitFunnel
     // TODO: refactor this copied code into common code.
     TEST(BitFunnelTool, ThreeToolsEndToEndSequentialInterpreterMultiShard)
     {
-        //
-        // This test is going to run out of a RAM filesystem.
-        //
-        auto fileSystem = BitFunnel::Factories::CreateRAMFileSystem();
-        auto fileManager =
-            BitFunnel::Factories::CreateFileManager(
-                "config",
-                "statistics",
-                "index",
-                *fileSystem);
+        for (int shardSplit = 1; shardSplit < 64; shardSplit += 5) {
+            //
+            // This test is going to run out of a RAM filesystem.
+            //
+            auto fileSystem = BitFunnel::Factories::CreateRAMFileSystem();
+            auto fileManager =
+                    BitFunnel::Factories::CreateFileManager(
+                            "config",
+                            "statistics",
+                            "index",
+                            *fileSystem);
 
 
-        //
-        // Create ShardDefinition
-        //
-        {
-            // According to FileManager, ShardDefinition is in statisticsDirectory.
-            auto shardDefinition = fileSystem->OpenForWrite("config/ShardDefinition.csv");
-            // NOTE: we'll get false negatives and false positives if we change this to 3.
-            *shardDefinition << "3";
-        }
-
-
-        //
-        // Initialize RAM filesystem with input files.
-        //
-        {
-            // Open the manifest file.
-            auto manifest = fileSystem->OpenForWrite("manifest.txt");
-
-            for (size_t i = 0; i < Sequential::chunks.size(); ++i)
+            //
+            // Create ShardDefinition
+            //
             {
-                // Create chunk file name, and write chunk data.
-                std::stringstream name;
-                name << "sequential" << i;
-                auto out = fileSystem->OpenForWrite(name.str().c_str());
-                out->write(Sequential::chunks[i].second,
-                           static_cast<std::streamsize>(Sequential::chunks[i].first));
-
-                // Add chunk file to manifest.
-                *manifest << name.str() << std::endl;
+                // According to FileManager, ShardDefinition is in statisticsDirectory.
+                auto shardDefinition = fileSystem->OpenForWrite("config/ShardDefinition.csv");
+                // NOTE: we'll get false negatives and false positives if we change this to 3.
+                *shardDefinition << shardSplit;
             }
 
-            auto script = fileSystem->OpenForWrite("testScript");
-            *script << "failOnException" << std::endl
-                    << "cache chunk sequential0" << std::endl;
-        }
 
-        //
-        // Create the BitFunnelTool based on the RAM filesystem.
-        //
-        BitFunnel::BitFunnelTool tool(*fileSystem);
+            //
+            // Initialize RAM filesystem with input files.
+            //
+            {
+                // Open the manifest file.
+                auto manifest = fileSystem->OpenForWrite("manifest.txt");
 
-        //
-        // Use the tool to run the statistics builder.
-        //
-        {
-            std::vector<char const *> argv = {
-                "BitFunnel",
-                "statistics",
-                "manifest.txt",
-                "config"
-            };
+                for (size_t i = 0; i < Sequential::chunks.size(); ++i) {
+                    // Create chunk file name, and write chunk data.
+                    std::stringstream name;
+                    name << "sequential" << i;
+                    auto out = fileSystem->OpenForWrite(name.str().c_str());
+                    out->write(Sequential::chunks[i].second,
+                               static_cast<std::streamsize>(Sequential::chunks[i].first));
 
-            tool.Main(std::cin,
-                      std::cout,
-                      static_cast<int>(argv.size()),
-                      argv.data());
-        }
+                    // Add chunk file to manifest.
+                    *manifest << name.str() << std::endl;
+                }
 
+                auto script = fileSystem->OpenForWrite("testScript");
+                *script << "failOnException" << std::endl
+                        << "cache chunk sequential0" << std::endl;
+            }
 
-        //
-        // Use the tool to run the TermTable builder.
-        //
-        {
-            std::vector<char const *> argv = {
-                "BitFunnel",
-                "termtable",
-                "config",
-                "0.1",
-                "PrivateSharedRank0And3"
-            };
+            //
+            // Create the BitFunnelTool based on the RAM filesystem.
+            //
+            BitFunnel::BitFunnelTool tool(*fileSystem);
 
-            tool.Main(std::cin,
-                      std::cout,
-                      static_cast<int>(argv.size()),
-                      argv.data());
-        }
+            //
+            // Use the tool to run the statistics builder.
+            //
+            {
+                std::vector<char const *> argv = {
+                        "BitFunnel",
+                        "statistics",
+                        "manifest.txt",
+                        "config"
+                };
 
-
-        //
-        // Use the tool to run the REPL.
-        //
-        {
-            std::vector<char const *> argv = {
-                "BitFunnel",
-                "repl",
-                "config",
-                // -script and testScript must be on seperate lines because
-                // tokens are delimited by whitespace.
-                "-script",
-                "testScript"
-            };
-
-            // Create an input stream with commands to
-            // load a chunk, verify a query, and inspect
-            // some rows.
-            std::stringstream input;
-            input
-                // This first line is run via -script.
-                // << "cache chunk sonnet0" << std::endl
-                << "interpreter" << std::endl
-                << "show rows one" << std::endl
-                << "verify one one" << std::endl
-                << "show rows four" << std::endl
-                << "verify one four" << std::endl
-                << "show rows four" << std::endl
-                << "verify one four" << std::endl
-                << "show rows sixteen" << std::endl
-                << "verify one sixteen" << std::endl
-                << "show rows sixty\\-four" << std::endl
-                << "verify one sixty\\-four" << std::endl;
+                tool.Main(std::cin,
+                          std::cout,
+                          static_cast<int>(argv.size()),
+                          argv.data());
+            }
 
 
-            tool.Main(input,
-                      std::cout,
-                      static_cast<int>(argv.size()),
-                      argv.data());
+            //
+            // Use the tool to run the TermTable builder.
+            //
+            {
+                std::vector<char const *> argv = {
+                        "BitFunnel",
+                        "termtable",
+                        "config",
+                        "0.1",
+                        "PrivateSharedRank0And3"
+                };
+
+                tool.Main(std::cin,
+                          std::cout,
+                          static_cast<int>(argv.size()),
+                          argv.data());
+            }
+
+
+            //
+            // Use the tool to run the REPL.
+            //
+            {
+                std::vector<char const *> argv = {
+                        "BitFunnel",
+                        "repl",
+                        "config",
+                        // -script and testScript must be on seperate lines because
+                        // tokens are delimited by whitespace.
+                        "-script",
+                        "testScript"
+                };
+
+                // Create an input stream with commands to
+                // load a chunk, verify a query, and inspect
+                // some rows.
+                std::stringstream input;
+                input
+                        // This first line is run via -script.
+                        // << "cache chunk sonnet0" << std::endl
+                        << "interpreter" << std::endl
+                        << "verify one one" << std::endl
+                        << "show rows one" << std::endl
+                        << "verify one sixteen" << std::endl
+                        << "show rows sixteen" << std::endl
+                        << "verify one thirty\\-two" << std::endl
+                        << "show rows thirty\\-two" << std::endl
+                        << "verify one sixty\\-four" << std::endl
+                        << "show rows sixty\\-four" << std::endl;
+
+
+                tool.Main(input,
+                          std::cout,
+                          static_cast<int>(argv.size()),
+                          argv.data());
+            }
         }
     }
 
