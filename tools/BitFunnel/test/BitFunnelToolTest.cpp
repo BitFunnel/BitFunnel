@@ -1052,7 +1052,7 @@ namespace BitFunnel
 
              // According to FileManager, ShardDefinition is in statisticsDirectory.
              auto shardDefinition = fileSystem->OpenForWrite("config/ShardDefinition.csv");
-             *shardDefinition << "50";
+             *shardDefinition << "0";
          }
 
          //
@@ -1145,6 +1145,10 @@ namespace BitFunnel
                  // This first line is run via -script.
                  // << "cache chunk sonnet0" << std::endl
                  << "interpreter" << std::endl
+                 << "show rows which" << std::endl
+                 << "show rows distill'd" << std::endl
+                 << "show rows foo" << std::endl
+                 << "show rows bar" << std::endl
                  << "verify one blood" << std::endl
                  << "show rows blood" << std::endl;
 

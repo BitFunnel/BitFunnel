@@ -37,16 +37,9 @@ namespace BitFunnel
     {
         const char chunk0[] =
             "0000000000000005\0"
-            "01\0Sonnet\0" "5\0\0"
             "00\0"
-            "and\0that\0unfair\0which\0fairly\0doth\0excel\0"
-            "sap\0checked\0with\0frost\0and\0lusty\0leaves\0quite\0gone\0"
-            "beauty\0o'er-snowed\0and\0bareness\0every\0where\0"
-            "then\0were\0not\0summer's\0distillation\0left\0"
-            "a\0liquid\0prisoner\0pent\0in\0walls\0of\0glass\0"
-            "beauty's\0effect\0with\0beauty\0were\0bereft\0"
-            "nor\0it\0nor\0no\0remembrance\0what\0it\0was\0"
-            "but\0flowers\0distill'd\0though\0they\0with\0winter\0meet\0"
+            "which\0"
+            "distill'd\0"
             "\0\0";
 /*
         const char chunk1[] =
