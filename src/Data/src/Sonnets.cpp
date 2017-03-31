@@ -36,35 +36,10 @@ namespace BitFunnel
     namespace Sonnets
     {
         const char chunk0[] =
-            "0000000000000001\0"
-            "02\0https://en.wikipedia.org/wiki/Sonnet_1\0\0"
-            "01\0Sonnet\0" "1\0\0"
-            "00\0"
-            "from\0fairest\0creatures\0we\0desire\0increase\0"
-            "that\0thereby\0beauty's\0rose\0might\0never\0die\0"
-            "but\0as\0the\0riper\0should\0by\0time\0decease\0"
-            "his\0tender\0heir\0might\0bear\0his\0memory\0"
-            "but\0thou\0contracted\0to\0thine\0own\0bright\0eyes\0"
-            "feed'st\0thy\0light's\0flame\0with\0self-substantial\0fuel\0"
-            "making\0a\0famine\0where\0abundance\0lies\0"
-            "thy\0self\0thy\0foe\0to\0thy\0sweet\0self\0too\0cruel\0"
-            "thou\0that\0art\0now\0the\0world's\0fresh\0ornament\0"
-            "and\0only\0herald\0to\0the\0gaudy\0spring\0"
-            "within\0thine\0own\0bud\0buriest\0thy\0content\0"
-            "and\0tender\0churl\0mak'st\0waste\0in\0niggarding\0"
-            "pity\0the\0world\0or\0else\0this\0glutton\0be\0"
-            "to\0eat\0the\0world's\0due\0by\0the\0grave\0and\0thee\0"
-            "\0\0"
             "0000000000000005\0"
-            "02\0https://en.wikipedia.org/wiki/Sonnet_5\0\0"
             "01\0Sonnet\0" "5\0\0"
             "00\0"
-            "those\0hours\0that\0with\0gentle\0work\0did\0frame\0"
-            "the\0lovely\0gaze\0where\0every\0eye\0doth\0dwell\0"
-            "will\0play\0the\0tyrants\0to\0the\0very\0same\0"
             "and\0that\0unfair\0which\0fairly\0doth\0excel\0"
-            "for\0never-re\0sting\0time\0leads\0summer\0on\0"
-            "to\0hideous\0winter\0and\0confounds\0him\0there\0"
             "sap\0checked\0with\0frost\0and\0lusty\0leaves\0quite\0gone\0"
             "beauty\0o'er-snowed\0and\0bareness\0every\0where\0"
             "then\0were\0not\0summer's\0distillation\0left\0"
@@ -72,7 +47,6 @@ namespace BitFunnel
             "beauty's\0effect\0with\0beauty\0were\0bereft\0"
             "nor\0it\0nor\0no\0remembrance\0what\0it\0was\0"
             "but\0flowers\0distill'd\0though\0they\0with\0winter\0meet\0"
-            "leese\0but\0their\0show\0their\0substance\0still\0lives\0sweet\0"
             "\0\0";
 /*
         const char chunk1[] =
