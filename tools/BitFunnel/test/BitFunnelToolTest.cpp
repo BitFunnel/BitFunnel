@@ -64,7 +64,7 @@ namespace BitFunnel
                 name << "simpledata" << i;
                 auto out = fileSystem->OpenForWrite(name.str().c_str());
                 out->write(SimpleData::chunks[i].second,
-                           static_cast<std::streamsize>(Sonnets::chunks[i].first));
+                           static_cast<std::streamsize>(SimpleData::chunks[i].first));
 
                 // Add chunk file to manifest.
                 *manifest << name.str() << std::endl;
