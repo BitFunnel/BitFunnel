@@ -185,6 +185,7 @@ namespace BitFunnel
     {
         // TODO: cast of gramSize can be removed when it's fixed to be unsigned.
         auto index = Factories::CreateSimpleIndex(m_fileSystem);
+        index->SetShardDefinition(Factories::CreateShardDefinition());
         index->ConfigureForStatistics(outputDirectory,
                                       static_cast<size_t>(gramSize),
                                       false);
@@ -194,7 +195,7 @@ namespace BitFunnel
         // TODO: Add try/catch around file operations.
         output
             << "Loading chunk list file '" << chunkListFileName << "'" << std::endl
-            << "Temp dir: '" << outputDirectory << "'" << std::endl;
+            << "Output directory: '" << outputDirectory << "'" << std::endl;
 
         std::vector<std::string> filePaths = ReadLines(m_fileSystem, chunkListFileName);
 

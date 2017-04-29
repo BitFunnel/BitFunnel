@@ -75,7 +75,7 @@ namespace BitFunnel
         CmdLine::OptionalParameter<double> snr(
             "snr",
             "Set signal-to-noise ratio.",
-            0.0,
+            10.0,
             CmdLine::GreaterThan(0.0));
 
 

@@ -109,7 +109,7 @@ namespace BitFunnel
         chunkData.reserve(static_cast<size_t>(length) + 1ull);
         chunkData.insert(chunkData.begin(),
                          (std::istreambuf_iterator<char>(*input)),
-                         std::istreambuf_iterator<char>());
+                          std::istreambuf_iterator<char>());
 
         {
             // Block scopes std::ostream.

@@ -66,9 +66,9 @@ namespace BitFunnel
                 name.append(argv[1]);
                 auto args = FilterArgs(argc, argv, name.c_str());
                 returnCode = executable->Main(input,
-                                 output,
-                                 static_cast<int>(args.size()),
-                                 args.data());
+                                              output,
+                                              static_cast<int>(args.size()),
+                                              args.data());
             }
             else
             {

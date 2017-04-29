@@ -78,7 +78,7 @@ namespace BitFunnel
         {
             m_size = 0;
         }
-        
+
         void push_back(Slice* slice, size_t index)
         {
             // TODO: add overflow check

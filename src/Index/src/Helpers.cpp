@@ -48,6 +48,6 @@ namespace BitFunnel
                                   ITermTable const & termTable)
     {
         size_t minimumFunctionalSize = GetMinimumBlockSize(schema, termTable);
-        return RoundUp<size_t>(minimumFunctionalSize, c_bitsPerPage);
+        return RoundUp<size_t>(minimumFunctionalSize, c_bitsPerPage);           // Why is this bitsPerPage and not bytesPerPage?
     }
 }
