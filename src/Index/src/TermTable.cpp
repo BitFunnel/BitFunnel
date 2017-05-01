@@ -339,8 +339,10 @@ namespace BitFunnel
         EnsureSealed(false);
 
         size_t totalRowCount = explicitCount + adhocCount;
-        CHECK_EQ(totalRowCount != 0, m_ranksInUse[rank])
-            << "inconsistent totalRowCount and m_ranksInUse.";
+        const bool param1 = (totalRowCount != 0);   // TODO: workaround for issue #386.
+        const bool param2 = m_ranksInUse[rank];     // TODO: workaround for issue #386.
+	CHECK_EQ(param1, param2)
+	  << "inconsistent totalRowCount and m_ranksInUse.";
 
         m_explicitRowCounts[rank] = explicitCount;
         m_adhocRowCounts[rank] = adhocCount;

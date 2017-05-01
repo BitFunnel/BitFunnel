@@ -68,7 +68,8 @@ namespace BitFunnel
                                     char const * outDir,
                                     std::vector<std::string> const & terms)
     {
-        CHECK_NE(*outDir, '\0')
+        char const end = '\0';     // TODO: Workaround for issue #386.
+        CHECK_NE(*outDir, end)
             << "Output directory not set. ";
 
         Correlate correlate(index, terms);

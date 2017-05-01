@@ -48,8 +48,9 @@ namespace BitFunnel
     void Factories::AnalyzeRowTables(ISimpleIndex const & index,
                                      char const * outDir)
     {
-        CHECK_NE(*outDir, '\0')
-            << "Output directory not set. ";
+        char const end = '\0';     // TODO: Workaround for issue #386.
+        CHECK_NE(*outDir, end)
+          << "Output directory not set. ";
 
         RowTableAnalyzer statistics(index);
         statistics.AnalyzeColumns(outDir);

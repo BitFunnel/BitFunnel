@@ -44,7 +44,8 @@ namespace BitFunnel
 
     void Analyze::Execute()
     {
-        CHECK_NE(*GetEnvironment().GetOutputDir().c_str(), '\0')
+      char const end = '\0';     // TODO: Workaround for issue #386.
+        CHECK_NE(*GetEnvironment().GetOutputDir().c_str(), end)
             << "Output directory not set. "
             << "Please use the 'cd' command to set an "
             << "output directory";
