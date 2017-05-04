@@ -132,6 +132,10 @@ namespace BitFunnel
         // all IDocuments ingested so far.
         virtual size_t GetTotalSouceBytesIngested() const = 0;
 
+        // Returns the total number of postings in all documents ingested.
+        // This count is not reduced as documents are deleted.
+        virtual size_t GetPostingCount() const = 0;
+
         // Returns a number of Shards and a Shard with the given ShardId.
         virtual size_t GetShardCount() const = 0;
         virtual IShard& GetShard(size_t shard) const = 0;

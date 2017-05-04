@@ -61,7 +61,10 @@ namespace BitFunnel
                        ISliceBufferAllocator& sliceBufferAllocator)
         : m_recycler(recycler),
           m_shardDefinition(shardDefinition),
-          m_documentCount(0),   // TODO: This member is now redundant (with m_documentMap).
+          // TODO: This member is now redundant (with m_documentMap).
+          // But see issue 389. Because of that issue, m_documentCount is not
+          // always equal to m_documentMap.size().
+          m_documentCount(0),
           m_totalSourceByteSize(0),
           m_documentMap(new DocumentMap()),
           m_documentCache(new DocumentCache()),
@@ -184,6 +187,15 @@ namespace BitFunnel
         try
         {
             m_documentMap->Add(handle);
+            // TODO: Remove this debugging code. Related to issue 389.
+            //if (m_documentMap->size() != m_documentCount)
+            //{
+            //    std::cout
+            //        << "  Mismatch on docId=" << id
+            //        << ": m_documentMap->size()=" << m_documentMap->size()
+            //        << ", m_documentCount = " << m_documentCount
+            //        << std::endl;
+            //}
         }
         catch (...)
         {
@@ -289,7 +301,8 @@ namespace BitFunnel
 
     size_t Ingestor::GetDocumentCount() const
     {
-        return m_documentMap->size();
+        return m_documentCount;
+//        return m_documentMap->size();
     }
 
 
@@ -302,6 +315,12 @@ namespace BitFunnel
     size_t Ingestor::GetTotalSouceBytesIngested() const
     {
         return m_totalSourceByteSize;
+    }
+
+
+    size_t Ingestor::GetPostingCount() const
+    {
+        return m_histogram.GetPostingCount();
     }
 
 

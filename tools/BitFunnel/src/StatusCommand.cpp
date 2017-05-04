@@ -87,6 +87,29 @@ namespace BitFunnel
         }
         std::cout << std::endl;
 
+        double bitsPerDocument = 0.0;
+        double documentsPerColumnAtRank = 1.0;
+        for (Rank rank = 0; rank < c_maxRankValue; ++rank)
+        {
+            bitsPerDocument += GetEnvironment().GetTermTable().GetTotalRowCount(rank) * documentsPerColumnAtRank;
+            documentsPerColumnAtRank /= 2;
+        }
+        std::cout << "Bits per document: " << bitsPerDocument << std::endl;
+
+        const auto documentCount = GetEnvironment().GetIngestor().GetDocumentCount();
+        std::cout << "Document count: " << documentCount << std::endl;
+
+        const double totalBits = documentCount * bitsPerDocument;
+        std::cout << "Total bits: " << totalBits << std::endl;
+
+        const auto postingCount = GetEnvironment().GetIngestor().GetPostingCount();
+        std::cout << "Posting count: " << postingCount << std::endl;
+
+        const double bitsPerPosting = totalBits / postingCount;
+        std::cout << "Bits per posting: " << bitsPerPosting << std::endl;
+
+        std::cout << std::endl;
+
         std::cout
             << "Slice capacity: "
             << GetEnvironment().GetIngestor().GetShard(0).GetSliceCapacity()
