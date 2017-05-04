@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
 #include "BitFunnel/Chunks/Factories.h"
@@ -88,6 +89,8 @@ namespace BitFunnel
             FatalError error("ChunkManifestIngestor: chunk index out of range.");
             throw error;
         }
+
+        std::cout << "  " << m_filePaths[index] << std::endl;
 
         auto input = m_fileSystem.OpenForRead(m_filePaths[index].c_str(),
                                               std::ios::binary);

@@ -104,6 +104,7 @@ namespace BitFunnel
 
         if (time > 0)
         {
+            out << "Total ingestion time: " << time << std::endl;
             out << "Bytes/second: " << m_totalSourceByteSize / time << std::endl;
         }
 

@@ -141,8 +141,6 @@ namespace BitFunnel
                 m_cacheDocuments);
 
             IngestChunks(*manifest, threadCount);
-
-            // std::cout << "Ingestion complete." << std::endl;
         }
         double t = stopwatch.ElapsedTime();
         GetEnvironment().GetIngestor().PrintStatistics(std::cout, t);
