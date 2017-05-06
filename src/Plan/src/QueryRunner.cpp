@@ -71,6 +71,7 @@ namespace BitFunnel
         }
 
         out
+            << "Index type: BitFunnel" << std::endl
             << "Thread count: " << m_threadCount << std::endl
             << "Unique queries: " << m_uniqueQueryCount << std::endl
             << "Queries processed: " << m_processedCount << std::endl
