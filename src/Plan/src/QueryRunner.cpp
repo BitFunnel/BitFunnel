@@ -45,22 +45,41 @@ namespace BitFunnel
         size_t threadCount,
         size_t uniqueQueryCount,
         size_t processedCount,
-        double elapsedTime)
+        double elapsedTime,
+        double parsingTime,
+        double planningTime,
+        double matchingTime)
       : m_threadCount(threadCount),
         m_uniqueQueryCount(uniqueQueryCount),
         m_processedCount(processedCount),
-        m_elapsedTime(elapsedTime)
+        m_elapsedTime(elapsedTime),
+        m_parsingLatency(parsingTime),
+        m_planningLatency(planningTime),
+        m_matchingLatency(matchingTime)
     {
     }
 
+
     void QueryRunner::Statistics::Print(std::ostream& out) const
     {
-        out << "Print" << std::endl;
+        double totalLatency = m_parsingLatency + m_planningLatency + m_matchingLatency;
+        double overheadLatency = m_parsingLatency + m_planningLatency;
+
+        if (m_uniqueQueryCount != m_processedCount)
+        {
+            out << "WARNING: unique queries differs from queries processed." << std::endl;
+        }
+
         out
             << "Thread count: " << m_threadCount << std::endl
             << "Unique queries: " << m_uniqueQueryCount << std::endl
             << "Queries processed: " << m_processedCount << std::endl
             << "Elapsed time: " << m_elapsedTime << std::endl
+            << "Total parsing latency: " << m_parsingLatency << std::endl
+            << "Total planning latency: " << m_planningLatency << std::endl
+            << "Total matching latency: " << m_matchingLatency << std::endl
+            << "Mean query latency: " << totalLatency / m_processedCount << std::endl
+            << "Planning overhead (%): " << overheadLatency / totalLatency << std::endl
             << "QPS: " << m_processedCount / m_elapsedTime << std::endl;
     }
 
@@ -317,19 +336,29 @@ namespace BitFunnel
         distributor->WaitForCompletion();
         double elapsedTime = synchronizer.GetElapsedTime();
 
+        double totalParsingTime = 0;
+        double totalPlanningTime = 0;
+        double totalMatchingTime = 0;
+
         size_t queriesProcessed = 0;
         for (auto result : results)
         {
             if (result.GetRowCount() > 0)
             {
                 ++queriesProcessed;
+                totalParsingTime += result.GetParsingTime();
+                totalPlanningTime += result.GetPlanningTime();
+                totalMatchingTime += result.GetMatchingTime();
             }
         }
 
         auto statistics(QueryRunner::Statistics(threadCount,
                                                 queries.size(),
                                                 queriesProcessed,
-                                                elapsedTime));
+                                                elapsedTime,
+                                                totalParsingTime,
+                                                totalPlanningTime,
+                                                totalMatchingTime));
 
         {
             std::cout << "Writing results ..." << std::endl;

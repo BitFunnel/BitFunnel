@@ -38,7 +38,10 @@ namespace BitFunnel
             Statistics(size_t threadCount,
                        size_t uniqueQueryCount,
                        size_t processedCount,
-                       double elapsedTime);
+                       double elapsedTime,
+                       double parsingTime,
+                       double planningTime,
+                       double matchingTime);
 
             void Print(std::ostream& out) const;
 
@@ -47,7 +50,11 @@ namespace BitFunnel
             const size_t m_uniqueQueryCount;
             size_t m_processedCount;
             double m_elapsedTime;
+            double m_parsingLatency;
+            double m_planningLatency;
+            double m_matchingLatency;
         };
+
 
         static QueryInstrumentation::Data Run(
             char const * query,
