@@ -80,7 +80,7 @@ namespace BitFunnel
             << "Total planning latency: " << m_planningLatency << std::endl
             << "Total matching latency: " << m_matchingLatency << std::endl
             << "Mean query latency: " << totalLatency / m_processedCount << std::endl
-            << "Planning overhead (%): " << overheadLatency / totalLatency << std::endl
+            << "Planning overhead: " << overheadLatency / totalLatency << std::endl
             << "QPS: " << m_processedCount / m_elapsedTime << std::endl;
     }
 
