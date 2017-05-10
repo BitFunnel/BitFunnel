@@ -38,6 +38,7 @@ namespace BitFunnel
             Statistics(size_t threadCount,
                        size_t uniqueQueryCount,
                        size_t processedCount,
+                       size_t matchCount,
                        double elapsedTime,
                        double parsingTime,
                        double planningTime,
@@ -49,6 +50,7 @@ namespace BitFunnel
             const size_t m_threadCount;
             const size_t m_uniqueQueryCount;
             size_t m_processedCount;
+            size_t m_matchCount;
             double m_elapsedTime;
             double m_parsingLatency;
             double m_planningLatency;

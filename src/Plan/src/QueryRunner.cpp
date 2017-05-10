@@ -45,6 +45,7 @@ namespace BitFunnel
         size_t threadCount,
         size_t uniqueQueryCount,
         size_t processedCount,
+        size_t matchCount,
         double elapsedTime,
         double parsingTime,
         double planningTime,
@@ -52,6 +53,7 @@ namespace BitFunnel
       : m_threadCount(threadCount),
         m_uniqueQueryCount(uniqueQueryCount),
         m_processedCount(processedCount),
+        m_matchCount(matchCount),
         m_elapsedTime(elapsedTime),
         m_parsingLatency(parsingTime),
         m_planningLatency(planningTime),
@@ -75,13 +77,15 @@ namespace BitFunnel
             << "Thread count: " << m_threadCount << std::endl
             << "Unique queries: " << m_uniqueQueryCount << std::endl
             << "Queries processed: " << m_processedCount << std::endl
+            << "Match count: " << m_matchCount << std::endl
             << "Elapsed time: " << m_elapsedTime << std::endl
             << "Total parsing latency: " << m_parsingLatency << std::endl
             << "Total planning latency: " << m_planningLatency << std::endl
             << "Total matching latency: " << m_matchingLatency << std::endl
             << "Mean query latency: " << totalLatency / m_processedCount << std::endl
             << "Planning overhead: " << overheadLatency / totalLatency << std::endl
-            << "QPS: " << m_processedCount / m_elapsedTime << std::endl;
+            << "QPS: " << m_processedCount / m_elapsedTime << std::endl
+            << "MPS: " << m_matchCount / m_elapsedTime << std::endl;
     }
 
 
@@ -190,7 +194,12 @@ namespace BitFunnel
 
         size_t m_queriesProcessed;
 
-        static const size_t c_allocatorSize = 1ull << 16;
+        // TODO: Issue #390. Trec 2006 Efficiency Topic 43860 is too bit for
+        // c_allocatorSize == 1ull << 17 when using TreatmentClassicBitsliced:
+        //     the nps air quality monitoring program provides information on ozone
+        //     levels acid rain and visibility impairment in parks from 1990 1999
+        //     of the 28 parks that were monitored for visibility
+        static const size_t c_allocatorSize = 1ull << 17;
     };
 
 
@@ -342,11 +351,13 @@ namespace BitFunnel
         double totalMatchingTime = 0;
 
         size_t queriesProcessed = 0;
+        size_t matchCount = 0;
         for (auto result : results)
         {
             if (result.GetRowCount() > 0)
             {
                 ++queriesProcessed;
+                matchCount += result.GetMatchCount();
                 totalParsingTime += result.GetParsingTime();
                 totalPlanningTime += result.GetPlanningTime();
                 totalMatchingTime += result.GetMatchingTime();
@@ -356,6 +367,7 @@ namespace BitFunnel
         auto statistics(QueryRunner::Statistics(threadCount,
                                                 queries.size(),
                                                 queriesProcessed,
+                                                matchCount,
                                                 elapsedTime,
                                                 totalParsingTime,
                                                 totalPlanningTime,

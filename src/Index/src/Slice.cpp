@@ -29,7 +29,6 @@ namespace BitFunnel
 {
     Slice::Slice(Shard& shard)
         : m_shard(shard),
-          m_temporaryNextDocIndex(0U),
           m_capacity(shard.GetSliceCapacity()),
           m_refCount(1),
           m_buffer(shard.AllocateSliceBuffer()),
