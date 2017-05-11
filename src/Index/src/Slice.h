@@ -241,8 +241,6 @@ namespace BitFunnel
         // Shard which owns this slice.
         Shard& m_shard;
 
-        std::atomic<DocIndex> m_temporaryNextDocIndex;
-
         // Capacity of the slice.
         const size_t m_capacity;
 
