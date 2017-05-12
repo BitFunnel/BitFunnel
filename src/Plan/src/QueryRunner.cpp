@@ -85,7 +85,8 @@ namespace BitFunnel
             << "Mean query latency: " << totalLatency / m_processedCount << std::endl
             << "Planning overhead: " << overheadLatency / totalLatency << std::endl
             << "QPS: " << m_processedCount / m_elapsedTime << std::endl
-            << "MPS: " << m_matchCount / m_elapsedTime << std::endl;
+            << "MPS: " << m_matchCount / m_elapsedTime << std::endl
+            << "MPQ: " << static_cast<double>(m_matchCount) / m_processedCount << std::endl;
     }
 
 
