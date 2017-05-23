@@ -126,6 +126,7 @@ namespace BitFunnel
         {
         public:
             bool operator!=(const_iterator const & other) const;
+			bool operator==(const_iterator const & other) const;
             const_iterator& operator++();
             Entry operator*() const;
 

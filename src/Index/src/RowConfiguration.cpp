@@ -103,13 +103,19 @@ namespace BitFunnel
     }
 
 
-    bool RowConfiguration::const_iterator::operator!=(RowConfiguration::const_iterator const & other) const
-    {
-        return m_data != other.m_data;
-    }
+	bool RowConfiguration::const_iterator::operator!=(RowConfiguration::const_iterator const & other) const
+	{
+		return m_data != other.m_data;
+	}
 
 
-    RowConfiguration::const_iterator& RowConfiguration::const_iterator::operator++()
+	bool RowConfiguration::const_iterator::operator==(RowConfiguration::const_iterator const & other) const
+	{
+		return m_data == other.m_data;
+	}
+
+
+	RowConfiguration::const_iterator& RowConfiguration::const_iterator::operator++()
     {
         if (m_data == 0)
         {

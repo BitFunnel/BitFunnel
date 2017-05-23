@@ -22,6 +22,10 @@
 
 #include <iostream>
 
+#ifdef _MSC_VER
+#include <intrin.h>
+#endif
+
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/IDiagnosticStream.h"
 #include "BitFunnel/Index/DocumentHandle.h"
