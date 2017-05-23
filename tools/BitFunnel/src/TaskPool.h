@@ -37,6 +37,7 @@ namespace BitFunnel
     {
     public:
         TaskPool(size_t threadCount);
+        ~TaskPool();
 
         bool TryEnqueue(std::unique_ptr<ITask> task);
 
@@ -60,5 +61,7 @@ namespace BitFunnel
         std::unique_ptr<IThreadManager> m_threadManager;
 
         BlockingQueue<std::unique_ptr<ITask>> m_queue;
+
+        bool m_shutdownInitiated;
     };
 }

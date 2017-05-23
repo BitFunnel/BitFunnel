@@ -35,13 +35,20 @@ namespace BitFunnel
     //
     //*************************************************************************
     TaskPool::TaskPool(size_t threadCount)
-      : m_queue(100)
+      : m_queue(100),
+        m_shutdownInitiated(false)
     {
         for (size_t i = 0; i < threadCount; ++i)
         {
             m_threads.push_back(std::unique_ptr<IThreadBase>(new Thread(*this, i)));
         }
         m_threadManager = Factories::CreateThreadManager(m_threads);
+    }
+
+
+    TaskPool::~TaskPool()
+    {
+        Shutdown();
     }
 
 
@@ -71,7 +78,14 @@ namespace BitFunnel
 
     void TaskPool::Shutdown()
     {
-        m_queue.Shutdown();
-        m_threadManager->WaitForThreads();
+        // Check to see if we've already shutdown. Probably a better
+        // solution is to make Shutdown() private and rely on RAII to
+        // ensure the TaskPool goes down. See issue #393.
+        if (!m_shutdownInitiated)
+        {
+            m_shutdownInitiated = true;
+            m_queue.Shutdown();
+            m_threadManager->WaitForThreads();
+        }
     }
 }
