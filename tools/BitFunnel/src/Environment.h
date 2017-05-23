@@ -47,6 +47,8 @@ namespace BitFunnel
                     size_t threadCount,
                     size_t memory);
 
+        ~Environment();
+
         void StartIndex();
 
         IFileSystem & GetFileSystem() const;
@@ -91,6 +93,8 @@ namespace BitFunnel
         bool m_failOnException;
         size_t m_threadCount;
         size_t m_memory;
+        std::string m_directory;
+        size_t m_gramSize;
         std::string m_outputDir;
         std::ostream& m_output;
     };

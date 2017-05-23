@@ -63,10 +63,10 @@ namespace BitFunnel
         m_failOnException(false),
         m_threadCount(threadCount),
         m_memory(memory),
-        m_output(output)
+        m_output(output),
+        m_directory(directory),
+        m_gramSize(gramSize)
     {
-        m_index->SetBlockAllocatorBufferSize(memory);
-        m_index->ConfigureForServing(directory, gramSize, false);
         RegisterCommands();
     }
 
@@ -95,7 +95,15 @@ namespace BitFunnel
 
     void Environment::StartIndex()
     {
+        m_index->SetBlockAllocatorBufferSize(m_memory);
+        m_index->ConfigureForServing(m_directory.c_str(), m_gramSize, false);
         m_index->StartIndex();
+    }
+
+
+    Environment::~Environment()
+    {
+        m_taskPool->Shutdown();
     }
 
 
