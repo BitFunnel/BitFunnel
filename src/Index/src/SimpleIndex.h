@@ -69,8 +69,11 @@ namespace BitFunnel
             std::unique_ptr<IDocumentDataSchema> schema) override;
         virtual void SetShardDefinition(
             std::unique_ptr<IShardDefinition> definition) override;
+
+        virtual void SetBlockAllocatorBufferSize(size_t size) override;
         virtual void SetSliceBufferAllocator(
             std::unique_ptr<ISliceBufferAllocator> sliceAllocator) override;
+
         virtual void SetTermTableCollection(
             std::unique_ptr<ITermTableCollection> termTables) override;
 
@@ -128,6 +131,7 @@ namespace BitFunnel
         std::unique_ptr<IIndexedIdfTable> m_idfTable;
         std::unique_ptr<IConfiguration> m_configuration;
 
+        size_t m_blockAllocatorBufferSize;
         std::unique_ptr<ISliceBufferAllocator> m_sliceAllocator;
         std::unique_ptr<IShardDefinition> m_shardDefinition;
 

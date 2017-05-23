@@ -49,7 +49,8 @@ namespace BitFunnel
                              std::ostream& output,
                              char const * directory,
                              size_t gramSize,
-                             size_t threadCount)
+                             size_t threadCount,
+                             size_t memory)
       // TODO: Don't like passing *this to TaskFactory.
       // What if TaskFactory calls back before Environment is fully initialized?
       : m_fileSystem(fileSystem),
@@ -61,8 +62,10 @@ namespace BitFunnel
         m_compilerMode(true),
         m_failOnException(false),
         m_threadCount(threadCount),
+        m_memory(memory),
         m_output(output)
     {
+        m_index->SetBlockAllocatorBufferSize(memory);
         m_index->ConfigureForServing(directory, gramSize, false);
         RegisterCommands();
     }
@@ -165,6 +168,12 @@ namespace BitFunnel
     void Environment::SetThreadCount(size_t count)
     {
         m_threadCount = count;
+    }
+
+
+    size_t Environment::GetMemory() const
+    {
+        return m_memory;
     }
 
 

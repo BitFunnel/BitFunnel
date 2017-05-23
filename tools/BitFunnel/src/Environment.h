@@ -44,7 +44,8 @@ namespace BitFunnel
                     std::ostream& output,
                     char const * directory,
                     size_t gramSize,
-                    size_t threadCount);
+                    size_t threadCount,
+                    size_t memory);
 
         void StartIndex();
 
@@ -67,6 +68,8 @@ namespace BitFunnel
         size_t GetThreadCount() const;
         void SetThreadCount(size_t threadCount);
 
+        size_t GetMemory() const;
+
         TaskFactory & GetTaskFactory() const;
         TaskPool & GetTaskPool() const;
         IConfiguration const & GetConfiguration() const;
@@ -87,6 +90,7 @@ namespace BitFunnel
         bool m_compilerMode;
         bool m_failOnException;
         size_t m_threadCount;
+        size_t m_memory;
         std::string m_outputDir;
         std::ostream& m_output;
     };

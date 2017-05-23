@@ -54,6 +54,7 @@ namespace BitFunnel
                 char const * directory,
                 size_t gramSize,
                 size_t threadCount,
+                size_t memory,
                 char const * scriptFile) const;
 
         void Loop(Environment& environment,

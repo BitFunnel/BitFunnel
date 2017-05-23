@@ -68,6 +68,14 @@ namespace BitFunnel
             1u,
             CmdLine::GreaterThan(0));
 
+        // TODO: This parameter should be unsigned, but it doesn't seem to work
+        // with CmdLineParser.
+        CmdLine::OptionalParameter<int> memory(
+            "memory",
+            "Specify the amount of memory to use for Slice buffers.",
+            1000000000u,
+            CmdLine::GreaterThan(0));
+
         CmdLine::OptionalParameter<char const *> scriptFile(
             "script",
             "File with commands to execute.",
@@ -76,6 +84,7 @@ namespace BitFunnel
         parser.AddParameter(path);
         parser.AddParameter(gramSize);
         parser.AddParameter(threadCount);
+        parser.AddParameter(memory);
         parser.AddParameter(scriptFile);
 
         int returnCode = 1;
@@ -91,6 +100,7 @@ namespace BitFunnel
                    path,
                    static_cast<size_t>(gramSize),
                    static_cast<size_t>(threadCount),
+                   static_cast<size_t>(memory),
                    scriptFile);
                 returnCode = 0;
             }
@@ -130,6 +140,7 @@ namespace BitFunnel
                   char const * directory,
                   size_t gramSize,
                   size_t threadCount,
+                  size_t memory,
                   char const * scriptFile) const
     {
         try
@@ -148,7 +159,8 @@ namespace BitFunnel
                                     output,
                                     directory,
                                     gramSize,
-                                    threadCount);
+                                    threadCount,
+                                    memory);
 
             output
                 << "Starting index ..."

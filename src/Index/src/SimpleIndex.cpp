@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Index/Factories.h"
@@ -54,7 +53,8 @@ namespace BitFunnel
 
     SimpleIndex::SimpleIndex(IFileSystem& fileSystem)
         : m_fileSystem(fileSystem),
-          m_isStarted(false)
+          m_isStarted(false),
+          m_blockAllocatorBufferSize(0)
     {
     }
 
@@ -136,6 +136,12 @@ namespace BitFunnel
         CHECK_EQ(m_shardDefinition.get(), nullptr)
             << "Attempting to overwrite existing ShardDefinition.";
         m_shardDefinition = std::move(definition);
+    }
+
+
+    void SimpleIndex::SetBlockAllocatorBufferSize(size_t size)
+    {
+        m_blockAllocatorBufferSize = size;
     }
 
 
@@ -358,20 +364,27 @@ namespace BitFunnel
 
         if (m_sliceAllocator.get() == nullptr)
         {
-            // TODO: Need a blockSize that works for all term tables.
             const ShardId tempId = 0;
-            const size_t blockSize =
+            const size_t m_blockSize =
                 32 * GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(tempId));
-            //        std::cout << "Blocksize: " << blockSize << std::endl;
+                // std::cout << "Blocksize: " << blockSize << std::endl;
 
-            // TODO: Using a larger initialBlockCount value like 20000000000l / blockSize
-            // seems to cause CI to fail.
-            const size_t initialBlockCount = 512;
-            // TODO: Don't use hard coded memory amount here. See issue #388.
-            // const size_t initialBlockCount = 20000000000l / blockSize;
+
+            // If the user didn't specify the block allocator buffer size, use
+            // a default that is small enough that it won't cause a CI failure.
+            // The CI machines don't have a lot of memory, so it is necessary
+            // to use a modest initial block count to allow unit tests to pass.
+            // See issue #388.
+            size_t blockCount = 512;
+            if (m_blockAllocatorBufferSize != 0)
+            {
+                // Otherwise, compute block count based on requested buffer size.
+                blockCount = m_blockAllocatorBufferSize / m_blockSize;
+            }
+
             m_sliceAllocator =
-                Factories::CreateSliceBufferAllocator(blockSize,
-                                                      initialBlockCount);
+                Factories::CreateSliceBufferAllocator(m_blockSize,
+                                                      blockCount);
         }
 
         if (m_recycler.get() == nullptr)

@@ -51,12 +51,16 @@ namespace BitFunnel
     // An abstract base class or interface for convenience classes that
     // instantiate and wire up all of the classes needed to form a BitFunnel
     // Index.
+	//
+	// The intended usage pattern is to instantiate a class that implements
+	// ISimpleIndex, then use setter methods to override default configuration
+	// of various index components. Then call StartIndex() which will supply
+	// default configuration components that weren't provider by via a setter.
     //
     //*************************************************************************
     class ISimpleIndex : public IInterface
     {
     public:
-
         virtual void SetConfiguration(
             std::unique_ptr<IConfiguration> config) = 0;
         virtual void SetFactSet(
@@ -71,8 +75,19 @@ namespace BitFunnel
             std::unique_ptr<IDocumentDataSchema> schema) = 0;
         virtual void SetShardDefinition(
             std::unique_ptr<IShardDefinition> definition) = 0;
+
+        //
+        // There are three options for the BlockAllocator:
+        //   1. Provide an ISliceBufferAllocator&.
+        //   2. Specify the amount of memory to use for Slice buffers and let
+        //      StartIndex() instantiate its own ISliceBufferAllocator.
+        //   3. Let StartIndex() choose sensible default values that ensure that unit
+        //      tests can run under continuous integration with limited memory.
+        //
+        virtual void SetBlockAllocatorBufferSize(size_t size) = 0;
         virtual void SetSliceBufferAllocator(
             std::unique_ptr<ISliceBufferAllocator> sliceAllocator) = 0;
+
         virtual void SetTermTableCollection(
             std::unique_ptr<ITermTableCollection> termTables) = 0;
 
