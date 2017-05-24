@@ -149,6 +149,15 @@ namespace BitFunnel
     }
 
 
+    void Ingestor::TemporaryWriteAllSlices(IFileManager& fileManager) const
+    {
+        for (size_t i = 0; i < m_shards.size(); ++i)
+        {
+            m_shards[i]->TemporaryWriteAllSlices(fileManager);
+        }
+    }
+
+
     IDocumentCache & Ingestor::GetDocumentCache() const
     {
         return *m_documentCache;

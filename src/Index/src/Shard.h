@@ -112,6 +112,9 @@ namespace BitFunnel
             std::ostream& out,
             ITermToText const * termToText) const override;
 
+        virtual void TemporaryWriteAllSlices(IFileManager& fileManager) const override;
+
+
         // Returns an std::vector containing the bit densities for each row in
         // the RowTable with the specified rank. Bit densities are computed
         // over all slices, for those columns that correspond to active
@@ -180,12 +183,12 @@ namespace BitFunnel
         // stream. The stream has the size of the buffer embedded as the first
         // element, and the function verifies that it matches the value stored
         // in buffer m_sliceBufferSize.
-        //void* LoadSliceBuffer(std::istream& input);
+        void* LoadSliceBuffer(std::istream& input);
 
         // Writes the contents of the slice buffer to the output stream. The
         // size of the stream is stored in m_sliceBufferSize and is written
         // before the buffer's data for compatibility checks.
-        //void WriteSliceBuffer(void* buffer, std::ostream& output);
+        void WriteSliceBuffer(void* buffer, std::ostream& output);
 
         // Releases the slice buffer and returns it to the
         // ISliceBufferAllocator.

@@ -136,7 +136,7 @@ namespace BitFunnel
         // stream by comparing Shard's RowTableDescriptor and
         // DocTableDescriptor with copies read from the stream. Throws if the
         // descriptors are not compatible.
-        //Slice(Shard& shard, std::istream& input);
+        Slice(Shard& shard, std::istream& input);
 
         // Releases all heap-allocated data blobs, returns the slice buffer
         // back to its allocator and destroys the Slice.
@@ -159,7 +159,7 @@ namespace BitFunnel
         // Serializes the slice to a given output stream. Only slices that are
         // full (all columns are allocated and committed) may be serialized.
         // Thread safe with respect to concurrent calls to const methods.
-        //void Write(std::ostream& output) const;
+        void Write(std::ostream& output) const;
 
         //
         // Document allocation methods.

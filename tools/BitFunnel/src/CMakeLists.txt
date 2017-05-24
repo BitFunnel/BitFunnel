@@ -28,6 +28,7 @@ set(CPPFILES
     TermTableBuilderTool.cpp
     ThreadsCommand.cpp
     VerifyCommand.cpp
+    WriteSlicesCommand.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -67,6 +68,7 @@ set(PRIVATE_HFILES
     TermTableBuilderTool.h
     ThreadsCommand.h
     VerifyCommand.h
+    WriteSlicesCommand.h
 )
 
 set(WINDOWS_PRIVATE_HFILES

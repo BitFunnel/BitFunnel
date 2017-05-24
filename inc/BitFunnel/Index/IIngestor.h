@@ -80,6 +80,9 @@ namespace BitFunnel
                                      ITermToText const * termToText) const = 0;
 
 
+        virtual void TemporaryWriteAllSlices(IFileManager& fileManager) const = 0;
+
+
         // Returns a reference to the IDocument cache. This cache holds ingested
         // IDocuments for use in query verification diagnostics.
         virtual IDocumentCache & GetDocumentCache() const = 0;

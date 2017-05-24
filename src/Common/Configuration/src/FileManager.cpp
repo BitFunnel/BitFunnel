@@ -81,6 +81,7 @@ namespace BitFunnel
                                                    indexDirectory,
                                                    "IndexedIdfTable",
                                                    ".bin")),
+          m_indexSlice(new ParameterizedFile2(fileSystem, indexDirectory, "IndexSlice", ".bin")),
           m_manifest(new ParameterizedFile0(fileSystem,
                                             indexDirectory,
                                             "Manifest",
@@ -254,8 +255,8 @@ namespace BitFunnel
     // FileDescriptor2 files.
     //
 
-    //FileDescriptor2 FileManager::IndexSlice(size_t shard, size_t slice)
-    //{
-    //    return FileDescriptor2(*m_indexSlice, shard, slice);
-    //}
+    FileDescriptor2 FileManager::IndexSlice(size_t shard, size_t slice)
+    {
+        return FileDescriptor2(*m_indexSlice, shard, slice);
+    }
 }

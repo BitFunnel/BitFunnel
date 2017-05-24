@@ -21,12 +21,14 @@
 // THE SOFTWARE.
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/IRecycler.h"
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/Row.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Index/Token.h"
+#include "BitFunnel/Utilities/StreamUtilities.h"
 #include "IRecyclable.h"
 #include "LoggerInterfaces/Check.h"
 #include "LoggerInterfaces/Logging.h"
@@ -126,6 +128,45 @@ namespace BitFunnel
     {
         return m_sliceBufferAllocator.Allocate(m_sliceBufferSize);
     }
+
+
+    void* Shard::LoadSliceBuffer(std::istream& input)
+    {
+        const size_t bufferSizePersisted = StreamUtilities::ReadField<size_t>(input);
+        if (bufferSizePersisted != m_sliceBufferSize)
+        {
+            throw std::exception("Data in the stream is not compatible with the current schema.");
+        }
+
+        // TODO: verify compatibility of DocTableDescriptor, RowTableDescriptor with the stream's data.
+
+        void* buffer = m_sliceBufferAllocator.Allocate(m_sliceBufferSize);
+
+        try
+        {
+            StreamUtilities::ReadBytes(input, buffer, m_sliceBufferSize);
+        }
+        catch (...)
+        {
+            LogB(Logging::Error, "LoadSliceBuffer", "Error reading slice buffer data from stream");
+            m_sliceBufferAllocator.Release(buffer);
+        }
+
+        return buffer;
+    }
+
+
+    // TODO: Should this really be in Shard? Seems it's only here because
+    // m_sliceBufferSize is here.
+    void Shard::WriteSliceBuffer(void* buffer, std::ostream& output)
+    {
+        // Write out the size of the slice buffer for compatibility check.
+        StreamUtilities::WriteField<size_t>(output, m_sliceBufferSize);
+        StreamUtilities::WriteBytes(output, reinterpret_cast<char*>(buffer), m_sliceBufferSize);
+
+        // TODO: persist DocTableDescriptor, RowTableDescriptor compatibility information.
+    }
+
 
     // Must be called with m_slicesLock held.
     void Shard::CreateNewActiveSlice()
@@ -450,6 +491,21 @@ namespace BitFunnel
         if (m_docFrequencyTableBuilder.get() != nullptr)
         {
             m_docFrequencyTableBuilder->WriteCumulativeTermCounts(out);
+        }
+    }
+
+
+    void Shard::TemporaryWriteAllSlices(IFileManager& fileManager) const
+    {
+        auto token = m_tokenManager.RequestToken();
+        auto sliceBuffers = GetSliceBuffers();
+        for (size_t i = 0; i < sliceBuffers.size(); ++i)
+        {
+            Slice* s = Slice::GetSliceFromBuffer(sliceBuffers[i],
+                                                 GetSlicePtrOffset());
+
+            auto out = fileManager.IndexSlice(m_shardId, i).OpenForWrite();
+            s->Write(*out);
         }
     }
 

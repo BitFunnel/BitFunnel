@@ -73,6 +73,7 @@ namespace BitFunnel
         virtual void WriteStatistics(IFileManager & fileManager,
                                      ITermToText const * termToText) const override;
 
+        virtual void TemporaryWriteAllSlices(IFileManager& fileManager) const override;
 
         // Returns a reference to the IDocument cache. This cache holds ingested
         // IDocuments for use in query verification diagnostics.

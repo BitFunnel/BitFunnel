@@ -41,6 +41,7 @@
 #include "TaskPool.h"
 #include "ThreadsCommand.h"
 #include "VerifyCommand.h"
+#include "WriteSlicesCommand.h"
 
 
 namespace BitFunnel
@@ -90,6 +91,7 @@ namespace BitFunnel
         m_taskFactory->RegisterCommand<Status>();
         m_taskFactory->RegisterCommand<ThreadsCommand>();
         m_taskFactory->RegisterCommand<Verify>();
+        m_taskFactory->RegisterCommand<WriteSlicesCommand>();
     }
 
 

@@ -32,6 +32,7 @@
 
 namespace BitFunnel
 {
+    class IFileManager;
     class ITermToText;
 
     class IShard : public IInterface
@@ -58,6 +59,8 @@ namespace BitFunnel
         virtual void TemporaryWriteDocumentFrequencyTable(
             std::ostream& out,
             ITermToText const * termToText) const = 0;
+
+        virtual void TemporaryWriteAllSlices(IFileManager& fileManager) const = 0;
 
         // Returns an std::vector containing the bit densities for each row in
         // the RowTable with the specified rank. Bit densities are computed
