@@ -135,7 +135,7 @@ namespace BitFunnel
         const size_t bufferSizePersisted = StreamUtilities::ReadField<size_t>(input);
         if (bufferSizePersisted != m_sliceBufferSize)
         {
-            throw std::exception("Data in the stream is not compatible with the current schema.");
+            throw std::runtime_error("Data in the stream is not compatible with the current schema.");
         }
 
         // TODO: verify compatibility of DocTableDescriptor, RowTableDescriptor with the stream's data.
@@ -146,10 +146,11 @@ namespace BitFunnel
         {
             StreamUtilities::ReadBytes(input, buffer, m_sliceBufferSize);
         }
-        catch (...)
+        catch (std::exception e)
         {
-            LogB(Logging::Error, "LoadSliceBuffer", "Error reading slice buffer data from stream");
+	  //            LogB(Logging::Error, "LoadSliceBuffer", "Error reading slice buffer data from stream");
             m_sliceBufferAllocator.Release(buffer);
+	    throw e;
         }
 
         return buffer;

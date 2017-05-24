@@ -64,9 +64,9 @@ namespace BitFunnel
         m_failOnException(false),
         m_threadCount(threadCount),
         m_memory(memory),
-        m_output(output),
         m_directory(directory),
-        m_gramSize(gramSize)
+        m_gramSize(gramSize),
+        m_output(output)
     {
         RegisterCommands();
     }
