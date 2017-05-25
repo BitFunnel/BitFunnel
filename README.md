@@ -6,7 +6,7 @@ If you really want to try things out, we have some instructions on [how to index
 
 If you want a description of one of the core ideas, see [this StrangeLoop talk transcript](http://bitfunnel.org/strangeloop/). See our [engineering diary](http://bitfunnel.org/blog-archive/) for descriptions of other parts of the system. We seem to be adding new descriptions at least once a week, and we (sometimes) go back and update old descriptions as things change.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/b65lb8wn2r7ux7d2/branch/master?svg=true)](https://ci.appveyor.com/project/danluu/bitfunnel/branch/master) [![Build status](https://doozer.io/badge/danluu/BitFunnel/buildstatus/master)](https://doozer.io/user/danluu/BitFunnel)
+[![Build status](https://ci.appveyor.com/api/projects/status/b65lb8wn2r7ux7d2/branch/master?svg=true)](https://ci.appveyor.com/project/MichaelHopcroft/bitfunnel) [![Build status](https://doozer.io/badge/danluu/BitFunnel/buildstatus/master)](https://doozer.io/user/danluu/BitFunnel)
 
 Dependencies
 ------------
