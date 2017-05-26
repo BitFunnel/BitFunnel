@@ -107,13 +107,30 @@ namespace BitFunnel
             catch (RecoverableError e)
             {
                 output << "Error: " << e.what() << std::endl;
+                Advice(output);
+            }
+            catch (FatalError e)
+            {
+                output << "Fatal Error: " << e.what() << std::endl;
+                Advice(output);
+            }
+            catch (Logging::CheckException e)
+            {
+                output
+                    << "Error: "
+                    << e.GetMessage()
+                    << std::endl;
+                Advice(output);
+            }
+            catch (std::runtime_error e)
+            {
+                output << "Runtime exception: " << e.what() << std::endl;
+                Advice(output);
             }
             catch (...)
             {
-                // TODO: Do we really want to catch all exceptions here?
-                // Seems we want to at least print out the error message for BitFunnel exceptions.
-
-                output << "Unexpected error." << std::endl;
+                output << "Unknown error." << std::endl;
+                Advice(output);
             }
         }
 
@@ -143,62 +160,33 @@ namespace BitFunnel
                   size_t memory,
                   char const * scriptFile) const
     {
-        try
-        {
-            output
-                << "Welcome to BitFunnel!" << std::endl
-                << "Starting " << threadCount
-                << " thread" << ((threadCount == 1) ? "" : "s") << std::endl
-                << "(plus one extra thread for the Recycler.)" << std::endl
-                << std::endl
-                << "directory = \"" << directory << "\"" << std::endl
-                << "gram size = " << gramSize << std::endl
-                << std::endl;
+        output
+            << "Welcome to BitFunnel!" << std::endl
+            << "Starting " << threadCount
+            << " thread" << ((threadCount == 1) ? "" : "s") << std::endl
+            << "(plus one extra thread for the Recycler.)" << std::endl
+            << std::endl
+            << "directory = \"" << directory << "\"" << std::endl
+            << "gram size = " << gramSize << std::endl
+            << std::endl;
 
-            Environment environment(m_fileSystem,
-                                    output,
-                                    directory,
-                                    gramSize,
-                                    threadCount,
-                                    memory);
+        Environment environment(m_fileSystem,
+                                output,
+                                directory,
+                                gramSize,
+                                threadCount,
+                                memory);
 
-            output
-                << "Starting index ..."
-                << std::endl;
+        output
+            << "Starting index ..."
+            << std::endl;
 
-            environment.StartIndex();
+        environment.StartIndex();
 
-            Loop(environment,
-                 input,
-                 output,
-                 scriptFile);
-        }
-        catch (RecoverableError e)
-        {
-            output << "Error: " << e.what() << std::endl;
-            Advice(output);
-        }
-        catch (FatalError e)
-        {
-            output << "Fatal Error: " << e.what() << std::endl;
-            Advice(output);
-            throw e;
-        }
-        catch (Logging::CheckException e)
-        {
-            output
-                << "Error: "
-                << e.GetMessage()
-                << std::endl;
-            Advice(output);
-            throw(e);
-        }
-        catch (...)
-        {
-            output << "Unknown error." << std::endl;
-            Advice(output);
-            throw;
-        }
+        Loop(environment,
+                input,
+                output,
+                scriptFile);
     }
 
 
@@ -282,27 +270,6 @@ namespace BitFunnel
                 {
                     throw e;
                 }
-            }
-            catch (FatalError e)
-            {
-                output << "Fatal Error: " << e.what() << std::endl;
-                throw e;
-            }
-            catch (Logging::CheckException e)
-            {
-                output
-                    << "Error: "
-                    << e.GetMessage()
-                    << std::endl;
-                if (environment.GetFailOnException())
-                {
-                    throw e;
-                }
-            }
-            catch (...)
-            {
-                output << "Unknown error." << std::endl;
-                throw;
             }
         }
         taskPool.Shutdown();
