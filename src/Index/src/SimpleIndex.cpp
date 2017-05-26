@@ -270,9 +270,6 @@ namespace BitFunnel
         // TODO: Load shard definition from file.
         if (m_shardDefinition.get() == nullptr)
         {
-            m_shardDefinition =
-                Factories::CreateShardDefinition();
-
             // The following shard-aware code causes problems when the
             // input file is missing. See issue 308.
             //      https://github.com/BitFunnel/BitFunnel/issues/308
