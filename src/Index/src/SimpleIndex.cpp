@@ -197,9 +197,7 @@ namespace BitFunnel
         // TODO: consider making this work if no ShardDefinition exists.
         if (m_shardDefinition.get() == nullptr)
         {
-            auto input = m_fileManager->ShardDefinition().OpenForRead();
-            m_shardDefinition =
-               Factories::CreateShardDefinition(*input);
+            m_shardDefinition = Factories::CreateDefaultShardDefinition();
         }
 
         if (m_termTables.get() == nullptr)
@@ -270,12 +268,7 @@ namespace BitFunnel
         // TODO: Load shard definition from file.
         if (m_shardDefinition.get() == nullptr)
         {
-            // The following shard-aware code causes problems when the
-            // input file is missing. See issue 308.
-            //      https://github.com/BitFunnel/BitFunnel/issues/308
-            auto input = m_fileManager->ShardDefinition().OpenForRead();
-            m_shardDefinition =
-               Factories::CreateShardDefinition(*input);
+            m_shardDefinition = Factories::CreateDefaultShardDefinition();
         }
 
         if (m_termTables.get() == nullptr)

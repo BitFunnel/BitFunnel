@@ -74,7 +74,17 @@ namespace BitFunnel
         // Create shards based on shard definition in m_shardDefinition..
         for (ShardId shardId = 0; shardId < m_shardDefinition.GetShardCount(); ++shardId)
         {
-            std::cout << "Creating shard: " << shardId << std::endl;
+            std::cout
+                << "Creating shard: " << shardId;
+            if (shardId + 1 < m_shardDefinition.GetShardCount())
+            {
+                std::cout << " (" << m_shardDefinition.GetMaxPostingCount(shardId) << " postings)" << std::endl;
+            }
+            else
+            {
+                std::cout << " (larger)" << std::endl;
+            }
+
             m_shards.push_back(
                 std::unique_ptr<Shard>(
                     new Shard(shardId,

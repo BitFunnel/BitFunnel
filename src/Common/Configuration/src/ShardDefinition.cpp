@@ -24,6 +24,7 @@
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "CsvTsv/Csv.h"
+#include "LoggerInterfaces/Check.h"
 #include "ShardDefinition.h"
 
 
@@ -35,9 +36,37 @@ namespace BitFunnel
     }
 
 
-    std::unique_ptr<IShardDefinition> Factories::CreateShardDefinition(std::istream& input)
+    std::unique_ptr<IShardDefinition>
+        Factories::CreateShardDefinition(std::istream& input)
     {
         return std::unique_ptr<IShardDefinition>(new ShardDefinition(input));
+    }
+
+
+    std::unique_ptr<IShardDefinition>
+        BitFunnel::Factories::CreateGeometricShardDefinition(size_t start,
+                                                             double growthFactor,
+                                                             size_t limit)
+    {
+        CHECK_GT(growthFactor, 1.0) << "Growth factor too small.";
+        std::unique_ptr<IShardDefinition> sd(new ShardDefinition());
+
+        while (start < limit)
+        {
+            sd->AddShard(start);
+            size_t newStart = static_cast<size_t>(start * growthFactor);
+            CHECK_GT(newStart, start) << "Growth factor too small.";
+            start = newStart;
+        }
+
+        return sd;
+    }
+
+
+    std::unique_ptr<IShardDefinition>
+        BitFunnel::Factories::CreateDefaultShardDefinition()
+    {
+        return CreateGeometricShardDefinition(32, 2.0, 16385);
     }
 
 
