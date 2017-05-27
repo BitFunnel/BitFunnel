@@ -152,7 +152,9 @@ namespace BitFunnel
 
 
     // TODO: refactor this copied code into common code.
-    TEST(BitFunnelTool, ThreeToolsEndToEndSequentialInterpreter)
+    // TEST(BitFunnelTool, ThreeToolsEndToEndSequentialInterpreter)
+    // This test is currently disabled. See issues #382, #395.
+    void ThisTestIsCurrentlyDisabled()
     {
         std::stringstream output;
         //
@@ -704,9 +706,7 @@ namespace BitFunnel
 
 
     // TODO: refactor this copied code into common code.
-    // TEST(BitFunnelTool, ThreeToolsEndToEndSequentialInterpreterMultiShard)
-    // This test is currently disabled. See issues #382, #395.
-    void ThisTestIsCurrentlyDisabled()
+    TEST(BitFunnelTool, ThreeToolsEndToEndSequentialInterpreterMultiShard)
     {
         for (int shardSplit = 1; shardSplit < 64; shardSplit += 10) {
             //
