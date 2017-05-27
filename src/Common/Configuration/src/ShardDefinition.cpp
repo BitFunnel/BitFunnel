@@ -23,6 +23,7 @@
 #include <istream>
 
 #include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Utilities/Exists.h"
 #include "CsvTsv/Csv.h"
 #include "LoggerInterfaces/Check.h"
 #include "ShardDefinition.h"
@@ -67,6 +68,21 @@ namespace BitFunnel
         BitFunnel::Factories::CreateDefaultShardDefinition()
     {
         return CreateGeometricShardDefinition(32, 2.0, 16385);
+    }
+
+
+    std::unique_ptr<IShardDefinition>
+        BitFunnel::Factories::LoadOrCreateDefaultShardDefinition(IFileManager & fileManager)
+    {
+        if (fileManager.ShardDefinition().Exists())
+        {
+            auto input = fileManager.ShardDefinition().OpenForRead();
+            return CreateShardDefinition(*input);
+        }
+        else
+        {
+            return CreateDefaultShardDefinition();
+        }
     }
 
 

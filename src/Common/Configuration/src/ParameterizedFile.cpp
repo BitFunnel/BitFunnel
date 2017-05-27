@@ -23,6 +23,7 @@
 
 #include <cstring>
 #include <fstream>
+#include <sys/stat.h>
 // #include <Windows.h>                // For DeleteFile.
 
 #include "BitFunnel/Configuration/IFileSystem.h"
@@ -110,18 +111,10 @@ namespace BitFunnel
     // }
 
 
-    // bool ParameterizedFile::Exists(const std::string& filename)
-    // {
-    //     // DESIGN NOTE: The following stream-based technique will return false
-    //     // in some situations where the file exists. Some examples are when the
-    //     // file exists, but is opened for exclusive access by another process.
-    //     //std::ifstream stream(filename.c_str());
-    //     //bool success = stream.is_open();
-    //     //stream.close();
-    //     //return success;
-
-    //     return GetFileAttributesA(filename.c_str()) != INVALID_FILE_ATTRIBUTES;
-    // }
+     bool ParameterizedFile::Exists(const std::string& filename)
+     {
+         return m_fileSystem.Exists(filename.c_str());
+     }
 
 
     // void ParameterizedFile::Delete(const std::string& filename)
@@ -133,6 +126,11 @@ namespace BitFunnel
     // }
 
 
+    //*************************************************************************
+    //
+    // ParameterizedFile0
+    //
+    //*************************************************************************
     ParameterizedFile0::ParameterizedFile0(IFileSystem & fileSystem,
                                            const char* path,
                                            const char* baseName,
@@ -174,14 +172,135 @@ namespace BitFunnel
     // }
 
 
-    // bool ParameterizedFile0::Exists()
-    // {
-    //     return ParameterizedFile::Exists(GetName());
-    // }
+     bool ParameterizedFile0::Exists()
+     {
+         return ParameterizedFile::Exists(GetName());
+     }
 
 
     // void ParameterizedFile0::Delete()
     // {
     //     ParameterizedFile::Delete(GetName());
     // }
+
+
+
+
+    //*************************************************************************
+    //
+    // ParameterizedFile1
+    //
+    //*************************************************************************
+     ParameterizedFile1::ParameterizedFile1(IFileSystem & fileSystem,
+                                            const char* path,
+                                            const char* baseName,
+                                            const char* extension)
+         : ParameterizedFile(fileSystem, path, baseName, extension)
+     {
+     }
+
+
+     std::string ParameterizedFile1::GetName(size_t p1)
+     {
+         std::stringstream ss;
+         ss << m_leftSide << "-" << p1 << m_extension;
+         return ss.str();
+     }
+
+
+     std::unique_ptr<std::istream> ParameterizedFile1::OpenForRead(size_t p1)
+     {
+         return ParameterizedFile::OpenForRead(GetName(p1));
+     }
+
+
+     std::unique_ptr<std::ostream> ParameterizedFile1::OpenForWrite(size_t p1)
+     {
+         return ParameterizedFile::OpenForWrite(GetName(p1));
+     }
+
+
+     // std::unique_ptr<std::ostream> ParameterizedFile1::OpenTempForWrite(size_t p1)
+     // {
+     //     return ParameterizedFile::OpenForWrite(GetTempName(GetName(p1)));
+     // }
+
+
+     // void ParameterizedFile1::Commit(size_t p1)
+     // {
+     //     return ParameterizedFile::Commit(GetName(p1));
+     // }
+
+
+     bool ParameterizedFile1::Exists(size_t p1)
+     {
+         return ParameterizedFile::Exists(GetName(p1));
+     }
+
+
+     // void ParameterizedFile1::Delete(size_t p1)
+     // {
+     //     ParameterizedFile::Delete(GetName(p1));
+     // }
+
+
+    //*************************************************************************
+    //
+    // ParameterizedFile2
+    //
+    //*************************************************************************
+     ParameterizedFile2::ParameterizedFile2(IFileSystem & fileSystem,
+                                            const char* path,
+                                            const char* baseName,
+                                            const char* extension)
+         : ParameterizedFile(fileSystem, path, baseName, extension)
+     {
+     }
+
+
+     std::string ParameterizedFile2::GetName(size_t p1, size_t p2)
+     {
+         std::stringstream ss;
+         ss << m_leftSide
+             << "-" << p1
+             << "-" << Converter<size_t>::Convert(p2)
+             << m_extension;
+         return ss.str();
+     }
+
+
+     std::unique_ptr<std::istream> ParameterizedFile2::OpenForRead(size_t p1, size_t p2)
+     {
+         return ParameterizedFile::OpenForRead(GetName(p1, p2));
+     }
+
+
+     std::unique_ptr<std::ostream> ParameterizedFile2::OpenForWrite(size_t p1, size_t p2)
+     {
+         return ParameterizedFile::OpenForWrite(GetName(p1, p2));
+     }
+
+
+     // std::unique_ptr<std::ostream> ParameterizedFile2::OpenTempForWrite(size_t p1, size_t p2)
+     // {
+     //     return ParameterizedFile::OpenForWrite(GetTempName(GetName(p1, p2)));
+     // }
+
+
+     // void ParameterizedFile2::Commit(size_t p1, size_t p2)
+     // {
+     //     return ParameterizedFile::Commit(GetName(p1, p2));
+     // }
+
+
+     bool ParameterizedFile2::Exists(size_t p1, size_t p2)
+     {
+         return ParameterizedFile::Exists(GetName(p1, p2));
+     }
+
+
+     // void ParameterizedFile2::Delete(size_t p1, size_t p2)
+     // {
+     //     ParameterizedFile::Delete(GetName(p1, p2));
+     // }
 }

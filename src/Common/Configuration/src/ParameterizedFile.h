@@ -52,7 +52,7 @@ namespace BitFunnel
         std::string GetTempName(const std::string& filename);
         std::unique_ptr<std::ostream> OpenForWrite(const std::string& filename);
         // void Commit(const std::string& filename);
-        // bool Exists(const std::string& filename);
+        bool Exists(const std::string& filename);
         // void Delete(const std::string& filename);
 
         IFileSystem & m_fileSystem;
@@ -85,7 +85,7 @@ namespace BitFunnel
         std::unique_ptr<std::ostream> OpenForWrite();
         // std::unique_ptr<std::ostream> OpenTempForWrite();
         // void Commit();
-        // bool Exists();
+        bool Exists();
         // void Delete();
     };
 
@@ -97,54 +97,16 @@ namespace BitFunnel
         ParameterizedFile1(IFileSystem & fileSystem,
                            const char* path,
                            const char* baseName,
-                           const char* extension)
-            : ParameterizedFile(fileSystem, path, baseName, extension)
-        {
-        }
+                           const char* extension);
 
 
-        std::string GetName(size_t p1)
-        {
-            std::stringstream ss;
-            ss << m_leftSide << "-" << p1 << m_extension;
-            return ss.str();
-        }
-
-
-        std::unique_ptr<std::istream> OpenForRead(size_t p1)
-        {
-            return ParameterizedFile::OpenForRead(GetName(p1));
-        }
-
-
-        std::unique_ptr<std::ostream> OpenForWrite(size_t p1)
-        {
-            return ParameterizedFile::OpenForWrite(GetName(p1));
-        }
-
-
-        // std::unique_ptr<std::ostream> OpenTempForWrite(size_t p1)
-        // {
-        //     return ParameterizedFile::OpenForWrite(GetTempName(GetName(p1)));
-        // }
-
-
-        // void Commit(size_t p1)
-        // {
-        //     return ParameterizedFile::Commit(GetName(p1));
-        // }
-
-
-        // bool Exists(size_t p1)
-        // {
-        //     return ParameterizedFile::Exists(GetName(p1));
-        // }
-
-
-        // void Delete(size_t p1)
-        // {
-        //     ParameterizedFile::Delete(GetName(p1));
-        // }
+        std::string GetName(size_t p1);
+        std::unique_ptr<std::istream> OpenForRead(size_t p1);
+        std::unique_ptr<std::ostream> OpenForWrite(size_t p1);
+        // std::unique_ptr<std::ostream> OpenTempForWrite(size_t p1);
+        // void Commit(size_t p1);
+        bool Exists(size_t p1);
+        // void Delete(size_t p1);
     };
 
 
@@ -155,56 +117,14 @@ namespace BitFunnel
         ParameterizedFile2(IFileSystem & fileSystem,
                            const char* path,
                            const char* baseName,
-                           const char* extension)
-            : ParameterizedFile(fileSystem, path, baseName, extension)
-        {
-        }
+                           const char* extension);
 
-
-        std::string GetName(size_t p1, size_t p2)
-        {
-            std::stringstream ss;
-            ss << m_leftSide
-               << "-" << p1
-               << "-" << Converter<size_t>::Convert(p2)
-               << m_extension;
-            return ss.str();
-        }
-
-
-        std::unique_ptr<std::istream> OpenForRead(size_t p1, size_t p2)
-        {
-            return ParameterizedFile::OpenForRead(GetName(p1, p2));
-        }
-
-
-        std::unique_ptr<std::ostream> OpenForWrite(size_t p1, size_t p2)
-        {
-            return ParameterizedFile::OpenForWrite(GetName(p1, p2));
-        }
-
-
-        // std::unique_ptr<std::ostream> OpenTempForWrite(size_t p1, size_t p2)
-        // {
-        //     return ParameterizedFile::OpenForWrite(GetTempName(GetName(p1, p2)));
-        // }
-
-
-        // void Commit(size_t p1, size_t p2)
-        // {
-        //     return ParameterizedFile::Commit(GetName(p1, p2));
-        // }
-
-
-        // bool Exists(size_t p1, size_t p2)
-        // {
-        //     return ParameterizedFile::Exists(GetName(p1, p2));
-        // }
-
-
-        // void Delete(size_t p1, size_t p2)
-        // {
-        //     ParameterizedFile::Delete(GetName(p1, p2));
-        // }
+        std::string GetName(size_t p1, size_t p2);
+        std::unique_ptr<std::istream> OpenForRead(size_t p1, size_t p2);
+        std::unique_ptr<std::ostream> OpenForWrite(size_t p1, size_t p2);
+        // std::unique_ptr<std::ostream> OpenTempForWrite(size_t p1, size_t p2);
+        // void Commit(size_t p1, size_t p2);
+        bool Exists(size_t p1, size_t p2);
+        // void Delete(size_t p1, size_t p2);
     };
 }

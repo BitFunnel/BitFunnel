@@ -60,6 +60,12 @@ namespace BitFunnel
     }
 
 
+    bool RAMFileSystem::Exists(char const * filename)
+    {
+        return m_files.find(filename) != m_files.end();
+    }
+
+
     RAMFileSystem::Buffer
         RAMFileSystem::EnsureStream(const char * filename,
                                     bool forWrite)
@@ -68,10 +74,6 @@ namespace BitFunnel
         {
             m_files[std::string(filename)] =
                 std::unique_ptr<std::stringstream>(new std::stringstream());
-            //m_files.insert_or_assign(
-            //    std::make_pair(
-            //        std::string(filename),
-            //        std::unique_ptr<std::stringstream>(new std::stringstream())));
         }
 
         auto it = m_files.find(filename);

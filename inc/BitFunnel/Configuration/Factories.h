@@ -56,6 +56,7 @@ namespace BitFunnel
         std::unique_ptr<IShardDefinition>
             CreateGeometricShardDefinition(size_t start, double growthFactor, size_t limit);
         std::unique_ptr<IShardDefinition> CreateDefaultShardDefinition();
+        std::unique_ptr<IShardDefinition> LoadOrCreateDefaultShardDefinition(IFileManager & fileManager);
 
         std::unique_ptr<IStreamConfiguration> CreateStreamConfiguration();
         std::unique_ptr<IStreamConfiguration> CreateStreamConfiguration(std::istream& input);

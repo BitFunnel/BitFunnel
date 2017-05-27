@@ -22,6 +22,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <sys/stat.h>
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Exceptions.h"
@@ -83,5 +84,12 @@ namespace BitFunnel
         }
 
         return std::unique_ptr<std::istream>(stream.release());
+    }
+
+
+    bool FileSystem::Exists(char const * filename)
+    {
+        struct stat buffer;
+        return (stat(filename, &buffer) == 0);
     }
 }

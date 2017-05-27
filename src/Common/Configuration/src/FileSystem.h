@@ -41,5 +41,7 @@ namespace BitFunnel
         virtual std::unique_ptr<std::istream>
             OpenForRead(char const * filename,
                         std::ios_base::openmode mode = std::ios::in) override;
+
+        virtual bool Exists(char const * filename) override;
     };
 }
