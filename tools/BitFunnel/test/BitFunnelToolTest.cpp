@@ -704,7 +704,9 @@ namespace BitFunnel
 
 
     // TODO: refactor this copied code into common code.
-    TEST(BitFunnelTool, ThreeToolsEndToEndSequentialInterpreterMultiShard)
+    // TEST(BitFunnelTool, ThreeToolsEndToEndSequentialInterpreterMultiShard)
+    // This test is currently disabled. See issues #382, #395.
+    void ThisTestIsCurrentlyDisabled()
     {
         for (int shardSplit = 1; shardSplit < 64; shardSplit += 10) {
             //
