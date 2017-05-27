@@ -7,6 +7,7 @@ set(CPPFILES
     ConsoleLogger.cpp
     DiagnosticStream.cpp
     Exceptions.cpp
+    Exists.cpp
     FileHeader.cpp
     Logging.cpp
     LogLevel.cpp

@@ -202,6 +202,7 @@ set(UTILITIES_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Allocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/BlockingQueue.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Factories.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Exists.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/FileHeader.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IBlockAllocator.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IInputStream.h
