@@ -132,7 +132,7 @@ namespace BitFunnel
     std::string SyntheticChunks::GetChunkName(size_t chunkId) const
     {
         std::stringstream name;
-        name << "chunk-" << chunkId;
+        name << "chunk" << chunkId;
         return name.str();
     }
 

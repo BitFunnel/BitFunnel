@@ -74,11 +74,6 @@ namespace BitFunnel
                 auto out = fileSystem->OpenForWrite(chunks.GetChunkName(i).c_str());
                 chunks.WriteChunk(*out, i);
             }
-
-            auto script = fileSystem->OpenForWrite("testScript");
-            *script << "failOnException" << std::endl
-                    << "cache chunk simpledata0" << std::endl
-                    << "cache chunk simpledata1" << std::endl;
         }
 
         //
@@ -127,14 +122,23 @@ namespace BitFunnel
         // Use the tool to run the REPL.
         //
         {
+            {
+                auto script = fileSystem->OpenForWrite("testScript");
+                *script
+                    << "failOnException" << std::endl
+                    << "cache manifest manifest.txt" << std::endl
+                    << "verify one 1" << std::endl
+                    << "verify one 32" << std::endl
+                    << "verify one 64" << std::endl
+                    << "quit" << std::endl;
+            }
+
             std::vector<char const *> argv = {
                 "BitFunnel",
                 "repl",
                 "config",
-                // -script and testScript must be on seperate lines because
-                // tokens are delimited by whitespace.
-                //"-script",
-                //"testScript"
+                "-script",
+                "testScript"
             };
 
             // Create an input stream with commands to
