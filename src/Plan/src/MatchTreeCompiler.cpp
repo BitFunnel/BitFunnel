@@ -68,7 +68,7 @@ namespace BitFunnel
             0,
             { 0 },
             results.m_capacity,
-            0,
+            results.m_size,
             results.m_buffer,
             0
         };

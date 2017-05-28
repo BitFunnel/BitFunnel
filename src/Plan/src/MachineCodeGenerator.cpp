@@ -27,6 +27,7 @@
 
 using namespace NativeJIT;
 
+//#define QUADWORDCOUNT
 
 namespace BitFunnel
 {

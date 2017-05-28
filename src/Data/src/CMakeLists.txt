@@ -4,6 +4,7 @@ set(CPPFILES
     SimpleData.cpp
     Sequential.cpp
     Sonnets.cpp
+    SyntheticChunks.cpp
 )
 
 set(WINDOWS_CPPFILES

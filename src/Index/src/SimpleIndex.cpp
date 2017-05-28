@@ -197,7 +197,7 @@ namespace BitFunnel
         // TODO: consider making this work if no ShardDefinition exists.
         if (m_shardDefinition.get() == nullptr)
         {
-            m_shardDefinition = Factories::CreateDefaultShardDefinition();
+            m_shardDefinition = Factories::LoadOrCreateDefaultShardDefinition(*m_fileManager);
         }
 
         if (m_termTables.get() == nullptr)
@@ -268,7 +268,7 @@ namespace BitFunnel
         // TODO: Load shard definition from file.
         if (m_shardDefinition.get() == nullptr)
         {
-            m_shardDefinition = Factories::CreateDefaultShardDefinition();
+            m_shardDefinition = Factories::LoadOrCreateDefaultShardDefinition(*m_fileManager);
         }
 
         if (m_termTables.get() == nullptr)

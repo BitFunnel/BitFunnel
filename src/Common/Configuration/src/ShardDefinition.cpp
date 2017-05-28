@@ -81,7 +81,10 @@ namespace BitFunnel
         }
         else
         {
-            return CreateDefaultShardDefinition();
+            auto shardDefinition = CreateDefaultShardDefinition();
+            auto output = fileManager.ShardDefinition().OpenForWrite();
+            shardDefinition->Write(*output);
+            return shardDefinition;
         }
     }
 

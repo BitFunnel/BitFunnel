@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <iterator>                     // std::iterator base class.
 #include <memory>                       // std::unique_ptr parameter.
 #include <utility>                      // std::pair in typedef.
 
