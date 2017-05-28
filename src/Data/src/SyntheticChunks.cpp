@@ -32,6 +32,8 @@
 
 namespace BitFunnel
 {
+    const size_t SyntheticChunks::m_shardDocIdStart;
+
     SyntheticChunks::SyntheticChunks(IShardDefinition const & shardDefinition,
                                      size_t documentsPerShard,
                                      size_t chunkCount)
