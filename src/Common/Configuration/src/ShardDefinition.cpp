@@ -97,6 +97,8 @@ namespace BitFunnel
     ShardDefinition::ShardDefinition(std::istream& input)
     {
         CsvTsv::ReadCsvColumn(input, m_maxPostingCounts);
+        CHECK_LE(m_maxPostingCounts.size(), c_maxShardIdCount)
+            << "Shard count limit exceeded.";
     }
 
 
@@ -108,6 +110,8 @@ namespace BitFunnel
 
     void ShardDefinition::AddShard(size_t maxPostingCount)
     {
+        CHECK_LT(m_maxPostingCounts.size(), c_maxShardIdCount)
+            << "Shard count limit exceeded.";
         m_maxPostingCounts.push_back(maxPostingCount);
         size_t i = m_maxPostingCounts.size() - 1;
 

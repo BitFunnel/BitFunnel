@@ -153,6 +153,7 @@ namespace BitFunnel
     TermTable::TermTable(std::istream& input)
       : m_sealed(true),
         m_start(0),
+        // TODO: Deal with the code duplication in m_randomHashes.
         m_randomHashes({
                     0xac0a7f8c2faac497,
                     0x75a616b7c0cc21d8,
@@ -266,6 +267,7 @@ namespace BitFunnel
 
     static_assert(std::is_trivially_copyable<std::array<std::array<PackedRowIdSequence, 10>, 10>>::value, "foo");
 
+
     void TermTable::OpenTerm()
     {
         EnsureSealed(false);
@@ -341,8 +343,8 @@ namespace BitFunnel
         size_t totalRowCount = explicitCount + adhocCount;
         const bool param1 = (totalRowCount != 0);   // TODO: workaround for issue #386.
         const bool param2 = m_ranksInUse[rank];     // TODO: workaround for issue #386.
-	CHECK_EQ(param1, param2)
-	  << "inconsistent totalRowCount and m_ranksInUse.";
+        CHECK_EQ(param1, param2)
+            << "inconsistent totalRowCount and m_ranksInUse.";
 
         m_explicitRowCounts[rank] = explicitCount;
         m_adhocRowCounts[rank] = adhocCount;

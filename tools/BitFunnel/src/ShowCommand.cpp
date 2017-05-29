@@ -43,9 +43,17 @@ namespace BitFunnel
     Show::Show(Environment & environment,
                Id id,
                char const * parameters)
-        : TaskBase(environment, id, Type::Synchronous)
+        : TaskBase(environment, id, Type::Synchronous),
+          m_shard(0)
     {
-        auto command = TaskFactory::GetNextToken(parameters);
+        auto tokens = TaskFactory::Tokenize(parameters);
+        std::string command;
+        
+        if (tokens.size() > 0)
+        {
+            command = tokens[0];
+        }
+
         if (command.compare("cache") == 0)
         {
             m_mode = Mode::Cache;
@@ -54,7 +62,15 @@ namespace BitFunnel
         else if (command.compare("rows") == 0)
         {
             m_mode = Mode::Rows;
-            m_term = TaskFactory::GetNextToken(parameters);
+            if (tokens.size() < 2)
+            {
+                RecoverableError error("`show rows` expects a term.");
+            }
+            m_term = tokens[1];
+            if (tokens.size() == 3)
+            {
+                m_shard = std::stoull(tokens[2].c_str());
+            }
         }
         else if (command.compare("term") == 0)
         {
@@ -63,7 +79,7 @@ namespace BitFunnel
         }
         else
         {
-            RecoverableError error("Show expects \"term\" or \"rows\" (for now).");
+            RecoverableError error("`show` command expects \"term\" or \"rows\".");
             throw error;
         }
     }
@@ -100,7 +116,7 @@ namespace BitFunnel
             // TODO: Consider parsing phrase terms here.
             auto & environment = GetEnvironment();
             Term term(m_term.c_str(), 0, environment.GetConfiguration());
-            RowIdSequence rows(term, environment.GetTermTable());
+            RowIdSequence rows(term, environment.GetTermTable(m_shard));
 
             output
                 << "Term("
@@ -115,14 +131,18 @@ namespace BitFunnel
             // the first 64 documents with ids less than 1000.
 
             std::vector<DocId> ids;
-            for (DocId id = 0; id <= 1000; ++id)
+            for (DocId id = 0; id <= 1000000; ++id)
             {
                 if (ingestor.Contains(id))
                 {
-                    ids.push_back(id);
-                    if (ids.size() == 64)
+                    DocumentHandle handle = ingestor.GetHandle(id);
+                    if (handle.GetShardId() == m_shard)
                     {
-                        break;
+                        ids.push_back(id);
+                        if (ids.size() == 64)
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -131,7 +151,7 @@ namespace BitFunnel
             output << "                 d ";
             for (auto id : ids)
             {
-                output << id / 100;
+                output << ((id / 100) % 10);
             }
             output << std::endl;
 
@@ -139,7 +159,7 @@ namespace BitFunnel
             output << "                 o ";
             for (auto id : ids)
             {
-                output << (id / 10 % 10);
+                output << ((id / 10) % 10);
             }
             output << std::endl;
 
@@ -187,7 +207,7 @@ namespace BitFunnel
             "show",
             "Shows information about various data structures. (TODO)",
             "show cache <term>\n"
-            "   | rows <term> [<docstart> <docend>]\n"
+            "   | rows <term> [shard = 0]\n"
             "   | term <term>\n"
             //"   | shards\n"
             //"   | shard <shardid>\n"

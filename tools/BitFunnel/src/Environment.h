@@ -24,6 +24,7 @@
 
 #include <memory>                           // std::unique_ptr embedded.
 
+#include "BitFunnel/BitFunnelTypes.h"       // ShardId parameter.
 #include "BitFunnel/Index/ISimpleIndex.h"   // Parameterizes std::unique_ptr.
 #include "BitFunnel/NonCopyable.h"          // Base class.
 #include "BitFunnel/Term.h"                 // Term::GramSize embedded.
@@ -77,7 +78,7 @@ namespace BitFunnel
         IConfiguration const & GetConfiguration() const;
         ISimpleIndex const & GetSimpleIndex() const;
         IIngestor & GetIngestor() const;
-        ITermTable const & GetTermTable() const;
+        ITermTable const & GetTermTable(ShardId shard) const;
 
     private:
         void RegisterCommands();

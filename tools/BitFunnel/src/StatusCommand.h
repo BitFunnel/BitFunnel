@@ -36,5 +36,8 @@ namespace BitFunnel
 
         virtual void Execute() override;
         static ICommand::Documentation GetDocumentation();
+
+    private:
+        size_t m_shard;
     };
 }

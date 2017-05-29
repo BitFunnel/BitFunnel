@@ -110,6 +110,8 @@ namespace BitFunnel
         // dereferenced during traversal of per-document data.
         bool IsActive() const;
 
+        ShardId GetShardId() const;
+
         // TODO: Methods for JIT trees.
 
     protected:

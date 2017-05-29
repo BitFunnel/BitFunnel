@@ -39,9 +39,15 @@ namespace BitFunnel
     //*************************************************************************
     Status::Status(Environment & environment,
                    Id id,
-                   char const * /*parameters*/)
-        : TaskBase(environment, id, Type::Synchronous)
+                   char const * parameters)
+        : TaskBase(environment, id, Type::Synchronous),
+          m_shard(0)
     {
+        auto tokens = TaskFactory::Tokenize(parameters);
+        if (tokens.size() > 0)
+        {
+            m_shard = std::stoull(tokens[0].c_str());
+        }
     }
 
 
@@ -58,11 +64,11 @@ namespace BitFunnel
         double bytesPerDocument = 0;
         for (Rank rank = 0; rank < c_maxRankValue; ++rank)
         {
-            bytesPerDocument += GetEnvironment().GetTermTable().GetBytesPerDocument(rank);
+            bytesPerDocument += GetEnvironment().GetTermTable(m_shard).GetBytesPerDocument(rank);
             std::cout
                 << rank
                 << ": "
-                << GetEnvironment().GetTermTable().GetBytesPerDocument(rank)
+                << GetEnvironment().GetTermTable(m_shard).GetBytesPerDocument(rank)
                 << " bytes/document"
                 << std::endl;
         }
@@ -81,7 +87,7 @@ namespace BitFunnel
             std::cout
                 << rank
                 << ": "
-                << GetEnvironment().GetTermTable().GetTotalRowCount(rank)
+                << GetEnvironment().GetTermTable(m_shard).GetTotalRowCount(rank)
                 << " rows."
                 << std::endl;
         }
@@ -91,7 +97,7 @@ namespace BitFunnel
         double documentsPerColumnAtRank = 1.0;
         for (Rank rank = 0; rank < c_maxRankValue; ++rank)
         {
-            bitsPerDocument += GetEnvironment().GetTermTable().GetTotalRowCount(rank) * documentsPerColumnAtRank;
+            bitsPerDocument += GetEnvironment().GetTermTable(m_shard).GetTotalRowCount(rank) * documentsPerColumnAtRank;
             documentsPerColumnAtRank /= 2;
         }
         std::cout << "Bits per document: " << bitsPerDocument << std::endl;
@@ -123,7 +129,7 @@ namespace BitFunnel
         return Documentation(
             "status",
             "Prints system status.",
-            "status\n"
+            "status [shard = 0]\n"
             "  Prints system status."
             "  NOT IMPLEMENTED\n"
         );

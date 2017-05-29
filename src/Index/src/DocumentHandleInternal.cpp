@@ -157,6 +157,11 @@ namespace BitFunnel
     }
 
 
+    ShardId DocumentHandle::GetShardId() const
+    {
+        return m_slice->GetShard().GetId();
+    }
+
     //*************************************************************************
     //
     // DocumentHandleInternal

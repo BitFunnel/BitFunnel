@@ -24,6 +24,7 @@
 // TODO: should this file be in Index?
 
 #include <algorithm>
+#include <iostream>         // TODO: Remove debugging code.
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/Index/IIngestor.h"
@@ -86,12 +87,16 @@ namespace BitFunnel
         // For each shard, allocate an array of Row.
         for (ShardId shardId = 0; shardId < m_planRows.GetShardCount(); ++shardId)
         {
+            std::cout << "LaodRows: shard = " << shardId << std::endl;
+
             // IShardIndex const & shard = m_indexData.GetShardIndex(shardId);
             IShard const & shard = m_index.GetIngestor().GetShard(shardId);
             for (unsigned i = 0; i < m_planRows.GetRowCount(); ++i)
             {
                 const RowId rowId = m_planRows.PhysicalRow(shardId, i);
                 m_rows[shardId][i] = shard.GetRowOffset(rowId);
+
+                std::cout << "  Row(" << rowId.GetRank() << ", " << rowId.GetIndex() << ")" << std::endl;
             }
         }
 

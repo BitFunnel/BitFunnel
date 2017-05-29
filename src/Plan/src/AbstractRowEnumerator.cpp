@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream>         // TODO: Remove debugging code.
+
 #include "AbstractRowEnumerator.h"
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/RowIdSequence.h"
@@ -41,6 +43,7 @@ namespace BitFunnel
         // IPlanRows.
         for (ShardId shard = 0; shard < planRows.GetShardCount(); ++shard)
         {
+            std::cout << "AbstractRowEnumerator: shard = " << shard << std::endl;
             RowIdSequence rowIdSequence(term, planRows.GetTermTable(shard));
             ProcessShard(rowIdSequence, planRows, shard);
         }
@@ -100,6 +103,11 @@ namespace BitFunnel
             ++it;
             const Rank rank = row.GetRank();
             RowId physicalRowId = row;
+
+            std::cout
+                << "  RowId(" << row.GetIndex()
+                << ", " << row.GetRank()
+                << ")" << std::endl;
 
             // Initialize index with the RowId's position in the current Rank.
             unsigned index = rowsPerRank[rank];
@@ -180,10 +188,13 @@ namespace BitFunnel
 
     void AbstractRowEnumerator::PadWithDuplicateRowIds(IPlanRows& planRows)
     {
+        std::cout << "PadWithDuplicateRowIds" << std::endl;
         for (ShardId shard = 0; shard < planRows.GetShardCount(); ++shard)
         {
+            std::cout << "  Shard: " << shard << std::endl;
             for (int r = c_maxRankValue; r >= 0; --r)
             {
+                std::cout << "    Rank: " << r << std::endl;
                 Rank rank = static_cast<Rank>(r);
                 FixedCapacityVector<AbstractRow, c_maxRowsPerTerm>& rows = m_rows[rank];
 
@@ -193,11 +204,18 @@ namespace BitFunnel
                     unsigned currentId = rows[i].GetId();
                     if (planRows.PhysicalRow(shard, currentId).IsValid())
                     {
+                        auto pr = planRows.PhysicalRow(shard, currentId);
+                        std::cout
+                            << "      Row(" << currentId << ")"
+                            << " index = " << pr.GetIndex()
+                            << "; rank = " << pr.GetRank()
+                            << " ok" << std::endl;
                         continue;
                     }
 
                     if (i > 0)
                     {
+                        std::cout << "      Row(" << currentId << "): pad with duplicate" << std::endl;
                         unsigned previousId = rows[i - 1].GetId();
                         planRows.PhysicalRow(shard, currentId) =
                             planRows.PhysicalRow(shard, previousId);
@@ -206,6 +224,7 @@ namespace BitFunnel
                     {
                         // All the rows for this rank are invalid rows.
                         // Need to replace it with the match-all row id.
+                        std::cout << "      Row(" << currentId << "): pad with match-all" << std::endl;
                         planRows.PhysicalRow(shard, currentId) = m_matchAllTermRowIds[shard];
                     }
                 }

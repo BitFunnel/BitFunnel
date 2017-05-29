@@ -217,8 +217,8 @@ namespace BitFunnel
     }
 
 
-    ITermTable const & Environment::GetTermTable() const
+    ITermTable const & Environment::GetTermTable(ShardId shard) const
     {
-        return m_index->GetTermTable0();
+        return m_index->GetTermTable(shard);
     }
 }

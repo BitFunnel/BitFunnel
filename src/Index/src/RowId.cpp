@@ -39,6 +39,7 @@ namespace BitFunnel
       : m_rank(rank),
         m_index(index),
         m_isAdhoc(isAdhoc ? 1 : 0),
+        m_isValid(1),
         m_unused(0)
     {
         if (index > c_maxRowIndexValue)
@@ -66,6 +67,7 @@ namespace BitFunnel
       : m_rank(0),
         m_index(0),
         m_isAdhoc(0),
+        m_isValid(0),
         m_unused(0)
     {
     }
@@ -75,6 +77,7 @@ namespace BitFunnel
       : m_rank(other.m_rank),
         m_index(static_cast<uint32_t>(other.m_index + index)),
         m_isAdhoc(other.m_isAdhoc),
+        m_isValid(other.m_isValid),
         m_unused(0)
     {
     }
@@ -140,6 +143,19 @@ namespace BitFunnel
         // It's not clear that we need to do this for the ported BitFunnel. We
         // should conduct the experiment before really porting this over because
         // it adds a significant amount of complexity.
-        return true;
+
+        //**************************************************************
+        //**************************************************************
+        //**************************************************************
+        //**************************************************************
+        // TODO: WARNING: EXPERIMENTAL CHANGE. NOT CORRECT AS A REAL ROW
+        // COULD SATISFY THIS CONDITION.
+        return (m_isValid == 1);
+        //return !(m_index == 0 && m_rank == 0 && m_isAdhoc == 0);
+        //**************************************************************
+        //**************************************************************
+        //**************************************************************
+        //**************************************************************
+        //return true;
     }
 }

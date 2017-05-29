@@ -74,9 +74,11 @@ namespace BitFunnel
         bool IsValid() const;
 
     private:
-        static_assert(c_log2MaxRankValue +
-                      c_log2MaxRowIndexValue +
-                      1 <= 32ull,
+        static_assert(c_log2MaxRankValue +      // m_rank
+                      c_log2MaxRowIndexValue +  // m_index
+                      1 +                       // m_isAdhoc
+                      1                         // m_isValid
+                      <= 32ull,
                       "Expect m_rank and m_index to use no more than 32 bits.");
 
         // DESIGN NOTE: members would normally be const, but we want this class
@@ -93,10 +95,12 @@ namespace BitFunnel
 
         uint32_t m_isAdhoc : 1;
 
+        uint32_t m_isValid : 1;
+
         // We fill in unused bits to prevent valgrind from complaining when we
         // serialize this data structure to disk.
         uint32_t m_unused :
-            32 - c_log2MaxRankValue - c_log2MaxRowIndexValue - 1;
+            32 - c_log2MaxRankValue - c_log2MaxRowIndexValue - 1 - 1;
     };
 
     static_assert(sizeof(RowId) == 4,

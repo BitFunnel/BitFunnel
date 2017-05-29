@@ -83,6 +83,7 @@ namespace BitFunnel
                                bool useNativeCode)
       : m_resultsBuffer(resultsBuffer)
     {
+        diagnosticStream.Enable("planning");
         if (diagnosticStream.IsEnabled("planning/term"))
         {
             std::ostream& out = diagnosticStream.GetStream();
@@ -100,6 +101,9 @@ namespace BitFunnel
                                             index,
                                             // generateNonBodyPlan,
                                             resources.GetMatchTreeAllocator());
+
+        // For Visual studio immediate window:
+        // reinterpret_cast<PlanRows const &>(rowPlan.m_planRows).m_rows.m_entries[1].m_rowIds
 
         if (diagnosticStream.IsEnabled("planning/row"))
         {

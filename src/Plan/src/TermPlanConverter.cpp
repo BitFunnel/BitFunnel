@@ -45,8 +45,7 @@ namespace BitFunnel
         // TermMatchTreeConverter matchConverter(index, planRows, generateNonBodyPlan, allocator);
         TermMatchTreeConverter matchConverter(index, planRows, allocator);
 
-        RowMatchNode const & matchTree = matchConverter.
-            BuildRowMatchTree(termMatchNode);
+        RowMatchNode const & matchTree = matchConverter.BuildRowMatchTree(termMatchNode);
 
         return *new (allocator.Allocate(sizeof(RowPlan)))
             RowPlan(matchTree, planRows);
