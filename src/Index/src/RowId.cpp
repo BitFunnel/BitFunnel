@@ -133,29 +133,7 @@ namespace BitFunnel
 
     bool RowId::IsValid() const
     {
-        // DESIGN NOTE: this needs to change once we pass the query plan. We
-        // wanted to use the same JIT'ed code on each shard. But not all shards
-        // have the same number of rows. The way that's done is by duplicating
-        // rows so that every shard ends up as long as the longest
-        // shard. IsValid was used to find the boundary where things need to be
-        // duplicated.
-
-        // It's not clear that we need to do this for the ported BitFunnel. We
-        // should conduct the experiment before really porting this over because
-        // it adds a significant amount of complexity.
-
-        //**************************************************************
-        //**************************************************************
-        //**************************************************************
-        //**************************************************************
-        // TODO: WARNING: EXPERIMENTAL CHANGE. NOT CORRECT AS A REAL ROW
-        // COULD SATISFY THIS CONDITION.
+        // DESIGN NOTE: IsValid() is used by AbstractRowEnumerator::PadWithDuplicateRowIds().
         return (m_isValid == 1);
-        //return !(m_index == 0 && m_rank == 0 && m_isAdhoc == 0);
-        //**************************************************************
-        //**************************************************************
-        //**************************************************************
-        //**************************************************************
-        //return true;
     }
 }

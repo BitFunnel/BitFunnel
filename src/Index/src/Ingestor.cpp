@@ -184,10 +184,6 @@ namespace BitFunnel
 
         // Choose correct shard and then allocate handle.
         ShardId shardId = m_shardDefinition.GetShard(document.GetPostingCount());
-        if (shardId != 0)
-        {
-            std::cout << "Adding document(" << id << ") to shard " << shardId << std::endl;
-        }
         DocumentHandleInternal handle = m_shards[shardId]->AllocateDocument(id);
 
         // std::cout

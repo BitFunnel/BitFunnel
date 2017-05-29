@@ -128,7 +128,7 @@ namespace BitFunnel
 
             // TODO: Come up with a better heuristic for deciding which
             // bits to display. Current algorithm is to display bits for
-            // the first 64 documents with ids less than 1000.
+            // the first 64 documents with ids less than 1000000.
 
             std::vector<DocId> ids;
             for (DocId id = 0; id <= 1000000; ++id)

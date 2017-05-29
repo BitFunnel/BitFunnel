@@ -21,7 +21,6 @@
 // THE SOFTWARE.
 
 #include <iomanip>
-#include <iostream>     // TODO: removed this debugging code.
 #include <limits>
 #include <sstream>
 
@@ -54,7 +53,6 @@ namespace BitFunnel
             m_ends.push_back(shardDefinition.GetMaxPostingCount(shard));
 
             size_t range = m_ends.back() - m_starts.back();
-            std::cout << "Shard " << shard << ": range = " << range << std::endl;
             if (range < minRange)
             {
                 minRange = range;
@@ -66,7 +64,6 @@ namespace BitFunnel
         m_ends.push_back(std::numeric_limits<size_t>::max());
 
         m_scale = (documentsPerShard + minRange - 1) / minRange;
-        std::cout << "Scale: " << m_scale << std::endl;
     }
 
 
@@ -78,21 +75,16 @@ namespace BitFunnel
 
     void SyntheticChunks::WriteChunk(std::ostream& out, size_t chunkId) const
     {
-        std::cout << std::endl << "Chunk " << chunkId << std::endl;
         for (size_t shard = 0; shard < m_starts.size(); ++shard)
         {
             size_t count = 0;
             size_t start = m_starts[shard] * m_scale;
-
-            std::cout << std::endl << "  Shard " << shard << std::endl;
 
             for (size_t i = 0; i < m_documentsPerShard; ++i)
             {
                 size_t docId = start + i;
                 if (docId % m_chunkCount == chunkId)
                 {
-                    std::cout << "    Doc " << docId + shard * m_shardDocIdStart << ": [0.." << docId / m_scale << "]" << std::endl;
-
                     WriteDocument(out, docId + shard * m_shardDocIdStart);
 
                     ++count;
@@ -114,7 +106,6 @@ namespace BitFunnel
         out << std::setfill('0') << std::setw(16) << std::hex << docId << static_cast<char>(0) << std::dec;
         out << "00" << static_cast<char>(0);
 
-        // size_t end = docId / m_scale;
         size_t end = (docId % m_shardDocIdStart) / m_scale;
         for (size_t i = 0; i <= end; ++i)
         {

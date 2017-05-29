@@ -125,14 +125,9 @@ namespace BitFunnel
             {
                 auto script = fileSystem->OpenForWrite("testScript");
                 *script
-                    //                    << "failOnException" << std::endl
-                    //                    << "cache manifest manifest.txt" << std::endl
-                    << "cache chunk chunk0" << std::endl
-                    //<< "show rows 32 0" << std::endl
-                    //<< "show rows 32 1" << std::endl
-                    //<< "show rows 32 2" << std::endl
-                    //<< "verify one 32" << std::endl;
-
+                    << "failOnException" << std::endl
+                    << "cache manifest manifest.txt" << std::endl
+                    //<< "cache chunk chunk0" << std::endl
                     << "verify one 1" << std::endl
                     << "verify one 32" << std::endl
                     << "verify one 64" << std::endl

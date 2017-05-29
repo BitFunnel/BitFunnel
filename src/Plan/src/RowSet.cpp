@@ -24,20 +24,16 @@
 // TODO: should this file be in Index?
 
 #include <algorithm>
-#include <iostream>         // TODO: Remove debugging code.
 
 #include "BitFunnel/Allocators/IAllocator.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/IShard.h"
-// #include "BitFunnel/Index/IShardIndex.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "IPlanRows.h"
 #include "IRowSet.h"
 #include "RowSet.h"
 
-
-// #include "BitFunnel/Plan/IRowsAvailable.h"
 
 namespace BitFunnel
 {
@@ -80,27 +76,18 @@ namespace BitFunnel
     }
 
 
-    void RowSet::LoadRows(// Context const & context,
-                          //IRowsAvailable& rowsAvailable
-                          )
+    void RowSet::LoadRows()
     {
         // For each shard, allocate an array of Row.
         for (ShardId shardId = 0; shardId < m_planRows.GetShardCount(); ++shardId)
         {
-            std::cout << "LaodRows: shard = " << shardId << std::endl;
-
-            // IShardIndex const & shard = m_indexData.GetShardIndex(shardId);
             IShard const & shard = m_index.GetIngestor().GetShard(shardId);
             for (unsigned i = 0; i < m_planRows.GetRowCount(); ++i)
             {
                 const RowId rowId = m_planRows.PhysicalRow(shardId, i);
                 m_rows[shardId][i] = shard.GetRowOffset(rowId);
-
-                std::cout << "  Row(" << rowId.GetRank() << ", " << rowId.GetIndex() << ")" << std::endl;
             }
         }
-
-        // rowsAvailable.OnRowsAvailable(context, true);
     }
 
 
