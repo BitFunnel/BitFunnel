@@ -194,7 +194,6 @@ namespace BitFunnel
                     unsigned currentId = rows[i].GetId();
                     if (planRows.PhysicalRow(shard, currentId).IsValid())
                     {
-                        auto pr = planRows.PhysicalRow(shard, currentId);
                         continue;
                     }
 
