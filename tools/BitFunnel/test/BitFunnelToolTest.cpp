@@ -51,7 +51,7 @@ namespace BitFunnel
         // Initialize RAM filesystem with input files.
         //
         {
-//            auto shardDefinition = Factories::CreateDefaultShardDefinition();
+            //auto shardDefinition = Factories::CreateDefaultShardDefinition();
             auto shardDefinition = Factories::CreateShardDefinition();
             shardDefinition->AddShard(32);
             shardDefinition->AddShard(64);

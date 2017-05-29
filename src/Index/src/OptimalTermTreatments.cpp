@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -81,13 +82,14 @@ namespace BitFunnel
             double signalAtRank = Term::FrequencyAtRank(signal, rank);
             double correlatedNoise = signalAtRank - signal;
             uncorrelatedNoise += (previousCorrelatedNoise - correlatedNoise);
-	    if (verbose)
-	    {
-	        std::cout << "-----rank:uncorrelatedNoise:correlatedNoise "
-                      << rank << ":"
-                      << uncorrelatedNoise << ":"
-                      << correlatedNoise << std::endl;
-	    }
+
+            if (verbose)
+            {
+                std::cout << "-----rank:uncorrelatedNoise:correlatedNoise "
+                          << rank << ":"
+                          << uncorrelatedNoise << ":"
+                          << correlatedNoise << std::endl;
+            }
 
             // TODO: Can't comment this out since it protects against negative noise.
             //if (signalAtRank > density)
@@ -121,13 +123,13 @@ namespace BitFunnel
                 //double bitIsZero = (1.0 - totalNoise) * (1.0 - signal);   // Incorrect formulation.
                 pQuadwordRead = 1.0 - pow(bitIsZero, 64);
 
-		if (verbose)
-		{
-                std::cout << "totalNoise:totalBits:PNonZero "
-                          << totalNoise << ":"
-                          << 1.0 - bitIsZero << ":"
-                          << pQuadwordRead << std::endl;
-		}
+                if (verbose)
+                {
+                        std::cout << "totalNoise:totalBits:PNonZero "
+                                  << totalNoise << ":"
+                                  << 1.0 - bitIsZero << ":"
+                                  << pQuadwordRead << std::endl;
+                }
 
                 // TODO: bitsPerDocument below is wrong for private rows.
                 // In private rows, we need one bit per document.
