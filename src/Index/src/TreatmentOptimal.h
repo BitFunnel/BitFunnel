@@ -57,10 +57,6 @@ namespace BitFunnel
         }
 
     private:
-        size_t FindBestTreatment(double density,
-                                 double signal,
-                                 double snr);
-
         std::vector<RowConfiguration> m_configurations;
     };
 }

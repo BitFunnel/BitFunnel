@@ -104,6 +104,7 @@ namespace BitFunnel
                       bitsPerDocument);
         }
 
+        std::cout << "Best configuration is " << m_bestConfiguration << std::endl;
         return m_bestConfiguration;
     }
 
@@ -229,7 +230,9 @@ namespace BitFunnel
                 std::cout
                     << std::setprecision(2) << "idf " << 0.1 * idf
                     << ": " << std::setprecision(6);
-                auto config = FindBestTreatment(density, signal, snr);
+                auto config = Analyzer::FindOptimalConfiguration(density,
+                                                                 signal,
+                                                                 snr); 
                 m_configurations.push_back(RowConfiguration(config));
             }
             else
@@ -254,15 +257,5 @@ namespace BitFunnel
         auto local = Term::c_maxIdfX10Value;
         Term::IdfX10 idf = std::min(term.GetIdfSum(), local);
         return m_configurations[idf];
-    }
-
-
-    size_t TreatmentOptimal::FindBestTreatment(double density,
-                                               double signal,
-                                               double snr)
-    {
-        size_t configuration = Analyzer::FindOptimalConfiguration(density, signal, snr);
-        std::cout << "Best configuration is " << configuration << std::endl;
-        return configuration;
     }
 }
