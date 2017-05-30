@@ -53,7 +53,7 @@ namespace BitFunnel
 
 
         TermTreatmentMetrics(double snr, double quadwords, double bits)
-            : m_snr(snr),
+          : m_snr(snr),
             m_quadwords(quadwords),
             m_bits(bits)
         {
@@ -105,19 +105,29 @@ namespace BitFunnel
                 << std::endl;
         }
 
+
+        bool operator==(TermTreatmentMetrics const & other) const
+        {
+            return (m_snr == other.m_snr)
+                && (m_quadwords == other.m_quadwords)
+                && (m_bits == other.m_bits);
+        }
+
+
     private:
         double m_snr;
         double m_quadwords;
         double m_bits;
     };
 
-    void OptimalTermTreatments();
-    void AnalyzeTermTreatment(ITermTreatment const & treatment,
-                              double density);
+//    void OptimalTermTreatments();
+//    void AnalyzeTermTreatment(ITermTreatment const & treatment,
+//                              double density);
 
     // TODO: maybe remove this. If not, put in right place.
     std::pair<bool, TermTreatmentMetrics> Analyze(size_t configuration,
                                                   double density,
                                                   double signal,
                                                   bool verbose);
+    size_t FindBestTreatment(double density, double signal, double snr, int variant);
 }

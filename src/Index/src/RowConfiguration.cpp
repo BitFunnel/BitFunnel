@@ -155,6 +155,41 @@ namespace BitFunnel
     }
 
 
+    RowConfiguration::RowConfiguration(size_t decimalDigits)
+        : m_data(0)
+    {
+        Rank rank = 0;
+        while (decimalDigits != 0)
+        {
+            size_t count = decimalDigits % 10;
+            if (count != 0)
+            {
+                push_front(RowConfiguration::Entry(rank, count));
+            }
+            decimalDigits /= 10;
+            rank++;
+        }
+    }
+
+
+    size_t RowConfiguration::ConfigurationAsDecimalDigits() const
+    {
+        size_t result = 0;
+
+        for (auto entry : *this)
+        {
+            size_t digit = 1;
+            for (size_t i = 0; i < entry.GetRank(); ++i)
+            {
+                digit *= 10;
+            }
+            result += entry.GetRowCount() * digit;
+        }
+
+        return result;
+    }
+
+
     void RowConfiguration::push_front(Entry entry)
     {
         // Check if there is space for another Entry in this RowConfiguration.

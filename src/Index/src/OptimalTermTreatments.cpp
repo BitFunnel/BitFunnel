@@ -40,6 +40,7 @@ namespace BitFunnel
     // where the 10^r digit has the number of rows at rank r. For example,
     // the configuration 000321 corresponds to 3 rank 2 rows, 2 rank 1 rows,
     // and a single rank 0 row.
+    // TODO: This doesn't need to return a pair.
     std::pair<bool, TermTreatmentMetrics> Analyze(size_t configuration,
                                                   double density,
                                                   double signal,
@@ -90,12 +91,6 @@ namespace BitFunnel
                           << uncorrelatedNoise << ":"
                           << correlatedNoise << std::endl;
             }
-
-            // TODO: Can't comment this out since it protects against negative noise.
-            //if (signalAtRank > density)
-            //{
-            //    return std::make_pair(false, TermTreatmentMetrics());
-            //}
 
             double noise = density - signalAtRank;
             if (noise < 0.0)
@@ -183,6 +178,7 @@ namespace BitFunnel
                                         std::numeric_limits<double>::infinity());
 
         // Enumerate all row configurations.
+        // TODO: Compute 999999 algorithmically. Should go up to max rank in use.
         for (size_t configuration = 1; configuration <= 999999; ++configuration)
         {
             auto result = Analyze(configuration, density, signal, false);
@@ -194,6 +190,8 @@ namespace BitFunnel
                 // We only consider configurations that result in a snr above the threshold.
                 if (metrics.GetSNR() >= snr)
                 {
+                    // TODO: Decide whether to keep variant.
+                    // What is default value of variant today?
                     if (variant == 1)
                     {
                         // variant 1: optimize for Q.
@@ -242,36 +240,36 @@ namespace BitFunnel
     }
 
 
-    void OptimalTermTreatments()
-    {
-        const double density = 0.1;
-        const double snr = 10.0;
-        int variant = 0;
+    //void OptimalTermTreatments()
+    //{
+    //    const double density = 0.1;
+    //    const double snr = 10.0;
+    //    int variant = 0;
 
-        for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
-        {
-            double signal = Term::IdfX10ToFrequency(idf);
-            //pow(10.0, -0.1 * idf);
+    //    for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
+    //    {
+    //        double signal = Term::IdfX10ToFrequency(idf);
+    //        //pow(10.0, -0.1 * idf);
 
-            // Algorithm only valid for terms with signal <= density.
-            // TODO: Understand why signal >= density seems to lead to term
-            // treatments with higher rank rows.
-            if (signal < density)
-            {
-                // std::cout
-                //     << std::setprecision(2) << "idf " << 0.1 * idf
-                //     << ": " << std::setprecision(6);
-                FindBestTreatment(density, signal, snr, variant);
-            }
-            else
-            {
-                // std::cout
-                //     << "idf " << std::setprecision(2) << 0.1 * idf
-                //     << ": " << std::setprecision(6) << signal
-                //     << " ==> private row" << std::endl;
-            }
-        }
-    }
+    //        // Algorithm only valid for terms with signal <= density.
+    //        // TODO: Understand why signal >= density seems to lead to term
+    //        // treatments with higher rank rows.
+    //        if (signal < density)
+    //        {
+    //            // std::cout
+    //            //     << std::setprecision(2) << "idf " << 0.1 * idf
+    //            //     << ": " << std::setprecision(6);
+    //            FindBestTreatment(density, signal, snr, variant);
+    //        }
+    //        else
+    //        {
+    //            // std::cout
+    //            //     << "idf " << std::setprecision(2) << 0.1 * idf
+    //            //     << ": " << std::setprecision(6) << signal
+    //            //     << " ==> private row" << std::endl;
+    //        }
+    //    }
+    //}
 
 
     RowConfiguration RowConfigurationFromSizeT(size_t configuration)
@@ -312,33 +310,33 @@ namespace BitFunnel
     }
 
 
-    void AnalyzeTermTreatment(ITermTreatment const & treatment,
-                              double density)
-    {
-        for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
-        {
-            //if (idf == 10)
-            {
-                Term term(0ull, 0u, idf);
-                auto rc = treatment.GetTreatment(term);
-                auto configuration = SizeTFromRowConfiguration(rc);
+    //void AnalyzeTermTreatment(ITermTreatment const & treatment,
+    //                          double density)
+    //{
+    //    for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
+    //    {
+    //        //if (idf == 10)
+    //        {
+    //            Term term(0ull, 0u, idf);
+    //            auto rc = treatment.GetTreatment(term);
+    //            auto configuration = SizeTFromRowConfiguration(rc);
 
-                double signal = Term::IdfX10ToFrequency(idf);
+    //            double signal = Term::IdfX10ToFrequency(idf);
 
-                auto result = Analyze(configuration, density, signal, false);
+    //            auto result = Analyze(configuration, density, signal, false);
 
-                std::cout
-                    << std::setprecision(2) << "idf " << 0.1 * idf
-                    << ": " << std::setprecision(6)
-                    << signal
-                    << " ==> "
-                    << std::setw(6) << std::setfill('0') << configuration
-                    << ": ";
+    //            std::cout
+    //                << std::setprecision(2) << "idf " << 0.1 * idf
+    //                << ": " << std::setprecision(6)
+    //                << signal
+    //                << " ==> "
+    //                << std::setw(6) << std::setfill('0') << configuration
+    //                << ": ";
 
-                result.second.Print(std::cout);
-            }
-        }
-    }
+    //            result.second.Print(std::cout);
+    //        }
+    //    }
+    //}
 
 
     //*************************************************************************

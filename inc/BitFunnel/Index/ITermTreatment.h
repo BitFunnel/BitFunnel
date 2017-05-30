@@ -126,7 +126,7 @@ namespace BitFunnel
         {
         public:
             bool operator!=(const_iterator const & other) const;
-			bool operator==(const_iterator const & other) const;
+            bool operator==(const_iterator const & other) const;
             const_iterator& operator++();
             Entry operator*() const;
 
@@ -138,6 +138,9 @@ namespace BitFunnel
         };
 
         RowConfiguration();
+        RowConfiguration(size_t decimalDigits);
+
+        size_t ConfigurationAsDecimalDigits() const;
 
         void push_front(Entry entry);
 
@@ -147,7 +150,6 @@ namespace BitFunnel
         void Write(std::ostream& output) const;
 
     private:
-
         uint64_t m_data;
     };
 }

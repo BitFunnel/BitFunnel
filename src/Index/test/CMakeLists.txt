@@ -8,6 +8,7 @@ set(CPPFILES
     DocumentLengthHistogramTest.cpp
     IngestorTest.cpp
     OptimalTermTreatmentsTest.cpp
+    OptimalTermTreatments2Test.cpp
     RowConfigurationTest.cpp
     RowTableDescriptorTest.cpp
     ShardTest.cpp
