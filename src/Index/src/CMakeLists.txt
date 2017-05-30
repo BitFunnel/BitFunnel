@@ -38,7 +38,11 @@ set(CPPFILES
     TermTableCollection.cpp
     TermToText.cpp
     TermTreatmentFactory.cpp
-    TermTreatments.cpp
+    TreatmentClassicBitsliced.cpp
+    TreatmentPrivateRank0.cpp
+    TreatmentPrivateSharedRank0.cpp
+    TreatmentPrivateSharedRank0And3.cpp
+    TreatmentPrivateSharedRank0ToN.cpp
 )
 
 set(WINDOWS_CPPFILES
@@ -78,7 +82,11 @@ set(PRIVATE_HFILES
     TermTableBuilder.h
     TermTableCollection.h
     TermTreatmentFactory.h
-    TermTreatments.h
+    TreatmentClassicBitsliced.h
+    TreatmentPrivateRank0.h
+    TreatmentPrivateSharedRank0.h
+    TreatmentPrivateSharedRank0And3.h
+    TreatmentPrivateSharedRank0ToN.cpp
 )
 
 set(WINDOWS_PRIVATE_HFILES
