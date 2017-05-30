@@ -7,7 +7,7 @@ set(CPPFILES
     DocumentHandleTest.cpp
     DocumentLengthHistogramTest.cpp
     IngestorTest.cpp
-    OptimalTermTreatmentsTest.cpp
+    OldOptimalTermTreatments.cpp
     OptimalTermTreatments2Test.cpp
     RowConfigurationTest.cpp
     RowTableDescriptorTest.cpp
@@ -17,7 +17,6 @@ set(CPPFILES
     TermTableBuilderTest.cpp
     TermTest.cpp
     TermToTextTest.cpp
-    TermTreatmentsTest.cpp
     TrackingSliceBufferAllocator.cpp
 )
 
@@ -28,6 +27,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    OldOptimalTermTreatments.h
     TrackingSliceBufferAllocator.h
 )
 

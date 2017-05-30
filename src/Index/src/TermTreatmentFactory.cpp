@@ -23,6 +23,7 @@
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/ITermTreatment.h"
 #include "LoggerInterfaces/Check.h"
+#include "OptimalTermTreatments2.h"
 #include "TermTreatmentFactory.h"
 #include "TermTreatments.h"
 
@@ -46,8 +47,8 @@ namespace BitFunnel
         AddTreatment<TreatmentPrivateSharedRank0>();
         AddTreatment<TreatmentPrivateSharedRank0And3>();
         AddTreatment<TreatmentPrivateSharedRank0ToN>();
-        AddTreatment<TreatmentExperimental>();
-        AddTreatment<TreatmentOptimal>();
+//        AddTreatment<TreatmentExperimental>();
+        AddTreatment<TreatmentOptimal2>();
         AddTreatment<TreatmentClassicBitsliced>();
     }
 

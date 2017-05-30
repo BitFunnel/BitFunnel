@@ -25,18 +25,10 @@
 #include <vector>                           // std::vector member.
 
 #include "BitFunnel/Index/ITermTreatment.h" // Base class.
-#include "OptimalTermTreatments.h"  // Temporary, for TermTreatmentMetrics.
+
 
 namespace BitFunnel
 {
-    TermTreatmentMetrics AnalyzeAlternate(std::vector<int> rows,
-                                          double density,
-                                          double signal);
-
-
-    size_t SizeTFromRowVector(std::vector<int> rows);
-
-
     //*************************************************************************
     //
     // TreatmentPrivateRank0
@@ -191,74 +183,9 @@ namespace BitFunnel
     };
 
 
-    // TODO: remove prototype.
-    std::pair<double, std::vector<int>> Temp(double frequency, double density, double snr, int currentRank, std::vector<int> rows, int maxRowsPerRank);
-
-    class TreatmentExperimental : public ITermTreatment
-    {
-    public:
-        TreatmentExperimental(double density, double snr, int variant);
-
-        //
-        // ITermTreatment methods.
-        //
-
-        virtual RowConfiguration GetTreatment(Term term) const override;
-
-
-        //
-        // Static methods used by ITermTreatmentFactory
-        //
-        static char const * GetName()
-        {
-            return "Experimental";
-        }
-
-
-        static char const * GetDescription()
-        {
-            return "Experimental flavor of the day.";
-        }
-
-    private:
-        std::vector<RowConfiguration> m_configurations;
-    };
-
-
-    class TreatmentOptimal : public ITermTreatment
-    {
-    public:
-        TreatmentOptimal(double density, double snr, int variant);
-
-        //
-        // ITermTreatment methods.
-        //
-
-        virtual RowConfiguration GetTreatment(Term term) const override;
-
-
-        //
-        // Static methods used by ITermTreatmentFactory
-        //
-        static char const * GetName()
-        {
-            return "Optimal";
-        }
-
-
-        static char const * GetDescription()
-        {
-            return "Optimal TermTreatment, given some assumptions.";
-        }
-
-    private:
-        std::vector<RowConfiguration> m_configurations;
-    };
-
-
     //*************************************************************************
     //
-    // TreatmentPrivateRank0
+    // TreatmentClassicBitsliced
     //
     // Every term gets the same treatment: a single, private, rank 0 row.
     //

@@ -190,6 +190,12 @@ namespace BitFunnel
     }
 
 
+    bool RowConfiguration::operator==(RowConfiguration const & other) const
+    {
+        return m_data == other.m_data;
+    }
+
+
     void RowConfiguration::push_front(Entry entry)
     {
         // Check if there is space for another Entry in this RowConfiguration.

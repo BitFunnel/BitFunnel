@@ -17,7 +17,6 @@ set(CPPFILES
     IDocumentCache.cpp
     IndexedIdfTable.cpp
     Ingestor.cpp
-    OptimalTermTreatments.cpp
     OptimalTermTreatments2.cpp
     PackedRowIdSequence.cpp
     Recycler.cpp
@@ -65,7 +64,6 @@ set(PRIVATE_HFILES
     IndexedIdfTable.h
     Ingestor.h
     IRecyclable.h
-    OptimalTermTreatments.h
     OptimalTermTreatments2.h
     Recycler.h
     RowTableDescriptor.h

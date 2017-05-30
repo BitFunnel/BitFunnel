@@ -26,7 +26,6 @@
 #include <vector>                           // std::vector embedded.
 
 #include "BitFunnel/Index/ITermTreatment.h" // ITermTreatment base class.
-#include "OptimalTermTreatments.h"          // Temporary for TreatmentMetrics.
 
 
 namespace BitFunnel
@@ -57,12 +56,7 @@ namespace BitFunnel
             return "Optimal TermTreatment, given some assumptions.";
         }
 
-    //private:
-        TermTreatmentMetrics Analyze(size_t configuration,
-                                        double density,
-                                        double signal,
-                                        bool verbose);
-
+    private:
         size_t FindBestTreatment(double density,
                                     double signal,
                                     double snr,

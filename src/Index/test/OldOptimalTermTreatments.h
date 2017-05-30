@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include <cmath>  // Used for pow in TermTreatmentMetrics.
-#include <utility>  // std::pair.
+#include "BitFunnel/Index/ITermTreatment.h"     // ITermTreatment base class.
+
 
 namespace BitFunnel
 {
@@ -120,14 +120,44 @@ namespace BitFunnel
         double m_bits;
     };
 
-//    void OptimalTermTreatments();
-//    void AnalyzeTermTreatment(ITermTreatment const & treatment,
-//                              double density);
 
-    // TODO: maybe remove this. If not, put in right place.
-    std::pair<bool, TermTreatmentMetrics> Analyze(size_t configuration,
-                                                  double density,
-                                                  double signal,
-                                                  bool verbose);
-    size_t FindBestTreatment(double density, double signal, double snr, int variant);
+    class TreatmentOptimal : public ITermTreatment
+    {
+    public:
+        TreatmentOptimal(double density, double snr, int variant);
+
+        //
+        // ITermTreatment methods.
+        //
+
+        virtual RowConfiguration GetTreatment(Term term) const override;
+
+
+        //
+        // Static methods used by ITermTreatmentFactory
+        //
+        static char const * GetName()
+        {
+            return "Optimal";
+        }
+
+
+        static char const * GetDescription()
+        {
+            return "Optimal TermTreatment, given some assumptions.";
+        }
+
+    private:
+        static TermTreatmentMetrics Analyze(size_t configuration,
+                                            double density,
+                                            double signal,
+                                            bool verbose);
+
+        static size_t FindBestTreatment(double density,
+                                        double signal,
+                                        double snr,
+                                        int variant);
+
+        std::vector<RowConfiguration> m_configurations;
+    };
 }

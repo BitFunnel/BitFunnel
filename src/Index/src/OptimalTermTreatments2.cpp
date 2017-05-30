@@ -25,13 +25,8 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
-//#include <limits>
-#include <vector>
 
-#include "BitFunnel/Index/ITermTreatment.h"
-#include "LoggerInterfaces/Check.h"
 #include "OptimalTermTreatments2.h"
-#include "TermTreatments.h"
 
 
 namespace BitFunnel
@@ -81,7 +76,6 @@ namespace BitFunnel
     }
 
 
-    // TODO: Make this method static. Make is instantiate the class. Make the constructor private.
     size_t Analyzer::Go()
     {
         m_bestDQ = -1;
@@ -138,7 +132,6 @@ namespace BitFunnel
             noise = 0.0;
         }
 
-        //for (size_t rowCount = 0; rowCount < m_maxRowsPerRank; ++rowCount)
         for (size_t rowCount = 0;;)
         {
             //std::cout << "Rank: " << rank
@@ -147,35 +140,6 @@ namespace BitFunnel
             //    << " snr = " << m_signal / (uncorrelatedNoise + correlatedNoise)
             //    << " dq = " << 1.0 / (expectedQuadwordReads * bitsPerDocument)
             //    << std::endl;
-
-            //if (!firstRow)
-            //{
-            //    if (rank > 0)
-            //    {
-            //        Recursion(rank - 1,
-            //                  firstRow,
-            //                  configuration * 10,
-            //                  uncorrelatedNoise,
-            //                  correlatedNoise,
-            //                  expectedQuadwordReads,
-            //                  pQuadwordRead,
-            //                  bitsPerDocument);
-            //    }
-            //    else
-            //    {
-            //        // Base case.
-            //        double snr = m_signal / (uncorrelatedNoise + previousCorrelatedNoise);
-            //        if (snr >= m_snr)
-            //        {
-            //            double dq = 1.0 / (expectedQuadwordReads * bitsPerDocument);
-            //            if (dq > m_bestDQ)
-            //            {
-            //                m_bestDQ = dq;
-            //                m_bestConfiguration = configuration;
-            //            }
-            //        }
-            //    }
-            //}
 
             if (!firstRow)
             {
@@ -191,26 +155,6 @@ namespace BitFunnel
                               bitsPerDocument);
                 }
             }
-                //else
-                //{
-                //    // Base case.
-                //    //                    double snr = m_signal / (uncorrelatedNoise + previousCorrelatedNoise);
-                //    double snr = m_signal / totalNoise;
-                //    if (snr >= m_snr)
-                //    {
-                //        double dq = 1.0 / (expectedQuadwordReads * bitsPerDocument);
-                //        if (dq > m_bestDQ)
-                //        {
-                //            m_bestDQ = dq;
-                //            m_bestConfiguration = configuration;
-                //            // Not sure whether one can prune the search here.
-                //            // Need to prove that it is ok.
-                //            // return;
-                //        }
-                //    }
-                //}
-//            }
-
 
             if (rowCount >= m_maxRowsPerRank)
             {
@@ -249,7 +193,6 @@ namespace BitFunnel
             if (rank == 0)
             {
                 // Base case.
-                //                    double snr = m_signal / (uncorrelatedNoise + previousCorrelatedNoise);
                 double snr = m_signal / totalNoise;
                 if (snr >= m_snr)
                 {
@@ -269,73 +212,41 @@ namespace BitFunnel
     }
 
 
-//            if (!firstRow)
-//            {
-//                if (rank > 0)
-//                {
-//                    Recursion(rank - 1,
-//                              firstRow,
-//                              configuration * 10,
-//                              uncorrelatedNoise,
-//                              correlatedNoise,
-//                              expectedQuadwordReads,
-//                              pQuadwordRead,
-//                              bitsPerDocument);
-//                }
-//                else
-//                {
-//                    // Base case.
-////                    double snr = m_signal / (uncorrelatedNoise + previousCorrelatedNoise);
-//                    double snr = m_signal / totalNoise;
-//                    if (snr >= m_snr)
-//                    {
-//                        double dq = 1.0 / (expectedQuadwordReads * bitsPerDocument);
-//                        if (dq > m_bestDQ)
-//                        {
-//                            m_bestDQ = dq;
-//                            m_bestConfiguration = configuration;
-//                            // Not sure whether one can prune the search here.
-//                            // Need to prove that it is ok.
-//                            // return;
-//                        }
-//                    }
-//                }
-//            }
-
-
     //*************************************************************************
     //
     // TreatmentOptimal2
     //
     //*************************************************************************
-    TreatmentOptimal2::TreatmentOptimal2(double /*density*/, double /*snr*/, int /*variant*/)
+    TreatmentOptimal2::TreatmentOptimal2(double density,
+                                         double snr,
+                                         int variant)
     {
-        //for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
-        //{
-        //    double signal = Term::IdfX10ToFrequency(idf);
+        for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
+        {
+            double signal = Term::IdfX10ToFrequency(idf);
 
-        //    // Algorithm only valid for terms with signal <= density.
-        //    // TODO: Understand why signal >= density seems to lead to term
-        //    // treatments with higher rank rows.
-        //    if (signal < density)
-        //    {
-        //        std::cout
-        //            << std::setprecision(2) << "idf " << 0.1 * idf
-        //            << ": " << std::setprecision(6);
-        //        auto config = FindBestTreatment(density, signal, snr, variant);
-        //        m_configurations.push_back(RowConfiguration(config));
-        //    }
-        //    else
-        //    {
-        //        std::cout
-        //            << "idf " << std::setprecision(2) << 0.1 * idf
-        //            << ": " << std::setprecision(6) << signal
-        //            << " ==> private row" << std::endl;
-        //        RowConfiguration configuration;
-        //        configuration.push_front(RowConfiguration::Entry(0, 1));
-        //        m_configurations.push_back(configuration);
-        //    }
-        //}
+            // Algorithm only valid for terms with signal <= density.
+            // TODO: Understand why signal >= density seems to lead to term
+            // treatments with higher rank rows.
+            if (signal < density)
+            {
+                std::cout
+                    << std::setprecision(2) << "idf " << 0.1 * idf
+                    << ": " << std::setprecision(6);
+                auto config = FindBestTreatment(density, signal, snr, variant);
+                m_configurations.push_back(RowConfiguration(config));
+            }
+            else
+            {
+                std::cout
+                    << "idf " << std::setprecision(2) << 0.1 * idf
+                    << ": " << std::setprecision(6) << signal
+                    << " ==> private row" << std::endl;
+                RowConfiguration configuration;
+                configuration.push_front(RowConfiguration::Entry(0, 1));
+                m_configurations.push_back(configuration);
+            }
+        }
     }
 
 
@@ -350,136 +261,6 @@ namespace BitFunnel
     }
 
 
-    // Computes the TermTreatmentMetrics for a single configuration, given
-    // a particular density and signal. The configuration is a 6-digit number
-    // where the 10^r digit has the number of rows at rank r. For example,
-    // the configuration 000321 corresponds to 3 rank 2 rows, 2 rank 1 rows,
-    // and a single rank 0 row.
-    // TODO: This doesn't need to return a pair.
-    TermTreatmentMetrics 
-        TreatmentOptimal2::Analyze(size_t configuration,
-                                   double density,
-                                   double signal,
-                                   bool verbose)
-    {
-        // Unpack configuration.
-        std::vector<size_t> rowsAtRank;
-        while (configuration != 0)
-        {
-            rowsAtRank.push_back(configuration % 10);
-            configuration /= 10;
-        }
-
-        if (verbose)
-        {
-            std::cout << "Rows: ";
-            for (size_t i = 0; i < rowsAtRank.size(); ++i)
-            {
-                if (i > 0)
-                {
-                    std::cout << ", ";
-                }
-                std::cout << rowsAtRank[i];
-            }
-            std::cout << std::endl << std::endl;
-        }
-
-        double uncorrelatedNoise = 0.0;
-        double previousCorrelatedNoise = 1.0;
-        double expectedQuadwordReads = 0.0;
-        double pQuadwordRead = 1.0;
-        double bitsPerDocument = 0.0;
-
-        size_t row = 0;
-        // NOTE: For loop uses signed type because it counts down to 0.
-        bool firstIntersection = true;
-        for (int rank = static_cast<int>(rowsAtRank.size()) - 1; rank >= 0; --rank)
-        {
-            unsigned fanout = 1u << rank;
-            double signalAtRank = Term::FrequencyAtRank(signal, rank);
-            double correlatedNoise = signalAtRank - signal;
-            uncorrelatedNoise += (previousCorrelatedNoise - correlatedNoise);
-
-            //if (verbose)
-            //{
-            //    std::cout << "-----rank:uncorrelatedNoise:correlatedNoise "
-            //        << rank << ":"
-            //        << uncorrelatedNoise << ":"
-            //        << correlatedNoise << std::endl;
-            //}
-
-            double noise = density - signalAtRank;
-            if (noise < 0.0)
-            {
-                // This must be a private row.
-                noise = 0.0;
-            }
-
-            for (size_t i = 0; i < rowsAtRank[rank]; ++i)
-            {
-                expectedQuadwordReads += pQuadwordRead / fanout;
-
-                if (firstIntersection)
-                {
-                    uncorrelatedNoise = noise;
-                    firstIntersection = false;
-                }
-                else
-                {
-                    uncorrelatedNoise *= noise;
-                }
-
-                double totalNoise = uncorrelatedNoise + correlatedNoise;
-                double bitIsZero = 1.0 - signal - totalNoise;
-                pQuadwordRead = 1.0 - pow(bitIsZero, 64);
-
-                //if (verbose)
-                //{
-                //    std::cout << "totalNoise:totalBits:PNonZero "
-                //        << totalNoise << ":"
-                //        << 1.0 - bitIsZero << ":"
-                //        << pQuadwordRead << std::endl;
-                //}
-
-                // TODO: bitsPerDocument below is wrong for private rows.
-                // In private rows, we need one bit per document.
-                if (signalAtRank >= density)
-                {
-                    bitsPerDocument += 1.0 / fanout;
-                }
-                else
-                {
-                    bitsPerDocument += signalAtRank / density;
-                }
-
-                if (verbose)
-                {
-                    std::cout
-                        << "row(" << row << ", " << rank << "): "
-                        << uncorrelatedNoise
-                        << ", " << correlatedNoise
-                        << ", " << signal / (totalNoise)
-                        << ", " << expectedQuadwordReads
-                        << ", " << bitsPerDocument
-                        << ", " << 1.0 / expectedQuadwordReads / bitsPerDocument
-                        << std::endl;
-                }
-                ++row;
-            }
-
-            previousCorrelatedNoise = correlatedNoise;
-        }
-
-        if (verbose)
-        {
-            std::cout << std::endl;
-        }
-
-        return TermTreatmentMetrics(signal / (uncorrelatedNoise + previousCorrelatedNoise),
-                                    expectedQuadwordReads,
-                                    bitsPerDocument);
-    }
-
 
     size_t TreatmentOptimal2::FindBestTreatment(double density,
                                                 double signal,
@@ -489,71 +270,5 @@ namespace BitFunnel
         size_t configuration = Analyzer::FindOptimalConfiguration(density, signal, snr);
         std::cout << "Best configuration is " << configuration << std::endl;
         return configuration;
-
-        //// Variables used to track the best row configuration and its
-        //// TermTreatmentMetrics.
-        //size_t bestConfiguration = 0;
-        //TermTreatmentMetrics bestResult(0.0,
-        //                                std::numeric_limits<double>::infinity(),
-        //                                std::numeric_limits<double>::infinity());
-
-        //// Enumerate all row configurations.
-        //// TODO: Compute 999999 algorithmically. Should go up to max rank in use.
-        //for (size_t configuration = 1; configuration <= 999999; ++configuration)
-        //{
-        //    auto result = Analyze(configuration, density, signal, false);
-
-        //    // result.first == true implies that this configuration is valid.
-        //    TermTreatmentMetrics const & metrics = result;
-
-        //    // We only consider configurations that result in a snr above the threshold.
-        //    if (metrics.GetSNR() >= snr)
-        //    {
-        //        // TODO: Decide whether to keep variant.
-        //        // What is default value of variant today?
-        //        if (variant == 1)
-        //        {
-        //            // variant 1: optimize for Q.
-        //            if (metrics.GetQuadwords() < bestResult.GetQuadwords())
-        //            {
-        //                bestResult = metrics;
-        //                bestConfiguration = configuration;
-        //            }
-        //        }
-        //        else if (variant == 2)
-        //        {
-        //            // variant 2: optimize for D.
-        //            if (metrics.GetBits() < bestResult.GetBits())
-        //            {
-        //                bestResult = metrics;
-        //                bestConfiguration = configuration;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            // default variant: optimize for DQ.
-        //            if (metrics.GetDQ() > bestResult.GetDQ())
-        //            {
-        //                bestResult = metrics;
-        //                bestConfiguration = configuration;
-        //            }
-        //        }
-        //    }
-        //}
-
-        //if (bestConfiguration == 0)
-        //{
-        //    // TODO: Throw some sort of error here? Return private row?
-        //    std::cout << "No configuration meets SNR criteria." << std::endl;
-        //}
-
-        //std::cout
-        //    << signal
-        //    << " ==> "
-        //    << std::setw(6) << std::setfill('0') << bestConfiguration
-        //    << ": ";
-        //bestResult.Print(std::cout);
-
-        //return bestConfiguration;
     }
 }

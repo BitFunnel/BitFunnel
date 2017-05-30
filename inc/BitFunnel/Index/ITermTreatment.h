@@ -142,6 +142,8 @@ namespace BitFunnel
 
         size_t ConfigurationAsDecimalDigits() const;
 
+        bool operator==(RowConfiguration const &) const;
+
         void push_front(Entry entry);
 
         const_iterator begin() const;
