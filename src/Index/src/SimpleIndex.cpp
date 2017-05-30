@@ -318,6 +318,8 @@ namespace BitFunnel
         {
             m_shardDefinition =
                 Factories::CreateShardDefinition();
+            const double defaultDensity = 0.15;
+            m_shardDefinition->AddShard(0, defaultDensity);
         }
 
         if (m_termTables.get() == nullptr)
