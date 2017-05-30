@@ -37,7 +37,6 @@
 #include "FactSetBase.h"
 #include "TermTable.h"
 #include "TermTableBuilder.h"
-#include "TermTreatments.h"
 
 
 namespace BitFunnel
