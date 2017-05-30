@@ -1,8 +1,6 @@
 # BitFunnel/src/Data/src
 
 set(CPPFILES
-    SimpleData.cpp
-    Sequential.cpp
     Sonnets.cpp
     SyntheticChunks.cpp
 )
