@@ -24,7 +24,6 @@
 #include "BitFunnel/Utilities/ITaskDistributor.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "ChunkEnumerator.h"
-//#include "ChunkTaskProcessor.h"
 
 
 namespace BitFunnel

@@ -26,6 +26,9 @@
 #include <iomanip>
 #include <iostream>
 
+#include "BitFunnel/Utilities/Factories.h"
+#include "BitFunnel/Utilities/ITaskDistributor.h"
+#include "BitFunnel/Utilities/ITaskProcessor.h"
 #include "TreatmentOptimal.h"
 
 
@@ -210,6 +213,66 @@ namespace BitFunnel
     }
 
 
+
+    class TreatmentProcessor : public ITaskProcessor
+    {
+    public:
+        TreatmentProcessor(double density,
+                           double snr,
+                           std::vector<RowConfiguration>& configurations);
+
+        //
+        // ITaskProcessor methods
+        //
+
+        virtual void ProcessTask(size_t taskId) override;
+        virtual void Finished() override;
+
+    private:
+        double m_density;
+        double m_snr;
+        std::vector<RowConfiguration>& m_configurations;
+    };
+
+
+    TreatmentProcessor::TreatmentProcessor(double density,
+                                           double snr,
+                                           std::vector<RowConfiguration>& configurations)
+      : m_density(density),
+        m_snr(snr),
+        m_configurations(configurations)
+    {
+    }
+
+
+    void TreatmentProcessor::ProcessTask(size_t taskId)
+    {
+        Term::IdfX10 idf = static_cast<Term::IdfX10>(taskId);
+        double signal = Term::IdfX10ToFrequency(idf);
+
+        // Default value to be used when signal > m_density.
+        // Want a private row. Use a single, rank 0 row.
+        size_t configuration = 1ull;
+
+        // The following condition may not be necessary. It seems that
+        // FindOptimalConfiguration returns a single, rank 0 in the case
+        // where signal > m_density.
+        if (signal < m_density)
+        {
+            configuration = Analyzer::FindOptimalConfiguration(m_density,
+                                                               signal,
+                                                               m_snr);
+        }
+
+        m_configurations[taskId] = RowConfiguration(configuration);
+    }
+
+
+    void TreatmentProcessor::Finished()
+    {
+    }
+
+
     //*************************************************************************
     //
     // TreatmentOptimal
@@ -217,35 +280,21 @@ namespace BitFunnel
     //*************************************************************************
     TreatmentOptimal::TreatmentOptimal(double density,
                                        double snr)
+        : m_configurations(Term::c_maxIdfX10Value + 1, 0)
     {
-        for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
-        {
-            double signal = Term::IdfX10ToFrequency(idf);
-
-            // Algorithm only valid for terms with signal <= density.
-            // TODO: Understand why signal >= density seems to lead to term
-            // treatments with higher rank rows.
-            if (signal < density)
-            {
-                std::cout
-                    << std::setprecision(2) << "idf " << 0.1 * idf
-                    << ": " << std::setprecision(6);
-                auto config = Analyzer::FindOptimalConfiguration(density,
-                                                                 signal,
-                                                                 snr); 
-                m_configurations.push_back(RowConfiguration(config));
-            }
-            else
-            {
-                std::cout
-                    << "idf " << std::setprecision(2) << 0.1 * idf
-                    << ": " << std::setprecision(6) << signal
-                    << " ==> private row" << std::endl;
-                RowConfiguration configuration;
-                configuration.push_front(RowConfiguration::Entry(0, 1));
-                m_configurations.push_back(configuration);
-            }
+        const size_t threadCount = 8;
+        std::vector<std::unique_ptr<ITaskProcessor>> processors;
+        for (size_t i = 0; i < threadCount; ++i) {
+            processors.push_back(
+                std::unique_ptr<ITaskProcessor>(
+                    new TreatmentProcessor(density, snr, m_configurations)));
         }
+
+        auto distributor =
+            Factories::CreateTaskDistributor(processors,
+                                             Term::c_maxIdfX10Value + 1);
+
+        distributor->WaitForCompletion();
     }
 
 
