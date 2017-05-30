@@ -33,13 +33,11 @@ namespace BitFunnel
     //*************************************************************************
     //
     // Abstract base class for objects that describe a collection of index 
-    // shards. Each shard specifies the maximum number of postings allowed
-    // for documents in the shard. Shards are ordered from smallest posting
-    // count to largest. The first shard allows all documents with fewer
-    // postings than the shard's max posting count. Subsequent shards' allow
-    // documents with posting counts bounded by the limits from pairs of
-    // adjacent shards. The last shard allows all documents with more postings
-    // than the previous shard's limit.
+    // shards. Each shard specifies the minimum number of postings allowed
+    // for documents in the shard. For shards other than the last shard, the
+    // maximum number of postings per document is one less than the minimum
+    // allowed in the next shard. The last shard allows all documents with a
+    // posting count at least as large as its minimum posting count.
     //
     //*************************************************************************
     class IShardDefinition : public IInterface
@@ -50,22 +48,27 @@ namespace BitFunnel
         // reconstitutes the class from a stream.
         virtual void Write(std::ostream& output) const = 0;
 
-        // Adds a shard to the collection. The maxPostingCount parameter
-        // specifies the maximum number of postings for any document that is
-        // considered a member of the shard. Note that maxPostingCount must be
-        // strictly larger than the posting counts of all of the previously
-        // added shards. In other words, the shards must be added in order of
-        // increasing maxPostingCount.
-        virtual void AddShard(size_t maxPostingCount) = 0;
+        // Adds a shard to the collection. The minPostingCount parameter
+        // specifies the minimum number of postings for any document that is
+        // considered a member of the shard. The density parameter specifies
+        // the target density for rows in the shard. This must be the same
+        // density specified when building the TermTable for this shard.
+        virtual void AddShard(size_t minPostingCount, double density) = 0;
 
         // Returns the ShardId that contains documents with the specified
-        // postingCount. If the documentSize is too big for any shard in the
-        // map, this method will return an invalid shard.
+        // postingCount.
         virtual ShardId GetShard(size_t postingCount) const = 0;
+
+        // Returns the minimum posting count for documents in the specified
+        // shard.
+        virtual size_t GetMinPostingCount(ShardId shard) const = 0;
 
         // Returns the maximum posting count for documents in the specified
         // shard.
         virtual size_t GetMaxPostingCount(ShardId shard) const = 0;
+
+        // Returns the bit densitry for the specified shard.
+        virtual double GetDensity(ShardId shard) const = 0;
 
         // Returns the number of shards in the map.
         virtual ShardId GetShardCount() const = 0;

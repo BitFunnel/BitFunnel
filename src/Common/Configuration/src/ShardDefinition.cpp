@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 #include <istream>
+#include <ostream>
+#include <limits>
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Utilities/Exists.h"
@@ -52,9 +54,14 @@ namespace BitFunnel
         CHECK_GT(growthFactor, 1.0) << "Growth factor too small.";
         std::unique_ptr<IShardDefinition> sd(new ShardDefinition());
 
+        // TODO: Issue #396. Is there some way to provider a density
+        // other than the default?
+        const double defaultDensity = 0.15;
+
+        sd->AddShard(0, defaultDensity);
         while (start < limit)
         {
-            sd->AddShard(start);
+            sd->AddShard(start, defaultDensity);
             size_t newStart = static_cast<size_t>(start * growthFactor);
             CHECK_GT(newStart, start) << "Growth factor too small.";
             start = newStart;
@@ -89,6 +96,11 @@ namespace BitFunnel
     }
 
 
+    //*************************************************************************
+    //
+    // ShardDefinition
+    //
+    //*************************************************************************
     ShardDefinition::ShardDefinition()
     {
     }
@@ -96,28 +108,69 @@ namespace BitFunnel
 
     ShardDefinition::ShardDefinition(std::istream& input)
     {
-        CsvTsv::ReadCsvColumn(input, m_maxPostingCounts);
-        CHECK_LE(m_maxPostingCounts.size(), c_maxShardIdCount)
-            << "Shard count limit exceeded.";
+        CsvTsv::InputColumn<size_t> 
+            minPostings("MinPostings",
+                        "Minimum number of postings for any document in shard.");
+        CsvTsv::InputColumn<double>
+            density("Density",
+                    "Target density for RowTables in the shard.");
+
+        CsvTsv::CsvTableParser parser(input);
+        CsvTsv::TableReader reader(parser);
+        reader.DefineColumn(minPostings);
+        reader.DefineColumn(density);
+
+        reader.ReadPrologue();
+        while (!reader.AtEOF())
+        {
+            reader.ReadDataRow();
+
+            AddShard(minPostings, density);
+        }
+        reader.ReadEpilogue();
     }
 
 
     void ShardDefinition::Write(std::ostream& output) const
     {
-        CsvTsv::WriteCsvColumn(output, m_maxPostingCounts);
+        CsvTsv::OutputColumn<size_t>
+            minPostings("MinPostings",
+                        "Minimum number of postings for any document in shard.");
+        CsvTsv::OutputColumn<double>
+            density("Density",
+                    "Target density for RowTables in the shard.");
+
+        CsvTsv::CsvTableFormatter formatter(output);
+        CsvTsv::TableWriter writer(formatter);
+        writer.DefineColumn(minPostings);
+        writer.DefineColumn(density);
+
+        writer.WritePrologue();
+        for (unsigned i = 0; i < m_shards.size(); ++i)
+        {
+            minPostings = m_shards[i].first;
+            density = m_shards[i].second;
+
+            writer.WriteDataRow();
+        }
+        writer.WriteEpilogue();
     }
 
 
-    void ShardDefinition::AddShard(size_t maxPostingCount)
+    void ShardDefinition::AddShard(size_t minPostingCount, double density)
     {
-        CHECK_LT(m_maxPostingCounts.size(), c_maxShardIdCount)
+        CHECK_LT(m_shards.size(), c_maxShardIdCount)
             << "Shard count limit exceeded.";
-        m_maxPostingCounts.push_back(maxPostingCount);
-        size_t i = m_maxPostingCounts.size() - 1;
 
-        while (i > 0 && m_maxPostingCounts[i] < m_maxPostingCounts[i - 1])
+        CHECK_TRUE(m_shards.size() > 0 || minPostingCount == 0)
+            << "First shard must have minPostingCount of zero.";
+
+        m_shards.push_back(std::make_pair(minPostingCount, density));
+        size_t i = m_shards.size() - 1;
+
+        while (i > 0 && m_shards[i].first < m_shards[i - 1].first)
         {
-            std::swap(m_maxPostingCounts[i], m_maxPostingCounts[i - 1]);
+            std::swap(m_shards[i], m_shards[i - 1]);
             --i;
         }
     }
@@ -126,9 +179,9 @@ namespace BitFunnel
     ShardId ShardDefinition::GetShard(size_t postingCount) const
     {
         size_t i = 0;
-        for (; i < m_maxPostingCounts.size(); ++i)
+        for (; i < m_shards.size() - 1; ++i)
         {
-            if (postingCount <= m_maxPostingCounts[i])
+            if (postingCount < m_shards[i + 1].first)
             {
                 break;
             }
@@ -137,14 +190,29 @@ namespace BitFunnel
     }
 
 
+    size_t ShardDefinition::GetMinPostingCount(ShardId shard) const
+    {
+        return m_shards[shard].first;
+    }
+
+
     size_t ShardDefinition::GetMaxPostingCount(ShardId shard) const
     {
-        return m_maxPostingCounts[shard];
+        if (shard < m_shards.size() - 1)
+            return m_shards[shard + 1].first;
+        else
+            return std::numeric_limits<size_t>::max();
+    }
+
+
+    double ShardDefinition::GetDensity(ShardId shard) const
+    {
+        return m_shards[shard].second;
     }
 
 
     ShardId ShardDefinition::GetShardCount() const
     {
-        return static_cast<ShardId>(m_maxPostingCounts.size() + 1);
+        return static_cast<ShardId>(m_shards.size());
     }
 }

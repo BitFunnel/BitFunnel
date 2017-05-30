@@ -35,14 +35,15 @@ namespace BitFunnel
         TEST(ShardDefinition, AddShards)
         {
             ShardDefinition s;
-            s.AddShard(500);
-            s.AddShard(400);
-            s.AddShard(600);
-            s.AddShard(450);
+            s.AddShard(0, 0.10);
+            s.AddShard(500, 0.10);
+            s.AddShard(400, 0.15);
+            s.AddShard(600, 0.20);
+            s.AddShard(450, 0.10);
 
             EXPECT_EQ(s.GetShardCount(), 5u);
 
-            for (ShardId i = 0; i < s.GetShardCount() - 2; ++i)
+            for (ShardId i = 0; i < s.GetShardCount() - 1; ++i)
             {
                 EXPECT_LT(s.GetMaxPostingCount(i), s.GetMaxPostingCount(i + 1));
             }
@@ -60,16 +61,19 @@ namespace BitFunnel
         TEST(ShardDefinition, GetShard)
         {
             ShardDefinition s;
-            s.AddShard(400);
-            s.AddShard(500);
-            s.AddShard(600);
-            s.AddShard(750);
+            s.AddShard(0, 0.10);
+            s.AddShard(400, 0.10);
+            s.AddShard(500, 0.10);
+            s.AddShard(600, 0.10);
+            s.AddShard(750, 0.10);
 
             EXPECT_EQ(s.GetShard(0), 0u);
             EXPECT_EQ(s.GetShard(10), 0u);
-            EXPECT_EQ(s.GetShard(400), 0u);
+            EXPECT_EQ(s.GetShard(399), 0u);
+            EXPECT_EQ(s.GetShard(400), 1u);
             EXPECT_EQ(s.GetShard(401), 1u);
-            EXPECT_EQ(s.GetShard(750), 3u);
+            EXPECT_EQ(s.GetShard(749), 3u);
+            EXPECT_EQ(s.GetShard(750), 4u);
             EXPECT_EQ(s.GetShard(751), 4u);
             EXPECT_EQ(s.GetShard(10000), 4u);
         }
@@ -78,10 +82,11 @@ namespace BitFunnel
          TEST(ShardDefinition, RoundTrip)
          {
              ShardDefinition s1;
-             s1.AddShard(500);
-             s1.AddShard(400);
-             s1.AddShard(600);
-             s1.AddShard(450);
+             s1.AddShard(0, 0.15);
+             s1.AddShard(500, 0.15);
+             s1.AddShard(400, 0.15);
+             s1.AddShard(600, 0.15);
+             s1.AddShard(450, 0.15);
 
              std::stringstream stream;
              s1.Write(stream);
@@ -99,15 +104,6 @@ namespace BitFunnel
              {
                  EXPECT_EQ(s1.GetMaxPostingCount(i), s2.GetMaxPostingCount(i));
              }
-         }
-
-
-         // An empty shard file configures the system to have a single shard.
-         TEST(ShardDefinition, ReadEmptyFile)
-         {
-             std::stringstream input;
-             ShardDefinition s(input);
-             EXPECT_EQ(s.GetShardCount(), 1u);
          }
     }
 }

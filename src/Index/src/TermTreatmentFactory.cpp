@@ -28,7 +28,7 @@
 #include "TreatmentPrivateRank0.h"
 #include "TreatmentPrivateSharedRank0.h"
 #include "TreatmentPrivateSharedRank0And3.h"
-#include "TreatmentPrivateSharedRank0ToN.cpp"
+#include "TreatmentPrivateSharedRank0ToN.h"
 
 
 namespace BitFunnel

@@ -138,6 +138,9 @@ namespace BitFunnel
 
     void ShardCostFunction::AddShard(IShardDefinition& shardDefinition) const
     {
-        shardDefinition.AddShard(m_maxPostingCount);
+        // TODO: Issue #396. Is there some way to provider a density
+        // other than the default?
+        const double defaultDensity = 0.15;
+        shardDefinition.AddShard(m_maxPostingCount, defaultDensity);
     }
 }

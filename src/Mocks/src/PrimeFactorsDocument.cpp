@@ -225,18 +225,12 @@ namespace BitFunnel
         index->SetTermTableCollection(std::move(termTableCollection));
         index->SetSliceBufferAllocator(std::move(sliceAllocator));
 
-        std::stringstream shardText;
-        for (unsigned i = 0; i < shardCount-1; ++i)
+        auto shardDefinition = Factories::CreateShardDefinition();
+        for (unsigned i = 0; i < shardCount; ++i)
         {
-            shardText << 1 + i;
-            if (i != shardCount - 2)
-            {
-                shardText << std::endl;
-            }
+            const double defaultDensity = 0.15;
+            shardDefinition->AddShard(i * 100, defaultDensity);
         }
-
-        std::cout << shardText.str() << std::endl;
-        auto shardDefinition = Factories::CreateShardDefinition(shardText);
         index->SetShardDefinition(std::move(shardDefinition));
 
         const Term::GramSize gramSize = 1;

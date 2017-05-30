@@ -22,7 +22,8 @@
 
 #pragma once
 
-#include <vector>                                       // std::vector member.
+#include <utility>                                      // std::pair embedded.
+#include <vector>                                       // std::vector embedded.
 
 #include "BitFunnel/Configuration/IShardDefinition.h"   // Base class.
 
@@ -45,27 +46,32 @@ namespace BitFunnel
         // reconstitutes the class from a stream.
         virtual void Write(std::ostream& output) const override;
 
-        // Adds a shard to the collection. The maxPostingCount parameter
-        // specifies the maximum number of postings for any document that is
-        // considered a member of the shard. Note that maxPostingCount must be
-        // strictly larger than the posting counts of all of the previously
-        // added shards. In other words, the shards must be added in order of
-        // increasing maxPostingCount.
-        virtual void AddShard(size_t maxPostingCount) override;
+        // Adds a shard to the collection. The minPostingCount parameter
+        // specifies the minimum number of postings for any document that is
+        // considered a member of the shard. The density parameter specifies
+        // the target density for rows in the shard. This must be the same
+        // density specified when building the TermTable for this shard.
+        virtual void AddShard(size_t minPostingCount, double density) override;
 
         // Returns the ShardId that contains documents with the specified
-        // postingCount. If the documentSize is too big for any shard in the
-        // map, this method will return an invalid shard.
+        // postingCount.
         virtual ShardId GetShard(size_t postingCount) const override;
+
+        // Returns the minimum posting count for documents in the specified
+        // shard.
+        virtual size_t GetMinPostingCount(ShardId shard) const override;
 
         // Returns the maximum posting count for documents in the specified
         // shard.
         virtual size_t GetMaxPostingCount(ShardId shard) const override;
 
+        // Returns the bit densitry for the specified shard.
+        virtual double GetDensity(ShardId shard) const override;
+
         // Returns the number of shards in the map.
         virtual ShardId GetShardCount() const override;
 
     private:
-        std::vector<size_t> m_maxPostingCounts;
+        std::vector<std::pair<size_t, double>> m_shards;
     };
 }

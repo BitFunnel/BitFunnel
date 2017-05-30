@@ -48,14 +48,14 @@ namespace BitFunnel
     class SyntheticIndex
     {
     public:
-        SyntheticIndex(unsigned maxDocId, ShardId numShards)
+        SyntheticIndex(unsigned maxDocId, ShardId shardCount)
         {
             m_maxDocId = maxDocId;
             m_fileSystem = Factories::CreateFileSystem();
             m_index = Factories::CreatePrimeFactorsIndex(*m_fileSystem,
                                                          m_maxDocId,
                                                          c_streamId,
-                                                         numShards);
+                                                         shardCount);
         }
 
 
@@ -139,36 +139,41 @@ namespace BitFunnel
             std::vector<DocId> results;
             for (ShardId shardId = 0; shardId < GetIngestor().GetShardCount(); ++shardId)
             {
-                // Load accumulator with 0xFFFFFFFFFFFFFFFF which matches
-                // all documents. Then intersect with rows of the query.
-                uint64_t accumulator = std::numeric_limits<uint64_t>::max();
-                unsigned query = queryInput;
-
-                for (size_t i = 0; query != 0; query >>= 1, ++i)
+                IShard & shard = m_index->GetIngestor().GetShard(shardId);
+                auto sliceBuffers = shard.GetSliceBuffers();
+                if (sliceBuffers.size() > 0)
                 {
-                    if (query & 0x1)
-                    {
-                        char const* text = Primes::c_primesBelow10000Text[i].c_str();
+                    // Load accumulator with 0xFFFFFFFFFFFFFFFF which matches
+                    // all documents. Then intersect with rows of the query.
+                    uint64_t accumulator = std::numeric_limits<uint64_t>::max();
+                    unsigned query = queryInput;
 
-                        Term term(Term::ComputeRawHash(text), c_streamId, 0);
-                        RowIdSequence rows(term, m_index->GetTermTable(shardId));
-                        for (auto row : rows)
+                    for (size_t i = 0; query != 0; query >>= 1, ++i)
+                    {
+                        if (query & 0x1)
                         {
-                            IShard & shard = m_index->GetIngestor().GetShard(shardId);
-                            auto rowOffset = shard.GetRowOffset(row);
-                            auto sliceBuffers = shard.GetSliceBuffers();
-                            auto base = static_cast<char*>(sliceBuffers[0]);
-                            auto ptr = base + rowOffset;
-                            accumulator &= *reinterpret_cast<uint64_t*>(ptr);
+                            char const* text = Primes::c_primesBelow10000Text[i].c_str();
+
+                            Term term(Term::ComputeRawHash(text), c_streamId, 0);
+                            RowIdSequence rows(term, m_index->GetTermTable(shardId));
+                            for (auto row : rows)
+                            {
+                                //IShard & shard = m_index->GetIngestor().GetShard(shardId);
+                                auto rowOffset = shard.GetRowOffset(row);
+                                //auto sliceBuffers = shard.GetSliceBuffers();
+                                auto base = static_cast<char*>(sliceBuffers[0]);
+                                auto ptr = base + rowOffset;
+                                accumulator &= *reinterpret_cast<uint64_t*>(ptr);
+                            }
                         }
                     }
-                }
 
-                for (unsigned i = 0; accumulator != 0; ++i, accumulator >>= 1)
-                {
-                    if (accumulator & 1)
+                    for (unsigned i = 0; accumulator != 0; ++i, accumulator >>= 1)
                     {
-                        results.push_back(i);
+                        if (accumulator & 1)
+                        {
+                            results.push_back(i);
+                        }
                     }
                 }
             }
@@ -275,9 +280,9 @@ namespace BitFunnel
         const int c_maxDocId = 63;
         // Note: we'll need to allocate more memory if we want to add more
         // shards.
-        for (ShardId numShards = 1; numShards < 4; ++numShards)
+        for (ShardId shard = 1; shard < 4; ++shard)
         {
-            SyntheticIndex index(c_maxDocId, numShards);
+            SyntheticIndex index(c_maxDocId, shard);
 
             // We don't look at docId 0 because it matches everything, which
             // will cause it to match all documents in all shards. It's possible

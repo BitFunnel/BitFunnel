@@ -53,8 +53,10 @@ namespace BitFunnel
         {
             //auto shardDefinition = Factories::CreateDefaultShardDefinition();
             auto shardDefinition = Factories::CreateShardDefinition();
-            shardDefinition->AddShard(32);
-            shardDefinition->AddShard(64);
+            const double defaultDensity = 0.15;
+            shardDefinition->AddShard(0, defaultDensity);
+            shardDefinition->AddShard(32, defaultDensity);
+            shardDefinition->AddShard(64, defaultDensity);
 
             {
                 auto out = fileManager->ShardDefinition().OpenForWrite();
