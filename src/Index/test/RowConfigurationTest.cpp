@@ -29,9 +29,10 @@
 #include <algorithm>        // std::equal
 #include <deque>
 
-#include "BitFunnel/Exceptions.h"
 #include "gtest/gtest.h"
-#include "TermTreatments.h"
+
+#include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/ITermTreatment.h"
 
 
 namespace BitFunnel
