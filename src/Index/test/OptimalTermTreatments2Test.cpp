@@ -61,9 +61,10 @@ namespace BitFunnel
                     << std::setprecision(2) << "idf " << 0.1 * idf
                     << ": " << std::setprecision(6);
 
-                auto config2 = treatments.FindBestTreatment(density, signal, snr, variant);
-                auto config1 = FindBestTreatment(density, signal, snr, variant);
-                ASSERT_EQ(config1, config2);
+                // auto config2 = 
+                treatments.FindBestTreatment(density, signal, snr, variant);
+                //auto config1 = FindBestTreatment(density, signal, snr, variant);
+                //ASSERT_EQ(config1, config2);
 
                 //auto config = FindBestTreatment(density, signal, snr, variant);
                 //m_configurations.push_back(RowConfigurationFromSizeT(config));

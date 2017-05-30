@@ -87,7 +87,7 @@ namespace BitFunnel
         m_bestDQ = -1;
         m_bestConfiguration = 0ull;
 
-        size_t maxRank = 3;
+        size_t maxRank = 5;
         bool firstRow = true;
         size_t config = 0;
         double uncorrelatedNoise = 0.0;
@@ -106,12 +106,12 @@ namespace BitFunnel
                       expectedQuadwordReads,
                       pQuadwordRead,
                       bitsPerDocument);
-            std::cout << "Best configuration so far: " << m_bestConfiguration
-                << " DQ: " << m_bestDQ << std::endl;
+            //std::cout << "Best configuration so far: " << m_bestConfiguration
+            //    << " DQ: " << m_bestDQ << std::endl;
         }
 
-        std::cout << "Final best configuration: " << m_bestConfiguration
-            << " DQ: " << m_bestDQ << std::endl;
+        //std::cout << "Final best configuration: " << m_bestConfiguration
+        //    << " DQ: " << m_bestDQ << std::endl;
 
         return m_bestConfiguration;
     }
@@ -138,14 +138,15 @@ namespace BitFunnel
             noise = 0.0;
         }
 
-        for (size_t rowCount = 0; rowCount < m_maxRowsPerRank; ++rowCount)
+        //for (size_t rowCount = 0; rowCount < m_maxRowsPerRank; ++rowCount)
+        for (size_t rowCount = 0;;)
         {
-            std::cout << "Rank: " << rank
-                << " Config: " << configuration
-                << " PreviousCorrelatedNoise: " << previousCorrelatedNoise
-                << " snr = " << m_signal / (uncorrelatedNoise + correlatedNoise)
-                << " dq = " << 1.0 / (expectedQuadwordReads * bitsPerDocument)
-                << std::endl;
+            //std::cout << "Rank: " << rank
+            //    << " Config: " << configuration
+            //    << " PreviousCorrelatedNoise: " << previousCorrelatedNoise
+            //    << " snr = " << m_signal / (uncorrelatedNoise + correlatedNoise)
+            //    << " dq = " << 1.0 / (expectedQuadwordReads * bitsPerDocument)
+            //    << std::endl;
 
             //if (!firstRow)
             //{
@@ -176,10 +177,45 @@ namespace BitFunnel
             //    }
             //}
 
-            //if (rowCount >= m_maxRowsPerRank)
-            //{
-            //    break;
-            //}
+            if (!firstRow)
+            {
+                if (rank > 0)
+                {
+                    Recursion(rank - 1,
+                              firstRow,
+                              configuration * 10,
+                              uncorrelatedNoise,
+                              correlatedNoise,
+                              expectedQuadwordReads,
+                              pQuadwordRead,
+                              bitsPerDocument);
+                }
+            }
+                //else
+                //{
+                //    // Base case.
+                //    //                    double snr = m_signal / (uncorrelatedNoise + previousCorrelatedNoise);
+                //    double snr = m_signal / totalNoise;
+                //    if (snr >= m_snr)
+                //    {
+                //        double dq = 1.0 / (expectedQuadwordReads * bitsPerDocument);
+                //        if (dq > m_bestDQ)
+                //        {
+                //            m_bestDQ = dq;
+                //            m_bestConfiguration = configuration;
+                //            // Not sure whether one can prune the search here.
+                //            // Need to prove that it is ok.
+                //            // return;
+                //        }
+                //    }
+                //}
+//            }
+
+
+            if (rowCount >= m_maxRowsPerRank)
+            {
+                break;
+            }
 
             // Add another row.
             ++rowCount;
@@ -210,40 +246,60 @@ namespace BitFunnel
                 bitsPerDocument += signalAtRank / m_density;
             }
 
-            if (!firstRow)
+            if (rank == 0)
             {
-                if (rank > 0)
+                // Base case.
+                //                    double snr = m_signal / (uncorrelatedNoise + previousCorrelatedNoise);
+                double snr = m_signal / totalNoise;
+                if (snr >= m_snr)
                 {
-                    Recursion(rank - 1,
-                              firstRow,
-                              configuration * 10,
-                              uncorrelatedNoise,
-                              correlatedNoise,
-                              expectedQuadwordReads,
-                              pQuadwordRead,
-                              bitsPerDocument);
-                }
-                else
-                {
-                    // Base case.
-//                    double snr = m_signal / (uncorrelatedNoise + previousCorrelatedNoise);
-                    double snr = m_signal / totalNoise;
-                    if (snr >= m_snr)
+                    double dq = 1.0 / (expectedQuadwordReads * bitsPerDocument);
+                    if (dq > m_bestDQ)
                     {
-                        double dq = 1.0 / (expectedQuadwordReads * bitsPerDocument);
-                        if (dq > m_bestDQ)
-                        {
-                            m_bestDQ = dq;
-                            m_bestConfiguration = configuration;
-                            // Not sure whether one can prune the search here.
-                            // Need to prove that it is ok.
-                            // return;
-                        }
+                        m_bestDQ = dq;
+                        m_bestConfiguration = configuration;
+                        // Not sure whether one can prune the search here.
+                        // Need to prove that it is ok.
+                        // return;
                     }
                 }
             }
         }
     }
+
+
+//            if (!firstRow)
+//            {
+//                if (rank > 0)
+//                {
+//                    Recursion(rank - 1,
+//                              firstRow,
+//                              configuration * 10,
+//                              uncorrelatedNoise,
+//                              correlatedNoise,
+//                              expectedQuadwordReads,
+//                              pQuadwordRead,
+//                              bitsPerDocument);
+//                }
+//                else
+//                {
+//                    // Base case.
+////                    double snr = m_signal / (uncorrelatedNoise + previousCorrelatedNoise);
+//                    double snr = m_signal / totalNoise;
+//                    if (snr >= m_snr)
+//                    {
+//                        double dq = 1.0 / (expectedQuadwordReads * bitsPerDocument);
+//                        if (dq > m_bestDQ)
+//                        {
+//                            m_bestDQ = dq;
+//                            m_bestConfiguration = configuration;
+//                            // Not sure whether one can prune the search here.
+//                            // Need to prove that it is ok.
+//                            // return;
+//                        }
+//                    }
+//                }
+//            }
 
 
     //*************************************************************************
