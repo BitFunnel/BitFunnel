@@ -33,7 +33,7 @@ namespace BitFunnel
     class TreatmentOptimal : public ITermTreatment
     {
     public:
-        TreatmentOptimal(double density, double snr, int variant);
+        TreatmentOptimal(double density, double snr);
 
         //
         // ITermTreatment methods.
@@ -58,9 +58,8 @@ namespace BitFunnel
 
     private:
         size_t FindBestTreatment(double density,
-                                    double signal,
-                                    double snr,
-                                    int variant);
+                                 double signal,
+                                 double snr);
 
         std::vector<RowConfiguration> m_configurations;
     };

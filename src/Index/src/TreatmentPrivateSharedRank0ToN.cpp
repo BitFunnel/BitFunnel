@@ -38,8 +38,7 @@ namespace BitFunnel
     //
     //*************************************************************************
     TreatmentPrivateSharedRank0ToN::TreatmentPrivateSharedRank0ToN(double density,
-                                                                   double snr,
-                                                                   int /*variant*/)
+                                                                   double snr)
     {
         // TODO: what should maxDensity be? Note that this is different from the
         // density liimt that's passed in.

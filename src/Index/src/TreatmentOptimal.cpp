@@ -34,7 +34,9 @@ namespace BitFunnel
     class Analyzer
     {
     public:
-        static size_t FindOptimalConfiguration(double density, double signal, double snr);
+        static size_t FindOptimalConfiguration(double density,
+                                               double signal,
+                                               double snr);
 
     private:
         Analyzer(double density, double signal, double snr);
@@ -100,12 +102,7 @@ namespace BitFunnel
                       expectedQuadwordReads,
                       pQuadwordRead,
                       bitsPerDocument);
-            //std::cout << "Best configuration so far: " << m_bestConfiguration
-            //    << " DQ: " << m_bestDQ << std::endl;
         }
-
-        //std::cout << "Final best configuration: " << m_bestConfiguration
-        //    << " DQ: " << m_bestDQ << std::endl;
 
         return m_bestConfiguration;
     }
@@ -214,12 +211,11 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    // TreatmentOptimal2
+    // TreatmentOptimal
     //
     //*************************************************************************
     TreatmentOptimal::TreatmentOptimal(double density,
-                                         double snr,
-                                         int variant)
+                                       double snr)
     {
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
@@ -233,7 +229,7 @@ namespace BitFunnel
                 std::cout
                     << std::setprecision(2) << "idf " << 0.1 * idf
                     << ": " << std::setprecision(6);
-                auto config = FindBestTreatment(density, signal, snr, variant);
+                auto config = FindBestTreatment(density, signal, snr);
                 m_configurations.push_back(RowConfiguration(config));
             }
             else
@@ -261,11 +257,9 @@ namespace BitFunnel
     }
 
 
-
     size_t TreatmentOptimal::FindBestTreatment(double density,
-                                                double signal,
-                                                double snr,
-                                                int /*variant*/)
+                                               double signal,
+                                               double snr)
     {
         size_t configuration = Analyzer::FindOptimalConfiguration(density, signal, snr);
         std::cout << "Best configuration is " << configuration << std::endl;

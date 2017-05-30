@@ -43,7 +43,7 @@ namespace BitFunnel
     class TreatmentPrivateSharedRank0 : public ITermTreatment
     {
     public:
-        TreatmentPrivateSharedRank0(double density, double snr, int variant);
+        TreatmentPrivateSharedRank0(double density, double snr);
 
         //
         // ITermTreatment methods.

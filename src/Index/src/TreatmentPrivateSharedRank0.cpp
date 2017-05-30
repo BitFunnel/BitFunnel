@@ -37,8 +37,7 @@ namespace BitFunnel
     //
     //*************************************************************************
     TreatmentPrivateSharedRank0::TreatmentPrivateSharedRank0(double density,
-                                                             double snr,
-                                                             int /*variant*/)
+                                                             double snr)
     {
         // Fill up vector of RowConfigurations. GetTreatment() will use the
         // IdfSum() value of the Term as an index into this vector.

@@ -34,10 +34,9 @@ namespace BitFunnel
     {
         double density = 0.15;
         double snr = 10.0;
-        int variant = 0;
 
-        TreatmentOptimal treatments2(density, snr, variant);
-        TreatmentOptimalOld treatments1(density, snr, variant);
+        TreatmentOptimal treatments2(density, snr);
+        TreatmentOptimalOld treatments1(density, snr);
 
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {

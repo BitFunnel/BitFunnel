@@ -37,7 +37,7 @@ namespace BitFunnel
     // TreatmentOptimalOld
     //
     //*************************************************************************
-    TreatmentOptimalOld::TreatmentOptimalOld(double density, double snr, int variant)
+    TreatmentOptimalOld::TreatmentOptimalOld(double density, double snr)
     {
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
@@ -51,7 +51,7 @@ namespace BitFunnel
                 std::cout
                     << std::setprecision(2) << "idf " << 0.1 * idf
                     << ": " << std::setprecision(6);
-                auto config = FindBestTreatment(density, signal, snr, variant);
+                auto config = FindBestTreatment(density, signal, snr);
                 m_configurations.push_back(RowConfiguration(config));
             }
             else
@@ -87,9 +87,9 @@ namespace BitFunnel
     // TODO: This doesn't need to return a pair.
     TermTreatmentMetrics
         TreatmentOptimalOld::Analyze(size_t configuration,
-                                  double density,
-                                  double signal,
-                                  bool verbose)
+                                     double density,
+                                     double signal,
+                                     bool verbose)
     {
         // Unpack configuration.
         std::vector<size_t> rowsAtRank;
@@ -211,9 +211,8 @@ namespace BitFunnel
 
 
     size_t TreatmentOptimalOld::FindBestTreatment(double density,
-                                               double signal,
-                                               double snr,
-                                               int variant)
+                                                  double signal,
+                                                  double snr)
     {
         // Variables used to track the best row configuration and its
         // TermTreatmentMetrics.
@@ -231,34 +230,10 @@ namespace BitFunnel
             // We only consider configurations that result in a snr above the threshold.
             if (metrics.GetSNR() >= snr)
             {
-                // TODO: Decide whether to keep variant.
-                // What is default value of variant today?
-                if (variant == 1)
+                if (metrics.GetDQ() > bestResult.GetDQ())
                 {
-                    // variant 1: optimize for Q.
-                    if (metrics.GetQuadwords() < bestResult.GetQuadwords())
-                    {
-                        bestResult = metrics;
-                        bestConfiguration = configuration;
-                    }
-                }
-                else if (variant == 2)
-                {
-                    // variant 2: optimize for D.
-                    if (metrics.GetBits() < bestResult.GetBits())
-                    {
-                        bestResult = metrics;
-                        bestConfiguration = configuration;
-                    }
-                }
-                else
-                {
-                    // default variant: optimize for DQ.
-                    if (metrics.GetDQ() > bestResult.GetDQ())
-                    {
-                        bestResult = metrics;
-                        bestConfiguration = configuration;
-                    }
+                    bestResult = metrics;
+                    bestConfiguration = configuration;
                 }
             }
         }

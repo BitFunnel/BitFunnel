@@ -35,8 +35,7 @@ namespace BitFunnel
     //
     //*************************************************************************
     TreatmentClassicBitsliced::TreatmentClassicBitsliced(double density,
-                                                         double snr,
-                                                         int /*variant*/)
+                                                         double snr)
     {
         // TODO: How can idf be changed by the user?
         Term::IdfX10 idf = 40;

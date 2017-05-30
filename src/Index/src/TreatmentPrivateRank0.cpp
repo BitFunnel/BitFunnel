@@ -35,8 +35,7 @@ namespace BitFunnel
     //
     //*************************************************************************
     TreatmentPrivateRank0::TreatmentPrivateRank0(double /*density*/,
-                                                 double /*snr*/,
-                                                 int /*variant*/)
+                                                 double /*snr*/)
     {
         // Same configuration for all terms - one private rank 0 row.
         m_configuration.push_front(RowConfiguration::Entry(0, 1));

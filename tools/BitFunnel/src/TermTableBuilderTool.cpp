@@ -66,12 +66,6 @@ namespace BitFunnel
             "treatment",
             "Name of the term treatment to use.");
 
-        CmdLine::OptionalParameter<int> variant(
-            "variant",
-            "Set variant option for treatment.",
-            0u,
-            CmdLine::GreaterThan(-1));
-
         CmdLine::OptionalParameter<double> snr(
             "snr",
             "Set signal-to-noise ratio.",
@@ -82,7 +76,6 @@ namespace BitFunnel
         parser.AddParameter(config);
         parser.AddParameter(density);
         parser.AddParameter(treatment);
-        parser.AddParameter(variant);
         parser.AddParameter(snr);
 
         int returnCode = 1;
@@ -136,8 +129,7 @@ namespace BitFunnel
                                    shard,
                                    density,
                                    snr,
-                                   adhocFrequency,
-                                   variant);
+                                   adhocFrequency);
                 }
 
                 returnCode = 0;
@@ -175,8 +167,7 @@ namespace BitFunnel
         ShardId shard,
         double density,
         double snr,
-        double adhocFrequency,
-        int variant) const
+        double adhocFrequency) const
     {
         output << "Loading files for TermTable build: "
                << shard << std::endl;
@@ -185,7 +176,7 @@ namespace BitFunnel
             *fileManager.DocFreqTable(shard).OpenForRead()));
 
         auto treatments = Factories::CreateTreatmentFactory();
-        auto treatment(treatments->CreateTreatment(treatmentName, density, snr, variant));
+        auto treatment(treatments->CreateTreatment(treatmentName, density, snr));
 
         auto facts(Factories::CreateFactSet());
 

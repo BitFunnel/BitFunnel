@@ -37,7 +37,7 @@ namespace BitFunnel
     class TreatmentClassicBitsliced : public ITermTreatment
     {
     public:
-        TreatmentClassicBitsliced(double density, double snr, int variant);
+        TreatmentClassicBitsliced(double density, double snr);
 
         //
         // ITermTreatment methods.

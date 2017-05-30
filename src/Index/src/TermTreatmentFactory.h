@@ -50,21 +50,19 @@ namespace BitFunnel
         virtual std::unique_ptr<ITermTreatment>
             CreateTreatment(char const * name,
                             double density,
-                            double snr,
-                            int variant) const override;
+                            double snr) const override;
 
     private:
         typedef std::unique_ptr<ITermTreatment>(*Creator)(
             double density,
-            double snr,
-            int variant);
+            double snr);
 
         template <class TREATMENT>
-        static std::unique_ptr<ITermTreatment>
-            Create(double density, double snr, int variant)
-            {
+        static std::unique_ptr<ITermTreatment> Create(double density,
+                                                      double snr)
+        {
             return std::unique_ptr<ITermTreatment>
-                (new TREATMENT(density, snr, variant));
+                (new TREATMENT(density, snr));
         }
 
         template <class TREATMENT>
