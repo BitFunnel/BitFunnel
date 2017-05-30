@@ -260,6 +260,7 @@ namespace BitFunnel
                         m_bestConfiguration = configuration;
                         // Not sure whether one can prune the search here.
                         // Need to prove that it is ok.
+                        // Not sure if it is any faster.
                         // return;
                     }
                 }

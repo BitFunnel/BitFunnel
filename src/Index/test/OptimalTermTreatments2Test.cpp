@@ -38,7 +38,7 @@ namespace BitFunnel
         double snr = 10.0;
         int variant = 0;
 
-        std::array<size_t, 4> configurations{ { 1, 3, 123, 12023 } };
+//        std::array<size_t, 4> configurations{ { 1, 3, 123, 12023 } };
 
         TreatmentOptimal2 treatments(density, snr, variant);
 
