@@ -50,7 +50,7 @@ namespace BitFunnel
         AddTreatment<TreatmentPrivateSharedRank0>();
         AddTreatment<TreatmentPrivateSharedRank0And3>();
         AddTreatment<TreatmentPrivateSharedRank0ToN>();
-        AddTreatment<TreatmentOptimal2>();
+        AddTreatment<TreatmentOptimal>();
         AddTreatment<TreatmentClassicBitsliced>();
     }
 

@@ -26,7 +26,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include "OptimalTermTreatments2.h"
+#include "TreatmentOptimal.h"
 
 
 namespace BitFunnel
@@ -217,7 +217,7 @@ namespace BitFunnel
     // TreatmentOptimal2
     //
     //*************************************************************************
-    TreatmentOptimal2::TreatmentOptimal2(double density,
+    TreatmentOptimal::TreatmentOptimal(double density,
                                          double snr,
                                          int variant)
     {
@@ -250,7 +250,7 @@ namespace BitFunnel
     }
 
 
-    RowConfiguration TreatmentOptimal2::GetTreatment(Term term) const
+    RowConfiguration TreatmentOptimal::GetTreatment(Term term) const
     {
         // DESIGN NOTE: we can't c_maxIdfX10Value directly to min because min
         // takes a reference and the compiler has already turned it into a
@@ -262,7 +262,7 @@ namespace BitFunnel
 
 
 
-    size_t TreatmentOptimal2::FindBestTreatment(double density,
+    size_t TreatmentOptimal::FindBestTreatment(double density,
                                                 double signal,
                                                 double snr,
                                                 int /*variant*/)

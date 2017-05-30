@@ -121,10 +121,10 @@ namespace BitFunnel
     };
 
 
-    class TreatmentOptimal : public ITermTreatment
+    class TreatmentOptimalOld : public ITermTreatment
     {
     public:
-        TreatmentOptimal(double density, double snr, int variant);
+        TreatmentOptimalOld(double density, double snr, int variant);
 
         //
         // ITermTreatment methods.

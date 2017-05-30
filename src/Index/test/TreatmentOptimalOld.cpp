@@ -27,17 +27,17 @@
 #include <iostream>
 #include <vector>
 
-#include "OldOptimalTermTreatments.h"
+#include "TreatmentOptimalOld.h"
 
 
 namespace BitFunnel
 {
     //*************************************************************************
     //
-    // TreatmentOptimal
+    // TreatmentOptimalOld
     //
     //*************************************************************************
-    TreatmentOptimal::TreatmentOptimal(double density, double snr, int variant)
+    TreatmentOptimalOld::TreatmentOptimalOld(double density, double snr, int variant)
     {
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
@@ -68,7 +68,7 @@ namespace BitFunnel
     }
 
 
-    RowConfiguration TreatmentOptimal::GetTreatment(Term term) const
+    RowConfiguration TreatmentOptimalOld::GetTreatment(Term term) const
     {
         // DESIGN NOTE: we can't c_maxIdfX10Value directly to min because min
         // takes a reference and the compiler has already turned it into a
@@ -86,7 +86,7 @@ namespace BitFunnel
     // and a single rank 0 row.
     // TODO: This doesn't need to return a pair.
     TermTreatmentMetrics
-        TreatmentOptimal::Analyze(size_t configuration,
+        TreatmentOptimalOld::Analyze(size_t configuration,
                                   double density,
                                   double signal,
                                   bool verbose)
@@ -210,7 +210,7 @@ namespace BitFunnel
     }
 
 
-    size_t TreatmentOptimal::FindBestTreatment(double density,
+    size_t TreatmentOptimalOld::FindBestTreatment(double density,
                                                double signal,
                                                double snr,
                                                int variant)

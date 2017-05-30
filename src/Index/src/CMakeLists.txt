@@ -17,7 +17,6 @@ set(CPPFILES
     IDocumentCache.cpp
     IndexedIdfTable.cpp
     Ingestor.cpp
-    OptimalTermTreatments2.cpp
     PackedRowIdSequence.cpp
     Recycler.cpp
     RowId.cpp
@@ -39,6 +38,7 @@ set(CPPFILES
     TermToText.cpp
     TermTreatmentFactory.cpp
     TreatmentClassicBitsliced.cpp
+    TreatmentOptimal.cpp
     TreatmentPrivateRank0.cpp
     TreatmentPrivateSharedRank0.cpp
     TreatmentPrivateSharedRank0And3.cpp
@@ -68,7 +68,6 @@ set(PRIVATE_HFILES
     IndexedIdfTable.h
     Ingestor.h
     IRecyclable.h
-    OptimalTermTreatments2.h
     Recycler.h
     RowTableDescriptor.h
     RowTableAnalyzer.h
@@ -83,6 +82,7 @@ set(PRIVATE_HFILES
     TermTableCollection.h
     TermTreatmentFactory.h
     TreatmentClassicBitsliced.h
+    TreatmentOptimal.h
     TreatmentPrivateRank0.h
     TreatmentPrivateSharedRank0.h
     TreatmentPrivateSharedRank0And3.h

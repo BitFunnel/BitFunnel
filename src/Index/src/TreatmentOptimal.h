@@ -20,32 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#pragma once
 
-#include "gtest/gtest.h"
+#include <cstddef>                          // size_t parameter
+#include <vector>                           // std::vector embedded.
 
-#include "BitFunnel/Term.h"
-#include "OldOptimalTermTreatments.h"
-#include "OptimalTermTreatments2.h"
+#include "BitFunnel/Index/ITermTreatment.h" // ITermTreatment base class.
 
 
 namespace BitFunnel
 {
-    TEST(OptimalTermTreatments2Test, Parity)
+    class TreatmentOptimal : public ITermTreatment
     {
-        double density = 0.15;
-        double snr = 10.0;
-        int variant = 0;
+    public:
+        TreatmentOptimal(double density, double snr, int variant);
 
-        TreatmentOptimal2 treatments2(density, snr, variant);
-        TreatmentOptimal treatments1(density, snr, variant);
+        //
+        // ITermTreatment methods.
+        //
 
-        for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
+        virtual RowConfiguration GetTreatment(Term term) const override;
+
+
+        //
+        // Static methods used by ITermTreatmentFactory
+        //
+        static char const * GetName()
         {
-            Term term(0ull, 0u, idf);
-            auto t1 = treatments1.GetTreatment(term);
-            auto t2 = treatments2.GetTreatment(term);
-
-            ASSERT_EQ(t1, t2);
+            return "Optimal";
         }
-    }
+
+
+        static char const * GetDescription()
+        {
+            return "Optimal TermTreatment, given some assumptions.";
+        }
+
+    private:
+        size_t FindBestTreatment(double density,
+                                    double signal,
+                                    double snr,
+                                    int variant);
+
+        std::vector<RowConfiguration> m_configurations;
+    };
 }
