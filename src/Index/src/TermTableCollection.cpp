@@ -28,6 +28,8 @@
 #include "TermTable.h"
 #include "TermTableCollection.h"
 
+#include <iostream>         // Temporary - for debugging.
+
 
 namespace BitFunnel
 {
@@ -42,6 +44,8 @@ namespace BitFunnel
     std::unique_ptr<ITermTableCollection>
         Factories::CreateTermTableCollection(ShardId shardCount)
     {
+        std::cout << "  Factories::CreateTermTableCollection(" << shardCount << ")" << std::endl;
+
         return std::unique_ptr<ITermTableCollection>(
             new TermTableCollection(shardCount));
     }

@@ -30,6 +30,7 @@
 #include "LoggerInterfaces/Check.h"
 #include "ShardDefinition.h"
 
+#include <iostream>         // Temporary - for debugging.
 
 namespace BitFunnel
 {
@@ -81,16 +82,22 @@ namespace BitFunnel
     std::unique_ptr<IShardDefinition>
         BitFunnel::Factories::LoadOrCreateDefaultShardDefinition(IFileManager & fileManager)
     {
+        std::cout << "  Factories::LoadOrCreateDefaultShardDefinition()" << std::endl;
         if (fileManager.ShardDefinition().Exists())
         {
+            std::cout << "    ShardDefinition file exists. Load it." << std::endl;
             auto input = fileManager.ShardDefinition().OpenForRead();
-            return CreateShardDefinition(*input);
+            auto shardDefinition = CreateShardDefinition(*input);
+            std::cout << "    Shard count == " << shardDefinition->GetShardCount() << std::endl;
+            return shardDefinition;
         }
         else
         {
+            std::cout << "    ShardDefinition file does not exist. Create default." << std::endl;
             auto shardDefinition = CreateDefaultShardDefinition();
             auto output = fileManager.ShardDefinition().OpenForWrite();
             shardDefinition->Write(*output);
+            std::cout << "    Shard count == " << shardDefinition->GetShardCount() << std::endl;
             return shardDefinition;
         }
     }

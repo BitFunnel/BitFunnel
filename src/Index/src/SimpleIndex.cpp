@@ -29,6 +29,8 @@
 #include "LoggerInterfaces/Check.h"
 #include "SimpleIndex.h"
 
+#include <iostream>         // Temporary - for debugging.
+
 
 namespace BitFunnel
 {
@@ -56,6 +58,7 @@ namespace BitFunnel
           m_isStarted(false),
           m_blockAllocatorBufferSize(0)
     {
+        std::cout << "SimpleIndex::SimpleIndex()" << std::endl;
     }
 
 
@@ -132,6 +135,7 @@ namespace BitFunnel
     void SimpleIndex::SetShardDefinition(
         std::unique_ptr<IShardDefinition> definition)
     {
+        std::cout << "SimpleIndex::SetShardDefinition(" << std::hex << definition.get() << std::dec << ")" << std::endl;
         EnsureStarted(false);
         CHECK_EQ(m_shardDefinition.get(), nullptr)
             << "Attempting to overwrite existing ShardDefinition.";
@@ -158,6 +162,7 @@ namespace BitFunnel
     void SimpleIndex::SetTermTableCollection(
         std::unique_ptr<ITermTableCollection> termTables)
     {
+        std::cout << "SimpleIndex::SetTermTableCollection(" << std::hex << termTables.get() << std::dec << ")" << std::endl;
         EnsureStarted(false);
         CHECK_EQ(m_termTables.get(), nullptr)
             << "Attempting to overwrite existing TermTableCollection.";
@@ -173,6 +178,7 @@ namespace BitFunnel
                                              size_t gramSize,
                                              bool generateTermToText)
     {
+        std::cout << "SimpleIndex::ConfigureForStatistics()" << std::endl;
         EnsureStarted(false);
 
         //if (m_fileSystem.get() == nullptr)
@@ -195,13 +201,17 @@ namespace BitFunnel
         }
 
         // TODO: consider making this work if no ShardDefinition exists.
+        std::cout << "  m_shardDefinition.get() == " << std::hex << m_shardDefinition.get() << std::dec << std::endl;
         if (m_shardDefinition.get() == nullptr)
         {
+            std::cout << "  m_shardDefinition is nullptr" << std::endl;
             m_shardDefinition = Factories::LoadOrCreateDefaultShardDefinition(*m_fileManager);
         }
 
+        std::cout << "  m_termTables.get() == " << std::hex << m_termTables.get() << std::dec << std::endl;
         if (m_termTables.get() == nullptr)
         {
+            std::cout << "  m_termTables is nullptr" << std::endl;
             // When gathering corpus statistics, we don't yet have any
             // TermTables. For now just create a collection of default
             // initialized TermTables.
