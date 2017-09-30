@@ -72,8 +72,8 @@ namespace BitFunnel
         // with CmdLineParser.
         CmdLine::OptionalParameter<int> memory(
             "memory",
-            "Specify the amount of memory to use for Slice buffers.",
-            1000000000u,
+            "Specify the amount of memory (in KiB) to use for Slice buffers.",
+            1000000u,
             CmdLine::GreaterThan(0));
 
         CmdLine::OptionalParameter<char const *> scriptFile(
@@ -100,7 +100,7 @@ namespace BitFunnel
                    path,
                    static_cast<size_t>(gramSize),
                    static_cast<size_t>(threadCount),
-                   static_cast<size_t>(memory),
+                   static_cast<size_t>(memory) * 1024ull,
                    scriptFile);
                 returnCode = 0;
             }
