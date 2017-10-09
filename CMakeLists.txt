@@ -194,6 +194,7 @@ set(PLAN_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryRunner.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/TermMatchNode.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/VerifyOneQuery.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/VerifyOneQuerySynthetic.h
 )
 
 set(UTILITIES_HFILES
@@ -212,6 +213,7 @@ set(UTILITIES_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskDistributor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ITaskProcessor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/IThreadManager.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Primes.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/Random.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/ReadLines.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Utilities/RingBuffer.h

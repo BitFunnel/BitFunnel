@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 #include <iostream>
+#include <limits>
+#include <sstream>
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IStreamConfiguration.h"
@@ -32,19 +34,99 @@
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryParser.h"     // TODO: Can this move to src/plan?
-#include "BitFunnel/Plan/VerifyOneQuery.h"
+#include "BitFunnel/Plan/VerifyOneQuerySynthetic.h"
 #include "BitFunnel/Utilities/Factories.h"
+#include "BitFunnel/Utilities/Primes.h"
 #include "MatchVerifier.h"
 #include "QueryResources.h"
 #include "ResultsBuffer.h"
-#include "TermMatchTreeEvaluator.h"
 
 
 namespace BitFunnel
 {
-    std::unique_ptr<IMatchVerifier> VerifyOneQuery(
+    void VerifySynthetic(
+        std::ostream& output,
         ISimpleIndex const & index,
-        std::string query,
+        bool compilerMode)
+    {
+        size_t termCount = 0;
+        size_t expectedMatchCount = 0;
+        size_t truePositiveCount = 0;
+        size_t falsePositiveCount = 0;
+        size_t falseNegativeCount = 0;
+
+        for (auto prime : Primes::c_primesBelow10000)
+        {
+            auto verifier = VerifyOneQuerySynthetic(index, prime, compilerMode);
+
+            ++termCount;
+            expectedMatchCount += verifier->GetExpected().size();
+
+            if (verifier->GetFalseNegativeCount() > 0)
+            {
+                truePositiveCount += verifier->GetTruePositiveCount();
+                falsePositiveCount += verifier->GetFalsePositiveCount();
+                falseNegativeCount += verifier->GetFalseNegativeCount();
+
+                output << "False negatives for query \"p" << prime << "\":" << std::endl;
+                auto falseNegatives = verifier->GetFalseNegatives();
+                bool first = true;
+                for (auto id : falseNegatives)
+                {
+                    if (!first)
+                    {
+                        output << ", ";
+                    }
+                    else
+                    {
+                        first = false;
+                    }
+                    output << id;
+                }
+                output << std::endl;
+            }
+        }
+
+        output << "Inspected "
+            << expectedMatchCount << " matches for "
+            << termCount << " terms." << std::endl;
+
+        double falsePositiveRate = 0;
+        if (truePositiveCount + falsePositiveCount > 0)
+        {
+            falsePositiveRate =
+                static_cast<double>(falsePositiveCount) /
+                (truePositiveCount + falsePositiveCount);
+        }
+        output << "False positive rate: " << falsePositiveRate << std::endl;
+
+        double snr = std::numeric_limits<double>::infinity();
+        if (falsePositiveCount > 0)
+        {
+            snr = static_cast<double>(truePositiveCount) /
+                falsePositiveCount;
+        }
+        output << "Signal to noise ratio: " << snr << std::endl;
+
+        if (falseNegativeCount > 0)
+        {
+            output << "WARNING: found "
+                << falseNegativeCount
+                << " false negatives."
+                << std::endl;
+        }
+
+        if (expectedMatchCount == 0)
+        {
+            output << "WARNING: no matches verified. Has index been loaded?"
+                << std::endl;
+        }
+    }
+
+
+    std::unique_ptr<IMatchVerifier> VerifyOneQuerySynthetic(
+        ISimpleIndex const & index,
+        size_t primeFactor,
         bool compilerMode)
     {
         QueryResources resources;
@@ -52,6 +134,11 @@ namespace BitFunnel
 
         // TODO: Get this from ISimpleIndex?
         auto streamConfiguration = Factories::CreateStreamConfiguration();
+
+        std::stringstream queryStream;
+        queryStream << "p";
+        queryStream << primeFactor;
+        std::string query(queryStream.str());
 
         QueryParser parser(query.c_str(), *streamConfiguration, allocator);
         auto tree = parser.Parse();
@@ -65,26 +152,16 @@ namespace BitFunnel
         }
         else
         {
-            auto & cache = index.GetIngestor().GetDocumentCache();
-            auto & config = index.GetConfiguration();
-            TermMatchTreeEvaluator evaluator(config);
-
             size_t matchCount = 0;
-            size_t documentCount = 0;
+            auto documentCount = index.GetIngestor().GetDocumentCount();
 
-            for (auto entry : cache)
-            {
-                ++documentCount;
-                bool matches = evaluator.Evaluate(*tree, entry.first);
-
-                if (matches)
+            for (DocId id = 1; id < documentCount; ++id)
+            {               
+                if (id != 0 &&
+                    ((id % primeFactor) == 0))
                 {
                     ++matchCount;
-                    //std::cout
-                    //    << "  DocId(" << entry.second << ") "
-                    //    << std::endl;
-
-                    verifier->AddExpected(entry.second);
+                    verifier->AddExpected(id);
                 }
             }
 

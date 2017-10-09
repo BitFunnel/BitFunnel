@@ -37,8 +37,8 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Mocks/Factories.h"
+#include "BitFunnel/Utilities/Primes.h"
 #include "DocumentFrequencyTable.h"
-#include "Primes.h"
 
 
 namespace BitFunnel

@@ -22,36 +22,24 @@
 
 #pragma once
 
-#include <string>       // std::string embedded.
-
-#include "TaskBase.h"   // TaskBase base class.
+#include <iosfwd>   // std::ostream& parameter.
+#include <memory>   // std::unique_ptr return value.
+#include <string>   // std::string parameter.
 
 
 namespace BitFunnel
 {
-    class Verify : public TaskBase
-    {
-    public:
-        Verify(Environment & environment,
-               Id id,
-               char const * parameters);
+    class IMatchVerifyer;
+    class ISimpleIndex;
 
-        virtual void Execute() override;
-        static ICommand::Documentation GetDocumentation();
+    void VerifySynthetic(
+        std::ostream& output,
+        ISimpleIndex const & index,
+        bool compilerMode);
 
-    private:
-        void VerifyOne();
-        void VerifyLog();
-        void VerifySynthetic();
 
-        // Command modes:
-        //   One: "verify one [query]" - verifies a single inline query.
-        //   Log: "verify log [file]" - verifies queries listed in a file.
-        //   Synthetic: "verify synthetic" - generates and verifies synthetic
-        //                                   queries against a synthetic index.
-        enum class Mode { One, Log, Synthetic};
-        Mode m_mode;
-
-        std::string m_query;
-    };
+    std::unique_ptr<IMatchVerifier> VerifyOneQuerySynthetic(
+        ISimpleIndex const & index,
+        size_t primeFactor,
+        bool compilerMode);
 }

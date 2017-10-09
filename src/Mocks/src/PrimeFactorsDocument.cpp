@@ -33,8 +33,8 @@
 #include "BitFunnel/Index/ITermTable.h"
 #include "BitFunnel/Index/ITermTableCollection.h"
 #include "BitFunnel/Mocks/Factories.h"
+#include "BitFunnel/Utilities/Primes.h"
 #include "LoggerInterfaces/Check.h"
-#include "Primes.h"
 
 
 // TODO: Can we somehow eliminate the requirement for an IConfiguration?

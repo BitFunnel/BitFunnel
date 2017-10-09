@@ -30,6 +30,7 @@ set(CPPFILES
     TermPlan.cpp
     TermPlanConverter.cpp
     VerifyOneQuery.cpp
+    VerifyOneQuerySynthetic.cpp
 )
 
 set(WINDOWS_CPPFILES
