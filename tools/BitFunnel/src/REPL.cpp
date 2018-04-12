@@ -145,8 +145,8 @@ namespace BitFunnel
             << std::endl
             << "Verify that directory path is valid and that the folder contains index files." << std::endl
             << "You can generate new index files with" << std::endl
-            << "  BitFunnel statistics <manifest> <directory> -statistics" << std::endl
-            << "  BitFunnel termtabe <directory>" << std::endl
+            << "  BitFunnel statistics <manifest> <directory>" << std::endl
+            << "  BitFunnel termtable <directory> <density> <treatment>" << std::endl
             << "For more information run \"BitFunnel statistics -help\" and" << std::endl
             << "\"BitFunnel termtable -help\"." << std::endl;
     }

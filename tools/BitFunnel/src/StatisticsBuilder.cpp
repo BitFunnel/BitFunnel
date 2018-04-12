@@ -131,7 +131,7 @@ namespace BitFunnel
         // TODO: Add try/catch around file operations.
         output
             << "Loading chunk list file '" << chunkListFileName << "'" << std::endl
-            << "Output dirextory: '" << intermediateDirectory << "'"<< std::endl;
+            << "Output directory: '" << intermediateDirectory << "'"<< std::endl;
 
         std::vector<std::string> filePaths = ReadLines(m_fileSystem, chunkListFileName);
 
