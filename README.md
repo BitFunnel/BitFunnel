@@ -70,23 +70,24 @@ If you use XCode, you'll have to either re-run `Configure_XCode` or run the `ZER
 
 ### Windows
 
-Install the following tools:
+You will need these tools:
 
-- Visual Studio 2015 with C++ compiler
 - CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
+- Visual Studio 2017 with C++ compiler ([the free version](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx))
 
-You can get [the free version of Visual Studio here](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx).
-Note that if you're installing Visual Studio for the first time and select the
+**Note**: If you install Visual Studio for the first time and select the
 default install options, you won't get a C++ compiler. To force the install of
 the C++ compiler, you need to either create a new C++ project or open an
 existing C++ project.
 
-In order to configure solution for Visual Studio 2015 run the following
-commands from the root `BitFunnel` directory:
+Clone the BitFunnel repository and then run the following command in BitFunnel's root folder:
 
 ~~~
 .\Configure_MSVC.bat
 ~~~
 
-From now on you can use the generated solution `build-msvc\BitFunnel.sln` from Visual Studio
-or build from command line using `cmake`.
+**Note**: You will need to modify the CMake -G option if you use a different version of Visual Studio.
+Bitfunnel must be built as a 64-bit program, so 'Win64' must be part of the specified G option text.
+
+At this point, you can open the generated solution `BitFunnel_CMake.sln` from Visual Studio and then build it.
+Alternatively, you can build from the command line using `cmake --build build-MSVC`.
