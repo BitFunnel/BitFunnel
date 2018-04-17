@@ -51,7 +51,7 @@ build_script:
     md _build -Force | Out-Null
     cd _build
 
-    & cmake -G "$generator" -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -Dgtest_build_tests=ON -Dgtest_build_samples=ON -Dgmock_build_tests=ON ..
+    & cmake -G "$generator" -DCMAKE_CONFIGURATION_TYPES="Debug;Release" ..
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }
