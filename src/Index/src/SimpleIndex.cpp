@@ -356,9 +356,28 @@ namespace BitFunnel
 
         if (m_sliceAllocator.get() == nullptr)
         {
-            const ShardId tempId = 0;
+            // To calculate a large-enough m_blocksize, we need to select the
+            // TermTable that has the largest number of rows across all ranks.
+            ShardId maxTableId = 0;
+            RowIndex maxRowCount = 0;
+            for (size_t tableId=0; tableId < m_termTables->size(); ++tableId)
+            {
+                const ITermTable &termTable = m_termTables->GetTermTable(tableId);
+                const Rank maxRank = termTable.GetMaxRankUsed();
+                RowIndex rowCount = 0;
+                for (Rank rank = 0; rank <= maxRank; ++rank)
+                {
+                    rowCount += termTable.GetTotalRowCount(rank);
+                }
+                if (rowCount > maxRowCount)
+                {
+                    maxRowCount = rowCount;
+                    maxTableId = tableId;
+                }
+            }
+
             const size_t m_blockSize =
-                32 * GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(tempId));
+                32 * GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(maxTableId));
                 // std::cout << "Blocksize: " << blockSize << std::endl;
 
 
