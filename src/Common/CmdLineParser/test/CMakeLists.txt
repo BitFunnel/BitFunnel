@@ -3,7 +3,6 @@
 set(CPPFILES
     AnswerResponseTestBase.cpp
     AnswerResponseTestBase.h
-    CMakeLists.txt
     CmdLineParserCases.cpp
     CmdLineParserTest.cpp
     CmdLineParserTest.h
