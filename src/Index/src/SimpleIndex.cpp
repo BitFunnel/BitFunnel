@@ -358,10 +358,10 @@ namespace BitFunnel
         {
             // To calculate a large-enough m_blocksize, we need to calculate the
             // largest blocksize required by any TermTable.
-			size_t m_blockSize = 0;
+            size_t m_blockSize = 0;
             for (size_t tableId=0; tableId < m_termTables->size(); ++tableId)
             {
-				const size_t tblBlockSize = 32 * GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(tableId));
+                const size_t tblBlockSize = 32 * GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(tableId));
                 if (tblBlockSize > m_blockSize)
                 {
                     m_blockSize = tblBlockSize;
