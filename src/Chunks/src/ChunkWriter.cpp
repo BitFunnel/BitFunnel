@@ -20,55 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#pragma once
+#include <sstream>
 
-#include <stdint.h>
-#include <vector>
-
-#include "BitFunnel/NonCopyable.h"  // Base class.
-#include "BitFunnel/Term.h"         // Term::StreamId return value.
+#include "ChunkWriter.h"
 
 
 namespace BitFunnel
 {
-    class IChunkProcessor;
-
     //*************************************************************************
     //
-    // ChunkReader
-    //
-    // Parses a buffer of documents encoded in the BitFunnel chunk format,
-    // generating callbacks to an IChunkProcessor.
+    // ChunkWriter
     //
     //*************************************************************************
-    class ChunkReader : public NonCopyable
+    ChunkWriter::ChunkWriter(char const * start,
+                                          char const * end)
+      : m_start(start),
+        m_end(end)
     {
-    // DESIGN NOTE: Need to add arena allocators.
-    public:
-        ChunkReader(char const * start,
-                    char const * end,
-                    IChunkProcessor& processor);
+    }
 
-    private:
-        void ProcessDocument();
-        void ProcessStream();
-        char const * GetToken();
 
-        DocId GetDocId();
-        Term::StreamId GetStreamId();
+    void ChunkWriter::Write(std::ostream & output)
+    {
+        output.write(m_start, m_end - m_start);
+    }
 
-        uint64_t GetHexValue(uint64_t digitCount);
-        void Consume(char c);
-        char GetChar();
-        char PeekChar();
 
-        // Construtor parameters.
-        IChunkProcessor& m_processor;
-
-        // Next character to be processed.
-        char const * m_next;
-
-        // Pointer to character beyond the end of m_input.
-        char const * m_end;
-    };
+    void ChunkWriter::Complete(std::ostream & output)
+    {
+        output << '\0';
+    }
 }

@@ -25,50 +25,38 @@
 #include <stdint.h>
 #include <vector>
 
-#include "BitFunnel/NonCopyable.h"  // Base class.
-#include "BitFunnel/Term.h"         // Term::StreamId return value.
+#include "BitFunnel/Chunks/IChunkProcessor.h"
 
 
 namespace BitFunnel
 {
-    class IChunkProcessor;
 
     //*************************************************************************
     //
-    // ChunkReader
+    // ChunkWriter
     //
-    // Parses a buffer of documents encoded in the BitFunnel chunk format,
-    // generating callbacks to an IChunkProcessor.
+    // Outputs a buffer of documents encoded in the BitFunnel chunk format
+    // to an output stream
     //
     //*************************************************************************
-    class ChunkReader : public NonCopyable
+    class ChunkWriter : public IChunkWriter
     {
-    // DESIGN NOTE: Need to add arena allocators.
     public:
-        ChunkReader(char const * start,
-                    char const * end,
-                    IChunkProcessor& processor);
+        ChunkWriter(char const * start,
+            char const * end);
+
+        // Writes the bytes in range [m_start, m_end) to the specified
+        // stream. ChunkReader uses this method to write the range of bytes
+        // corresponding to a single document.
+        void Write(std::ostream & output) override;
+
+        // Writes a single '\0' to the specified stream. ChunkReader uses
+        // this method to write the closing `\0` after a sequence of
+        // documents.
+        void Complete(std::ostream & output) override;
 
     private:
-        void ProcessDocument();
-        void ProcessStream();
-        char const * GetToken();
-
-        DocId GetDocId();
-        Term::StreamId GetStreamId();
-
-        uint64_t GetHexValue(uint64_t digitCount);
-        void Consume(char c);
-        char GetChar();
-        char PeekChar();
-
-        // Construtor parameters.
-        IChunkProcessor& m_processor;
-
-        // Next character to be processed.
-        char const * m_next;
-
-        // Pointer to character beyond the end of m_input.
+        char const * m_start;
         char const * m_end;
     };
 }

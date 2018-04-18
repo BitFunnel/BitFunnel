@@ -25,6 +25,7 @@
 #include "BitFunnel/Chunks/IChunkProcessor.h"
 #include "BitFunnel/Exceptions.h"
 #include "ChunkReader.h"
+#include "ChunkWriter.h"
 
 
 namespace BitFunnel
@@ -199,30 +200,5 @@ namespace BitFunnel
         }
 
         GetChar();
-    }
-
-
-    //*************************************************************************
-    //
-    // ChunkReader::ChunkWriter
-    //
-    //*************************************************************************
-    ChunkReader::ChunkWriter::ChunkWriter(char const * start,
-                                          char const * end)
-      : m_start(start),
-        m_end(end)
-    {
-    }
-
-
-    void ChunkReader::ChunkWriter::Write(std::ostream & output)
-    {
-        output.write(m_start, m_end - m_start);
-    }
-
-
-    void ChunkReader::ChunkWriter::Complete(std::ostream & output)
-    {
-        output << '\0';
     }
 }
