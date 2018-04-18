@@ -356,10 +356,17 @@ namespace BitFunnel
 
         if (m_sliceAllocator.get() == nullptr)
         {
-            const ShardId tempId = 0;
-            const size_t m_blockSize =
-                32 * GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(tempId));
-                // std::cout << "Blocksize: " << blockSize << std::endl;
+            // To calculate a large-enough m_blocksize, we need to calculate the
+            // largest blocksize required by any TermTable.
+			size_t m_blockSize = 0;
+            for (size_t tableId=0; tableId < m_termTables->size(); ++tableId)
+            {
+				const size_t tblBlockSize = 32 * GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(tableId));
+                if (tblBlockSize > m_blockSize)
+                {
+                    m_blockSize = tblBlockSize;
+                }
+            }
 
 
             // If the user didn't specify the block allocator buffer size, use
