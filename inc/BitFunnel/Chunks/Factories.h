@@ -33,6 +33,7 @@
 namespace BitFunnel
 {
     class IChunkManifestIngestor;
+    class IChunkWriter;
     class IConfiguration;
     class IDocument;
     class IDocumentFilter;
@@ -53,13 +54,15 @@ namespace BitFunnel
         std::unique_ptr<IChunkManifestIngestor>
             CreateChunkManifestIngestor(
                 IFileSystem& fileSystem,
-                IFileManager * fileManager,
+                IChunkWriter * writer,
                 std::vector<std::string> const & filePaths,
                 IConfiguration const & config,
                 IIngestor& ingestor,
                 IDocumentFilter & filter,
                 bool cacheDocuments);
 
+        std::unique_ptr<IChunkWriter>
+            CreateChunkWriter(IFileManager * fileManager);
 
         std::unique_ptr<IDocument>
             CreateDocument(IConfiguration const & configuration, DocId id);

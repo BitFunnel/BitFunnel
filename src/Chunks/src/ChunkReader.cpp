@@ -59,9 +59,7 @@ namespace BitFunnel
 
         Consume(0);
 
-        // TODO: Is is bad to pass nullptr?
-        ChunkWriter writer(nullptr, nullptr);
-        m_processor.OnFileExit(writer);
+        m_processor.OnFileExit();
     }
 
 
@@ -82,9 +80,7 @@ namespace BitFunnel
             throw FatalError("length underflow.");
         }
 
-        ChunkWriter writer(start, m_next);
-
-        m_processor.OnDocumentExit(writer,
+        m_processor.OnDocumentExit(start,
                                    static_cast<size_t>(m_next - start));
     }
 
@@ -199,30 +195,5 @@ namespace BitFunnel
         }
 
         GetChar();
-    }
-
-
-    //*************************************************************************
-    //
-    // ChunkReader::ChunkWriter
-    //
-    //*************************************************************************
-    ChunkReader::ChunkWriter::ChunkWriter(char const * start,
-                                          char const * end)
-      : m_start(start),
-        m_end(end)
-    {
-    }
-
-
-    void ChunkReader::ChunkWriter::Write(std::ostream & output)
-    {
-        output.write(m_start, m_end - m_start);
-    }
-
-
-    void ChunkReader::ChunkWriter::Complete(std::ostream & output)
-    {
-        output << '\0';
     }
 }

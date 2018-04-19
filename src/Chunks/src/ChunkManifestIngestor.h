@@ -40,7 +40,7 @@ namespace BitFunnel
     {
     public:
         ChunkManifestIngestor(IFileSystem & fileSystem,
-                              IFileManager * fileManager,
+                              IChunkWriter * writer,
                               std::vector<std::string> const & filePaths,
                               IConfiguration const & config,
                               IIngestor & ingestor,
@@ -62,7 +62,7 @@ namespace BitFunnel
         //
 
         IFileSystem & m_fileSystem;
-        IFileManager * m_fileManager;
+        IChunkWriter * m_writer;
         std::vector<std::string> const & m_filePaths;
         IConfiguration const & m_configuration;
         IIngestor& m_ingestor;

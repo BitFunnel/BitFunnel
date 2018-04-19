@@ -1,6 +1,7 @@
 # BitFunnel/tools/BitFunnel/src
 
 set(CPPFILES
+    AddShardTermWriter.cpp
     AnalyzeCommand.cpp
     BitFunnelTool.cpp
     CacheLineCountCommand.cpp
@@ -38,6 +39,7 @@ set(POSIX_CPPFILES
 )
 
 set(PRIVATE_HFILES
+    AddShardTermWriter.h
     AnalyzeCommand.h
     BitFunnelTool.h
     CacheLineCountCommand.h

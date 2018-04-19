@@ -20,51 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <sstream>
 
-#include "BitFunnel/IExecutable.h"  // Base class.
+#include "BitFunnel/Chunks/Factories.h"
+#include "ChunkWriter.h"
 
 
 namespace BitFunnel
 {
-    class IDocumentFilter;
-    class IFileSystem;
-
-    enum class WriterIds {
-        ChunkWriter,
-        AddShardIdWriter
-    };
-
     //*************************************************************************
     //
-    // FilterChunks
-    //
-    // An IExecutable that copies a set of chunk files specified by a manifest,
-    // while filtering the documents based on a set of predicates, including
-    // random sampling, posting count in range, and total number of documents.
+    // ChunkWriter
     //
     //*************************************************************************
-    class FilterChunks : public IExecutable
+
+    std::unique_ptr<IChunkWriter>
+        Factories::CreateChunkWriter(IFileManager * fileManager)
     {
-    public:
-        FilterChunks(IFileSystem & fileSystem);
+        return std::unique_ptr<IChunkWriter>(
+            new ChunkWriter(fileManager));
+    }
 
-        //
-        // IExecutable methods
-        //
-        virtual int Main(std::istream& input,
-                         std::ostream& output,
-                         int argc,
-                         char const *argv[]) override;
+    ChunkWriter::ChunkWriter(IFileManager * fileManager)
+      : m_fileManager(fileManager)    {
+    }
 
-    private:
-        void FilterChunkList(
-            std::ostream& output,
-            char const * intermediateDirectory,
-            char const * chunkListFileName,
-            int gramSize,
-            IDocumentFilter & filter,
-            WriterIds writer) const;
+    void ChunkWriter::SetChunk(size_t index)
+    {
+        m_output = m_fileManager->Chunk(index).OpenForWrite();
+    }
 
-        IFileSystem& m_fileSystem;
-    };
+    void ChunkWriter::WriteDoc(BitFunnel::IDocument & /*document*/, char const * start, size_t size)
+    {
+        m_output->write(start, size);
+    }
+
+
+    void ChunkWriter::Complete()
+    {
+        *m_output << '\0';
+    }
 }

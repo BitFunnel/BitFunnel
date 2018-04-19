@@ -20,51 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#pragma once
 
-#include "BitFunnel/IExecutable.h"  // Base class.
+#include <stdint.h>
+#include <vector>
+
+#include "BitFunnel/Chunks/IChunkProcessor.h"
+#include "BitFunnel/IFileManager.h"
+#include "BitFunnel/NonCopyable.h"
 
 
 namespace BitFunnel
 {
-    class IDocumentFilter;
-    class IFileSystem;
-
-    enum class WriterIds {
-        ChunkWriter,
-        AddShardIdWriter
-    };
 
     //*************************************************************************
     //
-    // FilterChunks
+    // ChunkWriter
     //
-    // An IExecutable that copies a set of chunk files specified by a manifest,
-    // while filtering the documents based on a set of predicates, including
-    // random sampling, posting count in range, and total number of documents.
+    // Outputs a buffer of documents encoded in the BitFunnel chunk format
+    // to an output stream
     //
     //*************************************************************************
-    class FilterChunks : public IExecutable
+    class ChunkWriter : public NonCopyable, public IChunkWriter
     {
     public:
-        FilterChunks(IFileSystem & fileSystem);
+        ChunkWriter(IFileManager * fileManager);
 
-        //
-        // IExecutable methods
-        //
-        virtual int Main(std::istream& input,
-                         std::ostream& output,
-                         int argc,
-                         char const *argv[]) override;
+        // Sets the index of the chunk to be processed.
+        // This creates the stream from the fileManager used to output the current chunk
+        void SetChunk(size_t index) override;
+
+        // Writes the document's bytes (in range m_start, m_end) to the current chunk's stream.
+        void WriteDoc(BitFunnel::IDocument & document, char const * start, size_t size) override;
+
+        // Writes a single '\0' to the specified stream, completing the outputted chunk.
+        void Complete() override;
 
     private:
-        void FilterChunkList(
-            std::ostream& output,
-            char const * intermediateDirectory,
-            char const * chunkListFileName,
-            int gramSize,
-            IDocumentFilter & filter,
-            WriterIds writer) const;
-
-        IFileSystem& m_fileSystem;
+        IFileManager * m_fileManager;
+        std::unique_ptr<std::ostream> m_output;
     };
 }

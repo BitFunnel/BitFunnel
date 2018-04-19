@@ -50,27 +50,6 @@ namespace BitFunnel
                     IChunkProcessor& processor);
 
     private:
-        class ChunkWriter : public IChunkWriter
-        {
-        public:
-            ChunkWriter(char const * start,
-                        char const * end);
-
-            // Writes the bytes in range [m_start, m_end) to the specified
-            // stream. ChunkReader uses this method to write the range of bytes
-            // corresponding to a single document.
-            void Write(std::ostream & output) override;
-
-            // Writes a single '\0' to the specified stream. ChunkReader uses
-            // this method to write the closing `\0` after a sequence of
-            // documents.
-            void Complete(std::ostream & output) override;
-
-        private:
-            char const * m_start;
-            char const * m_end;
-        };
-
         void ProcessDocument();
         void ProcessStream();
         char const * GetToken();
