@@ -29,6 +29,7 @@
 #include "BitFunnel/IInterface.h"           // inherits from IInterface.
 #include "BitFunnel/Index/IFactSet.h"       // FactHandle parameter.
 #include "BitFunnel/Index/DocumentHandle.h" // DocHandle return value.
+#include "BitFunnel/Configuration/IShardDefinition.h"
 
 
 namespace BitFunnel
@@ -142,6 +143,9 @@ namespace BitFunnel
         // Returns a number of Shards and a Shard with the given ShardId.
         virtual size_t GetShardCount() const = 0;
         virtual IShard& GetShard(size_t shard) const = 0;
+
+        // Return the shard definitions info
+        const virtual IShardDefinition& GetShardDef() const = 0;
 
         virtual IRecycler& GetRecycler() const = 0;
 

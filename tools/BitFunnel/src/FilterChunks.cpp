@@ -40,6 +40,7 @@
 #include "CmdLineParser/CmdLineParser.h"
 #include "FilterChunks.h"
 #include "LoggerInterfaces/Check.h"
+#include "AddShardTermWriter.h"
 
 
 namespace BitFunnel
@@ -111,6 +112,10 @@ namespace BitFunnel
             1u,
             CmdLine::GreaterThan(0));
 
+        CmdLine::OptionalParameter<const char *> writer(
+            "writer",
+            "Alternative chunk writer (e.g., AddShardId)",
+            nullptr);
 
         parser.AddParameter(manifestFileName);
         parser.AddParameter(outputPath);
@@ -118,6 +123,7 @@ namespace BitFunnel
         parser.AddParameter(random);
         parser.AddParameter(size);
         parser.AddParameter(count);
+        parser.AddParameter(writer);
 
         int returnCode = 1;
 
@@ -126,6 +132,7 @@ namespace BitFunnel
             try
             {
                 CompositeFilter filter;
+                WriterIds writerId = WriterIds::ChunkWriter;
 
                 if (size.IsActivated())
                 {
@@ -153,11 +160,25 @@ namespace BitFunnel
                             new DocumentCountFilter(static_cast<unsigned>(count))));
                 }
 
+                if (writer != nullptr)
+                {
+                    std::string writerName(writer);
+                    std::string addShard("AddShard");
+                    if (writerName.compare(0, addShard.length(), addShard) == 0)
+                    {
+                        writerId = WriterIds::AddShardIdWriter;
+                    }
+                    else {
+                        throw RecoverableError("Unknown writer (e.g., AddShardId)");
+                    }
+                }
+
                 FilterChunkList(output,
                                 outputPath,
                                 manifestFileName,
                                 gramSize,
-                                filter);
+                                filter,
+                                writerId);
 
                 returnCode = 0;
             }
@@ -181,7 +202,8 @@ namespace BitFunnel
         char const * chunkListFileName,
         // TODO: gramSize should be unsigned once CmdLineParser supports unsigned.
         int gramSize,
-        IDocumentFilter & filter) const
+        IDocumentFilter & filter,
+        WriterIds writerId) const
     {
         // TODO: cast of gramSize can be removed when it's fixed to be unsigned.
         auto index = Factories::CreateSimpleIndex(m_fileSystem);
@@ -210,7 +232,15 @@ namespace BitFunnel
             outputDirectory,
             index->GetFileSystem());
 
-        auto writer = Factories::CreateChunkWriter(fileManager.get());
+        std::unique_ptr<BitFunnel::IChunkWriter> writer;
+        if (writerId == WriterIds::ChunkWriter)
+        {
+            writer = Factories::CreateChunkWriter(fileManager.get());
+        }
+        else if (writerId == WriterIds::AddShardIdWriter)
+        {
+            writer = std::unique_ptr<IChunkWriter>(new AddShardTermWriter(fileManager.get(), ingestor));
+        }
 
         auto manifest = Factories::CreateChunkManifestIngestor(
             m_fileSystem,

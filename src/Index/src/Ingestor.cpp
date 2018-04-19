@@ -254,6 +254,12 @@ namespace BitFunnel
     }
 
 
+    const IShardDefinition & Ingestor::GetShardDef() const
+    {
+        return m_shardDefinition;
+    }
+
+
     ITokenManager& Ingestor::GetTokenManager() const
     {
         return *m_tokenManager;

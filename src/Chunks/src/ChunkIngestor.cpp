@@ -85,17 +85,20 @@ namespace BitFunnel
 
         if (m_filter.KeepDocument(*m_currentDocument))
         {
+            // Either we write out the document ...
             if (m_writer != nullptr)
             {
                 m_writer->WriteDoc(*m_currentDocument, start, bytesRead);
             }
-
-            m_ingestor.Add(m_currentDocument->GetDocId(), *m_currentDocument);
-            if (m_cacheDocuments)
-            {
-                DocId id = m_currentDocument->GetDocId();
-                m_ingestor.GetDocumentCache().Add(std::move(m_currentDocument),
-                                                  id);
+            // ... or else we ingest it
+            else {
+                m_ingestor.Add(m_currentDocument->GetDocId(), *m_currentDocument);
+                if (m_cacheDocuments)
+                {
+                    DocId id = m_currentDocument->GetDocId();
+                    m_ingestor.GetDocumentCache().Add(std::move(m_currentDocument),
+                        id);
+                }
             }
         }
 
