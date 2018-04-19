@@ -25,7 +25,6 @@
 #include "BitFunnel/Chunks/IChunkProcessor.h"
 #include "BitFunnel/Exceptions.h"
 #include "ChunkReader.h"
-#include "ChunkWriter.h"
 
 
 namespace BitFunnel
@@ -60,9 +59,7 @@ namespace BitFunnel
 
         Consume(0);
 
-        // TODO: Is is bad to pass nullptr?
-        ChunkWriter writer(nullptr, nullptr);
-        m_processor.OnFileExit(writer);
+        m_processor.OnFileExit();
     }
 
 
@@ -83,9 +80,7 @@ namespace BitFunnel
             throw FatalError("length underflow.");
         }
 
-        ChunkWriter writer(start, m_next);
-
-        m_processor.OnDocumentExit(writer,
+        m_processor.OnDocumentExit(start,
                                    static_cast<size_t>(m_next - start));
     }
 

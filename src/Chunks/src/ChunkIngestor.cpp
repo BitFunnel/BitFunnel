@@ -39,12 +39,12 @@ namespace BitFunnel
                                  IIngestor& ingestor,
                                  bool cacheDocuments,
                                  IDocumentFilter & filter,
-                                 std::unique_ptr<std::ostream> output)
+                                 IChunkWriter * writer)
       : m_config(config),
         m_ingestor(ingestor),
         m_cacheDocuments(cacheDocuments),
         m_filter(filter),
-        m_output(std::move(output))
+        m_writer(writer)
     {
     }
 
@@ -78,16 +78,16 @@ namespace BitFunnel
     }
 
 
-    void ChunkIngestor::OnDocumentExit(IChunkWriter & writer,
+    void ChunkIngestor::OnDocumentExit(char const * start,
                                        size_t bytesRead)
     {
         m_currentDocument->CloseDocument(bytesRead);
 
         if (m_filter.KeepDocument(*m_currentDocument))
         {
-            if (m_output.get() != nullptr)
+            if (m_writer != nullptr)
             {
-                writer.Write(*m_output);
+                m_writer->WriteDoc(*m_currentDocument, start, bytesRead);
             }
 
             m_ingestor.Add(m_currentDocument->GetDocId(), *m_currentDocument);
@@ -103,11 +103,11 @@ namespace BitFunnel
     }
 
 
-    void ChunkIngestor::OnFileExit(IChunkWriter & writer)
+    void ChunkIngestor::OnFileExit()
     {
-        if (m_output.get() != nullptr)
+        if (m_writer != nullptr)
         {
-            writer.Complete(*m_output);
+            m_writer->Complete();
         }
     }
 }

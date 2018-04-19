@@ -29,6 +29,7 @@
 #include "BitFunnel/Chunks/IChunkProcessor.h"   // Base class.
 #include "BitFunnel/NonCopyable.h"      // Base class.
 #include "Document.h"                   // std::unique_ptr<Document>.
+#include "ChunkWriter.h"
 
 
 namespace BitFunnel
@@ -44,7 +45,7 @@ namespace BitFunnel
                       IIngestor& ingestor,
                       bool cacheDocuments,
                       IDocumentFilter & filter,
-                      std::unique_ptr<std::ostream> output);
+                      IChunkWriter * writer);
 
         //
         // IChunkProcessor methods.
@@ -54,9 +55,9 @@ namespace BitFunnel
         virtual void OnStreamEnter(Term::StreamId id) override;
         virtual void OnTerm(char const * term) override;
         virtual void OnStreamExit() override;
-        virtual void OnDocumentExit(IChunkWriter & writer,
+        virtual void OnDocumentExit(char const * start,
                                     size_t bytesRead) override;
-        virtual void OnFileExit(IChunkWriter & writer) override;
+        virtual void OnFileExit() override;
 
     private:
         //
@@ -66,7 +67,7 @@ namespace BitFunnel
         IIngestor& m_ingestor;
         bool m_cacheDocuments;
         IDocumentFilter & m_filter;         // TODO: What about multi-threaded access?
-        std::unique_ptr<std::ostream> m_output;
+        IChunkWriter * m_writer;
 
         //
         // Other members

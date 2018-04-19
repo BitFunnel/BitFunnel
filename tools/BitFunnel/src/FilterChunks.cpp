@@ -210,9 +210,11 @@ namespace BitFunnel
             outputDirectory,
             index->GetFileSystem());
 
+        auto writer = Factories::CreateChunkWriter(fileManager.get());
+
         auto manifest = Factories::CreateChunkManifestIngestor(
             m_fileSystem,
-            fileManager.get(),
+            writer.get(),
             filePaths,
             configuration,
             ingestor,

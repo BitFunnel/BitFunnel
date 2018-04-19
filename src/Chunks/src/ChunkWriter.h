@@ -26,6 +26,8 @@
 #include <vector>
 
 #include "BitFunnel/Chunks/IChunkProcessor.h"
+#include "BitFunnel/IFileManager.h"
+#include "BitFunnel/NonCopyable.h"
 
 
 namespace BitFunnel
@@ -39,24 +41,23 @@ namespace BitFunnel
     // to an output stream
     //
     //*************************************************************************
-    class ChunkWriter : public IChunkWriter
+    class ChunkWriter : public NonCopyable, public IChunkWriter
     {
     public:
-        ChunkWriter(char const * start,
-            char const * end);
+        ChunkWriter(IFileManager * fileManager);
 
-        // Writes the bytes in range [m_start, m_end) to the specified
-        // stream. ChunkReader uses this method to write the range of bytes
-        // corresponding to a single document.
-        void Write(std::ostream & output) override;
+        // Sets the index of the chunk to be processed.
+        // This creates the stream from the fileManager used to output the current chunk
+        void SetChunk(size_t index) override;
 
-        // Writes a single '\0' to the specified stream. ChunkReader uses
-        // this method to write the closing `\0` after a sequence of
-        // documents.
-        void Complete(std::ostream & output) override;
+        // Writes the document's bytes (in range m_start, m_end) to the current chunk's stream.
+        void WriteDoc(BitFunnel::IDocument & document, char const * start, size_t size) override;
+
+        // Writes a single '\0' to the specified stream, completing the outputted chunk.
+        void Complete() override;
 
     private:
-        char const * m_start;
-        char const * m_end;
+        IFileManager * m_fileManager;
+        std::unique_ptr<std::ostream> m_output;
     };
 }

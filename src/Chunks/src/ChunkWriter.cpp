@@ -22,6 +22,7 @@
 
 #include <sstream>
 
+#include "BitFunnel/Chunks/Factories.h"
 #include "ChunkWriter.h"
 
 
@@ -32,22 +33,31 @@ namespace BitFunnel
     // ChunkWriter
     //
     //*************************************************************************
-    ChunkWriter::ChunkWriter(char const * start,
-                                          char const * end)
-      : m_start(start),
-        m_end(end)
+
+    std::unique_ptr<IChunkWriter>
+        Factories::CreateChunkWriter(IFileManager * fileManager)
     {
+        return std::unique_ptr<IChunkWriter>(
+            new ChunkWriter(fileManager));
+    }
+
+    ChunkWriter::ChunkWriter(IFileManager * fileManager)
+      : m_fileManager(fileManager)    {
+    }
+
+    void ChunkWriter::SetChunk(size_t index)
+    {
+        m_output = m_fileManager->Chunk(index).OpenForWrite();
+    }
+
+    void ChunkWriter::WriteDoc(BitFunnel::IDocument & /*document*/, char const * start, size_t size)
+    {
+        m_output->write(start, size);
     }
 
 
-    void ChunkWriter::Write(std::ostream & output)
+    void ChunkWriter::Complete()
     {
-        output.write(m_start, m_end - m_start);
-    }
-
-
-    void ChunkWriter::Complete(std::ostream & output)
-    {
-        output << '\0';
+        *m_output << '\0';
     }
 }

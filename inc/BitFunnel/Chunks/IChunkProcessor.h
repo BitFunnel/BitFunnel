@@ -48,12 +48,15 @@ namespace BitFunnel
     class IChunkWriter : public IInterface
     {
     public:
-        // Writes the most recently read document to a stream.
-        virtual void Write(std::ostream& output) = 0;
+        // Set the chunk's index - this creates a stream used to output the current chunk
+        virtual void SetChunk(size_t index) = 0;
 
-        // Call this method once after a sequence of calls to Write() in
+        // Writes the document's bytes (in range m_start, m_end) to the current chunk's stream.
+        virtual void WriteDoc(BitFunnel::IDocument & document, char const * start, size_t size) = 0;
+
+        // Call this method once after a sequence of calls to WriteDoc() in
         // order to write any necessary epilogue and close the stream.
-        virtual void Complete(std::ostream& output) = 0;
+        virtual void Complete() = 0;
     };
 
 
@@ -97,8 +100,8 @@ namespace BitFunnel
         virtual void OnStreamEnter(Term::StreamId id) = 0;
         virtual void OnTerm(char const * term) = 0;
         virtual void OnStreamExit() = 0;
-        virtual void OnDocumentExit(IChunkWriter & writer,
+        virtual void OnDocumentExit(char const * start,
                                     size_t bytesRead) = 0;
-        virtual void OnFileExit(IChunkWriter & writer) = 0;
+        virtual void OnFileExit() = 0;
     };
 }
