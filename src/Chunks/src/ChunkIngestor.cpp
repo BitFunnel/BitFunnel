@@ -23,6 +23,7 @@
 #include <iostream>     // TODO: remove
 
 #include "BitFunnel/Chunks/Factories.h"
+#include "BitFunnel/Chunks/IChunkWriter.h"
 #include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
 #include "ChunkIngestor.h"

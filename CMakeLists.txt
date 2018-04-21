@@ -143,6 +143,7 @@ set(CHUNKS_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Chunks/DocumentFilters.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Chunks/IChunkManifestIngestor.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Chunks/IChunkProcessor.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Chunks/IChunkWriter.h
 )
 
 set(DATA_HFILES

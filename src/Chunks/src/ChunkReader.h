@@ -25,8 +25,9 @@
 #include <stdint.h>
 #include <vector>
 
-#include "BitFunnel/NonCopyable.h"  // Base class.
-#include "BitFunnel/Term.h"         // Term::StreamId return value.
+#include "BitFunnel/Chunks/IChunkWriter.h"  // Base class.
+#include "BitFunnel/NonCopyable.h"          // Base class.
+#include "BitFunnel/Term.h"                 // Term::StreamId return value.
 
 
 namespace BitFunnel

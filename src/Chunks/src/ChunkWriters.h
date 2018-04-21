@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#pragma once
+
 #include <iosfwd>                   // std::ostream template parameter.
 #include <memory>                   // std::unique_ptr<T> parameter.
 #include <stddef.h>                 // size_t parameter.
