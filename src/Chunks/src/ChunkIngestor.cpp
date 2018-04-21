@@ -40,12 +40,14 @@ namespace BitFunnel
                                  IIngestor& ingestor,
                                  bool cacheDocuments,
                                  IDocumentFilter & filter,
-                                 std::unique_ptr<std::ostream> output)
+                                 IChunkWriter * chunkWriter)
+                                 //std::unique_ptr<std::ostream> output)
       : m_config(config),
         m_ingestor(ingestor),
         m_cacheDocuments(cacheDocuments),
         m_filter(filter),
-        m_output(std::move(output))
+        m_chunkWriter(chunkWriter)
+//        m_output(std::move(output))
     {
     }
 
@@ -79,24 +81,33 @@ namespace BitFunnel
     }
 
 
-    void ChunkIngestor::OnDocumentExit(IChunkWriter & writer,
-                                       size_t bytesRead)
+    void ChunkIngestor::OnDocumentExit(char const * start,
+                                       size_t length)
+    //void ChunkIngestor::OnDocumentExit(IChunkWriter & writer,
+    //                                   size_t bytesRead)
     {
-        m_currentDocument->CloseDocument(bytesRead);
+        m_currentDocument->CloseDocument(length);
 
         if (m_filter.KeepDocument(*m_currentDocument))
         {
-            if (m_output.get() != nullptr)
-            {
-                writer.Write(*m_output);
-            }
+            //if (m_output.get() != nullptr)
+            //{
+            //    writer.Write(*m_output);
+            //}
 
-            m_ingestor.Add(m_currentDocument->GetDocId(), *m_currentDocument);
-            if (m_cacheDocuments)
+            if (m_chunkWriter != nullptr)
             {
-                DocId id = m_currentDocument->GetDocId();
-                m_ingestor.GetDocumentCache().Add(std::move(m_currentDocument),
-                                                  id);
+                m_chunkWriter->Write(*m_currentDocument, start, length);
+            }
+            else
+            {
+                m_ingestor.Add(m_currentDocument->GetDocId(), *m_currentDocument);
+                if (m_cacheDocuments)
+                {
+                    DocId id = m_currentDocument->GetDocId();
+                    m_ingestor.GetDocumentCache().Add(std::move(m_currentDocument),
+                        id);
+                }
             }
         }
 
@@ -104,11 +115,12 @@ namespace BitFunnel
     }
 
 
-    void ChunkIngestor::OnFileExit(IChunkWriter & writer)
+//    void ChunkIngestor::OnFileExit(IChunkWriter & /*writer*/)
+    void ChunkIngestor::OnFileExit()
     {
-        if (m_output.get() != nullptr)
-        {
-            writer.Complete(*m_output);
-        }
+        //if (m_output.get() != nullptr)
+        //{
+        //    writer.Complete(*m_output);
+        //}
     }
 }

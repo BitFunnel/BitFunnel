@@ -22,12 +22,13 @@
 
 #pragma once
 
-#include <iosfwd>                   // std::ostream template parameter.
-#include <memory>                   // std::unique_ptr<T> parameter.
-#include <stddef.h>                 // size_t parameter.
+#include <iosfwd>                           // std::ostream template parameter.
+#include <memory>                           // std::unique_ptr<T> parameter.
+#include <stddef.h>                         // size_t parameter.
 
-#include "BitFunnel/IInterface.h"   // Base class.
-#include "BitFunnel/NonCopyable.h"  // Base class.
+#include "BitFunnel/Chunks/IChunkWriter.h"  // Base class.
+//#include "BitFunnel/IInterface.h"           // Base class.
+//#include "BitFunnel/NonCopyable.h"          // Base class.
 
 
 namespace BitFunnel
@@ -37,13 +38,13 @@ namespace BitFunnel
     class IShardDefinition;
 
 
-    class IChunkWriter : public IInterface, NonCopyable
-    {
-    public:
-        virtual void Write(IDocument const & document,
-                           char const * start,
-                           size_t length) = 0;
-    };
+    //class IChunkWriter : public IInterface, NonCopyable
+    //{
+    //public:
+    //    virtual void Write(IDocument const & document,
+    //                       char const * start,
+    //                       size_t length) = 0;
+    //};
 
 
     class CopyingChunkWriter : public IChunkWriter
@@ -86,12 +87,12 @@ namespace BitFunnel
     };
 
 
-    class IChunkWriterFactory : public IInterface, NonCopyable
-    {
-    public:
-        virtual std::unique_ptr<IChunkWriter>
-            CreateChunkWriter(size_t index) = 0;
-    };
+    //class IChunkWriterFactory : public IInterface, NonCopyable
+    //{
+    //public:
+    //    virtual std::unique_ptr<IChunkWriter>
+    //        CreateChunkWriter(size_t index) = 0;
+    //};
 
 
     class CopyingChunkWriterFactory : public IChunkWriterFactory

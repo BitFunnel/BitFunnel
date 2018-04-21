@@ -60,8 +60,9 @@ namespace BitFunnel
         Consume(0);
 
         // TODO: Is is bad to pass nullptr?
-        ChunkWriter writer(nullptr, nullptr);
-        m_processor.OnFileExit(writer);
+//        ChunkWriter writer(nullptr, nullptr);
+        m_processor.OnFileExit();
+//        m_processor.OnFileExit(writer);
     }
 
 
@@ -82,10 +83,13 @@ namespace BitFunnel
             throw FatalError("length underflow.");
         }
 
-        ChunkWriter writer(start, m_next);
-
-        m_processor.OnDocumentExit(writer,
+        m_processor.OnDocumentExit(start,
                                    static_cast<size_t>(m_next - start));
+
+        //ChunkWriter writer(start, m_next);
+
+        //m_processor.OnDocumentExit(writer,
+        //                           static_cast<size_t>(m_next - start));
     }
 
 
@@ -202,27 +206,27 @@ namespace BitFunnel
     }
 
 
-    //*************************************************************************
-    //
-    // ChunkReader::ChunkWriter
-    //
-    //*************************************************************************
-    ChunkReader::ChunkWriter::ChunkWriter(char const * start,
-                                          char const * end)
-      : m_start(start),
-        m_end(end)
-    {
-    }
+    ////*************************************************************************
+    ////
+    //// ChunkReader::ChunkWriter
+    ////
+    ////*************************************************************************
+    //ChunkReader::ChunkWriter::ChunkWriter(char const * start,
+    //                                      char const * end)
+    //  : m_start(start),
+    //    m_end(end)
+    //{
+    //}
 
 
-    void ChunkReader::ChunkWriter::Write(std::ostream & output)
-    {
-        output.write(m_start, m_end - m_start);
-    }
+    //void ChunkReader::ChunkWriter::Write(std::ostream & output)
+    //{
+    //    output.write(m_start, m_end - m_start);
+    //}
 
 
-    void ChunkReader::ChunkWriter::Complete(std::ostream & output)
-    {
-        output << '\0';
-    }
+    //void ChunkReader::ChunkWriter::Complete(std::ostream & output)
+    //{
+    //    output << '\0';
+    //}
 }

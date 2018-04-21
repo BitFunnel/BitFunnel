@@ -38,7 +38,8 @@ namespace BitFunnel
     std::unique_ptr<IChunkManifestIngestor>
         Factories::CreateChunkManifestIngestor(
             IFileSystem& fileSystem,
-            IFileManager * fileManager,
+            IChunkWriterFactory* chunkWriterFactory,
+//            IFileManager * fileManager,
             std::vector<std::string> const & filePaths,
             IConfiguration const & config,
             IIngestor& ingestor,
@@ -48,7 +49,8 @@ namespace BitFunnel
         return std::unique_ptr<IChunkManifestIngestor>(
             new ChunkManifestIngestor(
                 fileSystem,
-                fileManager,
+                chunkWriterFactory,
+//                fileManager,
                 filePaths,
                 config,
                 ingestor,
@@ -59,14 +61,16 @@ namespace BitFunnel
 
     ChunkManifestIngestor::ChunkManifestIngestor(
         IFileSystem& fileSystem,
-        IFileManager * fileManager,
+        IChunkWriterFactory* chunkWriterFactory,
+//        IFileManager * fileManager,
         std::vector<std::string> const & filePaths,
         IConfiguration const & config,
         IIngestor& ingestor,
         IDocumentFilter & filter,
         bool cacheDocuments)
       : m_fileSystem(fileSystem),
-        m_fileManager(fileManager),
+        m_chunkWriterFactory(chunkWriterFactory),
+//        m_fileManager(fileManager),
         m_filePaths(filePaths),
         m_configuration(config),
         m_ingestor(ingestor),
@@ -115,18 +119,24 @@ namespace BitFunnel
                           std::istreambuf_iterator<char>());
 
         {
-            // Block scopes std::ostream.
-            std::unique_ptr<std::ostream> output;
-            if (m_fileManager != nullptr)
-            {
-                output = m_fileManager->Chunk(index).OpenForWrite();
+            // Block scopes IChunkWriter.
+            std::unique_ptr<IChunkWriter> chunkWriter;
+            if (m_chunkWriterFactory != nullptr) {
+                chunkWriter = m_chunkWriterFactory->CreateChunkWriter(index);
             }
+            //// Block scopes std::ostream.
+            //std::unique_ptr<std::ostream> output;
+            //if (m_fileManager != nullptr)
+            //{
+            //    output = m_fileManager->Chunk(index).OpenForWrite();
+            //}
 
             ChunkIngestor processor(m_configuration,
                                     m_ingestor,
                                     m_cacheDocuments,
                                     m_filter,
-                                    std::move(output));
+                                    chunkWriter.get());
+//                                    std::move(output));
 
             ChunkReader(&chunkData[0],
                         &chunkData[0] + chunkData.size(),

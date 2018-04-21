@@ -22,9 +22,10 @@
 
 #pragma once
 
-#include <iosfwd>                       // std::ostream& parameter.
+#include <iosfwd>                   // std::ostream& parameter.
 
-#include "BitFunnel/IInterface.h"       // Base class.
+#include "BitFunnel/IInterface.h"   // Base class.
+#include "BitFunnel/Noncopyable.h"  // Base class.
 
 
 namespace BitFunnel
@@ -39,14 +40,32 @@ namespace BitFunnel
     // callbacks.
     //
     //*************************************************************************
-    class IChunkWriter : public IInterface
+
+    //class IChunkWriter : public IInterface
+    //{
+    //public:
+    //    // Writes the most recently read document to a stream.
+    //    virtual void Write(std::ostream& output) = 0;
+
+    //    // Call this method once after a sequence of calls to Write() in
+    //    // order to write any necessary epilogue and close the stream.
+    //    virtual void Complete(std::ostream& output) = 0;
+    //};
+
+
+    class IChunkWriter : public IInterface, NonCopyable
     {
     public:
-        // Writes the most recently read document to a stream.
-        virtual void Write(std::ostream& output) = 0;
+        virtual void Write(IDocument const & document,
+            char const * start,
+            size_t length) = 0;
+    };
 
-        // Call this method once after a sequence of calls to Write() in
-        // order to write any necessary epilogue and close the stream.
-        virtual void Complete(std::ostream& output) = 0;
+
+    class IChunkWriterFactory : public IInterface, NonCopyable
+    {
+    public:
+        virtual std::unique_ptr<IChunkWriter>
+            CreateChunkWriter(size_t index) = 0;
     };
 }

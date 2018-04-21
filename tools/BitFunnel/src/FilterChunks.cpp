@@ -28,6 +28,7 @@
 #include "BitFunnel/Chunks/DocumentFilters.h"
 #include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Chunks/IChunkManifestIngestor.h"
+#include "BitFunnel/Chunks/IChunkWriter.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
@@ -210,9 +211,13 @@ namespace BitFunnel
             outputDirectory,
             index->GetFileSystem());
 
+        auto chunkWriterFactory =
+            Factories::CreateCopyingChunkWriterFactory(*fileManager);
+
         auto manifest = Factories::CreateChunkManifestIngestor(
             m_fileSystem,
-            fileManager.get(),
+            chunkWriterFactory.get(),
+//            fileManager.get(),
             filePaths,
             configuration,
             ingestor,

@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "BitFunnel/Chunks/Factories.h"
 #include "BitFunnel/Configuration/IShardDefinition.h"
 #include "BitFunnel/IFileManager.h"
 #include "BitFunnel/Index/IDocument.h"
@@ -29,6 +30,29 @@
 
 namespace BitFunnel
 {
+    //*************************************************************************
+    //
+    // Factory methods.
+    //
+    //*************************************************************************
+    std::unique_ptr<IChunkWriterFactory>
+        Factories::CreateCopyingChunkWriterFactory(IFileManager& fileManager)
+    {
+        return std::make_unique<CopyingChunkWriterFactory>(fileManager);
+    }
+
+
+    std::unique_ptr<IChunkWriterFactory>
+        Factories::CreateAnnotatingChunkWriterFactory(
+            IFileManager& fileManager,
+            IShardDefinition const & shardDefinition)
+    {
+        return std::make_unique<AnnotatingChunkWriterFactory>(
+            fileManager,
+            shardDefinition);
+    }
+
+
     //*************************************************************************
     //
     // CopyingChunkWriter
