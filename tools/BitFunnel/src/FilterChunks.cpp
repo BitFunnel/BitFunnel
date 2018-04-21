@@ -217,7 +217,6 @@ namespace BitFunnel
         auto manifest = Factories::CreateChunkManifestIngestor(
             m_fileSystem,
             chunkWriterFactory.get(),
-//            fileManager.get(),
             filePaths,
             configuration,
             ingestor,

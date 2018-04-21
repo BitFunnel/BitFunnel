@@ -22,13 +22,11 @@
 
 #pragma once
 
-#include <iosfwd>                       // std::ostream template parameter.
 #include <memory>                       // std::unqiue_ptr member.
-#include <vector>                       // std::vector member.
 
 #include "BitFunnel/Chunks/IChunkProcessor.h"   // Base class.
-#include "BitFunnel/NonCopyable.h"      // Base class.
-#include "Document.h"                   // std::unique_ptr<Document>.
+#include "BitFunnel/NonCopyable.h"              // Base class.
+#include "Document.h"                           // std::unique_ptr<Document>.
 
 
 namespace BitFunnel
@@ -45,7 +43,6 @@ namespace BitFunnel
                       bool cacheDocuments,
                       IDocumentFilter & filter,
                       IChunkWriter * chunkWriter);
-//                      std::unique_ptr<std::ostream> output);
 
         //
         // IChunkProcessor methods.
@@ -55,12 +52,8 @@ namespace BitFunnel
         virtual void OnStreamEnter(Term::StreamId id) override;
         virtual void OnTerm(char const * term) override;
         virtual void OnStreamExit() override;
-        virtual void OnDocumentExit(char const * start,
-                                    size_t bytesRead) override;
-        //virtual void OnDocumentExit(IChunkWriter & writer,
-        //                            size_t bytesRead) override;
+        virtual void OnDocumentExit(char const * start, size_t length) override;
         virtual void OnFileExit() override;
-//        virtual void OnFileExit(IChunkWriter & writer) override;
 
     private:
         //
@@ -71,7 +64,6 @@ namespace BitFunnel
         bool m_cacheDocuments;
         IDocumentFilter & m_filter;         // TODO: What about multi-threaded access?
         IChunkWriter * m_chunkWriter;
-//        std::unique_ptr<std::ostream> m_output;
 
         //
         // Other members

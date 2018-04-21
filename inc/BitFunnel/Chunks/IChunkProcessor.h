@@ -77,11 +77,7 @@ namespace BitFunnel
         virtual void OnStreamEnter(Term::StreamId id) = 0;
         virtual void OnTerm(char const * term) = 0;
         virtual void OnStreamExit() = 0;
-        virtual void OnDocumentExit(char const * start,
-                                    size_t bytesRead) = 0;
-        //virtual void OnDocumentExit(IChunkWriter & writer,
-        //                            size_t bytesRead) = 0;
+        virtual void OnDocumentExit(char const * start, size_t length) = 0;
         virtual void OnFileExit() = 0;
-//        virtual void OnFileExit(IChunkWriter & writer) = 0;
     };
 }

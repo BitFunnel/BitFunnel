@@ -57,7 +57,6 @@ namespace BitFunnel
             CreateChunkManifestIngestor(
                 IFileSystem& fileSystem,
                 IChunkWriterFactory* chunkWriterFactory,
-//                IFileManager * fileManager,
                 std::vector<std::string> const & filePaths,
                 IConfiguration const & config,
                 IIngestor& ingestor,

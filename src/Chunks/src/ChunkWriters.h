@@ -27,8 +27,6 @@
 #include <stddef.h>                         // size_t parameter.
 
 #include "BitFunnel/Chunks/IChunkWriter.h"  // Base class.
-//#include "BitFunnel/IInterface.h"           // Base class.
-//#include "BitFunnel/NonCopyable.h"          // Base class.
 
 
 namespace BitFunnel
@@ -38,15 +36,33 @@ namespace BitFunnel
     class IShardDefinition;
 
 
-    //class IChunkWriter : public IInterface, NonCopyable
-    //{
-    //public:
-    //    virtual void Write(IDocument const & document,
-    //                       char const * start,
-    //                       size_t length) = 0;
-    //};
+    //*************************************************************************
+    //
+    // CopyingChunkWriterFactory
+    //
+    //*************************************************************************
+    class CopyingChunkWriterFactory : public IChunkWriterFactory
+    {
+    public:
+        CopyingChunkWriterFactory(IFileManager& fileManager);
 
 
+        //
+        // IChunkWriterFactory methods.
+        //
+
+        virtual std::unique_ptr<IChunkWriter> CreateChunkWriter(size_t index) override;
+
+    protected:
+        IFileManager & m_fileManager;
+    };
+
+
+    //*************************************************************************
+    //
+    // CopyingChunkWriter
+    //
+    //*************************************************************************
     class CopyingChunkWriter : public IChunkWriter
     {
     public:
@@ -67,6 +83,34 @@ namespace BitFunnel
     };
 
 
+    //*************************************************************************
+    //
+    // AnnotatingChunkWriterFactory
+    //
+    //*************************************************************************
+    class AnnotatingChunkWriterFactory : public CopyingChunkWriterFactory
+    {
+    public:
+        AnnotatingChunkWriterFactory(IFileManager& fileManager,
+            IShardDefinition const & shardDefinition);
+
+
+        //
+        // IChunkWriterFactory methods.
+        //
+
+        virtual std::unique_ptr<IChunkWriter> CreateChunkWriter(size_t index) override;
+
+    private:
+        IShardDefinition const & m_shardDefinition;
+    };
+
+
+    //*************************************************************************
+    //
+    // AnnotatingChunkWriter
+    //
+    //*************************************************************************
     class AnnotatingChunkWriter : public CopyingChunkWriter
     {
     public:
@@ -81,47 +125,6 @@ namespace BitFunnel
         virtual void Write(IDocument const & document,
                            char const * start,
                            size_t length) override;
-
-    private:
-        IShardDefinition const & m_shardDefinition;
-    };
-
-
-    //class IChunkWriterFactory : public IInterface, NonCopyable
-    //{
-    //public:
-    //    virtual std::unique_ptr<IChunkWriter>
-    //        CreateChunkWriter(size_t index) = 0;
-    //};
-
-
-    class CopyingChunkWriterFactory : public IChunkWriterFactory
-    {
-    public:
-        CopyingChunkWriterFactory(IFileManager& fileManager);
-
-        //
-        // IChunkWriterFactory methods.
-        //
-
-        virtual std::unique_ptr<IChunkWriter> CreateChunkWriter(size_t index) override;
- 
-    protected:
-        IFileManager & m_fileManager;
-    };
-
-
-    class AnnotatingChunkWriterFactory : public CopyingChunkWriterFactory
-    {
-    public:
-        AnnotatingChunkWriterFactory(IFileManager& fileManager,
-                                     IShardDefinition const & shardDefinition);
-
-        //
-        // IChunkWriterFactory methods.
-        //
-
-        virtual std::unique_ptr<IChunkWriter> CreateChunkWriter(size_t index) override;
 
     private:
         IShardDefinition const & m_shardDefinition;

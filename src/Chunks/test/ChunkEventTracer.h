@@ -25,8 +25,8 @@
 
 #include <sstream>
 
-#include "BitFunnel/Chunks/IChunkProcessor.h"
-#include "ChunkReader.h"
+#include "BitFunnel/Chunks/IChunkProcessor.h"   // Base class.
+#include "ChunkReader.h"                        // Inline method.
 
 
 namespace BitFunnel
@@ -73,7 +73,7 @@ namespace BitFunnel
             void OnStreamEnter(Term::StreamId id) override
             {
                 m_trace << "OnStreamEnter;streamId: "
-                        // Cast to uint64_T that operator<< won't treat uin8_t a char.
+                        // Cast to uint64_t so that operator<< won't treat uin8_t a char.
                         << static_cast<uint64_t>(id)
                         << std::endl;
             }
@@ -94,8 +94,6 @@ namespace BitFunnel
             }
 
 
-            //void OnDocumentExit(IChunkWriter & /*writer*/,
-            //                    size_t /*sourceByteSize*/) override
             void OnDocumentExit(char const *,
                                 size_t) override
             {
@@ -103,7 +101,6 @@ namespace BitFunnel
             }
 
 
-//            void OnFileExit(IChunkWriter & /*writer*/) override
             void OnFileExit() override
             {
                 m_trace << "OnFileExit" << std::endl;

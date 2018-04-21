@@ -104,13 +104,13 @@ namespace BitFunnel
         size_t index,
         IShardDefinition const & shardDefinition)
         : CopyingChunkWriter(fileManager, index),
-        m_shardDefinition(shardDefinition)
+          m_shardDefinition(shardDefinition)
     {
     }
 
     void AnnotatingChunkWriter::Write(IDocument const & document,
-        char const * start,
-        size_t length)
+                                      char const * start,
+                                      size_t length)
     {
         // We need min/max count info about the shard the document's posting count belongs in
         // (Note: We add one to the posting count to account for the added shard term)
@@ -144,6 +144,8 @@ namespace BitFunnel
     std::unique_ptr<IChunkWriter>
         AnnotatingChunkWriterFactory::CreateChunkWriter(size_t index)
     {
-        return std::make_unique<AnnotatingChunkWriter>(m_fileManager, index, m_shardDefinition);
+        return std::make_unique<AnnotatingChunkWriter>(m_fileManager,
+                                                       index,
+                                                       m_shardDefinition);
     }
 }
