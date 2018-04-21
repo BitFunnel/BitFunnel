@@ -37,9 +37,49 @@ namespace BitFunnel
     class IIngestor;
 
 
+    //*************************************************************************
+    //
+    // ChunkManifestIngestor
+    //
+    // Uses the BitFunnel ingestion pipeline to process a set of chunk/corpus
+    // files into a stream of IDocuments, which are then be filtered and then
+    // either written to disk or ingested into the index.
+    //
+    //*************************************************************************
     class ChunkManifestIngestor : public IChunkManifestIngestor
     {
     public:
+        // Constructor parameters:
+        //   fileSystem: the filesystem that hosts the input chunks.
+        //
+        //   chunkWriterFactory:
+        //     If supplied, this factory's writers will be used be used to
+        //     write documents that make it through the filter. If nullptr
+        //     is passed, the documents will be ingested into the
+        //     index. Writers have the opportunity to modify or annotate
+        //     the document before writing. One use case is adding pseudo
+        //     terms that indicate which shard holds a document.
+        //
+        //   filePaths:
+        //      A vector of paths to input chunk files.
+        //
+        //   config:
+        //      The IConfiguration that specifies ingestion parameters
+        //      (e.g. maximum n-gram size).
+        //
+        //   ingestor:
+        //      The IIngestor for the current index.
+        //
+        //   filter:
+        //      An IDocumentFilter that determines which documents
+        //      will be processed (copied or ingested).
+        //
+        //   cacheDocuments:
+        //      If true, ingested documents will also be stored in a
+        //      cache in order to allow for query verification with
+        //      the `verify one` and `verify log` commands in the
+        //      BitFunnel repl.
+        //
         ChunkManifestIngestor(IFileSystem & fileSystem,
                               IChunkWriterFactory* chunkWriterFactory,
                               std::vector<std::string> const & filePaths,

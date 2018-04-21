@@ -53,8 +53,8 @@ namespace BitFunnel
 
     //*************************************************************************
     //
-    // IIngester is an abstract class or interface of classes that
-    // represents the entire BitFunnel index as viewed by the document ingestion
+    // IIngester is an abstract class or interface for classes that
+    // represent the entire BitFunnel index as viewed by the document ingestion
     // pipeline. This interface is used by the host of the index to populate the
     // index. Provides methods to add and remove documents, verify if a document
     // exists in the index, and assert facts on documents in the index.

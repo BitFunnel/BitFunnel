@@ -114,7 +114,7 @@ namespace BitFunnel
 
         CmdLine::OptionalParameter<const char *> writer(
             "writer",
-            "Alternative chunk writer (annotate or copy)",
+            "Specify chunk writer (annotate or copy)",
             "copy");
 
 
@@ -219,7 +219,7 @@ namespace BitFunnel
             outputDirectory,
             index->GetFileSystem());
 
-        // Select IChunkWriterFactory based on name.
+        // Select IChunkWriterFactory based on name provided on command line.
         std::unique_ptr<IChunkWriterFactory> chunkWriterFactory;
         if (!strcmp(writer, "copy"))
         {

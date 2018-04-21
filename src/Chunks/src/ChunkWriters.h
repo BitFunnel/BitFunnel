@@ -40,6 +40,9 @@ namespace BitFunnel
     //
     // CopyingChunkWriterFactory
     //
+    // Generates CopyingChunkWriters that write chunk files to paths supplied
+    // by an IFileManager.
+    //
     //*************************************************************************
     class CopyingChunkWriterFactory : public IChunkWriterFactory
     {
@@ -61,6 +64,10 @@ namespace BitFunnel
     //*************************************************************************
     //
     // CopyingChunkWriter
+    //
+    // Writes chunk files to paths supplied by an IFileManager.
+    // Primary use case is copying certain documents from one chunk file
+    // to another.
     //
     //*************************************************************************
     class CopyingChunkWriter : public IChunkWriter
@@ -90,6 +97,10 @@ namespace BitFunnel
     //
     // AnnotatingChunkWriterFactory
     //
+    // Generates AnnotatingChunkWriters that write annotated chunk files to
+    // paths supplied by an IFileManager. Each document is annotated with a
+    // pseudo term indicating its shard.
+    //
     //*************************************************************************
     class AnnotatingChunkWriterFactory : public CopyingChunkWriterFactory
     {
@@ -112,6 +123,16 @@ namespace BitFunnel
     //*************************************************************************
     //
     // AnnotatingChunkWriter
+    //
+    // Writes chunk files to paths supplied by an IFileManager.
+    // Each document is annotated with a pseudo-term that indicates the
+    // document's shard. The term is added to stream `00` and take the form
+    //     SHARD_min_max
+    // where `min` and `max` are the shard parameters denoting the range of
+    // unique term counts allowed in the shard: [min, max).
+    //
+    // Primary use case is annotating documents with shard info, in order to
+    // facilitate measurement and verification of shard-specific query results.
     //
     //*************************************************************************
     class AnnotatingChunkWriter : public CopyingChunkWriter

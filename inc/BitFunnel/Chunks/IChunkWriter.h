@@ -43,7 +43,7 @@ namespace BitFunnel
     public:
         // Writes the document.
         // The start and length parameters refer to a buffer containing the
-        // BitFunnel corpus/chunk file encoding of the document.
+        // BitFunnel corpus/chunk file encoding of the document to be written.
         virtual void Write(IDocument const & document,
                            char const * start,
                            size_t length) = 0;
