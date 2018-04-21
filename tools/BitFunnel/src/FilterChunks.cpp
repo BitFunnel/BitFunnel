@@ -112,6 +112,11 @@ namespace BitFunnel
             1u,
             CmdLine::GreaterThan(0));
 
+        CmdLine::OptionalParameter<const char *> writer(
+            "writer",
+            "Alternative chunk writer (annotate or copy)",
+            "copy");
+
 
         parser.AddParameter(manifestFileName);
         parser.AddParameter(outputPath);
@@ -119,6 +124,7 @@ namespace BitFunnel
         parser.AddParameter(random);
         parser.AddParameter(size);
         parser.AddParameter(count);
+        parser.AddParameter(writer);
 
         int returnCode = 1;
 
@@ -158,7 +164,8 @@ namespace BitFunnel
                                 outputPath,
                                 manifestFileName,
                                 gramSize,
-                                filter);
+                                filter,
+                                writer);
 
                 returnCode = 0;
             }
@@ -182,7 +189,8 @@ namespace BitFunnel
         char const * chunkListFileName,
         // TODO: gramSize should be unsigned once CmdLineParser supports unsigned.
         int gramSize,
-        IDocumentFilter & filter) const
+        IDocumentFilter & filter,
+        char const * writer) const
     {
         // TODO: cast of gramSize can be removed when it's fixed to be unsigned.
         auto index = Factories::CreateSimpleIndex(m_fileSystem);
@@ -211,8 +219,24 @@ namespace BitFunnel
             outputDirectory,
             index->GetFileSystem());
 
-        auto chunkWriterFactory =
-            Factories::CreateCopyingChunkWriterFactory(*fileManager);
+        // Select IChunkWriterFactory based on name.
+        std::unique_ptr<IChunkWriterFactory> chunkWriterFactory;
+        if (!strcmp(writer, "copy"))
+        {
+            chunkWriterFactory = Factories::CreateCopyingChunkWriterFactory(*fileManager);
+        }
+        else if (!strcmp(writer, "annotate"))
+        {
+            chunkWriterFactory =
+                Factories::CreateAnnotatingChunkWriterFactory(
+                    *fileManager,
+                    ingestor.GetShardDefinition());
+        }
+        else
+        {
+            FatalError error("Invalid writer. Use `copy` or `annotate`.");
+            throw error;
+        }
 
         auto manifest = Factories::CreateChunkManifestIngestor(
             m_fileSystem,

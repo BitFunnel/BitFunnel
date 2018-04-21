@@ -79,6 +79,9 @@ namespace BitFunnel
                            size_t length) override;
 
     protected:
+        // WARNING: The design of this class relies on the output stream being
+        // destructed automatically. The output stream must be destructed in
+        // order to close the its underlying file.
         std::unique_ptr<std::ostream> m_output;
     };
 

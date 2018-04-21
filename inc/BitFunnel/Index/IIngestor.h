@@ -39,6 +39,7 @@ namespace BitFunnel
     class IRecycler;
     class ITokenManager;
     class IShard;
+    class IShardDefinition;
     class ITermToText;
 
     // BITFUNNELTYPES
@@ -142,6 +143,8 @@ namespace BitFunnel
         // Returns a number of Shards and a Shard with the given ShardId.
         virtual size_t GetShardCount() const = 0;
         virtual IShard& GetShard(size_t shard) const = 0;
+
+        virtual IShardDefinition const & GetShardDefinition() const = 0;
 
         virtual IRecycler& GetRecycler() const = 0;
 

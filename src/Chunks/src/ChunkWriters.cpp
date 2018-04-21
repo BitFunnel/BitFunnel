@@ -66,6 +66,8 @@ namespace BitFunnel
 
     CopyingChunkWriter::~CopyingChunkWriter()
     {
+        // Zero-terminate the stream, indicating that there are no more documents.
+        // The stream itself will be closed when its std::unique_ptr is destructed.
         *m_output << '\0';
     }
 

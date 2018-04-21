@@ -117,6 +117,7 @@ namespace BitFunnel
 
         {
             // Block scopes IChunkWriter.
+            // IChunkWriter's destructor zero-terminates its output and closes its stream.
             std::unique_ptr<IChunkWriter> chunkWriter;
             if (m_chunkWriterFactory != nullptr) {
                 chunkWriter = m_chunkWriterFactory->CreateChunkWriter(index);

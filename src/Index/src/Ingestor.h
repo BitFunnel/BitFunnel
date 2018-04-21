@@ -133,6 +133,8 @@ namespace BitFunnel
         virtual size_t GetShardCount() const override;
         virtual IShard& GetShard(size_t shard) const override;
 
+        virtual IShardDefinition const & GetShardDefinition() const override;
+
         virtual IRecycler& GetRecycler() const override;
 
         virtual ITokenManager& GetTokenManager() const override;

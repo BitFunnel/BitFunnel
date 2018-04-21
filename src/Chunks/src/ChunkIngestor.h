@@ -53,6 +53,8 @@ namespace BitFunnel
         virtual void OnTerm(char const * term) override;
         virtual void OnStreamExit() override;
         virtual void OnDocumentExit(char const * start, size_t length) override;
+
+        // TODO: Consider eliminating OnFileExit()? Also eliminate OnFileEnter()?
         virtual void OnFileExit() override;
 
     private:

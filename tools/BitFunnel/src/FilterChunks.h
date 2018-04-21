@@ -26,6 +26,7 @@
 
 namespace BitFunnel
 {
+    class IChunkWriterFactory;
     class IDocumentFilter;
     class IFileSystem;
 
@@ -57,7 +58,8 @@ namespace BitFunnel
             char const * intermediateDirectory,
             char const * chunkListFileName,
             int gramSize,
-            IDocumentFilter & filter) const;
+            IDocumentFilter & filter,
+            char const * writer) const;
 
         IFileSystem& m_fileSystem;
     };
