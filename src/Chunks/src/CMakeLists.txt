@@ -6,6 +6,7 @@ set(CPPFILES
     ChunkIngestor.cpp
     ChunkManifestIngestor.cpp
     ChunkReader.cpp
+	ChunkWriters.cpp
     Document.cpp
     DocumentFilters.cpp
     IngestChunks.cpp
@@ -23,6 +24,7 @@ set(PRIVATE_HFILES
     ChunkIngestor.h
     ChunkManifestIngestor.h
     ChunkReader.h
+	ChunkWriters.h
     Document.h
 )
 
