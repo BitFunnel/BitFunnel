@@ -22,6 +22,7 @@
 
 
 #include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/Helpers.h"
 #include "BitFunnel/Index/IRecycler.h"
@@ -372,13 +373,19 @@ namespace BitFunnel
             // If the user didn't specify the block allocator buffer size, use
             // a default that is small enough that it won't cause a CI failure.
             // The CI machines don't have a lot of memory, so it is necessary
-            // to use a modest initial block count to allow unit tests to pass.
+            // to use a modest memory requirement (1GB) to allow unit tests to pass.
             // See issue #388.
-            size_t blockCount = 512;
-            if (m_blockAllocatorBufferSize != 0)
+            if (m_blockAllocatorBufferSize == 0)
             {
-                // Otherwise, compute block count based on requested buffer size.
-                blockCount = m_blockAllocatorBufferSize / m_blockSize;
+                m_blockAllocatorBufferSize = 1024000000;
+            }
+
+            // Calculate number of slices that will fit in requested memory.
+            // Ensure we have enough memory for at least one slice per termtable
+            size_t blockCount = m_blockAllocatorBufferSize / m_blockSize;
+            if (blockCount < m_termTables->size())
+            {
+                throw FatalError("Insufficient memory requested to build index");
             }
 
             m_sliceAllocator =
