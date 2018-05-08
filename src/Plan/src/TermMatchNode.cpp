@@ -340,7 +340,7 @@ namespace BitFunnel
         : m_streamId(streamId),
           m_grams(grams)
     {
-        LogAssertB(m_grams.GetSize() >= 2, "Phase mush have at least 2 terms.");
+        LogAssertB(m_grams.GetSize() >= 2, "Phrase must have at least 2 terms.");
     }
 
 
@@ -352,7 +352,7 @@ namespace BitFunnel
                    StringVector::Parse(parser, c_defaultInitialCapacity)))
     {
         // Phrase nodes must have at least two Terms.
-        LogAssertB(m_grams.GetSize() >= 2, "Phase mush have at least 2 terms.");
+        LogAssertB(m_grams.GetSize() >= 2, "Phrase must have at least 2 terms.");
         parser.CloseObject();
     }
 

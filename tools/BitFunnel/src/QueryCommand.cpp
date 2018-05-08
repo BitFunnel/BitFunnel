@@ -57,8 +57,9 @@ namespace BitFunnel
             m_isSingleQuery = false;
             if (command.compare("log") != 0)
             {
-                std::cout << "expected log or one" << std::endl;
-                throw RecoverableError();
+                std::stringstream message;
+                message << "expected log or one" << std::endl;
+                throw RecoverableError(message.str().c_str());
             }
             m_query = TaskFactory::GetNextToken(parameters);
         }
@@ -69,61 +70,72 @@ namespace BitFunnel
     {
         std::ostream& output = GetEnvironment().GetOutputStream();
 
-        if (m_isSingleQuery)
+        try
         {
-            output
-                << "Processing query \""
-                << m_query
-                << "\"" << std::endl;
-            auto instrumentation =
-                QueryRunner::Run(m_query.c_str(),
-                                 GetEnvironment().GetSimpleIndex(),
-                                 GetEnvironment().GetCompilerMode(),
-                                 GetEnvironment().GetCacheLineCountMode());
+            if (m_isSingleQuery)
+            {
+                output
+                    << "Processing query \""
+                    << m_query
+                    << "\"" << std::endl;
+                auto instrumentation =
+                    QueryRunner::Run(m_query.c_str(),
+                        GetEnvironment().GetSimpleIndex(),
+                        GetEnvironment().GetCompilerMode(),
+                        GetEnvironment().GetCacheLineCountMode());
 
-            output << "Results:" << std::endl;
-            CsvTsv::CsvTableFormatter formatter(output);
-            QueryInstrumentation::Data::FormatHeader(formatter);
-            instrumentation.Format(formatter);
+                output << "Results:" << std::endl;
+                CsvTsv::CsvTableFormatter formatter(output);
+                QueryInstrumentation::Data::FormatHeader(formatter);
+                instrumentation.Format(formatter);
+            }
+            else
+            {
+                CHECK_NE(*GetEnvironment().GetOutputDir().c_str(), '\0')
+                    << "Output directory not set. "
+                    << "Please use the 'cd' command to set an "
+                    << "output directory";
+
+                output
+                    << "Processing queries from log at \""
+                    << m_query
+                    << "\"" << std::endl;
+
+                std::string const & filename = m_query;
+                auto fileSystem = Factories::CreateFileSystem();  // TODO: Use environment file system
+                auto queries = ReadLines(*fileSystem, filename.c_str());
+                const size_t c_threadCount = GetEnvironment().GetThreadCount();
+                const size_t c_iterations = 1;
+                auto statistics =
+                    QueryRunner::Run(GetEnvironment().GetSimpleIndex(),
+                        GetEnvironment().GetOutputDir().c_str(),
+                        c_threadCount,
+                        queries,
+                        c_iterations,
+                        GetEnvironment().GetCompilerMode(),
+                        GetEnvironment().GetCacheLineCountMode());
+                output << "Results:" << std::endl;
+                statistics.Print(output);
+
+                // TODO: unify this with the fileManager that's passed into
+                // QueryRunner::Run.
+                auto outFileManager =
+                    Factories::CreateFileManager(GetEnvironment().GetOutputDir().c_str(),
+                        GetEnvironment().GetOutputDir().c_str(),
+                        GetEnvironment().GetOutputDir().c_str(),
+                        GetEnvironment().GetSimpleIndex().GetFileSystem());
+
+                auto outSummary = outFileManager->QuerySummaryStatistics().OpenForWrite();
+                statistics.Print(*outSummary);
+            }
         }
-        else
+        catch (RecoverableError e)
         {
-            CHECK_NE(*GetEnvironment().GetOutputDir().c_str(), '\0')
-                << "Output directory not set. "
-                << "Please use the 'cd' command to set an "
-                << "output directory";
-
-            output
-                << "Processing queries from log at \""
-                << m_query
-                << "\"" << std::endl;
-
-            std::string const & filename = m_query;
-            auto fileSystem = Factories::CreateFileSystem();  // TODO: Use environment file system
-            auto queries = ReadLines(*fileSystem, filename.c_str());
-            const size_t c_threadCount = GetEnvironment().GetThreadCount();
-            const size_t c_iterations = 1;
-            auto statistics =
-                QueryRunner::Run(GetEnvironment().GetSimpleIndex(),
-                                 GetEnvironment().GetOutputDir().c_str(),
-                                 c_threadCount,
-                                 queries,
-                                 c_iterations,
-                                 GetEnvironment().GetCompilerMode(),
-                                 GetEnvironment().GetCacheLineCountMode());
-            output << "Results:" << std::endl;
-            statistics.Print(output);
-
-            // TODO: unify this with the fileManager that's passed into
-            // QueryRunner::Run.
-            auto outFileManager =
-                Factories::CreateFileManager(GetEnvironment().GetOutputDir().c_str(),
-                                             GetEnvironment().GetOutputDir().c_str(),
-                                             GetEnvironment().GetOutputDir().c_str(),
-                                             GetEnvironment().GetSimpleIndex().GetFileSystem());
-
-            auto outSummary = outFileManager->QuerySummaryStatistics().OpenForWrite();
-            statistics.Print(*outSummary);
+            output << "Error: " << e.what() << std::endl;
+        }
+        catch (Logging::CheckException e)
+        {
+            output << "Error: " << e.GetMessage().c_str() << std::endl;
         }
     }
 

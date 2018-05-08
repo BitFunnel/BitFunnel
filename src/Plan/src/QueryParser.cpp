@@ -200,7 +200,17 @@ namespace BitFunnel
             grams.AddString(token);
         }
 
-        return TermMatchNode::Builder::CreatePhraseNode(grams, streamId, m_allocator);
+        // A phrase must have at least 2 terms.
+        if (grams.GetSize() >= 2)
+        {
+            return TermMatchNode::Builder::CreatePhraseNode(grams, streamId, m_allocator);
+        }
+        else
+        {
+            // TODO: Treat single term phrase as a Unigram (issue #417), e.g.:
+            // return TermMatchNode::Builder::CreateUnigramNode(grams[0], streamId, m_allocator);
+            throw ParseError("A phrase in double-quotes must have at least two terms", m_currentPosition);
+        }
     }
 
 
