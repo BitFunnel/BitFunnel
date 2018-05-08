@@ -29,6 +29,9 @@
 
 namespace BitFunnel
 {
+    // This calculates the minimum acceptable slice size.
+    // This scales up based on corpus size, since a larger corpus requires more ranks.
+    // Each additional rank doubles the minimum document capacity required for a slice.
     size_t GetMinimumBlockSize(IDocumentDataSchema const & schema,
                                ITermTable const & termTable)
     {
@@ -42,12 +45,11 @@ namespace BitFunnel
     }
 
 
-    // TODO: this should actually be much larger when the corpus is much larger
-    // for performance reasons.
+    // Use minimum block size as a reasonable slice size, since it scales based on corpus size.
     size_t GetReasonableBlockSize(IDocumentDataSchema const & schema,
                                   ITermTable const & termTable)
     {
         size_t minimumFunctionalSize = GetMinimumBlockSize(schema, termTable);
-        return RoundUp<size_t>(minimumFunctionalSize, c_bitsPerPage);           // Why is this bitsPerPage and not bytesPerPage?
+        return RoundUp<size_t>(minimumFunctionalSize, c_bytesPerPage);
     }
 }

@@ -22,6 +22,7 @@
 
 
 #include "BitFunnel/Configuration/Factories.h"
+#include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/Helpers.h"
 #include "BitFunnel/Index/IRecycler.h"
@@ -357,11 +358,11 @@ namespace BitFunnel
         if (m_sliceAllocator.get() == nullptr)
         {
             // To calculate a large-enough m_blocksize, we need to calculate the
-            // largest blocksize required by any TermTable.
+            // largest blocksize (slice) required by any TermTable (shard).
             size_t m_blockSize = 0;
             for (size_t tableId=0; tableId < m_termTables->size(); ++tableId)
             {
-                const size_t tblBlockSize = 32 * GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(tableId));
+                const size_t tblBlockSize = GetReasonableBlockSize(*m_schema, m_termTables->GetTermTable(tableId));
                 if (tblBlockSize > m_blockSize)
                 {
                     m_blockSize = tblBlockSize;
@@ -372,13 +373,19 @@ namespace BitFunnel
             // If the user didn't specify the block allocator buffer size, use
             // a default that is small enough that it won't cause a CI failure.
             // The CI machines don't have a lot of memory, so it is necessary
-            // to use a modest initial block count to allow unit tests to pass.
+            // to use a modest memory requirement (1GB) to allow unit tests to pass.
             // See issue #388.
-            size_t blockCount = 512;
-            if (m_blockAllocatorBufferSize != 0)
+            if (m_blockAllocatorBufferSize == 0)
             {
-                // Otherwise, compute block count based on requested buffer size.
-                blockCount = m_blockAllocatorBufferSize / m_blockSize;
+                m_blockAllocatorBufferSize = 1024000000;
+            }
+
+            // Calculate number of slices that will fit in requested memory.
+            // Ensure we have enough memory for at least one slice per termtable
+            size_t blockCount = m_blockAllocatorBufferSize / m_blockSize;
+            if (blockCount < m_termTables->size())
+            {
+                throw FatalError("Insufficient memory requested to build index");
             }
 
             m_sliceAllocator =
