@@ -373,11 +373,11 @@ namespace BitFunnel
             // If the user didn't specify the block allocator buffer size, use
             // a default that is small enough that it won't cause a CI failure.
             // The CI machines don't have a lot of memory, so it is necessary
-            // to use a modest memory requirement (1GB) to allow unit tests to pass.
+            // to use a modest memory requirement (1GiB) to allow unit tests to pass.
             // See issue #388.
             if (m_blockAllocatorBufferSize == 0)
             {
-                m_blockAllocatorBufferSize = 1024000000;
+                m_blockAllocatorBufferSize = 1073741824;
             }
 
             // Calculate number of slices that will fit in requested memory.
