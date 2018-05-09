@@ -69,7 +69,7 @@ namespace BitFunnel
 
         if (m_uniqueQueryCount != m_processedCount)
         {
-            out << "WARNING: unique queries differs from queries processed." << std::endl;
+            out << "WARNING: Not all queries were processed; some failed or are invalid" << std::endl;
         }
 
         out
@@ -244,23 +244,32 @@ namespace BitFunnel
 
         size_t queryId = taskId % m_queries.size();
 
-        QueryParser parser(m_queries[queryId].c_str(),
-                           m_config,
-                           m_resources.GetMatchTreeAllocator());
-        auto tree = parser.Parse();
-        instrumentation.FinishParsing();
-
-        // TODO: remove diagnosticStream and replace with nullable.
-        auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
-        if (tree != nullptr)
+        // Parse and run the query, catching ParseError or other RecoverableError
+        try
         {
-            Factories::RunQueryPlanner(*tree,
-                                       m_index,
-                                       m_resources,
-                                       *diagnosticStream,
-                                       instrumentation,
-                                       m_resultsBuffer,
-                                       m_useNativeCode);
+            QueryParser parser(m_queries[queryId].c_str(),
+                m_config,
+                m_resources.GetMatchTreeAllocator());
+            auto tree = parser.Parse();
+            instrumentation.FinishParsing();
+
+            // TODO: remove diagnosticStream and replace with nullable.
+            auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
+            if (tree != nullptr)
+            {
+                Factories::RunQueryPlanner(*tree,
+                                           m_index,
+                                           m_resources,
+                                           *diagnosticStream,
+                                           instrumentation,
+                                           m_resultsBuffer,
+                                           m_useNativeCode);
+            }
+        }
+        catch (RecoverableError e)
+        {
+            // Set indicator later used to determine if query was performed
+            instrumentation.SetRowCount(0);
         }
 
         m_results[taskId] = instrumentation.GetData();
