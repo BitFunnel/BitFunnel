@@ -20,6 +20,7 @@ set(CPPFILES
     REPL.cpp
     ScriptCommand.cpp
     ShardBuilder.cpp
+    ShardCommand.cpp
     ShowCommand.cpp
     StatisticsBuilder.cpp
     StatusCommand.cpp
@@ -59,6 +60,7 @@ set(PRIVATE_HFILES
     REPL.h
     ScriptCommand.h
     ShardBuilder.h
+    ShardCommand.h
     ShowCommand.h
     StatisticsBuilder.h
     StatusCommand.h
