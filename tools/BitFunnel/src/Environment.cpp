@@ -35,6 +35,7 @@
 #include "InterpreterCommand.h"
 #include "QueryCommand.h"
 #include "ScriptCommand.h"
+#include "ShardCommand.h"
 #include "ShowCommand.h"
 #include "StatusCommand.h"
 #include "TaskFactory.h"
@@ -66,7 +67,9 @@ namespace BitFunnel
         m_memory(memory),
         m_directory(directory),
         m_gramSize(gramSize),
-        m_output(output)
+        m_output(output),
+        m_minshard(0),
+        m_maxshard(0)
     {
         RegisterCommands();
     }
@@ -87,6 +90,7 @@ namespace BitFunnel
         m_taskFactory->RegisterCommand<Load>();
         m_taskFactory->RegisterCommand<Query>();
         m_taskFactory->RegisterCommand<Script>();
+        m_taskFactory->RegisterCommand<ShardCommand>();
         m_taskFactory->RegisterCommand<Show>();
         m_taskFactory->RegisterCommand<Status>();
         m_taskFactory->RegisterCommand<ThreadsCommand>();
@@ -168,6 +172,22 @@ namespace BitFunnel
         return m_output;
     }
 
+
+    size_t Environment::GetMinShard() const
+    {
+        return m_minshard;
+    }
+
+    size_t Environment::GetMaxShard() const
+    {
+        return m_maxshard;
+    }
+
+    void Environment::SetShards(size_t minshard, size_t maxshard)
+    {
+        m_minshard = minshard;
+        m_maxshard = maxshard;
+    }
 
     size_t Environment::GetThreadCount() const
     {

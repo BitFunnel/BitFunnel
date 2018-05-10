@@ -66,6 +66,10 @@ namespace BitFunnel
         std::string const & GetOutputDir() const;
         void SetOutputDir(std::string dir);
 
+        size_t GetMinShard() const;
+        size_t GetMaxShard() const;
+        void SetShards(size_t minshard, size_t maxshard);
+
         std::ostream & GetOutputStream() const;
 
         size_t GetThreadCount() const;
@@ -98,5 +102,7 @@ namespace BitFunnel
         size_t m_gramSize;
         std::string m_outputDir;
         std::ostream& m_output;
+        size_t m_minshard;
+        size_t m_maxshard;
     };
 }

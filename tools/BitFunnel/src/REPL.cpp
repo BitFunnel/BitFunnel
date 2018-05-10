@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Utilities/ReadLines.h"
 #include "CmdLineParser/CmdLineParser.h"
 #include "Environment.h"
@@ -182,6 +183,7 @@ namespace BitFunnel
             << std::endl;
 
         environment.StartIndex();
+        environment.SetShards(0, environment.GetIngestor().GetShardCount());
 
         Loop(environment,
                 input,
