@@ -128,6 +128,9 @@ namespace BitFunnel
         // Returns the number of documents currently active in the index.
         virtual size_t GetDocumentCount() const = 0;
 
+        // Returns the maximum DocID of any document added to the index.
+        virtual DocId GetMaxDocId() const = 0;
+
         // Returns the size in bytes of the capacity of row tables in the
         // entire ingestion index.
         virtual size_t GetUsedCapacityInBytes() const = 0;

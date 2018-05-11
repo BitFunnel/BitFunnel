@@ -139,9 +139,9 @@ namespace BitFunnel
 
                 // TODO: Come up with a better heuristic for deciding which
                 // bits to display. Current algorithm is to display bits for
-                // the first 64 documents with ids less than 1000000.
+                // the first 64 documents in the shard.
 
-                auto maxDocId = 1000000;
+                auto maxDocId = ingestor.GetMaxDocId();
                 std::vector<DocId> ids;
                 for (DocId id = 0; id <= maxDocId; ++id)
                 {
