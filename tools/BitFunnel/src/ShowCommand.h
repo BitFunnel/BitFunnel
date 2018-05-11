@@ -49,6 +49,5 @@ namespace BitFunnel
     private:
         Mode m_mode;
         std::string m_term;
-        size_t m_shard;
     };
 }
