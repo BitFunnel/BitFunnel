@@ -461,12 +461,6 @@ namespace BitFunnel
     }
 
 
-    ITermTable const & SimpleIndex::GetTermTable0() const
-    {
-        return GetTermTable(0);
-    }
-
-
     ITermTable const & SimpleIndex::GetTermTable(ShardId shardId) const
     {
         EnsureStarted(true);

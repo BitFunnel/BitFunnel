@@ -61,6 +61,8 @@ namespace BitFunnel
 
         std::cout << std::endl;
 
+        std::cout << "SHARD " << m_shard << "-->" << std::endl << std::endl;
+
         double bytesPerDocument = 0;
         for (Rank rank = 0; rank < c_maxRankValue; ++rank)
         {
@@ -102,23 +104,28 @@ namespace BitFunnel
         }
         std::cout << "Bits per document: " << bitsPerDocument << std::endl;
 
+        // TODO:  This is document count for corpus vs. shard. totalBits will be incorrect.
         const auto documentCount = GetEnvironment().GetIngestor().GetDocumentCount();
         std::cout << "Document count: " << documentCount << std::endl;
 
         const double totalBits = documentCount * bitsPerDocument;
         std::cout << "Total bits: " << totalBits << std::endl;
 
+        // TODO: This is posting count for corpus vs. shard. bitsPerPosting will be incorrect.
         const auto postingCount = GetEnvironment().GetIngestor().GetPostingCount();
         std::cout << "Posting count: " << postingCount << std::endl;
 
-        const double bitsPerPosting = totalBits / postingCount;
-        std::cout << "Bits per posting: " << bitsPerPosting << std::endl;
+        if (postingCount > 0)
+        {
+            const double bitsPerPosting = totalBits / postingCount;
+            std::cout << "Bits per posting: " << bitsPerPosting << std::endl;
+        }
 
         std::cout << std::endl;
 
         std::cout
             << "Slice capacity: "
-            << GetEnvironment().GetIngestor().GetShard(0).GetSliceCapacity()
+            << GetEnvironment().GetIngestor().GetShard(m_shard).GetSliceCapacity()
             << std::endl;
         std::cout << std::endl;
     }

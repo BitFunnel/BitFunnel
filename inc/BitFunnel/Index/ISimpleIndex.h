@@ -129,13 +129,6 @@ namespace BitFunnel
         virtual IIngestor & GetIngestor() const = 0;
         virtual IRecycler & GetRecycler() const = 0;
 
-        // TODO: return ITermTableCollection or take ShardId.
-        // GetTermTable0() is a temporary method that makes it easy to spot
-        // all of the places in the code that are not Shard-aware. Intention
-        // is to eliminate GetTermTable0() which will cause compiler errors
-        // that will need to be addressed when moving to a multi-shard
-        // system.
-        virtual ITermTable const & GetTermTable0() const = 0;
         virtual ITermTable const & GetTermTable(ShardId shardId) const = 0;
     };
 }
