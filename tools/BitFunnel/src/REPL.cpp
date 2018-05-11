@@ -183,7 +183,7 @@ namespace BitFunnel
             << std::endl;
 
         environment.StartIndex();
-        environment.SetShards(0, environment.GetIngestor().GetShardCount());
+        environment.SetShards(0, environment.GetIngestor().GetShardCount() - 1);
 
         Loop(environment,
                 input,

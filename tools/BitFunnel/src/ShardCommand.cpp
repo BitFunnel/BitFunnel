@@ -46,7 +46,7 @@ namespace BitFunnel
             if (tokens[0].compare("all") == 0)
             {
                 m_minshard = 0;
-                m_maxshard = environment.GetIngestor().GetShardCount();
+                m_maxshard = environment.GetIngestor().GetShardCount() - 1;
             }
             else
             {
