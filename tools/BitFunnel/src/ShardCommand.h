@@ -31,8 +31,8 @@ namespace BitFunnel
     {
     public:
         ShardCommand(Environment & environment,
-           Id id,
-           char const * parameters);
+                     Id id,
+                     char const * parameters);
 
         virtual void Execute() override;
         static ICommand::Documentation GetDocumentation();
