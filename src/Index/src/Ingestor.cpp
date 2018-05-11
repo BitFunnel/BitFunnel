@@ -65,6 +65,7 @@ namespace BitFunnel
           // But see issue 389. Because of that issue, m_documentCount is not
           // always equal to m_documentMap.size().
           m_documentCount(0),
+          m_maxDocId(0),
           m_totalSourceByteSize(0),
           m_documentMap(new DocumentMap()),
           m_documentCache(new DocumentCache()),
@@ -178,6 +179,7 @@ namespace BitFunnel
     {
         ++m_documentCount;
         m_totalSourceByteSize += document.GetSourceByteSize();
+        m_maxDocId = id > m_maxDocId ? id : m_maxDocId;
 
         // Add postingCount to the DocumentHistogramBuilder
         m_histogram.AddDocument(document.GetPostingCount());
@@ -328,6 +330,12 @@ namespace BitFunnel
     {
         return m_documentCount;
 //        return m_documentMap->size();
+    }
+
+
+    DocId Ingestor::GetMaxDocId() const
+    {
+        return m_maxDocId;
     }
 
 
