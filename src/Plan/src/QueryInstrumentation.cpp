@@ -30,6 +30,7 @@ namespace BitFunnel
     void QueryInstrumentation::Data::FormatHeader(
         CsvTsv::CsvTableFormatter & formatter)
     {
+        formatter.WriteField("succeeded");
         formatter.WriteField("rows");
         formatter.WriteField("matches");
         formatter.WriteField("quadwords");
@@ -44,6 +45,7 @@ namespace BitFunnel
     void QueryInstrumentation::Data::Format(
         CsvTsv::CsvTableFormatter & formatter) const
     {
+        formatter.WriteField(m_succeeded);
         formatter.WriteField(m_rowCount);
         formatter.WriteField(m_matchCount);
         formatter.WriteField(m_quadwordCount);

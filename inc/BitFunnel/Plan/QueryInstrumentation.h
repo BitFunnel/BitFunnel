@@ -40,6 +40,11 @@ namespace BitFunnel
     public:
         class Data;
 
+        inline void QuerySuceeded()
+        {
+            m_data.m_succeeded = true;
+        }
+
         inline void SetMatchCount(size_t matchCount)
         {
             m_data.m_matchCount = matchCount;
@@ -89,7 +94,8 @@ namespace BitFunnel
         {
         public:
             inline Data()
-              : m_rowCount(0ull),
+              : m_succeeded(false),
+                m_rowCount(0ull),
                 m_matchCount(0ull),
                 m_quadwordCount(0ull),
                 m_cacheLineCount(0ll),
@@ -101,6 +107,7 @@ namespace BitFunnel
 
             Data & operator=(Data const & other)
             {
+                m_succeeded = other.m_succeeded;
                 m_rowCount = other.m_rowCount;
                 m_matchCount = other.m_matchCount;
                 m_quadwordCount = other.m_quadwordCount;
@@ -109,6 +116,11 @@ namespace BitFunnel
                 m_planningTime = other.m_planningTime;
                 m_matchingTime = other.m_matchingTime;
                 return *this;
+            }
+
+            inline size_t GetSucceeded()
+            {
+                return m_succeeded;
             }
 
             inline size_t GetRowCount()
@@ -152,6 +164,7 @@ namespace BitFunnel
         private:
             friend class QueryInstrumentation;
 
+            bool m_succeeded;
             size_t m_rowCount;
             size_t m_matchCount;
             size_t m_quadwordCount;

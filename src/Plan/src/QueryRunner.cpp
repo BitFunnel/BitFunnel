@@ -264,12 +264,14 @@ namespace BitFunnel
                                            instrumentation,
                                            m_resultsBuffer,
                                            m_useNativeCode);
+
+                instrumentation.QuerySuceeded();
             }
         }
         catch (RecoverableError e)
         {
-            // Set indicator later used to determine if query was performed
-            instrumentation.SetRowCount(0);
+            // Continue processing other queries, even though the current query failed.
+            // The instrumentation for this query will show that it didn't succeed.
         }
 
         m_results[taskId] = instrumentation.GetData();
@@ -364,7 +366,7 @@ namespace BitFunnel
         size_t matchCount = 0;
         for (auto result : results)
         {
-            if (result.GetRowCount() > 0)
+            if (result.GetSucceeded())
             {
                 ++queriesProcessed;
                 matchCount += result.GetMatchCount();
