@@ -179,7 +179,10 @@ namespace BitFunnel
     {
         ++m_documentCount;
         m_totalSourceByteSize += document.GetSourceByteSize();
-        m_maxDocId = id > m_maxDocId ? id : m_maxDocId;
+
+        DocId oldMaxId = m_maxDocId;
+        while (id > oldMaxId &&
+               !m_maxDocId.compare_exchange_weak(oldMaxId, id));
 
         // Add postingCount to the DocumentHistogramBuilder
         m_histogram.AddDocument(document.GetPostingCount());
