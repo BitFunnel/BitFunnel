@@ -104,11 +104,6 @@ namespace BitFunnel
         // and fact terms.
         virtual PackedRowIdSequence GetRows(const Term& term) const override;
 
-        // Getters for system defined terms.
-        virtual Term GetDocumentActiveTerm() const override;
-        virtual Term GetMatchAllTerm() const override;
-        virtual Term GetMatchNoneTerm() const override;
-
         //
         // Reader methods called by RowIdSequence::const_iterator.
         //
@@ -141,8 +136,6 @@ namespace BitFunnel
         // at least one (transient and quickly fixed) bug where we called
         // CloseTerm multiple times without calling OpenTerm.
         void EnsureTermOpen(bool value) const;
-
-        static Term CreateSystemTerm(SystemTerm term);
 
         bool m_sealed;
         bool m_termOpen;

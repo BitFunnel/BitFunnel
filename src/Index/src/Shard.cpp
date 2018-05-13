@@ -42,7 +42,7 @@ namespace BitFunnel
     // Extracts a RowId used to mark documents as active/soft-deleted.
     static RowId RowIdForActiveDocument(ITermTable const & termTable)
     {
-        RowIdSequence rows(termTable.GetDocumentActiveTerm(), termTable);
+        RowIdSequence rows(ITermTable::GetDocumentActiveTerm(), termTable);
 
         auto it = rows.begin();
         if (it == rows.end())
@@ -526,7 +526,7 @@ namespace BitFunnel
         RowTableDescriptor const & rowTable = m_rowTables[rank];
         RowTableDescriptor const & rowTable0 = m_rowTables[0];
 
-        RowIndex active = (*RowIdSequence(m_termTable.GetDocumentActiveTerm(),
+        RowIndex active = (*RowIdSequence(ITermTable::GetDocumentActiveTerm(),
                                           m_termTable).begin()).GetIndex();
 
         std::vector<double> densities;

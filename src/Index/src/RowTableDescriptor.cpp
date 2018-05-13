@@ -80,7 +80,7 @@ namespace BitFunnel
                GetBufferSize(m_capacity, m_rowCount, m_rank, m_maxRank));
 
         // The "match-all" row needs to be initialized differently.
-        RowIdSequence rows(termTable.GetMatchAllTerm(), termTable);
+        RowIdSequence rows(ITermTable::GetMatchAllTerm(), termTable);
 
         auto it = rows.begin();
         if (it == rows.end())

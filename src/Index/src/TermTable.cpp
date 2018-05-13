@@ -343,24 +343,6 @@ namespace BitFunnel
     }
 
 
-    Term TermTable::GetDocumentActiveTerm() const
-    {
-        return CreateSystemTerm(SystemTerm::DocumentActive);
-    }
-
-
-    Term TermTable::GetMatchAllTerm() const
-    {
-        return CreateSystemTerm(SystemTerm::MatchAll);
-    }
-
-
-    Term TermTable::GetMatchNoneTerm() const
-    {
-        return CreateSystemTerm(SystemTerm::MatchNone);
-    }
-
-
     RowId TermTable::GetRowIdExplicit(size_t index) const
     {
         if (index >= m_rowIds.size())
@@ -370,12 +352,6 @@ namespace BitFunnel
         }
 
         return m_rowIds[index];
-    }
-
-
-    Term TermTable::CreateSystemTerm(SystemTerm term)
-    {
-        return Term(term, 0, 0);
     }
 
 

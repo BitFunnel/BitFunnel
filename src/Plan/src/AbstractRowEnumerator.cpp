@@ -75,9 +75,9 @@ namespace BitFunnel
         // Initialize the RowIds for the match-all and match-none terms for all the shards.
         for (ShardId shard = 0; shard < planRows.GetShardCount(); ++shard)
         {
-            RowIdSequence matchAll(planRows.GetTermTable(shard).GetMatchAllTerm(),
+            RowIdSequence matchAll(ITermTable::GetMatchAllTerm(),
                                    planRows.GetTermTable(shard));
-            RowIdSequence matchNone(planRows.GetTermTable(shard).GetMatchNoneTerm(),
+            RowIdSequence matchNone(ITermTable::GetMatchNoneTerm(),
                                     planRows.GetTermTable(shard));
 
             m_matchAllTermRowIds[shard] = *matchAll.begin();

@@ -86,7 +86,7 @@ namespace BitFunnel
 
     const RowMatchNode* TermMatchTreeConverter::BuildDocumentActiveMatchNode()
     {
-        const Term documentActiveDocumentTerm = Term(ITermTable::SystemTerm::DocumentActive, 0, 0);
+        const Term documentActiveDocumentTerm = ITermTable::GetDocumentActiveTerm();
         AbstractRowEnumerator rowEnumerator(documentActiveDocumentTerm, m_planRows);
         LogAssertB(rowEnumerator.MoveNext(), "couldn't find documentActive row.");
 

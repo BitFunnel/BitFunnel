@@ -342,7 +342,7 @@ namespace BitFunnel
 
             // Soft Deleted Term
             {
-                RowIdSequence rows(termTable.GetDocumentActiveTerm(), termTable);
+                RowIdSequence rows(ITermTable::GetDocumentActiveTerm(), termTable);
                 auto it = rows.begin();
                 EXPECT_EQ(*it, RowId(0, systemRowStart + ITermTable::SystemTerm::DocumentActive));
 
@@ -354,7 +354,7 @@ namespace BitFunnel
 
             {
                 // Match All Term
-                RowIdSequence rows(termTable.GetMatchAllTerm(), termTable);
+                RowIdSequence rows(ITermTable::GetMatchAllTerm(), termTable);
                 auto it = rows.begin();
                 EXPECT_EQ(*it, RowId(0, systemRowStart + ITermTable::SystemTerm::MatchAll));
 
@@ -366,7 +366,7 @@ namespace BitFunnel
 
             {
                 // Soft Deleted Term
-                RowIdSequence rows(termTable.GetMatchNoneTerm(), termTable);
+                RowIdSequence rows(ITermTable::GetMatchNoneTerm(), termTable);
                 auto it = rows.begin();
                 EXPECT_EQ(*it, RowId(0, systemRowStart + ITermTable::SystemTerm::MatchNone));
 

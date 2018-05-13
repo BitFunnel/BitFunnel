@@ -127,11 +127,6 @@ namespace BitFunnel
         // and fact terms.
         virtual PackedRowIdSequence GetRows(const Term& term) const = 0;
 
-        // Getters for system defined terms.
-        virtual Term GetDocumentActiveTerm() const = 0;
-        virtual Term GetMatchAllTerm() const = 0;
-        virtual Term GetMatchNoneTerm() const = 0;
-
         // Enumeration defines the FactHandles for each of the system defined
         // terms. Used by FactSet to generate user-defined handles that don't
         // conflict with system handles.
@@ -143,6 +138,26 @@ namespace BitFunnel
             Last = MatchNone,
             Count = 3
         };
+
+        static Term CreateSystemTerm(SystemTerm term)
+        {
+            return Term(term, 0, 0);
+        }
+
+        static Term GetDocumentActiveTerm()
+        {
+            return CreateSystemTerm(SystemTerm::DocumentActive);
+        }
+
+        static Term GetMatchAllTerm()
+        {
+            return CreateSystemTerm(SystemTerm::MatchAll);
+        }
+
+        static Term GetMatchNoneTerm()
+        {
+            return CreateSystemTerm(SystemTerm::MatchNone);
+        }
 
         // Writes the contents of the ITermTable to a stream.
         virtual void Write(std::ostream& output) const = 0;
