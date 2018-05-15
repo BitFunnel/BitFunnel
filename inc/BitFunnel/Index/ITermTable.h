@@ -139,11 +139,6 @@ namespace BitFunnel
             Count = 3
         };
 
-        static Term CreateSystemTerm(SystemTerm term)
-        {
-            return Term(term, 0, 0);
-        }
-
         static Term GetDocumentActiveTerm()
         {
             return CreateSystemTerm(SystemTerm::DocumentActive);
@@ -176,5 +171,11 @@ namespace BitFunnel
                                     size_t variant) const = 0;
 
         virtual RowId GetRowIdFact(size_t index) const = 0;
+
+    private:
+        static Term CreateSystemTerm(SystemTerm term)
+        {
+            return Term(term, 0, 0);
+        }
     };
 }
