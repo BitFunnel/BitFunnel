@@ -107,7 +107,6 @@ namespace BitFunnel
                       bitsPerDocument);
         }
 
-        std::cout << "Best configuration is " << m_bestConfiguration << std::endl;
         return m_bestConfiguration;
     }
 
@@ -295,6 +294,15 @@ namespace BitFunnel
                                              Term::c_maxIdfX10Value + 1);
 
         distributor->WaitForCompletion();
+
+        for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
+        {
+            std::cout
+                << static_cast<uint32_t>(idf)
+                << ": best configuration is "
+                << m_configurations[idf].ConfigurationAsDecimalDigits()
+                << std::endl;
+        }
     }
 
 
