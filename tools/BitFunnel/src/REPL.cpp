@@ -273,6 +273,14 @@ namespace BitFunnel
                     throw e;
                 }
             }
+            catch (Logging::CheckException e)
+            {
+                output << "Error: " << e.GetMessage() << std::endl;
+                if (environment.GetFailOnException())
+                {
+                    throw e;
+                }
+            }
         }
         taskPool.Shutdown();
     }
