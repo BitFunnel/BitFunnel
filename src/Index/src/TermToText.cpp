@@ -33,6 +33,9 @@ namespace BitFunnel
     }
 
 
+    const std::string TermToText::m_emptyString;
+
+
     TermToText::TermToText()
     {
     }

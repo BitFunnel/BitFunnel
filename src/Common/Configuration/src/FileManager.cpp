@@ -103,6 +103,11 @@ namespace BitFunnel
                                      statisticsDirectory,
                                      "RowDensities",
                                      ".csv")),
+          m_rowDensitySummary(
+              new ParameterizedFile0(fileSystem,
+                                     statisticsDirectory,
+                                     "RowDensitySummary",
+                                     ".csv")),
           m_shardDefinition(
               new ParameterizedFile0(fileSystem,
                                      statisticsDirectory,
@@ -171,6 +176,12 @@ namespace BitFunnel
     FileDescriptor0 FileManager::QuerySummaryStatistics()
     {
         return FileDescriptor0(*m_querySummaryStatistics);
+    }
+
+
+    FileDescriptor0 FileManager::RowDensitySummary()
+    {
+        return FileDescriptor0(*m_rowDensitySummary);
     }
 
 
