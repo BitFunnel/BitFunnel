@@ -89,6 +89,7 @@ namespace BitFunnel
         virtual FileDescriptor0 QueryLog() = 0;
         virtual FileDescriptor0 QueryPipelineStatistics() = 0;
         virtual FileDescriptor0 QuerySummaryStatistics() = 0;
+        virtual FileDescriptor0 RowDensitySummary() = 0;
         virtual FileDescriptor0 ShardDefinition() = 0;
         //virtual FileDescriptor0 ShardDocCounts() = 0;
         //virtual FileDescriptor0 ShardedDocFreqTable() = 0;

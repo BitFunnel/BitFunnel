@@ -48,7 +48,13 @@ namespace BitFunnel
         void AnalyzeRowsInOneShard(
             ShardId const & shardId,
             ITermToText const & termToText,
-            std::ostream& out) const;
+            std::ostream& out,
+            std::ostream& summaryOut) const;
+        void WriteRowSummary(
+            ShardId const & shardId,
+            Term::IdfX10 idfX10,
+            std::ostream& summaryOut,
+            std::array<Accumulator, c_maxRankValue>* accumulators) const;
 
 
         class Column
