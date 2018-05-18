@@ -523,7 +523,7 @@ namespace BitFunnel
         {
             Slice* slice = Slice::GetSliceFromBuffer((*m_sliceBuffers)[sliceIndex],
                                                       GetSlicePtrOffset());
-            return DocumentHandleInternal::DocumentHandleInternal(slice, docSliceIndex);
+            return DocumentHandleInternal(slice, docSliceIndex);
         }
         else
         {
