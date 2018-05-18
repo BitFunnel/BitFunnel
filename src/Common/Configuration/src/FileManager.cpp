@@ -61,7 +61,7 @@ namespace BitFunnel
               new ParameterizedFile0(fileSystem,
                                      statisticsDirectory,
                                      "ColumnDensitySummary",
-                                     ".txt")),
+                                     ".csv")),
           m_correlate(new ParameterizedFile1(fileSystem,
                                              statisticsDirectory,
                                              "Correlate",
