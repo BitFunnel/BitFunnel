@@ -131,7 +131,6 @@ namespace BitFunnel
 
         // Returns a number of Shards and a Shard with the given ShardId.
         virtual size_t GetShardCount() const override;
-        virtual DocId GetMaxDocId() const override;
         virtual IShard& GetShard(size_t shard) const override;
 
         virtual IShardDefinition const & GetShardDefinition() const override;
@@ -175,7 +174,6 @@ namespace BitFunnel
         // the size of the unordered_map in m_documentMap. The reason
         // is that documents may have been deleted.
         std::atomic<size_t> m_documentCount;
-        std::atomic<DocId> m_maxDocId;
         std::atomic<size_t> m_totalSourceByteSize;
 
         std::unique_ptr<DocumentMap> m_documentMap;
