@@ -107,18 +107,18 @@ namespace BitFunnel
             }
             catch (RecoverableError e)
             {
-                output << "Error: " << e.what() << std::endl;
+                output << "Error (RecoverableError): " << e.what() << std::endl;
                 Advice(output);
             }
             catch (FatalError e)
             {
-                output << "Fatal Error: " << e.what() << std::endl;
+                output << "Error (FatalError): " << e.what() << std::endl;
                 Advice(output);
             }
             catch (Logging::CheckException e)
             {
                 output
-                    << "Error: "
+                    << "Error (CheckException): "
                     << e.GetMessage()
                     << std::endl;
                 Advice(output);
@@ -267,7 +267,7 @@ namespace BitFunnel
             }
             catch (RecoverableError e)
             {
-                output << "Error: " << e.what() << std::endl;
+                output << "Error (RecoverableError): " << e.what() << std::endl;
                 if (environment.GetFailOnException())
                 {
                     throw e;
@@ -275,7 +275,10 @@ namespace BitFunnel
             }
             catch (Logging::CheckException e)
             {
-                output << "Error: " << e.GetMessage() << std::endl;
+                // TODO: We probably shouldn't catch CheckException here since
+                // we don't know whether the situation is safely recoverable.
+                // https://github.com/BitFunnel/BitFunnel/issues/425
+                output << "Error (CheckException): " << e.GetMessage() << std::endl;
                 if (environment.GetFailOnException())
                 {
                     throw e;
