@@ -53,7 +53,7 @@ namespace BitFunnel
                                    "Chunk",
                                    ".chunk")),
 
-          m_columnDensities(new ParameterizedFile0(fileSystem,
+          m_columnDensities(new ParameterizedFile1(fileSystem,
                                                    statisticsDirectory,
                                                    "ColumnDensities",
                                                    ".csv")),
@@ -137,12 +137,6 @@ namespace BitFunnel
     // FileDescriptor0 files.
     //
 
-    FileDescriptor0 FileManager::ColumnDensities()
-    {
-        return FileDescriptor0(*m_columnDensities);
-    }
-
-
     FileDescriptor0 FileManager::ColumnDensitySummary()
     {
         return FileDescriptor0(*m_columnDensitySummary);
@@ -206,6 +200,12 @@ namespace BitFunnel
     //
     // FileDescriptor1 files.
     //
+
+    FileDescriptor1 FileManager::ColumnDensities(size_t shard)
+    {
+        return FileDescriptor1(*m_columnDensities, shard);
+    }
+
 
     FileDescriptor1 FileManager::Chunk(size_t number)
     {
