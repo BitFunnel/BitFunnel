@@ -274,7 +274,7 @@ namespace BitFunnel
 
         std::array<Accumulator, c_maxRankValue+1> accumulators;
 
-        for (auto shardId = 0; shardId < ingestor.GetShardCount(); ++shardId)
+        for (ShardId shardId = 0; shardId < ingestor.GetShardCount(); ++shardId)
         {
             IShard& shard = ingestor.GetShard(shardId);
 
