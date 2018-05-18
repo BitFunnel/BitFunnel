@@ -115,6 +115,21 @@ namespace BitFunnel
         virtual void TemporaryWriteAllSlices(IFileManager& fileManager) const override;
 
 
+        // Get the document handle for the nth document in a shard
+        // Warning: this method may not be thread-safe.
+        // If the document's slice is recycled, the returned handle
+        // could point to a different document than intended.
+        virtual DocumentHandle GetHandle(size_t docNumber) const override;
+
+        // Find next active document in shard, looking first at docNumber
+        // - Return true if found and modify docNumber to position of active document
+        // - Return false if no more active documents
+        // Warning: this method may not be thread-safe.
+        // If the document's slice is recycled, the altered docNumber
+        // may no longer be valid or could reference a different document than intended.
+        virtual bool FindNextActive(size_t& docNumber) const override;
+
+
         // Returns an std::vector containing the bit densities for each row in
         // the RowTable with the specified rank. Bit densities are computed
         // over all slices, for those columns that correspond to active
