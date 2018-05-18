@@ -53,7 +53,7 @@ namespace BitFunnel
                                    "Chunk",
                                    ".chunk")),
 
-          m_columnDensities(new ParameterizedFile0(fileSystem,
+          m_columnDensities(new ParameterizedFile1(fileSystem,
                                                    statisticsDirectory,
                                                    "ColumnDensities",
                                                    ".csv")),
@@ -61,7 +61,7 @@ namespace BitFunnel
               new ParameterizedFile0(fileSystem,
                                      statisticsDirectory,
                                      "ColumnDensitySummary",
-                                     ".txt")),
+                                     ".csv")),
           m_correlate(new ParameterizedFile1(fileSystem,
                                              statisticsDirectory,
                                              "Correlate",
@@ -103,6 +103,11 @@ namespace BitFunnel
                                      statisticsDirectory,
                                      "RowDensities",
                                      ".csv")),
+          m_rowDensitySummary(
+              new ParameterizedFile0(fileSystem,
+                                     statisticsDirectory,
+                                     "RowDensitySummary",
+                                     ".csv")),
           m_shardDefinition(
               new ParameterizedFile0(fileSystem,
                                      statisticsDirectory,
@@ -131,12 +136,6 @@ namespace BitFunnel
     //
     // FileDescriptor0 files.
     //
-
-    FileDescriptor0 FileManager::ColumnDensities()
-    {
-        return FileDescriptor0(*m_columnDensities);
-    }
-
 
     FileDescriptor0 FileManager::ColumnDensitySummary()
     {
@@ -174,6 +173,12 @@ namespace BitFunnel
     }
 
 
+    FileDescriptor0 FileManager::RowDensitySummary()
+    {
+        return FileDescriptor0(*m_rowDensitySummary);
+    }
+
+
     FileDescriptor0 FileManager::ShardDefinition()
     {
         return FileDescriptor0(*m_shardDefinition);
@@ -195,6 +200,12 @@ namespace BitFunnel
     //
     // FileDescriptor1 files.
     //
+
+    FileDescriptor1 FileManager::ColumnDensities(size_t shard)
+    {
+        return FileDescriptor1(*m_columnDensities, shard);
+    }
+
 
     FileDescriptor1 FileManager::Chunk(size_t number)
     {

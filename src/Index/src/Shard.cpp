@@ -511,6 +511,51 @@ namespace BitFunnel
     }
 
 
+    DocumentHandle Shard::GetHandle(size_t docNumber) const
+    {
+        // Hold a token to ensure that m_sliceBuffers won't be recycled.
+        auto token = m_tokenManager.RequestToken();
+
+        size_t sliceIndex = docNumber / GetSliceCapacity();
+        size_t docSliceIndex = docNumber % GetSliceCapacity();
+
+        if (sliceIndex < (*m_sliceBuffers).size())
+        {
+            Slice* slice = Slice::GetSliceFromBuffer((*m_sliceBuffers)[sliceIndex],
+                                                      GetSlicePtrOffset());
+            return DocumentHandleInternal(slice, docSliceIndex);
+        }
+        else
+        {
+            throw RecoverableError("Invalid document number");
+        }
+    }
+
+
+    bool Shard::FindNextActive(size_t& docNumber) const
+    {
+        // Hold a token to ensure that m_sliceBuffers won't be recycled.
+        auto token = m_tokenManager.RequestToken();
+
+        try
+        {
+            while (1)
+            {
+                DocumentHandleInternal handle = GetHandle(docNumber);
+                if (handle.IsActive())
+                {
+                    return true;
+                }
+                ++docNumber;
+            }
+        }
+        catch (RecoverableError e)
+        {
+            return false;
+        }
+    }
+
+
     std::vector<double> Shard::GetDensities(Rank rank) const
     {
         // Hold a token to ensure that m_sliceBuffers won't be recycled.

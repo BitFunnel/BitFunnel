@@ -53,6 +53,17 @@ namespace BitFunnel
         }
 
 
+        // Reset for a new sequence of values
+        void Reset()
+        {
+            m_count = 0;
+            m_sum = 0;
+            m_sumSquared = 0;
+            m_min = std::numeric_limits<double>::infinity();
+            m_max = -std::numeric_limits<double>::infinity();
+        }
+
+
         // Updates the accumulated statistics the reflect the addition of
         // another value.
         template <typename T>

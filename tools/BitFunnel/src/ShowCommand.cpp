@@ -28,6 +28,7 @@
 #include "BitFunnel/Index/IDocument.h"
 #include "BitFunnel/Index/IDocumentCache.h"
 #include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Index/IShard.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "Environment.h"
 #include "ShowCommand.h"
@@ -131,32 +132,20 @@ namespace BitFunnel
             IIngestor & ingestor = GetEnvironment().GetIngestor();
 
             auto maxshard = environment.GetMaxShard();
-            for (auto shard = environment.GetMinShard(); shard <= maxshard; ++shard)
+            for (auto shardId = environment.GetMinShard(); shardId <= maxshard; ++shardId)
             {
 
                 output
-                    << "Shard: " << shard << std::endl;
+                    << "Shard: " << shardId << std::endl;
 
-                // TODO: Come up with a better heuristic for deciding which
-                // bits to display. Current algorithm is to display bits for
-                // the first 64 documents in the shard.
-
-                auto maxDocId = ingestor.GetMaxDocId();
+                // Gather ids for first 64 documents in shard
+                IShard& shard = ingestor.GetShard(shardId);
                 std::vector<DocId> ids;
-                for (DocId id = 0; id <= maxDocId; ++id)
+                size_t docNumber = 0;
+                for (int i = 0; i <= 64 && shard.FindNextActive(docNumber); ++i)
                 {
-                    if (ingestor.Contains(id))
-                    {
-                        DocumentHandle handle = ingestor.GetHandle(id);
-                        if (handle.GetShardId() == shard)
-                        {
-                            ids.push_back(id);
-                            if (ids.size() == 64)
-                            {
-                                break;
-                            }
-                        }
-                    }
+                    ids.push_back(shard.GetHandle(docNumber).GetDocId());
+                    ++docNumber;
                 }
 
                 // Print out 100s digit of DocId.
@@ -184,7 +173,7 @@ namespace BitFunnel
                 output << std::endl;
 
                 // Print out RowIds and their bits.
-                RowIdSequence rows(term, environment.GetTermTable(shard));
+                RowIdSequence rows(term, environment.GetTermTable(shardId));
                 for (auto row : rows)
                 {
                     output

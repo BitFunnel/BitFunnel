@@ -78,24 +78,35 @@ namespace BitFunnel
         auto & fileManager = m_index.GetFileManager();
         auto & ingestor = m_index.GetIngestor();
 
-        // TODO: Create with factory?
-        TermToText termToText(*fileManager.TermToText().OpenForRead());
+        // Obtain data for converting a term hash to text, if file exists
+        TermToText termToText;
+        try
+        {
+            // Will fail with exception if file does not exist or can't be read
+            // TODO: Create with factory?
+            termToText = TermToText(*fileManager.TermToText().OpenForRead());
+        }
+        catch (RecoverableError e)
+        {
+            termToText = TermToText();
+        }
+
+        auto fileSystem = Factories::CreateFileSystem();
+        auto outFileManager =
+            Factories::CreateFileManager(outDir,
+                outDir,
+                outDir,
+                *fileSystem);
+
+        auto summaryOut = outFileManager->RowDensitySummary().OpenForWrite();
+        *summaryOut << "shard,idfx10,rank,mean,min,max,var,count" << std::endl;
 
         for (ShardId shardId = 0; shardId < ingestor.GetShardCount(); ++shardId)
         {
-            auto terms(Factories::CreateDocumentFrequencyTable(
-                *fileManager.DocFreqTable(shardId).OpenForRead()));
-
-            auto fileSystem = Factories::CreateFileSystem();
-            auto outFileManager =
-                Factories::CreateFileManager(outDir,
-                                             outDir,
-                                             outDir,
-                                             *fileSystem);
-
             AnalyzeRowsInOneShard(shardId,
                                   termToText,
-                                  *outFileManager->RowDensities(shardId).OpenForWrite());
+                                  *outFileManager->RowDensities(shardId).OpenForWrite(),
+                                  *summaryOut);
         }
     }
 
@@ -103,29 +114,50 @@ namespace BitFunnel
     void RowTableAnalyzer::AnalyzeRowsInOneShard(
         ShardId const & shardId,
         ITermToText const & termToText,
-        std::ostream& out) const
+        std::ostream& out,
+        std::ostream& summaryOut) const
     {
+        auto & shard = m_index.GetIngestor().GetShard(shardId);
+        std::array<std::vector<double>, c_maxRankValue+1> densities;
+
+        for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
+        {
+            densities[rank] = shard.GetDensities(rank);
+        }
+
+        std::array<Accumulator, c_maxRankValue> accumulators;
+        Term::IdfX10 curIdfX10 = 0;
+
+        // Use CsvTableFormatter to escape terms that contain commas and quotes.
+        CsvTsv::CsvTableFormatter formatter(out);
         auto & fileManager = m_index.GetFileManager();
         auto terms(Factories::CreateDocumentFrequencyTable(
             *fileManager.DocFreqTable(shardId).OpenForRead()));
 
-        std::array<std::vector<double>, c_maxRankValue> densities;
-
-        for (Rank rank = 0; rank < c_maxRankValue; ++rank)
-        {
-            auto & shard = m_index.GetIngestor().GetShard(shardId);
-            densities[rank] = shard.GetDensities(rank);
-        }
-
-        // Use CsvTableFormatter to escape terms that contain commas and quotes.
-        CsvTsv::CsvTableFormatter formatter(out);
-
         for (auto dfEntry : *terms)
         {
             Term term = dfEntry.GetTerm();
+            Term::IdfX10 idfX10 = Term::ComputeIdfX10(dfEntry.GetFrequency(), Term::c_maxIdfX10Value);
+            if (idfX10 != curIdfX10)
+            {
+                WriteRowSummary(shardId, curIdfX10, summaryOut, &accumulators);
+                curIdfX10 = idfX10;
+            }
+
             RowIdSequence rows(term, m_index.GetTermTable(shardId));
 
-            formatter.WriteField(termToText.Lookup(term.GetRawHash()));
+            std::string termName = termToText.Lookup(term.GetRawHash());
+            if (!termName.empty())
+            {
+                formatter.WriteField(termName);
+            }
+            else
+            {
+                formatter.SetHexMode(1);
+                formatter.WriteField(term.GetRawHash());
+                formatter.SetHexMode(0);
+            }
+
             formatter.WriteField(dfEntry.GetFrequency());
 
             std::stack<RowId> rowsReversed;
@@ -137,14 +169,47 @@ namespace BitFunnel
             while (!rowsReversed.empty())
             {
                 auto row = rowsReversed.top();
+                auto rank = row.GetRank();
+                auto index = row.GetIndex();
+                auto density = densities[rank][index];
+                accumulators[rank].Record(density);
+
                 formatter.WriteField("r");
                 out << row.GetRank();
-                formatter.WriteField(row.GetIndex());
-                formatter.WriteField(densities[row.GetRank()][row.GetIndex()]);
+                formatter.WriteField(index);
+                formatter.WriteField(density);
 
                 rowsReversed.pop();
             }
             formatter.WriteRowEnd();
+        }
+        WriteRowSummary(shardId, curIdfX10, summaryOut, &accumulators);
+    }
+
+
+    void RowTableAnalyzer::WriteRowSummary(
+        ShardId const & shardId,
+        Term::IdfX10 idfX10,
+        std::ostream& summaryOut,
+        std::array<Accumulator, c_maxRankValue> *accumulators) const
+    {
+        for (Rank rank = 0; rank < c_maxRankValue; ++rank)
+        {
+            Accumulator accumulator = (*accumulators)[rank];
+            if (accumulator.GetCount() == 0)
+                continue;
+
+            summaryOut
+                << shardId << ","
+                << static_cast<uint32_t>(idfX10) << ","
+                << rank << ","
+                << accumulator.GetMean() << ","
+                << accumulator.GetMin() << ","
+                << accumulator.GetMax() << ","
+                << accumulator.GetVariance() << ","
+                << accumulator.GetCount() << std::endl;
+
+            (*accumulators)[rank].Reset();
         }
     }
 
@@ -157,46 +222,6 @@ namespace BitFunnel
     void RowTableAnalyzer::AnalyzeColumns(char const * outDir) const
     {
         auto & ingestor = m_index.GetIngestor();
-        auto & cache = ingestor.GetDocumentCache();
-
-        std::vector<Column> columns;
-
-        for (auto doc : cache)
-        {
-            const DocumentHandleInternal
-                handle(ingestor.GetHandle(doc.second));
-
-            Slice const & slice = handle.GetSlice();
-            const ShardId shard = slice.GetShard().GetId();
-
-            columns.emplace_back(doc.second,
-                                 shard,
-                                 doc.first.GetPostingCount());
-
-            void const * buffer = slice.GetSliceBuffer();
-            const DocIndex column = handle.GetIndex();
-
-            for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
-            {
-                RowTableDescriptor rowTable = slice.GetRowTable(rank);
-
-                size_t bitCount = 0;
-                const size_t rowCount = rowTable.GetRowCount();
-                for (RowIndex row = 0; row < rowCount; ++row)
-                {
-                    if (rowTable.GetBit(buffer, row, column) != 0)
-                    {
-                        ++bitCount;
-                    }
-                }
-
-                columns.back().SetCount(rank, bitCount);
-
-                double density =
-                    (rowCount == 0) ? 0.0 : static_cast<double>(bitCount) / rowCount;
-                columns.back().SetDensity(rank, density);
-            }
-        }
 
         auto fileSystem = Factories::CreateFileSystem();
         auto outFileManager =
@@ -205,47 +230,81 @@ namespace BitFunnel
                                          outDir,
                                          *fileSystem);
 
-        //
-        // Write out raw column data.
-        //
+        auto summaryOut = outFileManager->ColumnDensitySummary().OpenForWrite();
+        *summaryOut << "shard,rank,mean,min,max,var,count" << std::endl;
+
+        std::array<Accumulator, c_maxRankValue+1> accumulators;
+
+        for (ShardId shardId = 0; shardId < ingestor.GetShardCount(); ++shardId)
         {
+            IShard& shard = ingestor.GetShard(shardId);
+
+            // Write out each document's raw column data per shard.
             // No need to use CsvTableFormatter for escaping because all values
             // are numbers.
-            auto out = outFileManager->ColumnDensities().OpenForWrite();
+            auto out = outFileManager->ColumnDensities(shardId).OpenForWrite();
             Column::WriteHeader(*out);
-            for (auto column : columns)
+
+            size_t docNumber = 0;
+            while (shard.FindNextActive(docNumber))
             {
-                column.Write(*out);
-            }
-        }
+                const DocumentHandleInternal 
+                    handle(shard.GetHandle(docNumber++));
+                const DocId docId = handle.GetDocId();
+                Slice const & slice = handle.GetSlice();
 
+                // TODO: handle.GetPostingCount() instead of 0
+                Column column(docId, shardId, 0);
 
-        //
-        // Generate summary.
-        //
-        {
-            auto out = outFileManager->ColumnDensitySummary().OpenForWrite();
+                void const * buffer = slice.GetSliceBuffer();
+                const DocIndex docIndex = handle.GetIndex();
 
-            *out << "Summary" << std::endl;
-
-            for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
-            {
-                Accumulator accumulator;
-                for (auto column : columns)
+                for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
                 {
-                    accumulator.Record(column.m_densities[rank]);
+                    RowTableDescriptor rowTable = slice.GetRowTable(rank);
+
+                    size_t bitCount = 0;
+                    const size_t rowCount = rowTable.GetRowCount();
+                    for (RowIndex row = 0; row < rowCount; ++row)
+                    {
+                        if (rowTable.GetBit(buffer, row, docIndex) != 0)
+                        {
+                            ++bitCount;
+                        }
+                    }
+
+                    column.SetCount(rank, bitCount);
+
+                    double density =
+                        (rowCount == 0) ? 0.0 : static_cast<double>(bitCount) / rowCount;
+                    column.SetDensity(rank, density);
+                    accumulators[rank].Record(density);
                 }
 
-                *out << "Rank " << rank << std::endl
-                    << "  column density: " << std::endl
-                    << "      min: " << accumulator.GetMin() << std::endl
-                    << "      max: " << accumulator.GetMax() << std::endl
-                    << "     mean: " << accumulator.GetMean() << std::endl
-                    << "      var: " << accumulator.GetVariance() << std::endl
-                    << "    count: " << accumulator.GetCount() << std::endl;
+                column.Write(*out);
+            }
+
+            //
+            // Generate document summary by rank for shard
+            //
+            for (Rank rank = 0; rank < c_maxRankValue; ++rank)
+            {
+                Accumulator accumulator = accumulators[rank];
+                if (accumulator.GetCount() == 0)
+                    continue;
+
+                *summaryOut
+                    << shardId << ","
+                    << rank << ","
+                    << accumulator.GetMean() << ","
+                    << accumulator.GetMin() << ","
+                    << accumulator.GetMax() << ","
+                    << accumulator.GetVariance() << ","
+                    << accumulator.GetCount() << std::endl;
+
+                accumulators[rank].Reset();
             }
         }
-
     }
 
 

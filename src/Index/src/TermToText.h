@@ -75,7 +75,7 @@ namespace BitFunnel
     private:
         // Empty string returned by Lookup() when hash is not in the map.
         // Implemented as a member because Lookup() returns a const reference.
-        const std::string m_emptyString;
+        static const std::string m_emptyString;
 
         // Term::Hash ==> std::string map.
         std::unordered_map<Term::Hash, std::string> m_termToText;
