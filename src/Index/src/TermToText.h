@@ -23,7 +23,6 @@
 #pragma once
 
 #include <iosfwd>                           // std::istream parameter.
-//#include <memory>                           // std::unique_ptr
 #include <string>                           // std::string embedded, template parameter.
 #include <unordered_map>                    // std::unordered_map embedded.
 
@@ -75,7 +74,7 @@ namespace BitFunnel
     private:
         // Empty string returned by Lookup() when hash is not in the map.
         // Implemented as a member because Lookup() returns a const reference.
-        static const std::string m_emptyString;
+        const std::string m_emptyString;
 
         // Term::Hash ==> std::string map.
         std::unordered_map<Term::Hash, std::string> m_termToText;

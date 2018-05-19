@@ -66,6 +66,63 @@ namespace BitFunnel
 
     //*************************************************************************
     //
+    // Row Statistics
+    //
+    //*************************************************************************
+    class RowStatistics
+    {
+    public:
+        static void WriteHeader(std::ostream& out)
+        {
+            CsvTsv::CsvTableFormatter formatter(out);
+            formatter.WritePrologue(std::vector<char const *>{
+                "shard", "idfX10", "rank", "mean", "min", "max", "var", "count"});
+        }
+
+
+        void WriteSummary(std::ostream& out, 
+                          ShardId const & shardId,
+                          Term::IdfX10 idfX10) const
+        {
+            for (Rank rank = 0; rank < c_maxRankValue; ++rank)
+            {
+                Accumulator const & accumulator = m_accumulators[rank];
+                if (accumulator.GetCount() == 0)
+                    continue;
+
+                out << shardId << ","
+                    << static_cast<uint32_t>(idfX10) << ","
+                    << rank << ","
+                    << accumulator.GetMean() << ","
+                    << accumulator.GetMin() << ","
+                    << accumulator.GetMax() << ","
+                    << accumulator.GetVariance() << ","
+                    << accumulator.GetCount() << std::endl;
+            }
+        }
+
+
+        void RecordDensity(Rank rank, double density)
+        {
+            m_accumulators.at(rank).Record(density);
+        }
+
+
+        void Reset()
+        {
+            for (auto it = m_accumulators.begin(); it != m_accumulators.end(); ++it)
+            {
+                it->Reset();
+            }
+        }
+
+    private:
+        std::array<Accumulator, c_maxRankValue> m_accumulators;
+    };
+
+
+    //*************************************************************************
+    //
     // Analyze rows
     //
     //*************************************************************************
@@ -79,16 +136,16 @@ namespace BitFunnel
         auto & ingestor = m_index.GetIngestor();
 
         // Obtain data for converting a term hash to text, if file exists
-        TermToText termToText;
+        std::unique_ptr<ITermToText> termToText;
         try
         {
             // Will fail with exception if file does not exist or can't be read
             // TODO: Create with factory?
-            termToText = TermToText(*fileManager.TermToText().OpenForRead());
+            termToText = Factories::CreateTermToText(*fileManager.TermToText().OpenForRead());
         }
         catch (RecoverableError e)
         {
-            termToText = TermToText();
+            termToText = Factories::CreateTermToText();
         }
 
         auto fileSystem = Factories::CreateFileSystem();
@@ -99,12 +156,12 @@ namespace BitFunnel
                 *fileSystem);
 
         auto summaryOut = outFileManager->RowDensitySummary().OpenForWrite();
-        *summaryOut << "shard,idx10,rank,mean,min,max,var,count" << std::endl;
+        RowStatistics::WriteHeader(*summaryOut);
 
         for (ShardId shardId = 0; shardId < ingestor.GetShardCount(); ++shardId)
         {
             AnalyzeRowsInOneShard(shardId,
-                                  termToText,
+                                  *termToText,
                                   *outFileManager->RowDensities(shardId).OpenForWrite(),
                                   *summaryOut);
         }
@@ -125,7 +182,7 @@ namespace BitFunnel
             densities[rank] = shard.GetDensities(rank);
         }
 
-        std::array<Accumulator, c_maxRankValue> accumulators;
+        RowStatistics statistics;
         Term::IdfX10 curIdfX10 = 0;
 
         // Use CsvTableFormatter to escape terms that contain commas and quotes.
@@ -138,10 +195,15 @@ namespace BitFunnel
         {
             Term term = dfEntry.GetTerm();
             Term::IdfX10 idfX10 = Term::ComputeIdfX10(dfEntry.GetFrequency(), Term::c_maxIdfX10Value);
+
+            // When we cross an idfX10 bucket boundary, output statistics
+            // accumulated since previous idfX10 bucket. Then reset
+            // statistics accumulators for the next bucket.
             if (idfX10 != curIdfX10)
             {
-                WriteRowSummary(shardId, curIdfX10, summaryOut, &accumulators);
                 curIdfX10 = idfX10;
+                statistics.WriteSummary(summaryOut, shardId, curIdfX10);
+                statistics.Reset();
             }
 
             RowIdSequence rows(term, m_index.GetTermTable(shardId));
@@ -149,10 +211,12 @@ namespace BitFunnel
             std::string termName = termToText.Lookup(term.GetRawHash());
             if (!termName.empty())
             {
+                // Print out the term text if we have it.
                 formatter.WriteField(termName);
             }
             else
             {
+                // Otherwise print out the term's hash.
                 formatter.SetHexMode(1);
                 formatter.WriteField(term.GetRawHash());
                 formatter.SetHexMode(0);
@@ -171,8 +235,8 @@ namespace BitFunnel
                 auto row = rowsReversed.top();
                 auto rank = row.GetRank();
                 auto index = row.GetIndex();
-                auto density = densities[rank][index];
-                accumulators[rank].Record(density);
+                auto density = densities.at(rank).at(index);
+                statistics.RecordDensity(rank, density);
 
                 formatter.WriteField("r");
                 out << row.GetRank();
@@ -183,34 +247,7 @@ namespace BitFunnel
             }
             formatter.WriteRowEnd();
         }
-        WriteRowSummary(shardId, curIdfX10, summaryOut, &accumulators);
-    }
-
-
-    void RowTableAnalyzer::WriteRowSummary(
-        ShardId const & shardId,
-        Term::IdfX10 idfX10,
-        std::ostream& summaryOut,
-        std::array<Accumulator, c_maxRankValue> *accumulators) const
-    {
-        for (Rank rank = 0; rank < c_maxRankValue; ++rank)
-        {
-            Accumulator accumulator = (*accumulators)[rank];
-            if (accumulator.GetCount() == 0)
-                continue;
-
-            summaryOut
-                << shardId << ","
-                << static_cast<uint32_t>(idfX10) << ","
-                << rank << ","
-                << accumulator.GetMean() << ","
-                << accumulator.GetMin() << ","
-                << accumulator.GetMax() << ","
-                << accumulator.GetVariance() << ","
-                << accumulator.GetCount() << std::endl;
-
-            (*accumulators)[rank].Reset();
-        }
+        statistics.WriteSummary(summaryOut, shardId, curIdfX10);
     }
 
 

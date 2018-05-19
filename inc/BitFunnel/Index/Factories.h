@@ -135,5 +135,6 @@ namespace BitFunnel
         std::unique_ptr<ITermTreatmentFactory> CreateTreatmentFactory();
 
         std::unique_ptr<ITermToText> CreateTermToText(std::istream & input);
+        std::unique_ptr<ITermToText> CreateTermToText();
     }
 }
