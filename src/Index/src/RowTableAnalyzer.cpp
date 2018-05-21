@@ -84,7 +84,7 @@ namespace BitFunnel
                           ShardId const & shardId,
                           Term::IdfX10 idfX10) const
         {
-            for (Rank rank = 0; rank < c_maxRankValue; ++rank)
+            for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
             {
                 Accumulator const & accumulator = m_accumulators[rank];
                 if (accumulator.GetCount() == 0)
@@ -175,7 +175,7 @@ namespace BitFunnel
         std::ostream& summaryOut) const
     {
         auto & shard = m_index.GetIngestor().GetShard(shardId);
-        std::array<std::vector<double>, c_maxRankValue+1> densities;
+        std::array<std::vector<double>, c_maxRankValue + 1> densities;
 
         for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
         {
@@ -272,7 +272,7 @@ namespace BitFunnel
         // TODO: Consider using CsvTsv::CsvTableFormatter::WritePrologue() here.
         *summaryOut << "shard,rank,mean,min,max,var,count" << std::endl;
 
-        std::array<Accumulator, c_maxRankValue+1> accumulators;
+        std::array<Accumulator, c_maxRankValue + 1> accumulators;
 
         for (ShardId shardId = 0; shardId < ingestor.GetShardCount(); ++shardId)
         {
@@ -327,7 +327,7 @@ namespace BitFunnel
             //
             // Generate document summary by rank for shard
             //
-            for (Rank rank = 0; rank < c_maxRankValue; ++rank)
+            for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
             {
                 Accumulator accumulator = accumulators[rank];
                 if (accumulator.GetCount() == 0)
