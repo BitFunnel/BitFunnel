@@ -138,14 +138,14 @@ namespace BitFunnel
                 output
                     << "Shard: " << shardId << std::endl;
 
-                // Gather ids for first 64 documents in shard
+                // Gather DocIds for first 64 documents in shard
                 IShard& shard = ingestor.GetShard(shardId);
                 std::vector<DocId> ids;
-                size_t docNumber = 0;
-                for (int i = 0; i <= 64 && shard.FindNextActive(docNumber); ++i)
+                auto itPtr = shard.GetIterator();
+                auto & it = *itPtr;
+                for (size_t i = 0; i < 64 && !it.AtEnd(); ++it, ++i)
                 {
-                    ids.push_back(shard.GetHandle(docNumber).GetDocId());
-                    ++docNumber;
+                    ids.push_back((*it).GetDocId());
                 }
 
                 // Print out 100s digit of DocId.

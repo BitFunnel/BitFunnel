@@ -24,10 +24,10 @@
 
 #include <cstddef>                      // ptrdiff_t return value.
 #include <iosfwd>                       // std::ostream parameter.
-
 #include "BitFunnel/BitFunnelTypes.h"   // DocIndex return value.
 #include "BitFunnel/IInterface.h"       // Base class.
 #include "BitFunnel/Index/RowId.h"      // RowId parameter.
+#include "BitFunnel/Noncopyable.h"      // Base class.
 
 
 namespace BitFunnel
@@ -63,20 +63,31 @@ namespace BitFunnel
 
         virtual void TemporaryWriteAllSlices(IFileManager& fileManager) const = 0;
 
-        // Get the document handle for the nth document in a shard
-        // Warning: this method may not be thread-safe.
-        // If the document's slice is recycled, the returned handle
-        // could point to a different document than intended.
-        virtual DocumentHandle GetHandle(size_t docNumber) const = 0;
 
-        // Find next active document in shard, looking first at docNumber
-        // - Return true if found and modify docNumber to position of active document
-        // - Return false if no more active documents
-        // Warning: this method may not be thread-safe.
-        // If the document's slice is recycled, the altered docNumber
-        // may no longer be valid or could reference a different document than intended.
-        virtual bool FindNextActive(size_t& docNumber) const = 0;
+        //
+        // DocumentHandle iterator
+        //
+        // DESIGN NOTE: Can't use the C++ <iterator> pattern because
+        // iterators cannot be abstract base classes (they must be copyable)
+        // and IShard cannot know the implementation of an iterator of its
+        // subclass. Chose to implement a pattern that is similar to
+        // the C++ iterator pattern. In this approach, const_iterator is an
+        // abstract base class which is provided via and std::unique_ptr
+        // from GetIterator().
+        class const_iterator : public IInterface, NonCopyable
+        {
+        public:
+            virtual const_iterator& operator++() = 0;
+            virtual DocumentHandle operator*() const = 0;
+            virtual bool AtEnd() const = 0;
+        };
 
+        // Returns an iterator to the DocumentHandles corresponding to
+        // documents currently active in the index. This method is
+        // thread safe with respect to document addition and deletion.
+        // WARNING: this iterator holds a Token which will prevent
+        // recycling. Be sure to release iterator when finished.
+        virtual std::unique_ptr<const_iterator> GetIterator() = 0;
 
         // Returns an std::vector containing the bit densities for each row in
         // the RowTable with the specified rank. Bit densities are computed

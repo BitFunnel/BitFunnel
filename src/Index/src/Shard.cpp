@@ -148,9 +148,9 @@ namespace BitFunnel
         }
         catch (std::exception e)
         {
-	  //            LogB(Logging::Error, "LoadSliceBuffer", "Error reading slice buffer data from stream");
+//            LogB(Logging::Error, "LoadSliceBuffer", "Error reading slice buffer data from stream");
             m_sliceBufferAllocator.Release(buffer);
-	    throw e;
+            throw e;
         }
 
         return buffer;
@@ -511,61 +511,99 @@ namespace BitFunnel
     }
 
 
-    DocumentHandle Shard::GetHandle(size_t docNumber) const
+    //*************************************************************************
+    //
+    // DocumentHandle iterator.
+    //
+    //*************************************************************************
+    Shard::ConstIterator::ConstIterator(Shard const & shard)
+      : m_token(shard.m_tokenManager.RequestToken()),
+        m_sliceBuffers(shard.m_sliceBuffers),
+        m_sliceCapacity(shard.m_sliceCapacity),
+        m_sliceIndex(0),
+        m_slice(nullptr),
+        m_sliceOffset(0)
     {
-        // Hold a token to ensure that m_sliceBuffers won't be recycled.
-        auto token = m_tokenManager.RequestToken();
-
-        size_t sliceIndex = docNumber / GetSliceCapacity();
-        size_t docSliceIndex = docNumber % GetSliceCapacity();
-
-        if (sliceIndex < (*m_sliceBuffers).size())
-        {
-            Slice* slice = Slice::GetSliceFromBuffer((*m_sliceBuffers)[sliceIndex],
-                                                      GetSlicePtrOffset());
-            return DocumentHandleInternal::DocumentHandleInternal(slice, docSliceIndex);
-        }
-        else
-        {
-            throw RecoverableError("Invalid document number");
-        }
+        // Advance to first active document, if not already at one.
+        EnsureActive();
     }
 
 
-    bool Shard::FindNextActive(size_t& docNumber) const
+    void Shard::ConstIterator::EnsureActive()
     {
-        // Hold a token to ensure that m_sliceBuffers won't be recycled.
-        auto token = m_tokenManager.RequestToken();
-
-        try
+        for (; !AtEnd(); ++m_sliceIndex)
         {
-            while (1)
+            m_slice = Slice::GetSliceFromBuffer(
+                (*m_sliceBuffers)[m_sliceIndex],
+                GetSlicePtrOffset());
+
+            for (; m_sliceOffset < m_sliceCapacity; ++m_sliceOffset)
             {
-                DocumentHandleInternal handle = GetHandle(docNumber);
+                DocumentHandleInternal handle(m_slice, m_sliceOffset);
                 if (handle.IsActive())
                 {
-                    return true;
+                    return;
                 }
-                ++docNumber;
             }
-        }
-        catch (RecoverableError e)
-        {
-            return false;
         }
     }
 
 
+    bool Shard::ConstIterator::AtEnd() const
+    {
+        return m_sliceIndex >= m_sliceBuffers->size();
+    }
+
+
+    Shard::const_iterator& Shard::ConstIterator::operator++()
+    {
+        if (AtEnd())
+        {
+            RecoverableError
+                error("Shard::ConstIterator::operator++: iterator beyond end.");
+            throw error;
+        }
+
+        ++m_sliceOffset;
+        EnsureActive();
+        return *this;
+    }
+
+
+    DocumentHandle Shard::ConstIterator::operator*() const
+    {
+        if (AtEnd())
+        {
+            RecoverableError
+                error("Shard::ConstIterator::operator*: iterator beyond end.");
+            throw error;
+        }
+
+        return DocumentHandleInternal(m_slice, m_sliceOffset);
+    }
+
+
+    std::unique_ptr<IShard::const_iterator> Shard::GetIterator()
+    {
+        std::unique_ptr<IShard::const_iterator> it(new ConstIterator(*this));
+        return std::move(it);
+    }
+
+
+    //*************************************************************************
+    //
+    // GetDensities
+    //
+    //*************************************************************************
     std::vector<double> Shard::GetDensities(Rank rank) const
     {
         // Hold a token to ensure that m_sliceBuffers won't be recycled.
         auto token = m_tokenManager.RequestToken();
 
-        // m_sliceBuffers can change at any time, but we can safely grab a copy
-        // because
-        //   1. m_sliceBuffers is std::atomic.
-        //   2. no m_sliceBuffers value observed while holding token can be
-        //      recycled.
+        // m_sliceBuffers can change at any time, but we can safely grab the
+        // pointer because
+        //   1. m_sliceBuffers is std::atomic
+        //   2. token guarantees that m_sliceBuffers pointer cannot be recycled.
         std::vector<void*> const & buffers = *m_sliceBuffers;
 
         RowTableDescriptor const & rowTable = m_rowTables[rank];
