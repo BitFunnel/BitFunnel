@@ -117,7 +117,7 @@ namespace BitFunnel
         }
 
     private:
-        std::array<Accumulator, c_maxRankValue> m_accumulators;
+        std::array<Accumulator, c_maxRankValue + 1> m_accumulators;
     };
 
 
