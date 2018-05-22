@@ -27,7 +27,7 @@
 #include "BitFunnel/BitFunnelTypes.h"   // DocIndex return value.
 #include "BitFunnel/IInterface.h"       // Base class.
 #include "BitFunnel/Index/RowId.h"      // RowId parameter.
-#include "BitFunnel/Noncopyable.h"      // Base class.
+#include "BitFunnel/NonCopyable.h"      // Base class.
 
 
 namespace BitFunnel
