@@ -586,7 +586,7 @@ namespace BitFunnel
     std::unique_ptr<IShard::const_iterator> Shard::GetIterator()
     {
         std::unique_ptr<IShard::const_iterator> it(new ConstIterator(*this));
-        return std::move(it);
+        return it;
     }
 
 
