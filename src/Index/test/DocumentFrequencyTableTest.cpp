@@ -40,7 +40,7 @@ namespace BitFunnel
             double frequency = Term::IdfX10ToFrequency(idf);
             std::string text = std::to_string(hash);
 
-            Term term(hash, streamId, idf, gramSize);
+            Term term(hash, streamId, gramSize);
             DocumentFrequencyTable::Entry entry(term, frequency);
 
             return entry;

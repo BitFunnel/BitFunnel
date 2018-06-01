@@ -69,8 +69,6 @@ namespace BitFunnel
             std::unique_ptr<IFileManager> fileManager) = 0;
         //virtual void SetFileSystem(
         //    std::unique_ptr<IFileSystem> fileSystem) = 0;
-        virtual void SetIdfTable(
-            std::unique_ptr<IIndexedIdfTable> idfTable) = 0;
         virtual void SetSchema(
             std::unique_ptr<IDocumentDataSchema> schema) = 0;
         virtual void SetShardDefinition(

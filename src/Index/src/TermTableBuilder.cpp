@@ -104,7 +104,8 @@ namespace BitFunnel
             //std::cout << "; frequency = " << dfEntry.GetFrequency() << std::endl;
 
             // Get the term's RowConfiguration.
-            auto configuration = treatment.GetTreatment(dfEntry.GetTerm());
+            Term::IdfX10 idf = Term::ComputeIdfX10(dfEntry.GetFrequency(), Term::c_maxIdfX10Value);
+            auto configuration = treatment.GetTreatment(idf);
 
             if (dfEntry.GetFrequency() < adhocFrequency)
             {
@@ -143,7 +144,7 @@ namespace BitFunnel
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
             // WARNING: because we don't CloseAdHocGTerm with gramSize of 0, we
-            // write out unitialized memory.
+            // write out uninitialized memory.
             for (Term::GramSize gramSize = 1;
                  gramSize <= Term::c_maxGramSize; ++gramSize)
             {
@@ -152,8 +153,7 @@ namespace BitFunnel
 
                 m_termTable.OpenTerm();
 
-                Term term(hash, streamId, idf, gramSize);
-                auto configuration = treatment.GetTreatment(term);
+                auto configuration = treatment.GetTreatment(idf);
                 for (auto rcEntry : configuration)
                 {
                     for (size_t i = 0; i < rcEntry.GetRowCount(); ++i)

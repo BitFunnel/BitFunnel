@@ -419,7 +419,7 @@ namespace BitFunnel
 
     void Shard::AssertFact(FactHandle fact, bool value, DocIndex index, void* sliceBuffer)
     {
-        Term term(fact, 0u, 0u, 1u);
+        Term term(fact, 0u, 1u);
         RowIdSequence rows(term, m_termTable);
         auto it = rows.begin();
 

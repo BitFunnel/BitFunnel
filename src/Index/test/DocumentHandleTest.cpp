@@ -154,8 +154,8 @@ namespace BitFunnel
         for (size_t i = 0; i < termCount; ++i)
         {
             Term::Hash hash = i + c_firstHash;
-            // hash, streamId, idf, gramSize.
-            Term term(hash, 0, 10, 1);
+            // hash, streamId, gramSize.
+            Term term(hash, 0, 1);
             for (auto & handle : handles)
             {
                 handle.AddPosting(term);

@@ -45,9 +45,9 @@ namespace BitFunnel
 
 
     std::unique_ptr<ITermTable>
-        Factories::CreateTermTable(std::istream & input)
+        Factories::CreateTermTable(std::istream & input, std::istream & indexedIdf)
     {
-        return std::unique_ptr<ITermTable>(new TermTable(input));
+        return std::unique_ptr<ITermTable>(new TermTable(input, indexedIdf));
     }
 
 
@@ -63,7 +63,8 @@ namespace BitFunnel
         m_explicitRowCounts(c_maxRankValue + 1, 0),
         m_adhocRowCounts(c_maxRankValue + 1, 0),
         m_sharedRowCounts(c_maxRankValue + 1, 0),
-        m_factRowCount(SystemTerm::Count)
+        m_factRowCount(SystemTerm::Count),
+        m_idfTable(Factories::CreateIndexedIdfTable())
     {
         // Make an entry for the system rows.
         // TODO: Comment explaining why system rows are added first (rather than last).
@@ -83,9 +84,10 @@ namespace BitFunnel
     }
 
 
-    TermTable::TermTable(std::istream& input)
+    TermTable::TermTable(std::istream& input, std::istream& indexedIdf)
       : m_sealed(true),
-        m_start(0)
+        m_start(0),
+        m_idfTable(Factories::CreateIndexedIdfTable(indexedIdf, Term::c_maxIdfX10Value))
     {
         size_t count = StreamUtilities::ReadField<size_t>(input);
         for (size_t i = 0; i < count; ++i)
@@ -337,7 +339,7 @@ namespace BitFunnel
                 // If term isn't found, assume it is adhoc.
                 // Return a PackedRowIdSequence that will be used as a recipe for
                 // generating adhoc term RowIds.
-                return m_adhocRows[term.GetIdfMax()][term.GetGramSize()];
+                return m_adhocRows[m_idfTable->GetIdf(term.GetRawHash())][term.GetGramSize()];
             }
         }
     }

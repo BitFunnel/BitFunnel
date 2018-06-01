@@ -41,9 +41,8 @@ namespace BitFunnel
 
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
-            Term term(0ull, 0u, idf);
-            auto t1 = treatments1.GetTreatment(term);
-            auto t2 = treatments2.GetTreatment(term);
+            auto t1 = treatments1.GetTreatment(idf);
+            auto t2 = treatments2.GetTreatment(idf);
 
             ASSERT_EQ(t1, t2);
         }

@@ -28,7 +28,6 @@
 #include "BitFunnel/Exceptions.h"
 #include "BitFunnel/Term.h"
 #include "BitFunnel/Index/IConfiguration.h"
-#include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "BitFunnel/Utilities/IObjectParser.h"
 #include "LoggerInterfaces/Logging.h"
 #include "MurmurHash2.h"
@@ -57,8 +56,6 @@ namespace BitFunnel
           m_stream(stream),
           m_gramSize(1)
     {
-        m_idfSum = m_idfMax = configuration.GetIdfTable().GetIdf(m_rawHash);
-
         // If we're maintaining a term-to-text mapping.
         if (configuration.KeepTermText())
         {
@@ -77,13 +74,10 @@ namespace BitFunnel
 
     Term::Term(Hash rawHash,
                StreamId stream,
-               IdfX10 idf,
                GramSize gramSize)
         : m_rawHash(rawHash),
           m_stream(stream),
-          m_gramSize(gramSize),
-          m_idfSum(idf),
-          m_idfMax(idf)
+          m_gramSize(gramSize)
     {
     }
 
@@ -124,11 +118,6 @@ namespace BitFunnel
         LogAssertB(gramSize <= c_maxGramSize, "");
         m_gramSize = static_cast<uint8_t>(gramSize);
 
-        LogAssertB(parser.OpenPrimitiveItem(), "");
-        unsigned idfSum = parser.ParseUInt();
-        LogAssertB(idfSum <= c_maxIdfSumX10Value, "");
-        m_idfSum = static_cast<IdfX10>(idfSum);
-
         // TODO: Decide whether we really want to keep maxWordIdf.
         // For now, disable serialization to work around unit test breaks.
         //LogAssertB(parser.OpenPrimitiveItem());
@@ -161,8 +150,6 @@ namespace BitFunnel
 
         m_rawHash = rotl64By1(m_rawHash) ^ term.m_rawHash;
         m_gramSize += term.m_gramSize;
-        m_idfSum += term.m_idfSum;
-        m_idfMax = std::max(m_idfMax, term.m_idfMax);
 
 
         // If we're maintaining a term-to-text mapping.
@@ -192,9 +179,7 @@ namespace BitFunnel
     bool Term::operator==(const Term& other) const
     {
         return m_rawHash == other.m_rawHash
-            && m_gramSize == other.m_gramSize
-            && m_idfSum == other.m_idfSum
-            && m_idfMax == other.m_idfMax;
+            && m_gramSize == other.m_gramSize;
     }
 
 
@@ -219,18 +204,6 @@ namespace BitFunnel
     Term::GramSize Term::GetGramSize() const
     {
         return m_gramSize;
-    }
-
-
-    Term::IdfX10 Term::GetIdfSum() const
-    {
-        return m_idfSum;
-    }
-
-
-    Term::IdfX10 Term::GetIdfMax() const
-    {
-        return m_idfMax;
     }
 
 

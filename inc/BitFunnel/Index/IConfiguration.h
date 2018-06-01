@@ -54,11 +54,6 @@ namespace BitFunnel
         // Note: behavior is undefined if KeepTermText() is false.
         virtual ITermToText & GetTermToText() const = 0;
 
-        // Returns an IIndexedIdfTable used to set the IDF values in each
-        // Term as it is constructed. The IIndexedIdfTable should be
-        // representative of the distribution of terms in the corpus.
-        virtual IIndexedIdfTable const & GetIdfTable() const = 0;
-
         // Returns the IFactSet used to configure the TermTable with user
         // defined fact rows.
         virtual IFactSet const & GetFactSet() const = 0;

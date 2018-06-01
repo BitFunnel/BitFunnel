@@ -80,13 +80,13 @@ namespace BitFunnel
     }
 
 
-    RowConfiguration TreatmentPrivateSharedRank0And3::GetTreatment(Term term) const
+    RowConfiguration TreatmentPrivateSharedRank0And3::GetTreatment(Term::IdfX10 idf) const
     {
         // DESIGN NOTE: we can't c_maxIdfX10Value directly to min because min
         // takes a reference and the compiler has already turned it into a
         // constant, which we can't take a reference to.
         auto local = Term::c_maxIdfX10Value;
-        Term::IdfX10 idf = std::min(term.GetIdfSum(), local);
+        idf = std::min(idf, local);
         return m_configurations[idf];
     }
 }

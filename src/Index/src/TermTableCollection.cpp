@@ -80,8 +80,9 @@ namespace BitFunnel
         for (ShardId shard = 0; shard < shardCount; ++shard)
         {
             auto input = fileManager.TermTable(shard).OpenForRead();
+            auto indexedIdf = fileManager.IndexedIdfTable(shard).OpenForRead();
             m_termTables.emplace_back(
-                std::unique_ptr<ITermTable>(new TermTable(*input)));
+                std::unique_ptr<ITermTable>(new TermTable(*input, *indexedIdf)));
         }
     }
 

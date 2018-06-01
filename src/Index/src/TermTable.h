@@ -24,8 +24,10 @@
 
 #include <unordered_map>                // std::unordered_map member.
 #include <array>                        // std::array member.
+#include <memory>                       // Embeds std::unique_ptr.
 #include <vector>                       // std::vector member.
 
+#include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "BitFunnel/Index/ITermTable.h" // Base class.
 #include "BitFunnel/Index/RowId.h"      // RowId template parameter.
 #include "BitFunnel/Term.h"             // Term::Hash parameter.
@@ -40,7 +42,7 @@ namespace BitFunnel
 
         // Constructs a TermTable from data previously serialized via the
         // Write() method.
-        TermTable(std::istream& input);
+        TermTable(std::istream& input, std::istream& indexIdf);
 
         // Writes the contents of the ITermTable to a stream.
         virtual void Write(std::ostream& output) const override;
@@ -146,12 +148,16 @@ namespace BitFunnel
         RanksInUse m_ranksInUse{};
         Rank m_maxRankInUse;
 
+        // Maps all explicit terms to their bin-packed row assignments
         // TODO: Is the term table big enough that we would benefit from
         // a more compact class than std::pair<RowIndex, RowIndex>>? Would this
         // even lead to a benefit if we didn't replace std::unordered_map with
         // a better hash table? Should measure actual memory use for this data
         // structure.
         std::unordered_map<Term::Hash, PackedRowIdSequence> m_termHashToRows;
+
+        // Maps all known (explicit and ad hoc) terms from their hash to their IDFx10 value
+        std::unique_ptr<IIndexedIdfTable> const m_idfTable;
 
         typedef
             std::array<

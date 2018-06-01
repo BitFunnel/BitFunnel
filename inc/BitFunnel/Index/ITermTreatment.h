@@ -60,8 +60,8 @@ namespace BitFunnel
     {
     public:
         // Returns the RowConfiguration describing how a particular term
-        // should be represented in the index.
-        virtual RowConfiguration GetTreatment(Term term) const = 0;
+        // of a particular idf should be represented in the index.
+        virtual RowConfiguration GetTreatment(Term::IdfX10 idf) const = 0;
     };
 
 
