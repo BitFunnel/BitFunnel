@@ -38,6 +38,8 @@ namespace BitFunnel
     class ResultsBuffer
     {
     public:
+		class const_iterator;
+
         class Result
         {
         public:
@@ -87,35 +89,6 @@ namespace BitFunnel
             m_size++;
         }
 
-        class const_iterator
-            : public std::iterator<std::input_iterator_tag, Result>
-        {
-        public:
-            const_iterator(Result * result)
-                : m_current(result)
-            {
-            }
-
-            bool operator!=(const_iterator const & other) const
-            {
-                return m_current != other.m_current;
-            }
-
-            const_iterator& operator++()
-            {
-                m_current++;
-                return *this;
-            }
-
-            Result const operator*() const
-            {
-                return *m_current;
-            }
-
-        private:
-            Result const * m_current;
-        };
-
         const_iterator begin() const
         {
             return const_iterator(m_buffer);
@@ -135,7 +108,37 @@ namespace BitFunnel
         size_t m_capacity;
         size_t m_size;
         Result * m_buffer;
-    };
+
+		class const_iterator
+			: public std::iterator<std::input_iterator_tag, Result>
+		{
+		public:
+			const_iterator(Result * result)
+				: m_current(result)
+			{
+			}
+
+			bool operator!=(const_iterator const & other) const
+			{
+				return m_current != other.m_current;
+			}
+
+			const_iterator& operator++()
+			{
+				m_current++;
+				return *this;
+			}
+
+			Result const operator*() const
+			{
+				return *m_current;
+			}
+
+		private:
+			Result const * m_current;
+		};
+
+	};
     static_assert(std::is_standard_layout<ResultsBuffer>::value,
                   "Generated code requires standard layout for ResultsBuffer.");
 }
