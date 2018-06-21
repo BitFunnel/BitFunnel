@@ -116,6 +116,10 @@ namespace BitFunnel
                     m_rowAssigners[rcEntry.GetRank()]->
                         AssignAdhoc(dfEntry.GetFrequency(),
                                     rcEntry.GetRowCount());
+
+                    // Preserve mapping of known ad hoc term to idf
+                    if (idf < Term::c_maxIdfX10Value)
+                        m_termTable.AddAdhocTerm(dfEntry.GetTerm().GetRawHash(), idf);
                 }
             }
             else

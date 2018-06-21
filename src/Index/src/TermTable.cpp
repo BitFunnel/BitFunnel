@@ -45,9 +45,9 @@ namespace BitFunnel
 
 
     std::unique_ptr<ITermTable>
-        Factories::CreateTermTable(std::istream & input, std::istream & indexedIdf)
+        Factories::CreateTermTable(std::istream & input)
     {
-        return std::unique_ptr<ITermTable>(new TermTable(input, indexedIdf));
+        return std::unique_ptr<ITermTable>(new TermTable(input));
     }
 
 
@@ -63,8 +63,7 @@ namespace BitFunnel
         m_explicitRowCounts(c_maxRankValue + 1, 0),
         m_adhocRowCounts(c_maxRankValue + 1, 0),
         m_sharedRowCounts(c_maxRankValue + 1, 0),
-        m_factRowCount(SystemTerm::Count),
-        m_idfTable(Factories::CreateIndexedIdfTable())
+        m_factRowCount(SystemTerm::Count)
     {
         // Make an entry for the system rows.
         // TODO: Comment explaining why system rows are added first (rather than last).
@@ -84,11 +83,11 @@ namespace BitFunnel
     }
 
 
-    TermTable::TermTable(std::istream& input, std::istream& indexedIdf)
+    TermTable::TermTable(std::istream& input)
       : m_sealed(true),
-        m_start(0),
-        m_idfTable(Factories::CreateIndexedIdfTable(indexedIdf, Term::c_maxIdfX10Value))
+        m_start(0)
     {
+        // Retrieve the map from all known explicit terms (hash) to row plans
         size_t count = StreamUtilities::ReadField<size_t>(input);
         for (size_t i = 0; i < count; ++i)
         {
@@ -96,6 +95,16 @@ namespace BitFunnel
             const PackedRowIdSequence rows = StreamUtilities::ReadField<PackedRowIdSequence>(input);
 
             m_termHashToRows.insert(std::make_pair(hash, rows));
+        }
+
+        // Retrieve the map from known ad hoc terms (hash) to IdfX10
+        // These can later be mapped to the treatment's row plan for that IdfX10
+        size_t adhoccount = StreamUtilities::ReadField<size_t>(input);
+        for (size_t i = 0; i < adhoccount; ++i)
+        {
+            const Term::Hash hash(StreamUtilities::ReadField<Term::Hash>(input));
+            const Term::IdfX10 idf(StreamUtilities::ReadField<Term::IdfX10>(input));
+            m_adhocTerms.insert(std::make_pair(hash, idf));
         }
 
         m_ranksInUse = StreamUtilities::ReadField<RanksInUse>(input);
@@ -121,6 +130,16 @@ namespace BitFunnel
 
             StreamUtilities::WriteField<Term::Hash>(output, hash);
             StreamUtilities::WriteField<PackedRowIdSequence>(output, rows);
+        }
+
+        StreamUtilities::WriteField<size_t>(output, m_adhocTerms.size());
+        for (auto entry : m_adhocTerms)
+        {
+            const Term::Hash hash = entry.first;
+            const Term::IdfX10 idf = entry.second;
+
+            StreamUtilities::WriteField<Term::Hash>(output, hash);
+            StreamUtilities::WriteField<Term::IdfX10>(output, idf);
         }
 
         StreamUtilities::WriteField<RanksInUse>(output, m_ranksInUse);
@@ -200,6 +219,22 @@ namespace BitFunnel
         m_adhocRows[idf][gramSize] = PackedRowIdSequence(m_start, end, PackedRowIdSequence::Type::Adhoc);
     }
 
+    void TermTable::AddAdhocTerm(Term::Hash hash, Term::IdfX10 idf)
+    {
+        EnsureSealed(false);
+
+        // Verify that this Term::Hash hasn't been added previously.
+        auto it = m_adhocTerms.find(hash);
+        if (it != m_adhocTerms.end())
+        {
+            std::stringstream message;
+            message << "TermTable::AddAdhocTerm(): Term::Hash " << hash << " has already been added.";
+
+            RecoverableError error(message.str());
+        }
+
+        m_adhocTerms.insert(std::make_pair(hash, idf));
+    }
 
 
     void TermTable::SetRowCounts(Rank rank,
@@ -339,7 +374,7 @@ namespace BitFunnel
                 // If term isn't found, assume it is adhoc.
                 // Return a PackedRowIdSequence that will be used as a recipe for
                 // generating adhoc term RowIds.
-                return m_adhocRows[m_idfTable->GetIdf(term.GetRawHash())][term.GetGramSize()];
+                return m_adhocRows[GetIdf(term.GetRawHash())][term.GetGramSize()];
             }
         }
     }
@@ -389,6 +424,20 @@ namespace BitFunnel
 
         // Adhoc rows start at RowIndex 0.
         return RowId(rank, (hash % adhocRowCount));
+    }
+
+
+    Term::IdfX10 TermTable::GetIdf(Term::Hash hash) const
+    {
+        auto it = m_adhocTerms.find(hash);
+        if (it != m_adhocTerms.end())
+        {
+            return (*it).second;
+        }
+        else
+        {
+            return Term::c_maxIdfX10Value;
+        }
     }
 
 

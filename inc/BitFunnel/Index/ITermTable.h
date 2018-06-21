@@ -84,6 +84,9 @@ namespace BitFunnel
         virtual void CloseAdhocTerm(Term::IdfX10 idf,
                                     Term::GramSize gramSize) = 0;
 
+        // Add a mapping of a known ad hoc term's hash to its idf value
+        virtual void AddAdhocTerm(Term::Hash hash, Term::IdfX10 idf) = 0;
+
         // Set the number of explicit and adhoc rows at each Rank.
         // Should be invoked once for rank values in [0..c_maxRankValue] during
         // TermTable build.
@@ -169,6 +172,9 @@ namespace BitFunnel
         virtual RowId GetRowIdAdhoc(Term::Hash hash,
                                     size_t index,
                                     size_t variant) const = 0;
+
+        // Return the IdfX10 for an known ad hoc term
+        virtual Term::IdfX10 GetIdf(Term::Hash hash) const = 0;
 
         virtual RowId GetRowIdFact(size_t index) const = 0;
 

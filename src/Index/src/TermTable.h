@@ -42,7 +42,7 @@ namespace BitFunnel
 
         // Constructs a TermTable from data previously serialized via the
         // Write() method.
-        TermTable(std::istream& input, std::istream& indexIdf);
+        TermTable(std::istream& input);
 
         // Writes the contents of the ITermTable to a stream.
         virtual void Write(std::ostream& output) const override;
@@ -63,6 +63,9 @@ namespace BitFunnel
         // recipes, indexed by the supplied idf and gramSize values.
         virtual void CloseAdhocTerm(Term::IdfX10 idf,
                                     Term::GramSize gramSize) override;
+
+        // Add a mapping of a known ad hoc term's hash to its idf value
+        virtual void AddAdhocTerm(Term::Hash hash, Term::IdfX10 idf) override;
 
         // Set the number of explicit and adhoc rows at each Rank.
         // Should be invoked once for rank values in [0..c_maxRankValue] during
@@ -119,6 +122,9 @@ namespace BitFunnel
                                     size_t index,
                                     size_t variant) const override;
 
+        // Return the IdfX10 for an known ad hoc term
+        virtual Term::IdfX10 GetIdf(Term::Hash hash) const override;
+
         virtual RowId GetRowIdFact(size_t index) const override;
 
         // NOTE: Included operator== for write-to-stream/read-from-stream
@@ -156,8 +162,8 @@ namespace BitFunnel
         // structure.
         std::unordered_map<Term::Hash, PackedRowIdSequence> m_termHashToRows;
 
-        // Maps all known (explicit and ad hoc) terms from their hash to their IDFx10 value
-        std::unique_ptr<IIndexedIdfTable> const m_idfTable;
+        // Maps all known ad hoc terms from their hash to their IDFx10 value
+        std::unordered_map<Term::Hash, Term::IdfX10> m_adhocTerms;
 
         typedef
             std::array<

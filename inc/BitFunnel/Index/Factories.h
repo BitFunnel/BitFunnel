@@ -113,8 +113,7 @@ namespace BitFunnel
             CreateSliceBufferAllocator(size_t blockSize, size_t blockCount);
 
         std::unique_ptr<ITermTable> CreateTermTable();
-        std::unique_ptr<ITermTable> CreateTermTable(std::istream & input,
-                                                    std::istream & indexedIdf);
+        std::unique_ptr<ITermTable> CreateTermTable(std::istream & input);
 
         std::unique_ptr<ITermTableBuilder>
             CreateTermTableBuilder(double density,
