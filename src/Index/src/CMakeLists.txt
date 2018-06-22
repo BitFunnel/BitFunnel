@@ -15,7 +15,6 @@ set(CPPFILES
     FactSetBase.cpp
     Helpers.cpp
     IDocumentCache.cpp
-    IndexedIdfTable.cpp
     Ingestor.cpp
     PackedRowIdSequence.cpp
     Recycler.cpp
@@ -65,7 +64,6 @@ set(PRIVATE_HFILES
     DocumentMap.h
     FactSetBase.h
     IDocumentCacheNode.h
-    IndexedIdfTable.h
     Ingestor.h
     IRecyclable.h
     Recycler.h

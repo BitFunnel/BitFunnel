@@ -27,7 +27,6 @@
 #include <memory>                       // Embeds std::unique_ptr.
 #include <vector>                       // std::vector member.
 
-#include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "BitFunnel/Index/ITermTable.h" // Base class.
 #include "BitFunnel/Index/RowId.h"      // RowId template parameter.
 #include "BitFunnel/Term.h"             // Term::Hash parameter.

@@ -69,7 +69,6 @@ namespace BitFunnel
         //   Per Shard
         //      CumulativeTermCountd
         //      DocumentFrequencyTable (with term text if termToText provided)
-        //      IndexedIdfTable
         virtual void WriteStatistics(IFileManager & fileManager,
                                      ITermToText const * termToText) const override;
 

@@ -477,16 +477,6 @@ namespace BitFunnel
     }
 
 
-    void Shard::TemporaryWriteIndexedIdfTable(std::ostream& out) const
-    {
-        // TODO: 0.0 is the truncation frequency, which shouldn't be fixed at 0.
-        if (m_docFrequencyTableBuilder.get() != nullptr)
-        {
-            m_docFrequencyTableBuilder->WriteIndexedIdfTable(out, 0.0);
-        }
-    }
-
-
     void Shard::TemporaryWriteCumulativeTermCounts(std::ostream& out) const
     {
         if (m_docFrequencyTableBuilder.get() != nullptr)

@@ -30,7 +30,6 @@
 #include "BitFunnel/IFileManager.h"                 // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IConfiguration.h"         // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IDocumentDataSchema.h"    // Parameterizes std::unique_ptr.
-#include "BitFunnel/Index/IIndexedIdfTable.h"       // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IIngestor.h"              // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/IRecycler.h"              // Parameterizes std::unique_ptr.
 #include "BitFunnel/Index/ISliceBufferAllocator.h"  // Parameterizes std::unique_ptr.

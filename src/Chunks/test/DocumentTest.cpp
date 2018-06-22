@@ -26,7 +26,6 @@
 
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IConfiguration.h"
-#include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "Document.h"
 
 

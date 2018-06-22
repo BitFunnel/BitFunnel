@@ -28,7 +28,6 @@
 namespace BitFunnel
 {
     class IFactSet;
-    class IIndexedIdfTable;
     class ITermToText;
 
 

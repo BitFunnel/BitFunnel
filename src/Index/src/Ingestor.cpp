@@ -151,10 +151,6 @@ namespace BitFunnel
                 auto out = fileManager.DocFreqTable(shard).OpenForWrite();
                 m_shards[shard]->TemporaryWriteDocumentFrequencyTable(*out, termToText);
             }
-            {
-                auto out = fileManager.IndexedIdfTable(shard).OpenForWrite();
-                m_shards[shard]->TemporaryWriteIndexedIdfTable(*out);
-            }
         }
     }
 

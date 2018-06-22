@@ -86,15 +86,6 @@ namespace BitFunnel
                               ITermToText const * termToText) const;
 
 
-        // Writes the document frequency data to a stream in the binary format
-        // used by the IndexedIdfTable constructor.
-        //
-        // This method is not threadsafe in the presense of writers.
-        // (ie. callers to OnDocumentEnter() and OnTerm()).
-        void WriteIndexedIdfTable(std::ostream& output,
-                                  double truncateBelowFrequency) const;
-
-
         // Writes the Cumulative Term Count Table to a stream.  The file format
         // is a series of entries, one per line. Each entry consists of the
         // following comm-separated fields:

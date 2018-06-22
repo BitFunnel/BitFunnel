@@ -35,7 +35,6 @@ namespace BitFunnel
     class IFactSet;
     class IFileManager;
     class IFileSystem;
-    class IIndexedIdfTable;
     class IIngestor;
     class IRecycler;
     class IShardDefinition;
