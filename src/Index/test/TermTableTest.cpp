@@ -133,7 +133,7 @@ namespace BitFunnel
             std::set<RowIndex> indexes;
 
             // For each row in the RowIdSequence
-            while (o != rows.end())
+            while (o != rows.end() && e != recipe.end())
             {
                 RowId observed = *o;
                 RowId expected = *e;
@@ -158,19 +158,16 @@ namespace BitFunnel
             }
             // Verify that e has as many RowIds as o.
             // NOTE: Cannot use EXPECT_EQ with iterators.
-            EXPECT_TRUE(e == recipe.end());
+            EXPECT_TRUE(e == recipe.end() && o == rows.end());
         }
 
 
         // Verifies that the RowIdSequences for two terms with the same IdfX10
         // and GramSize values but different hashes are different.
         static void VerifyTwoTerms(Term term1,
+                                   Term term2,
                                    TermTable const & termTable)
         {
-            Term term2(term1.GetRawHash() + 17,
-                       term1.GetStream(),
-                       term1.GetGramSize());
-
             RowIdSequence rs1(term1, termTable);
             RowIdSequence rs2(term2, termTable);
 
@@ -227,11 +224,22 @@ namespace BitFunnel
                     Term::c_maxIdfX10Value + 1>
                 recipes;
 
+            // Start with an arbitrary term hash well above the reserved hash
+            // values for system rows and facts.
+            const Term::Hash c_firstHash = 12345ull;
+            const Term::Hash c_hashGap = 10000ull;
+            Term::Hash hash = c_firstHash;
+
             // For each (IdfX10, GramSize) pair
             for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
             {
                 for (Term::GramSize gramSize = 0; gramSize <= Term::c_maxGramSize; ++gramSize)\
                 {
+                    // Map a hash to the idf, for later lookup
+                    termTable.AddAdhocTerm(hash, idf);
+                    termTable.AddAdhocTerm(hash + c_hashGap, idf); // for VerifyTwoTerms()
+                    ++hash;
+
                     // Invent a number of rows for this (IdfX10, GramSize) pair
                     size_t rowCount = (idf + gramSize) % maxRowsPerConfiguration;
 
@@ -278,17 +286,19 @@ namespace BitFunnel
             // Verify rows for adhoc terms.
             //
 
-            // Start with an arbitrary term hash well above the reserved hash
+            // Restart with an arbitrary term hash well above the reserved hash
             // values for system rows and facts.
-            Term::Hash hash = 12345ull;
+            hash = c_firstHash;
 
             // For each (IdfX10, GramSize) pair
             for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
             {
                 for (Term::GramSize gramSize = 0; gramSize <= Term::c_maxGramSize; ++gramSize)\
                 {
-                    // Generate a term.
-                    Term term(hash++, 0, gramSize);
+                    // Generate a term
+                    Term term(hash, 0, gramSize);
+                    Term term2(hash + c_hashGap, 0, gramSize);
+                    ++hash;
 
                     std::vector<RowId> const & recipe = recipes[idf][gramSize];
 
@@ -299,7 +309,7 @@ namespace BitFunnel
 
                     // Verify that two different terms at (idf, gramSize) get
                     // similar row patterns with different RowIndex values.
-                    VerifyTwoTerms(term, termTable);
+                    VerifyTwoTerms(term, term2, termTable);
                 }
             }
 
@@ -311,9 +321,9 @@ namespace BitFunnel
             std::stringstream stream;
             termTable.Write(stream);
 
-            // TermTable termTable2(stream);
+            TermTable termTable2(stream);
 
-            // EXPECT_EQ(termTable, termTable2);
+            EXPECT_EQ(termTable, termTable2);
         }
 
 

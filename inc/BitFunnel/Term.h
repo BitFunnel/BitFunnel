@@ -60,9 +60,14 @@ namespace BitFunnel
         // Hash of the term's text.
         typedef uint64_t Hash;
 
-        // 10 times an IDF (inverse document frequeny) value. The IDF is
-        // 1/log(f) where f is the fraction of documents in the corpus
-        // containing the term.
+        // Idf (indexed document frequency) is defined as the log base-10 of
+        // the total document count divided by how many documents contain the term:
+        //     Idf = log(1/term-frequency)
+        // For example, a term that appears once in every 1000 documents will
+        // have an IDF of 3. For more info, see:
+        //      http://en.wikipedia.org/wiki/Inverse_document_frequency
+        // IdfX10 is a one-byte unsigned integer, equal to the actual IDF value
+        // multiplied by 10 and rounded to the nearest integer.
         typedef uint8_t IdfX10;
 
         // Terms come from various streams in documents (e.g. title stream,

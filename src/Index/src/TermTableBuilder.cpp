@@ -152,9 +152,6 @@ namespace BitFunnel
             for (Term::GramSize gramSize = 1;
                  gramSize <= Term::c_maxGramSize; ++gramSize)
             {
-                const Term::Hash hash = 0ull;
-                const Term::StreamId streamId = 0;
-
                 m_termTable.OpenTerm();
 
                 auto configuration = treatment.GetTreatment(idf);

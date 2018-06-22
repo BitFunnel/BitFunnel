@@ -134,12 +134,12 @@ namespace BitFunnel
             m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.02));
 
             // Expect Rank:0, RowIndex: 2 and Rank: 0, RowIndex: 3
-            hashToIdf[hash] = Term::ComputeIdfX10(0.0099, 60);
-            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.0099));
+            hashToIdf[hash] = Term::ComputeIdfX10(0.015, 60);
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.015));
 
             // Expect Rank:0, RowIndex: 3 and Rank: 4, RowIndex: 0
-            hashToIdf[hash] = Term::ComputeIdfX10(0.0098, 60);
-            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.0098));
+            hashToIdf[hash] = Term::ComputeIdfX10(0.012, 60);
+            m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.012));
 
 
             //
@@ -218,19 +218,19 @@ namespace BitFunnel
             m_termTable.CloseTerm(hash++);
 
             // Sixth row is configured as a pair of shared rank 0 rows. It's
-            // density of 0.01 is low enough that it will share with the third
-            // and fourth rows.
+            // density of 0.015 is low enough that it will share with the fourth
+            // and fifth rows.
             m_termTreatment.OpenConfiguration();
             m_termTreatment.AddEntry(0, 2);
             m_termTreatment.CloseConfiguration(hashToIdf[hash]);
 
             m_termTable.OpenTerm();
-            m_termTable.AddRowId(RowId(0, third));
             m_termTable.AddRowId(RowId(0, fourth));
+            m_termTable.AddRowId(RowId(0, rows[0]++));
             m_termTable.CloseTerm(hash++);
 
             // Seventh row is configured two shared rows, one rank 0 and one
-            // rank 4. Seventh row's frequency of 0.01 is great enough to
+            // rank 4. Seventh row's frequency of 0.012 is great enough to
             // require a private row at rank 4.
             m_termTreatment.OpenConfiguration();
             m_termTreatment.AddEntry(4, 1);
@@ -244,7 +244,7 @@ namespace BitFunnel
 
             const size_t adhocRowCount =
                 TermTableBuilder::GetMinAdhocRowCount();
-            m_termTable.SetRowCounts(0, 4 + ITermTable::SystemTerm::Count, adhocRowCount);
+            m_termTable.SetRowCounts(0, 5 + ITermTable::SystemTerm::Count, adhocRowCount);
             m_termTable.SetRowCounts(4, 1, adhocRowCount);
 
             m_termTable.SetFactCount(0);
@@ -288,7 +288,7 @@ private:
         {
             // Construct a test environment that provides the ITermTreatment
             // and DocumentFrequencyTable to be used by the TermTableBuilder.
-            // The test environement also provides a hand-constructed expected
+            // The test environment also provides a hand-constructed expected
             // TermTable for verification purposes.
             TestEnvironment environment;
 
@@ -313,7 +313,7 @@ private:
 
             //
             // Verify that configured TermTable is the same as the expected
-            // TermTable provided by the enviornment.
+            // TermTable provided by the environment.
             //
 
             // Ensure that all known terms have the same RowIdSequences.
