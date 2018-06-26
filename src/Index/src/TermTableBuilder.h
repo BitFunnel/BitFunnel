@@ -125,7 +125,9 @@ namespace BitFunnel
 
             void AssignExplicit(double frequency, RowIndex count);
             void AssignAdhoc(double frequency, RowIndex count);
+            void AssignUnknown(RowIndex count);
 
+            size_t GetKnownTermCount() const;
             RowIndex GetExplicitRowCount() const;
             RowIndex GetAdhocRowCount() const;
 
@@ -157,6 +159,14 @@ namespace BitFunnel
             size_t m_sharedExplicitTermCount;
 
             size_t m_privateExplicitRowCount;
+
+            // Unknown terms are those whose IDF >= the max. IDF value.
+            // The unknown term count is a rough, conservative estimate.
+            // Its rows are folded into the ad hoc row count.
+            // It takes a lot of unknown terms to fill up a single row
+            // (e.g., at IDF 60 and density of 0.15, a row represents 150,000 terms).
+            size_t m_unknownTermCount;
+            double m_unknownTotal;
 
             RandomInt<unsigned>& m_random;
 

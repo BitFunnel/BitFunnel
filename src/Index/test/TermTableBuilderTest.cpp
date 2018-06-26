@@ -114,31 +114,31 @@ namespace BitFunnel
             Term::Hash hash = c_firstHash;
 
             // Expect Rank:0, RowIndex: 0
-            hashToIdf[hash] = Term::ComputeIdfX10(0.9, 60);
+            hashToIdf[hash] = Term::ComputeIdfX10(0.9, Term::c_maxIdfX10Value);
             m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.9));
 
             // Expect Rank:0, RowIndex: 1
-            hashToIdf[hash] = Term::ComputeIdfX10(0.7, 60);
+            hashToIdf[hash] = Term::ComputeIdfX10(0.7, Term::c_maxIdfX10Value);
             m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.7));
 
             // Expect Rank:0, RowIndex: 2
-            hashToIdf[hash] = Term::ComputeIdfX10(0.07, 60);
+            hashToIdf[hash] = Term::ComputeIdfX10(0.07, Term::c_maxIdfX10Value);
             m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.07));
 
             // Expect Rank:0, RowIndex: 3
-            hashToIdf[hash] = Term::ComputeIdfX10(0.05, 60);
+            hashToIdf[hash] = Term::ComputeIdfX10(0.05, Term::c_maxIdfX10Value);
             m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.05));
 
             // Expect Rank:0, RowIndex: 2
-            hashToIdf[hash] = Term::ComputeIdfX10(0.02, 60);
+            hashToIdf[hash] = Term::ComputeIdfX10(0.02, Term::c_maxIdfX10Value);
             m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.02));
 
             // Expect Rank:0, RowIndex: 2 and Rank: 0, RowIndex: 3
-            hashToIdf[hash] = Term::ComputeIdfX10(0.015, 60);
+            hashToIdf[hash] = Term::ComputeIdfX10(0.015, Term::c_maxIdfX10Value);
             m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.015));
 
             // Expect Rank:0, RowIndex: 3 and Rank: 4, RowIndex: 0
-            hashToIdf[hash] = Term::ComputeIdfX10(0.012, 60);
+            hashToIdf[hash] = Term::ComputeIdfX10(0.012, Term::c_maxIdfX10Value);
             m_documentFrequencyTable->AddEntry(DocumentFrequencyTable::Entry(Term(hash++, 1, 1), 0.012));
 
 
