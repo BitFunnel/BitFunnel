@@ -247,7 +247,7 @@ namespace BitFunnel
                                                rowSet.GetRowOffsets(shardId),
                                                nullptr,
                                                instrumentation,
-                                               resources.GetCacheLineRecorder());
+                                               resources.GetCountCacheLines()? shard.GetSliceBufferSize() : 0);
 
                 intepreter.Run();
             }

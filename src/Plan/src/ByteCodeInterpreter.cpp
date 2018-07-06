@@ -67,7 +67,7 @@ Decide on type of Slices
         ptrdiff_t const * rowOffsets,
         IDiagnosticStream * diagnosticStream,
         QueryInstrumentation & instrumentation,
-        CacheLineRecorder * cacheLineRecorder)
+        size_t sliceBufferSize)
       : m_code(code.GetCode()),
         m_jumpTable(code.GetJumpTable()),
         m_resultsBuffer(resultsBuffer),
@@ -78,11 +78,19 @@ Decide on type of Slices
         m_rowOffsets(rowOffsets),
         m_dedupe(),
         m_diagnosticStream(diagnosticStream),
-        m_instrumentation(instrumentation),
-        m_cacheLineRecorder(cacheLineRecorder)
+        m_instrumentation(instrumentation)
     {
+        m_cacheLineRecorder = sliceBufferSize ? new CacheLineRecorder(sliceBufferSize) : nullptr;
     }
 
+
+    ByteCodeInterpreter::~ByteCodeInterpreter()
+    {
+        if (m_cacheLineRecorder != nullptr)
+        {
+            delete m_cacheLineRecorder;
+        }
+    }
 
     bool ByteCodeInterpreter::Run()
     {

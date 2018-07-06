@@ -77,7 +77,7 @@ namespace BitFunnel
             m_rowOffsets.data(),
             nullptr,
             instrumentation,
-            nullptr);
+            0);
 
         interpreter.Run();
 

@@ -25,7 +25,6 @@
 #include <memory>                               // std::unique_ptr embedded.
 
 #include "BitFunnel/Allocators/IAllocator.h"    // Template parameter.
-#include "CacheLineRecorder.h"                  // Template parameter.
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"  // Template parameter.
 #include "NativeJIT/CodeGen/FunctionBuffer.h"   // Template parameter.
 #include "Temporary/Allocator.h"                // Template parameter.
@@ -41,7 +40,7 @@ namespace BitFunnel
         QueryResources(size_t treeAllocatorBytes = 1ull << 16,
                        size_t codeAllocatorBytes = 1ull << 16);
 
-        void EnableCacheLineCounting(ISimpleIndex const & index);
+        void EnableCacheLineCounting();
 
         virtual void Reset();
 
@@ -65,9 +64,9 @@ namespace BitFunnel
             return *m_code;
         }
 
-        CacheLineRecorder* GetCacheLineRecorder() const
+        bool GetCountCacheLines()
         {
-            return m_cacheLineRecorder.get();
+            return m_countCacheLines;
         }
 
     private:
@@ -75,6 +74,6 @@ namespace BitFunnel
         std::unique_ptr<NativeJIT::Allocator> m_expressionTreeAllocator;
         std::unique_ptr<NativeJIT::ExecutionBuffer> m_codeAllocator;
         std::unique_ptr<NativeJIT::FunctionBuffer> m_code;
-        std::unique_ptr<CacheLineRecorder> m_cacheLineRecorder;
+        bool m_countCacheLines;
     };
 }

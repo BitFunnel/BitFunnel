@@ -225,7 +225,7 @@ namespace BitFunnel
     {
         if (countCacheLines)
         {
-            m_resources.EnableCacheLineCounting(index);
+            m_resources.EnableCacheLineCounting();
         }
     }
 
