@@ -31,9 +31,9 @@
 #include "BitFunnel/Index/DocumentHandle.h"
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "ByteCodeInterpreter.h"
 #include "CacheLineRecorder.h"
-#include "ResultsBuffer.h"
 
 
 namespace BitFunnel

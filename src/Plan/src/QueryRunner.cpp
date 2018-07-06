@@ -32,11 +32,11 @@
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryParser.h"
 #include "BitFunnel/Plan/QueryRunner.h"
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/Allocator.h"
 #include "CsvTsv/Csv.h"
 #include "QueryResources.h"
-#include "ResultsBuffer.h"
 
 
 namespace BitFunnel

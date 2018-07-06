@@ -34,12 +34,12 @@
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryParser.h"     // TODO: Can this move to src/plan?
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Plan/VerifyOneQuerySynthetic.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/Primes.h"
 #include "MatchVerifier.h"
 #include "QueryResources.h"
-#include "ResultsBuffer.h"
 
 
 namespace BitFunnel

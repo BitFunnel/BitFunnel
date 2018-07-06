@@ -54,7 +54,6 @@ set(PRIVATE_HFILES
     NativeCodeGenerator.h
     QueryPlanner.h
     QueryResources.h
-    ResultsBuffer.h
     RowMatchNode.h
     RowSet.h
     RankDownCompiler.h
