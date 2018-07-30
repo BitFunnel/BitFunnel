@@ -39,7 +39,6 @@ namespace NativeJIT
 namespace BitFunnel
 {
     class CompileNode;
-    class QueryResources;
     class RegisterAllocator;
     class ResultsBuffer;
 
@@ -51,7 +50,8 @@ namespace BitFunnel
     class MatchTreeCompiler
     {
     public:
-        MatchTreeCompiler(QueryResources & resources,
+        MatchTreeCompiler(Allocators::IAllocator & resources,
+                          NativeJIT::FunctionBuffer & code,
                           CompileNode const & tree,
                           RegisterAllocator const & registers,
                           Rank initialRank);

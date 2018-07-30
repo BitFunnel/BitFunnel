@@ -30,13 +30,15 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Plan/Factories.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
+#include "BitFunnel/Plan/IQueryEngine.h"
 #include "BitFunnel/Plan/QueryParser.h"
 #include "BitFunnel/Plan/QueryRunner.h"
 #include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/Allocator.h"
+#include "ByteCodeQueryEngine.h"
 #include "CsvTsv/Csv.h"
-#include "QueryResources.h"
+#include "NativeJITQueryEngine.h"
 
 
 namespace BitFunnel
@@ -180,18 +182,16 @@ namespace BitFunnel
         //
         // constructor parameters
         //
-        ISimpleIndex const & m_index;
         IStreamConfiguration const & m_config;
         std::vector<std::string> const & m_queries;
         std::vector<QueryInstrumentation::Data> & m_results;
-        bool m_useNativeCode;
         ThreadSynchronizer& m_synchronizer;
 
         std::vector<ResultsBuffer::Result> m_matches;
 
         ResultsBuffer m_resultsBuffer;
 
-        QueryResources m_resources;
+        std::unique_ptr<IQueryEngine> m_queryEngine;
 
         size_t m_queriesProcessed;
 
@@ -212,20 +212,26 @@ namespace BitFunnel
                                    bool useNativeCode,
                                    bool countCacheLines,
                                    ThreadSynchronizer& synchronizer)
-      : m_index(index),
-        m_config(config),
+      : m_config(config),
         m_queries(queries),
         m_results(results),
-        m_useNativeCode(useNativeCode),
         m_synchronizer(synchronizer),
         m_matches(maxResultCount, {nullptr, 0}),
         m_resultsBuffer(index.GetIngestor().GetDocumentCount()),
-        m_resources(c_allocatorSize, c_allocatorSize),
         m_queriesProcessed(0)
     {
+        if (useNativeCode)
+        {
+            m_queryEngine = std::unique_ptr<IQueryEngine>(new NativeJITQueryEngine(index, config, c_allocatorSize, c_allocatorSize));
+        }
+        else
+        {
+            m_queryEngine = std::unique_ptr<IQueryEngine>(new ByteCodeQueryEngine(index, config, c_allocatorSize));
+        }
+
         if (countCacheLines)
         {
-            m_resources.EnableCacheLineCounting();
+            m_queryEngine->EnableDiagnostic("planning/countcachelines");
         }
     }
 
@@ -240,32 +246,20 @@ namespace BitFunnel
         ++m_queriesProcessed;
 
         QueryInstrumentation instrumentation;
-        m_resources.Reset();
 
         size_t queryId = taskId % m_queries.size();
 
         // Parse and run the query, catching ParseError or other RecoverableError
         try
         {
-            QueryParser parser(m_queries[queryId].c_str(),
-                m_config,
-                m_resources.GetMatchTreeAllocator());
-            auto tree = parser.Parse();
+            auto tree = m_queryEngine->Parse(m_queries[queryId].c_str());
             instrumentation.FinishParsing();
 
-            // TODO: remove diagnosticStream and replace with nullable.
-            auto diagnosticStream = Factories::CreateDiagnosticStream(std::cout);
             if (tree != nullptr)
             {
-                Factories::RunQueryPlanner(*tree,
-                                           m_index,
-                                           m_resources,
-                                           *diagnosticStream,
-                                           instrumentation,
-                                           m_resultsBuffer,
-                                           m_useNativeCode);
-
-                instrumentation.QuerySuceeded();
+                m_queryEngine->Run(tree,
+                                   instrumentation,
+                                   m_resultsBuffer);
             }
         }
         catch (RecoverableError e)

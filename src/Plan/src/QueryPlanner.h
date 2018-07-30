@@ -23,7 +23,7 @@
 #pragma once
 
 #include "BitFunnel/NonCopyable.h"        // Inherits from NonCopyable.
-#include "ByteCodeInterpreter.h"
+#include "RowSet.h"
 
 
 namespace BitFunnel
@@ -32,8 +32,6 @@ namespace BitFunnel
     class ISimpleIndex;
     class IThreadResources;
     class QueryInstrumentation;
-    class QueryResources;
-    class ResultsBuffer;
     class RowSet;
     class TermMatchNode;
 
@@ -44,46 +42,26 @@ namespace BitFunnel
         QueryPlanner(TermMatchNode const & tree,
                      unsigned targetRowCount,
                      ISimpleIndex const & index,
-                     // IThreadResources& threadResources,
-                     QueryResources & resources,
+                     IAllocator & matchTreeAllocator,
                      IDiagnosticStream& diagnosticStream,
-                     QueryInstrumentation & instrumentation,
-                     ResultsBuffer & resultsBuffer,
-                     bool useNativeCode);
+                     QueryInstrumentation & instrumentation);
+
+        CompileNode const & GetCompileTree() const;
+
+        Rank GetInitialRank() const;
+
+        RowSet const & GetRowSet() const;
 
         IPlanRows const & GetPlanRows() const;
 
     private:
-        void RunByteCodeInterpreter(ISimpleIndex const & index,
-                                    QueryResources & resources,
-                                    QueryInstrumentation & instrumentation,
-                                    CompileNode const & compileTree,
-                                    Rank maxRank,
-                                    RowSet const & rowSet);
+        CompileNode const * m_compileTree;
 
-        void RunNativeCode(ISimpleIndex const & index,
-                           QueryResources & resources,
-                           QueryInstrumentation & instrumentation,
-                           CompileNode const & compileTree,
-                           Rank maxRank,
-                           RowSet const & rowSet);
+        Rank m_initialRank;
 
+        std::unique_ptr<RowSet> m_rowSet;
+        
         IPlanRows const * m_planRows;
 
-        // The maximum number of iterations that can be performed before a termination
-        // check is mandatory. Details can be found in the MatchTreeCodeGenerator.
-        // const unsigned m_maxIterationsScannedBetweenTerminationChecks;
-
-        // First available row pointer register is R8.
-        // TODO: is this valid on all platforms or only on Windows?
-        static const unsigned c_registerBase = 8;
-
-        // Row pointers stored in the eight registers R8..R15.
-        // TODO: is this valid on all platforms or only on Windows?
-        static const unsigned c_registerCount = 8;
-
-        ByteCodeGenerator m_code;
-
-        ResultsBuffer& m_resultsBuffer;
     };
 }
