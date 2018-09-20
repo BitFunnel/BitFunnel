@@ -46,7 +46,7 @@ namespace BitFunnel
     }
 
 
-    RowConfiguration TreatmentPrivateRank0::GetTreatment(Term /*term*/) const
+    RowConfiguration TreatmentPrivateRank0::GetTreatment(Term::IdfX10 /*term*/) const
     {
         return m_configuration;
     }

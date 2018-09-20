@@ -28,7 +28,6 @@
 namespace BitFunnel
 {
     class IFactSet;
-    class IIndexedIdfTable;
     class ITermToText;
 
 
@@ -53,11 +52,6 @@ namespace BitFunnel
         // a mapping from Term hash to the Term's text in the corpus.
         // Note: behavior is undefined if KeepTermText() is false.
         virtual ITermToText & GetTermToText() const = 0;
-
-        // Returns an IIndexedIdfTable used to set the IDF values in each
-        // Term as it is constructed. The IIndexedIdfTable should be
-        // representative of the distribution of terms in the corpus.
-        virtual IIndexedIdfTable const & GetIdfTable() const = 0;
 
         // Returns the IFactSet used to configure the TermTable with user
         // defined fact rows.

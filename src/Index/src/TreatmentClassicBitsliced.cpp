@@ -45,7 +45,7 @@ namespace BitFunnel
     }
 
 
-    RowConfiguration TreatmentClassicBitsliced::GetTreatment(Term /*term*/) const
+    RowConfiguration TreatmentClassicBitsliced::GetTreatment(Term::IdfX10 /*idf*/) const
     {
         return m_configuration;
     }

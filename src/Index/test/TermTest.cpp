@@ -37,6 +37,6 @@ namespace BitFunnel
     TEST(ComputeMaxRank, Trivial)
     {
         EXPECT_EQ(Term::ComputeMaxRank(1.0, 0.1), 0u);
-        EXPECT_GE(Term::ComputeMaxRank(Term::IdfX10ToFrequency(60), 0.1), 6u);
+        EXPECT_GE(Term::ComputeMaxRank(Term::IdfX10ToFrequency(Term::c_maxIdfX10Value), 0.1), 6u);
     }
 }

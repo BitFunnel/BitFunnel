@@ -26,7 +26,6 @@
 
 #include "BitFunnel/Index/Factories.h"
 #include "BitFunnel/Index/IConfiguration.h"
-#include "BitFunnel/Index/IIndexedIdfTable.h"
 #include "Document.h"
 
 
@@ -38,10 +37,9 @@ namespace BitFunnel
         const DocId docId = 0;
         const size_t gramSize = 1;
 
-        auto idfTable = Factories::CreateIndexedIdfTable();
         auto facts = Factories::CreateFactSet();
         auto config =
-            Factories::CreateConfiguration(gramSize, false, *idfTable, *facts);
+            Factories::CreateConfiguration(gramSize, false, *facts);
         Document d(*config, docId);
 
         std::array<char const *, 5> text {{
@@ -83,10 +81,9 @@ namespace BitFunnel
         const DocId docId = 0;
         const size_t gramSize = 5;
 
-        auto idfTable = Factories::CreateIndexedIdfTable();
         auto facts = Factories::CreateFactSet();
         auto config =
-            Factories::CreateConfiguration(gramSize, false, *idfTable, *facts);
+            Factories::CreateConfiguration(gramSize, false, *facts);
         Document d(*config, docId);
 
         std::array<char const *, 5> text {{

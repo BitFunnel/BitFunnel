@@ -60,9 +60,14 @@ namespace BitFunnel
         // Hash of the term's text.
         typedef uint64_t Hash;
 
-        // 10 times an IDF (inverse document frequeny) value. The IDF is
-        // 1/log(f) where f is the fraction of documents in the corpus
-        // containing the term.
+        // Idf (indexed document frequency) is defined as the log base-10 of
+        // the total document count divided by how many documents contain the term:
+        //     Idf = log(1/term-frequency)
+        // For example, a term that appears once in every 1000 documents will
+        // have an IDF of 3. For more info, see:
+        //      http://en.wikipedia.org/wiki/Inverse_document_frequency
+        // IdfX10 is a one-byte unsigned integer, equal to the actual IDF value
+        // multiplied by 10 and rounded to the nearest integer.
         typedef uint8_t IdfX10;
 
         // Terms come from various streams in documents (e.g. title stream,
@@ -78,7 +83,6 @@ namespace BitFunnel
         //static const IdfX10 c_maxIdfSumX10Value = std::numeric_limits<IdfX10>::max() - 1;
         static const IdfX10 c_maxIdfSumX10Value = (std::numeric_limits<IdfX10>::max)() - 1;
 
-        // TODO: Should terms store IDF values? Why?
         // TODO: Should terms store ngram sizes? Why?
 
         // Constructs a Term for a unigram based on its raw hash
@@ -96,7 +100,6 @@ namespace BitFunnel
         // (1..c_maxGramSize).
         Term(Hash rawHash,
              StreamId stream,
-             IdfX10 idf,
              GramSize = 1);
 
         Term(IObjectParser& parser, bool parseParametersOnly);
@@ -131,21 +134,6 @@ namespace BitFunnel
 
         // Returns the Gram size of this term (e.g. unigram = 1, bigram = 2, etc.).
         GramSize GetGramSize() const;
-
-        // Returns the term's IDF Sum value. IDF stands for inverse document
-        // frequency. It is defined as the log base-10 of ratio of the corpus
-        // size to the number of times the term appears in a corpus. As an
-        // example, a term that appears once in every 1000 documents will
-        // have an IDF of 3. GetIdfSum() returns the IDF Sum as an IdfX10 value.
-        // IdfX10 is a one-byte size that is equal to the actual IDF value
-        // multiplied by 10 and rounded to the nearest integer. For more
-        // information see
-        //      http://en.wikipedia.org/wiki/Inverse_document_frequency
-        // For ngram, Idf sum is the sum of all its unigrams' IDF.
-        IdfX10 GetIdfSum() const;
-
-        // Returns the max IDF value of all words in this term.
-        IdfX10 GetIdfMax() const;
 
         void Print(std::ostream& output) const;
 
@@ -217,14 +205,6 @@ namespace BitFunnel
 
         // The gramSize for this term (i.e. 2 = bigram)
         GramSize m_gramSize;
-
-        // An approximation of the IDF value for the term.
-        // If gram size is 1, it is the real IDF value of the term.
-        IdfX10 m_idfSum;
-
-        // Max IDF value of all words in this term.
-        // The real IDF value of this term should be bigger than this value.
-        IdfX10 m_idfMax;
     };
 
     // DESIGN NOTE: intent is that Term is small enough to be used as a value type.

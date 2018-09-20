@@ -24,6 +24,7 @@
 
 #include <unordered_map>                // std::unordered_map member.
 #include <array>                        // std::array member.
+#include <memory>                       // Embeds std::unique_ptr.
 #include <vector>                       // std::vector member.
 
 #include "BitFunnel/Index/ITermTable.h" // Base class.
@@ -61,6 +62,9 @@ namespace BitFunnel
         // recipes, indexed by the supplied idf and gramSize values.
         virtual void CloseAdhocTerm(Term::IdfX10 idf,
                                     Term::GramSize gramSize) override;
+
+        // Add a mapping of a known ad hoc term's hash to its idf value
+        virtual void AddAdhocTerm(Term::Hash hash, Term::IdfX10 idf) override;
 
         // Set the number of explicit and adhoc rows at each Rank.
         // Should be invoked once for rank values in [0..c_maxRankValue] during
@@ -117,6 +121,9 @@ namespace BitFunnel
                                     size_t index,
                                     size_t variant) const override;
 
+        // Return the IdfX10 for an known ad hoc term
+        virtual Term::IdfX10 GetIdf(Term::Hash hash) const override;
+
         virtual RowId GetRowIdFact(size_t index) const override;
 
         // NOTE: Included operator== for write-to-stream/read-from-stream
@@ -146,12 +153,16 @@ namespace BitFunnel
         RanksInUse m_ranksInUse{};
         Rank m_maxRankInUse;
 
+        // Maps all explicit terms to their bin-packed row assignments
         // TODO: Is the term table big enough that we would benefit from
         // a more compact class than std::pair<RowIndex, RowIndex>>? Would this
         // even lead to a benefit if we didn't replace std::unordered_map with
         // a better hash table? Should measure actual memory use for this data
         // structure.
         std::unordered_map<Term::Hash, PackedRowIdSequence> m_termHashToRows;
+
+        // Maps all known ad hoc terms from their hash to their IDFx10 value
+        std::unordered_map<Term::Hash, Term::IdfX10> m_adhocTerms;
 
         typedef
             std::array<

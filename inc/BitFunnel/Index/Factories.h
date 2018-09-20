@@ -42,7 +42,6 @@ namespace BitFunnel
     class IFactSet;
     class IFileManager;
     class IFileSystem;
-    class IIndexedIdfTable;
     class IIngestor;
     class IRecycler;
     class IShardCostFunction;
@@ -70,7 +69,6 @@ namespace BitFunnel
         std::unique_ptr<IConfiguration>
             CreateConfiguration(size_t maxGramSize,
                                 bool keepTermText,
-                                IIndexedIdfTable const & idfTable,
                                 IFactSet const & facts);
 
         std::unique_ptr<IDocumentDataSchema> CreateDocumentDataSchema();
@@ -87,11 +85,6 @@ namespace BitFunnel
         void * GetSliceBuffer(Slice * slice);
 
         std::unique_ptr<IFactSet> CreateFactSet();
-
-        std::unique_ptr<IIndexedIdfTable> CreateIndexedIdfTable();
-        std::unique_ptr<IIndexedIdfTable>
-            CreateIndexedIdfTable(std::istream& input,
-                                  Term::IdfX10 defaultIdf);
 
         std::unique_ptr<IIngestor>
             CreateIngestor(IDocumentDataSchema const & docDataSchema,

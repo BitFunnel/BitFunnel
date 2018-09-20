@@ -419,7 +419,7 @@ namespace BitFunnel
 
     void Shard::AssertFact(FactHandle fact, bool value, DocIndex index, void* sliceBuffer)
     {
-        Term term(fact, 0u, 0u, 1u);
+        Term term(fact, 0u, 1u);
         RowIdSequence rows(term, m_termTable);
         auto it = rows.begin();
 
@@ -473,16 +473,6 @@ namespace BitFunnel
         if (m_docFrequencyTableBuilder.get() != nullptr)
         {
             m_docFrequencyTableBuilder->WriteFrequencies(out, 0.0, termToText);
-        }
-    }
-
-
-    void Shard::TemporaryWriteIndexedIdfTable(std::ostream& out) const
-    {
-        // TODO: 0.0 is the truncation frequency, which shouldn't be fixed at 0.
-        if (m_docFrequencyTableBuilder.get() != nullptr)
-        {
-            m_docFrequencyTableBuilder->WriteIndexedIdfTable(out, 0.0);
         }
     }
 

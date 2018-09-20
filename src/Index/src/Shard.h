@@ -83,7 +83,6 @@ namespace BitFunnel
         void AssertFact(FactHandle fact, bool value, DocIndex index, void* sliceBuffer);
 
         void TemporaryRecordDocument();
-        void TemporaryWriteIndexedIdfTable(std::ostream& out) const;
         void TemporaryWriteCumulativeTermCounts(std::ostream& out) const;
 
 

@@ -26,7 +26,6 @@
 
 #include "DocumentFrequencyTable.h"
 #include "DocumentFrequencyTableBuilder.h"
-#include "IndexedIdfTable.h"
 
 
 namespace BitFunnel
@@ -70,40 +69,6 @@ namespace BitFunnel
                   << std::endl
                   << "Saved DocumentFrequencyTable count: "
                   << table.size()
-                  << std::endl;
-    }
-
-
-    void DocumentFrequencyTableBuilder::WriteIndexedIdfTable(
-        std::ostream& output,
-        double truncateBelowFrequency) const
-    {
-        typedef std::pair<Term::Hash, Term::IdfX10> Entry;
-        std::vector<Entry> entries;
-
-        // For each term count record, compute the document frequency then
-        // add to entries if frequency is above threshold.
-        for (auto const & entry : m_termCounts)
-        {
-            double frequency = static_cast<double>(entry.second) / m_cumulativeTermCounts.size();
-            if (frequency >= truncateBelowFrequency)
-            {
-                const Term::Hash hash = entry.first.GetRawHash();
-                const Term::IdfX10 idf =
-                    Term::ComputeIdfX10(frequency, Term::c_maxIdfX10Value);
-
-                entries.push_back(std::make_pair(hash, idf));
-            }
-        }
-
-        IndexedIdfTable::WriteHeader(output, entries.size());
-        for (auto entry : entries)
-        {
-            IndexedIdfTable::WriteEntry(output, entry.first, entry.second);
-        }
-
-        std::cout << "IndexedIdfTable count: "
-                  << entries.size()
                   << std::endl;
     }
 

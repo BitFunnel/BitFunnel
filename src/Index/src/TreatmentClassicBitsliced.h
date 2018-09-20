@@ -43,7 +43,7 @@ namespace BitFunnel
         // ITermTreatment methods.
         //
 
-        virtual RowConfiguration GetTreatment(Term term) const override;
+        virtual RowConfiguration GetTreatment(Term::IdfX10 idf) const override;
 
 
         //

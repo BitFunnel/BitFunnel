@@ -105,7 +105,6 @@ namespace BitFunnel
 
             Term term(hash,
                       static_cast<Term::StreamId>(streamId),
-                      Term::ComputeIdfX10(frequency, Term::c_maxIdfX10Value),
                       static_cast<Term::GramSize>(gramSize));
 
             if (m_entries.size() > 0 && m_entries.back().GetFrequency() < frequency)

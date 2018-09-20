@@ -113,7 +113,6 @@ namespace BitFunnel
         virtual FileDescriptor1 Correlate(size_t shard) = 0;
         virtual FileDescriptor1 CumulativeTermCounts(size_t shard) = 0;
         virtual FileDescriptor1 DocFreqTable(size_t shard) = 0;
-        virtual FileDescriptor1 IndexedIdfTable(size_t shard) = 0;
         //virtual FileDescriptor1 DocTable(size_t shard) = 0;
         //virtual FileDescriptor1 ScoreTable(size_t shard) = 0;
         virtual FileDescriptor1 RowDensities(size_t shard) = 0;

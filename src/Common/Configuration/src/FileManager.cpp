@@ -77,10 +77,6 @@ namespace BitFunnel
                                                      statisticsDirectory,
                                                      "DocumentHistogram",
                                                      ".csv" )),
-          m_indexedIdfTable(new ParameterizedFile1(fileSystem,
-                                                   indexDirectory,
-                                                   "IndexedIdfTable",
-                                                   ".bin")),
           m_indexSlice(new ParameterizedFile2(fileSystem, indexDirectory, "IndexSlice", ".bin")),
           m_manifest(new ParameterizedFile0(fileSystem,
                                             indexDirectory,
@@ -228,12 +224,6 @@ namespace BitFunnel
     FileDescriptor1 FileManager::DocFreqTable(size_t shard)
     {
         return FileDescriptor1(*m_docFreqTable, shard);
-    }
-
-
-    FileDescriptor1 FileManager::IndexedIdfTable(size_t shard)
-    {
-        return FileDescriptor1(*m_indexedIdfTable, shard);
     }
 
 

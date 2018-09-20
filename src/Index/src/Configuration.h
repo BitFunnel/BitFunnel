@@ -35,7 +35,6 @@ namespace BitFunnel
     public:
         Configuration(size_t maxGramSize,
                       bool keepTermText,
-                      IIndexedIdfTable const & idfTable,
                       IFactSet const & facts);
 
         // Returns the maximum ngram size to be indexed.
@@ -50,11 +49,6 @@ namespace BitFunnel
         // Note: behavior is undefined if KeepTermText() is false.
         virtual ITermToText & GetTermToText() const override;
 
-        // Returns an IIndexedIdfTable used to set the IDF values in each
-        // Term as it is constructed. The IIndexedIdfTable should be
-        // representative of the distribution of terms in the corpus.
-        virtual IIndexedIdfTable const & GetIdfTable() const override;
-
         // Returns the IFactSet used to configure the TermTable with user
         // defined fact rows.
         virtual IFactSet const & GetFactSet() const override;
@@ -62,7 +56,6 @@ namespace BitFunnel
     private:
         size_t m_maxGramSize;
         std::unique_ptr<ITermToText> m_termToText;
-        IIndexedIdfTable const & m_idfTable;
         IFactSet const & m_facts;
     };
 }

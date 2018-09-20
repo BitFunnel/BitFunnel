@@ -104,7 +104,13 @@ namespace BitFunnel
             //std::cout << "; frequency = " << dfEntry.GetFrequency() << std::endl;
 
             // Get the term's RowConfiguration.
-            auto configuration = treatment.GetTreatment(dfEntry.GetTerm());
+            Term::IdfX10 idf = Term::ComputeIdfX10(dfEntry.GetFrequency(), Term::c_maxIdfX10Value);
+            auto configuration = treatment.GetTreatment(idf);
+
+            // Ignore all terms whose IDF is the max value, as this IDF
+            // is exclusively used for handling "unknown" terms.
+            if (idf >= Term::c_maxIdfX10Value)
+                break;
 
             if (dfEntry.GetFrequency() < adhocFrequency)
             {
@@ -115,6 +121,9 @@ namespace BitFunnel
                     m_rowAssigners[rcEntry.GetRank()]->
                         AssignAdhoc(dfEntry.GetFrequency(),
                                     rcEntry.GetRowCount());
+
+                    // Preserve mapping of known ad hoc term to idf
+                    m_termTable.AddAdhocTerm(dfEntry.GetTerm().GetRawHash(), idf);
                 }
             }
             else
@@ -137,23 +146,31 @@ namespace BitFunnel
             }
         }
 
+        // Calculate row assignments needed for estimated number of unknown terms
+        // Unknown term estimate is based on the number of known terms at rank 0.
+        auto knownTermCount = m_rowAssigners[0]->GetKnownTermCount();
+        auto unknownConfig = treatment.GetTreatment(Term::c_maxIdfX10Value);
+        // For each rank entry in the RowConfiguration.
+        for (auto rcEntry : unknownConfig)
+        {
+            // Estimate and allocate needed space for unknown terms
+            m_rowAssigners[rcEntry.GetRank()]->
+                AssignUnknown(knownTermCount);
+        }
+
         // TODO: make entries for facts.
 
         // For each (IdfX10, GramSize) pair.
         for (Term::IdfX10 idf = 0; idf <= Term::c_maxIdfX10Value; ++idf)
         {
             // WARNING: because we don't CloseAdHocGTerm with gramSize of 0, we
-            // write out unitialized memory.
+            // write out uninitialized memory.
             for (Term::GramSize gramSize = 1;
                  gramSize <= Term::c_maxGramSize; ++gramSize)
             {
-                const Term::Hash hash = 0ull;
-                const Term::StreamId streamId = 0;
-
                 m_termTable.OpenTerm();
 
-                Term term(hash, streamId, idf, gramSize);
-                auto configuration = treatment.GetTreatment(term);
+                auto configuration = treatment.GetTreatment(idf);
                 for (auto rcEntry : configuration)
                 {
                     for (size_t i = 0; i < rcEntry.GetRowCount(); ++i)
@@ -172,31 +189,9 @@ namespace BitFunnel
 
         for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
         {
-            // TODO: Come up with a more principled solution.
-            // When building a TermTable based on a small IDocumentFrequencyTable,
-            // the builder may run into a situation where it encounters no adhoc
-            // terms (because all terms encountered are in the frequency table,
-            // and therefore treated as explicit).
-            //
-            // This could be a problem when ingesting a corpus that has adhoc terms
-            // since the TermTable would not be configured with adhoc rows. A
-            // TermTable with zero adhoc rows will cause a divide-by-zero when
-            // attempting to compute a RowIndex by taking the mod of the hash and
-            // zero.
-            //
-            // To avoid this problem, the TermTableBuilder always configures ranks
-            // that are used in the ITermTreatment with some minimal amount of
-            // adhoc rows. GetMinAdhocRowCount() returns this minimal number.
-            //
-            // Note that this approach also ensures there are sufficient adhoc rows
-            // to greatly reduce the chances that a single adhoc term will have
-            // duplicate rows.
-            // https://github.com/BitFunnel/BitFunnel/issues/155
-
-            size_t adhocRowCount = m_rowAssigners[rank]->GetAdhocRowCount();
             m_termTable.SetRowCounts(rank,
                                      m_rowAssigners[rank]->GetExplicitRowCount(),
-                                     adhocRowCount);
+                                     m_rowAssigners[rank]->GetAdhocRowCount());
         }
 
         m_termTable.SetFactCount(facts.GetCount());
@@ -218,29 +213,21 @@ namespace BitFunnel
     }
 
 
-    // TODO: Come up with a more principled solution.
-    // When building a TermTable based on a small IDocumentFrequencyTable,
-    // the builder may run into a situation where it encounters no adhoc
-    // terms (because all terms encountered are in the frequency table,
-    // and therefore treated as explicit).
+    // Although this is likely unnecessary, we establish a minimum number
+    // of ad hoc rows for any used rank. Because we calculate rows for
+    // some number of estimated unknown terms (even when no terms are
+    // present for the rank), a row count of 0 should never happen for a used rank.
     //
-    // This could be a problem when ingesting a corpus that has adhoc terms
-    // since the TermTable would not be configured with adhoc rows. A
-    // TermTable with zero adhoc rows will cause a divide-by-zero when
-    // attempting to compute a RowIndex by taking the mod of the hash and
-    // zero.
+    // Establishing a minimum number of ad hoc rows provides added
+    // protection against a calculated row count of 0. 
+    // A TermTable with zero adhoc rows will cause a divide-by-zero when
+    // attempting to compute a RowIndex by taking the mod of the hash and zero.
     //
-    // To avoid this problem, the TermTableBuilder always configures ranks
-    // that are used in the ITermTreatment with some minimal amount of
-    // adhoc rows. GetMinAdhocRowCount() returns this minimal number.
-    //
-    // Note that this approach also ensures there are sufficient adhoc rows
-    // to greatly reduce the chances that a single adhoc term will have
-    // duplicate rows.
-    // https://github.com/BitFunnel/BitFunnel/issues/155
+    // Having a minimum row count may also reduce the chance that a single adhoc term
+    // will have duplicate rows.
     RowIndex TermTableBuilder::GetMinAdhocRowCount()
     {
-        const RowIndex c_minAdhocRowCount = 1000u;
+        const RowIndex c_minAdhocRowCount = 10u;
         return c_minAdhocRowCount;
     }
 
@@ -263,6 +250,8 @@ namespace BitFunnel
           m_sharedAdhocTermCount(0),
           m_sharedExplicitTermCount(0),
           m_privateExplicitRowCount(0),
+          m_unknownTermCount(0),
+          m_unknownTotal(0),
           m_random(random)
     {
         // TODO: Is there a way to reduce this coupling between RowAssigner
@@ -393,6 +382,32 @@ namespace BitFunnel
     }
 
 
+    void TermTableBuilder::RowAssigner::AssignUnknown(RowIndex knowncount)
+    {
+        // TODO: Use experimental evidence to scale this multiplier up realistically
+        // based on the max. IDF value gathered by statistics for a shard.
+        // For example, if statistics has access to fewer than a 1,000,000 documents,
+        // the known terms will cap at an IDF < 60.
+        // The fewer the documents surveyed, the greater the uncertainty,
+        // and likely this means unknown terms should have a higher multiplier.
+        const size_t unknownTermMultiplier = 10;
+
+        // Estimate the number of unknown terms as some multiple of known terms
+        m_unknownTermCount = knowncount * unknownTermMultiplier;
+
+        // Set m_unknownTotal as if all the estimated unknown terms were max IDF 
+        // (similar to m_adhocTotal). This total will be incorporated as part of the ad hoc row count.
+        double f = Term::FrequencyAtRank(Term::IdfX10ToFrequency(Term::c_maxIdfX10Value), m_rank);
+        m_unknownTotal = f * m_unknownTermCount;
+    }
+
+
+    size_t TermTableBuilder::RowAssigner::GetKnownTermCount() const
+    {
+        return m_privateExplicitTermCount + m_sharedExplicitTermCount + m_sharedAdhocTermCount;
+    }
+
+
     RowIndex TermTableBuilder::RowAssigner::GetExplicitRowCount() const
     {
         return m_currentRow;
@@ -404,7 +419,7 @@ namespace BitFunnel
         if (m_termTable.IsRankUsed(m_rank))
         {
             double rowCount = std::max(static_cast<double>(GetMinAdhocRowCount()),
-                                       ceil(m_adhocTotal / m_density));
+                                       ceil((m_adhocTotal + m_unknownTotal) / m_density));
 
             CHECK_LE(rowCount, c_maxRowIndexValue)
                 << "TermTableBuilder::RowAssigner::GetAdhocRowCount: too many rows.";
@@ -437,6 +452,7 @@ namespace BitFunnel
             output << "    Adhoc: " << m_sharedAdhocTermCount << std::endl;
             output << "    Explicit: " << m_sharedExplicitTermCount << std::endl;
             output << "    Private: " << m_privateExplicitTermCount << std::endl;
+            output << "    Unknown (est): " << m_unknownTermCount << std::endl;
 
             output << std::endl;
 

@@ -38,7 +38,7 @@
 
 
 // TODO: Can we somehow eliminate the requirement for an IConfiguration?
-// TODO: Can we somehow eliminate the requirement for an IIndexedIdfTable + TermToText?
+// TODO: Can we somehow eliminate the requirement for an TermToText?
 // TODO: ChunkManifestIngestor for PrimeFactors corpus?
 
 namespace BitFunnel
