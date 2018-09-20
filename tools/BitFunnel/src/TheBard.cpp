@@ -45,12 +45,13 @@ namespace BitFunnel
     // example to run without touching the filesystem.
     //
     //*************************************************************************
-    void Run(bool verbose)
+    void Run(bool verbose, bool file)
     {
         //
-        // This example uses the RAM filesystem.
+        // This example uses the RAM filesystem if file is false
         //
-        auto fileSystem = BitFunnel::Factories::CreateRAMFileSystem();
+        auto fileSystem = file? BitFunnel::Factories::CreateFileSystem()
+			: BitFunnel::Factories::CreateRAMFileSystem();
         auto fileManager =
             BitFunnel::Factories::CreateFileManager(
                 "config",
@@ -59,10 +60,10 @@ namespace BitFunnel
                 *fileSystem);
 
         //
-        // Initialize RAM filesystem with input files.
+        // Initialize RAM/file filesystem with input files.
         //
         {
-            std::cout << "Initializing RAM filesystem." << std::endl;
+            std::cout << "Initializing filesystem." << std::endl;
 
             // Open the manifest file.
             auto manifest = fileSystem->OpenForWrite("manifest.txt");
@@ -84,7 +85,7 @@ namespace BitFunnel
         }
 
         //
-        // Create the BitFunnelTool based on the RAM filesystem.
+        // Create the BitFunnelTool based on the created files.
         //
         BitFunnel::BitFunnelTool tool(*fileSystem);
 
@@ -174,7 +175,11 @@ int main(int argc, const char *const *argv)
         "Print information gathered during statistics and "
         "termtable stages.");
 
-    // TODO: This parameter should be unsigned, but it doesn't seem to work
+	CmdLine::OptionalParameterList file(
+		"file",
+		"Produce sonnet configuration as real files (vs. memory-only operation).");
+
+	// TODO: This parameter should be unsigned, but it doesn't seem to work
     // with CmdLineParser.
     CmdLine::OptionalParameter<int> gramSize(
         "gramsize",
@@ -182,6 +187,7 @@ int main(int argc, const char *const *argv)
         1u);
 
     parser.AddParameter(verbose);
+	parser.AddParameter(file);
     parser.AddParameter(gramSize);
 
     int returnCode = 1;
@@ -190,7 +196,7 @@ int main(int argc, const char *const *argv)
     {
         try
         {
-            BitFunnel::Run(verbose.IsActivated());
+            BitFunnel::Run(verbose.IsActivated(), file.IsActivated());
         }
         catch (BitFunnel::RecoverableError e)
         {
