@@ -30,12 +30,12 @@
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Index/RowIdSequence.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Utilities/Allocator.h"
 #include "BitFunnel/Utilities/Factories.h"  // TODO: only for diagnosticStream. Remove.
 #include "ByteCodeInterpreter.h"
 #include "ByteCodeVerifier.h"
 #include "CompileNode.h"
-#include "ResultsBuffer.h"
 #include "TextObjectParser.h"
 
 
@@ -77,7 +77,7 @@ namespace BitFunnel
             m_rowOffsets.data(),
             nullptr,
             instrumentation,
-            nullptr);
+            0);
 
         interpreter.Run();
 

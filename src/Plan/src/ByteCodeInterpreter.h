@@ -72,8 +72,10 @@ namespace BitFunnel
                             ptrdiff_t const * rowOffsets,
                             IDiagnosticStream * diagnosticStream,
                             QueryInstrumentation & instrumentation,
-                            CacheLineRecorder * cacheLineRecorder);
+                            size_t sliceBufferSize);
 
+        ~ByteCodeInterpreter();
+        
         // Runs the instruction sequence for a specified number of iterations.
         // Each iteration processes a single quadword of row data at the
         // highest rank in the plan.  Returns true to indicate early

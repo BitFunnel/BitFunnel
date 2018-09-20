@@ -32,14 +32,16 @@
 #include "BitFunnel/Index/IIngestor.h"
 #include "BitFunnel/Index/ISimpleIndex.h"
 #include "BitFunnel/Plan/Factories.h"
+#include "BitFunnel/Plan/IQueryEngine.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryParser.h"     // TODO: Can this move to src/plan?
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Plan/VerifyOneQuerySynthetic.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/Primes.h"
+#include "ByteCodeQueryEngine.h"
 #include "MatchVerifier.h"
-#include "QueryResources.h"
-#include "ResultsBuffer.h"
+#include "NativeJITQueryEngine.h"
 
 
 namespace BitFunnel
@@ -129,19 +131,26 @@ namespace BitFunnel
         size_t primeFactor,
         bool compilerMode)
     {
-        QueryResources resources;
-        auto & allocator = resources.GetMatchTreeAllocator();
-
         // TODO: Get this from ISimpleIndex?
-        auto streamConfiguration = Factories::CreateStreamConfiguration();
+        auto streamConfig = Factories::CreateStreamConfiguration();
+        std::unique_ptr<IQueryEngine> queryEngine;
+        const size_t c_allocatorSize = 1ull << 17;
+        if (compilerMode)
+        {
+            queryEngine = std::unique_ptr<IQueryEngine>(new NativeJITQueryEngine(index, *streamConfig, c_allocatorSize, c_allocatorSize));
+        }
+        else
+        {
+            queryEngine = std::unique_ptr<IQueryEngine>(new ByteCodeQueryEngine(index, *streamConfig, c_allocatorSize));
+        }
+
 
         std::stringstream queryStream;
         queryStream << "p";
         queryStream << primeFactor;
         std::string query(queryStream.str());
 
-        QueryParser parser(query.c_str(), *streamConfiguration, allocator);
-        auto tree = parser.Parse();
+        auto tree = queryEngine->Parse(query.c_str());
 
         // TODO: Can MatchVerifier take a char const *? Does it need a copy?
         std::unique_ptr<IMatchVerifier> verifier(new MatchVerifier(query));
@@ -177,13 +186,7 @@ namespace BitFunnel
 
             ResultsBuffer results(index.GetIngestor().GetDocumentCount());
 
-            Factories::RunQueryPlanner(*tree,
-                                       index,
-                                       resources,
-                                       *diagnosticStream,
-                                       instrumentation,
-                                       results,
-                                       compilerMode);
+            queryEngine->Run(tree, instrumentation, results);
 
             for (auto result : results)
             {

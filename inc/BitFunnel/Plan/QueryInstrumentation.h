@@ -40,7 +40,7 @@ namespace BitFunnel
     public:
         class Data;
 
-        inline void QuerySuceeded()
+        inline void QuerySucceeded()
         {
             m_data.m_succeeded = true;
         }

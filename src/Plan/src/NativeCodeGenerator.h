@@ -25,9 +25,9 @@
 #include <stddef.h>     // size_t, ptrdiff_t parameters.
 
 #include "BitFunnel/BitFunnelTypes.h"           // Rank parameter.
+#include "BitFunnel/Plan/ResultsBuffer.h"       // ResultsBuffer::Result type.
 #include "NativeJIT/CodeGen/FunctionBuffer.h"   // FunctionBuffer embedded.
 #include "NativeJIT/Function.h"                 // Function in typedef.
-#include "ResultsBuffer.h"                      // ResultsBuffer::Result type.
 
 
 namespace NativeJIT

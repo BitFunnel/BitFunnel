@@ -31,15 +31,11 @@
 #include "BitFunnel/Plan/TermMatchNode.h"
 #include "BitFunnel/Utilities/Factories.h"
 #include "BitFunnel/Utilities/IObjectFormatter.h"
-#include "ByteCodeInterpreter.h"
 #include "CompileNode.h"
 #include "IPlanRows.h"
-#include "MatchTreeCompiler.h"
 #include "MatchTreeRewriter.h"
 #include "QueryPlanner.h"
-#include "QueryResources.h"
 #include "RankDownCompiler.h"
-#include "RegisterAllocator.h"
 #include "RowSet.h"
 #include "TermPlan.h"
 #include "TermPlanConverter.h"
@@ -47,27 +43,6 @@
 
 namespace BitFunnel
 {
-    // TODO: remove. This is a quick shortcut to try to connect QueryPlanner the
-    // way SimplePlanner is connected.
-    void Factories::RunQueryPlanner(TermMatchNode const & tree,
-                                    ISimpleIndex const & index,
-                                    QueryResources & resources,
-                                    IDiagnosticStream & diagnosticStream,
-                                    QueryInstrumentation & instrumentation,
-                                    ResultsBuffer & resultsBuffer,
-                                    bool useNativeCode)
-    {
-        const int c_arbitraryRowCount = 500;
-        QueryPlanner planner(tree,
-                             c_arbitraryRowCount,
-                             index,
-                             resources,
-                             diagnosticStream,
-                             instrumentation,
-                             resultsBuffer,
-                             useNativeCode);
-    }
-
 
     unsigned const c_targetCrossProductTermCount = 180;
 
@@ -76,12 +51,9 @@ namespace BitFunnel
     QueryPlanner::QueryPlanner(TermMatchNode const & tree,
                                unsigned targetRowCount,
                                ISimpleIndex const & index,
-                               QueryResources & resources,
+                               IAllocator & matchTreeAllocator,
                                IDiagnosticStream & diagnosticStream,
-                               QueryInstrumentation & instrumentation,
-                               ResultsBuffer & resultsBuffer,
-                               bool useNativeCode)
-      : m_resultsBuffer(resultsBuffer)
+                               QueryInstrumentation & instrumentation)
     {
         if (diagnosticStream.IsEnabled("planning/term"))
         {
@@ -98,8 +70,7 @@ namespace BitFunnel
         RowPlan const & rowPlan =
             TermPlanConverter::BuildRowPlan(tree,
                                             index,
-                                            // generateNonBodyPlan,
-                                            resources.GetMatchTreeAllocator());
+                                            matchTreeAllocator);
 
         if (diagnosticStream.IsEnabled("planning/row"))
         {
@@ -143,7 +114,7 @@ namespace BitFunnel
             MatchTreeRewriter::Rewrite(rowPlan.GetMatchTree(),
                                        targetRowCount,
                                        c_targetCrossProductTermCount,
-                                       resources.GetMatchTreeAllocator());
+                                       matchTreeAllocator);
 
 
         if (diagnosticStream.IsEnabled("planning/rewrite"))
@@ -159,10 +130,10 @@ namespace BitFunnel
         }
 
         // Compile the match tree into CompileNodes.
-        RankDownCompiler compiler(resources.GetMatchTreeAllocator());
+        RankDownCompiler compiler(matchTreeAllocator);
         compiler.Compile(rewritten);
-        const Rank initialRank = compiler.GetMaximumRank();
-        CompileNode const & compileTree = compiler.CreateTree(initialRank);
+        m_initialRank = compiler.GetMaximumRank();
+        m_compileTree = &compiler.CreateTree(m_initialRank);
 
         if (diagnosticStream.IsEnabled("planning/compile"))
         {
@@ -172,147 +143,42 @@ namespace BitFunnel
 
             out << "--------------------" << std::endl;
             out << "Compile Nodes:" << std::endl;
-            compileTree.Format(*formatter);
+            m_compileTree->Format(*formatter);
             out << std::endl;
         }
 
-        RowSet rowSet(index, *m_planRows, resources.GetMatchTreeAllocator());
-        rowSet.LoadRows();
+        m_rowSet = std::unique_ptr<RowSet>(new RowSet(index, *m_planRows, matchTreeAllocator));
+        m_rowSet->LoadRows();
 
         if (diagnosticStream.IsEnabled("planning/rowset"))
         {
             std::ostream& out = diagnosticStream.GetStream();
             out << "--------------------" << std::endl;
             out << "Row Set:" << std::endl;
-            out << "  ShardCount: " << rowSet.GetShardCount() << std::endl;
-            out << "  Row Count: " << rowSet.GetRowCount() << std::endl;
+            out << "  ShardCount: " << m_rowSet->GetShardCount() << std::endl;
+            out << "  Row Count: " << m_rowSet->GetRowCount() << std::endl;
 
         }
 
-        instrumentation.SetRowCount(rowSet.GetRowCount());
+        instrumentation.SetRowCount(m_rowSet->GetRowCount());
 
-        if (useNativeCode)
-        {
-            RunNativeCode(index,
-                          resources,
-                          instrumentation,
-                          compileTree,
-                          initialRank,
-                          rowSet);
-        }
-        else
-        {
-            RunByteCodeInterpreter(index,
-                                   resources,
-                                   instrumentation,
-                                   compileTree,
-                                   initialRank,
-                                   rowSet);
-        }
     }
 
 
-    void QueryPlanner::RunByteCodeInterpreter(ISimpleIndex const & index,
-                                              QueryResources & resources,
-                                              QueryInstrumentation & instrumentation,
-                                              CompileNode const & compileTree,
-                                              Rank initialRank,
-                                              RowSet const & rowSet)
+    CompileNode const & QueryPlanner::GetCompileTree() const
     {
-        // TODO: Clear results buffer here?
-        compileTree.Compile(m_code);
-        m_code.Seal();
-
-        instrumentation.FinishPlanning();
-        m_resultsBuffer.Reset();
-
-        // Get token before we GetSliceBuffers.
-        {
-            auto token = index.GetIngestor().GetTokenManager().RequestToken();
-
-            for (ShardId shardId = 0; shardId < index.GetIngestor().GetShardCount(); ++shardId)
-            {
-                auto & shard = index.GetIngestor().GetShard(shardId);
-                auto & sliceBuffers = shard.GetSliceBuffers();
-
-                // Iterations per slice calculation.
-                auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> initialRank;
-
-                ByteCodeInterpreter intepreter(m_code,
-                                               m_resultsBuffer,
-                                               sliceBuffers.size(),
-                                               sliceBuffers.data(),
-                                               iterationsPerSlice,
-                                               initialRank,
-                                               rowSet.GetRowOffsets(shardId),
-                                               nullptr,
-                                               instrumentation,
-                                               resources.GetCacheLineRecorder());
-
-                intepreter.Run();
-            }
-
-            instrumentation.FinishMatching();
-            instrumentation.SetMatchCount(m_resultsBuffer.size());
-        } // End of token lifetime.
+        return *m_compileTree;
     }
 
-
-    void QueryPlanner::RunNativeCode(ISimpleIndex const & index,
-                                     QueryResources & resources,
-                                     QueryInstrumentation & instrumentation,
-                                     CompileNode const & compileTree,
-                                     Rank initialRank,
-                                     RowSet const & rowSet)
+    Rank QueryPlanner::GetInitialRank() const
     {
-         // Perform register allocation on the compile tree.
-         RegisterAllocator const registers(compileTree,
-                                           rowSet.GetRowCount(),
-                                           c_registerBase,
-                                           c_registerCount,
-                                           resources.GetMatchTreeAllocator());
-
-         MatchTreeCompiler compiler(resources,
-                                    compileTree,
-                                    registers,
-                                    initialRank);
-
-
-         // TODO: Clear results buffer here?
-        compileTree.Compile(m_code);
-        m_code.Seal();
-
-        instrumentation.FinishPlanning();
-
-        m_resultsBuffer.Reset();
-
-        // Get token before we GetSliceBuffers.
-        {
-            auto token = index.GetIngestor().GetTokenManager().RequestToken();
-
-            for (ShardId shardId = 0; shardId < index.GetIngestor().GetShardCount(); ++shardId)
-            {
-                auto & shard = index.GetIngestor().GetShard(shardId);
-                auto & sliceBuffers = shard.GetSliceBuffers();
-
-                // Iterations per slice calculation.
-                auto iterationsPerSlice = shard.GetSliceCapacity() >> 6 >> initialRank;
-
-
-                size_t quadwordCount = compiler.Run(sliceBuffers.size(),
-                                                    sliceBuffers.data(),
-                                                    iterationsPerSlice,
-                                                    rowSet.GetRowOffsets(shardId),
-                                                    m_resultsBuffer);
-
-                instrumentation.IncrementQuadwordCount(quadwordCount);
-            }
-
-            instrumentation.FinishMatching();
-            instrumentation.SetMatchCount(m_resultsBuffer.size());
-        } // End of token lifetime.
+        return m_initialRank;
     }
 
+    RowSet const & QueryPlanner::GetRowSet() const
+    {
+        return *m_rowSet;
+    }
 
     IPlanRows const & QueryPlanner::GetPlanRows() const
     {

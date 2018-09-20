@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 
-// Copyright (c) 2016, Microsoft
+// Copyright (c) 2018, Microsoft
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,44 +22,42 @@
 
 #pragma once
 
-#include <memory>  // std::unique_ptr return value.
-#include <string>
-#include <vector>  // std::vector return value.
-
-#include "BitFunnel/BitFunnelTypes.h"  // DocId.
+#include "BitFunnel/IInterface.h"       // Base class.
 
 
 namespace BitFunnel
 {
-    class IAllocator;
-    class IDiagnosticStream;
-    class IInputStream;
-    class IMatchVerifier;
-    class IQueryEngine;
-    class IPlanRows;
-    class IRowSet;
-    class ISimpleIndex;
-    class IStreamConfiguration;
     class QueryInstrumentation;
     class ResultsBuffer;
-    class SimpleResultsProcessor;
     class TermMatchNode;
 
-    namespace Factories
+    //*************************************************************************
+    //
+    // IQueryEngine
+    //
+    // An abstract base class or interface for concrete QueryEngine classes,
+    // such as thuse that use NativeJIT or interpret the query tree.
+    // It defines the common public methods needed to run parsed queries.
+    //
+    //*************************************************************************
+    class IQueryEngine : public IInterface
     {
-        std::unique_ptr<IQueryEngine> CreateQueryEngine(ISimpleIndex const & index,
-                                                                   IStreamConfiguration const & config);
+    public:
+        // Parse a query
+        virtual TermMatchNode const *Parse(const char *query) = 0;
 
-        std::unique_ptr<IMatchVerifier> CreateMatchVerifier(std::string query);
+        // Runs a parsed query
+        virtual void Run(TermMatchNode const * tree,
+                         QueryInstrumentation & instrumentation,
+                         ResultsBuffer & resultsBuffer) = 0;
 
-        IPlanRows& CreatePlanRows(IInputStream& input,
-                                  const ISimpleIndex& index,
-                                  IAllocator& allocator);
+        // Adds the diagnostic keyword prefix to the list of prefixes that
+        // enable diagnostics.
+        virtual void EnableDiagnostic(char const * prefix) = 0;
 
-        std::unique_ptr<SimpleResultsProcessor> CreateSimpleResultsProcessor();
+        // Removes the diagnostic keyword prefix from the list of prefixes
+        // that enable diagnostics.
+        virtual void DisableDiagnostic(char const * prefix) = 0;
 
-        IRowSet& CreateRowSet(ISimpleIndex const & indexData,
-                              IPlanRows const & planRows,
-                              IAllocator& allocator);
-    }
+    };
 }

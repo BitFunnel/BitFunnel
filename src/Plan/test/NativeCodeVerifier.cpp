@@ -35,7 +35,6 @@
 #include "MatchTreeCompiler.h"
 #include "NativeCodeVerifier.h"
 #include "NativeJIT/CodeGen/ExecutionBuffer.h"
-#include "QueryResources.h"
 #include "RegisterAllocator.h"
 #include "RowMatchNode.h"
 #include "TextObjectParser.h"
@@ -53,7 +52,6 @@ namespace BitFunnel
     void NativeCodeVerifier::Verify(char const * codeText)
     {
         // Create allocator and buffers for pre-compiled and post-compiled code.
-        NativeJIT::ExecutionBuffer codeAllocator(8192);
         NativeJIT::Allocator treeAllocator(8192);
         BitFunnel::Allocator allocator(2048);
 
@@ -70,9 +68,14 @@ namespace BitFunnel
                                     7,
                                     allocator);
 
-        QueryResources resources;
+        const size_t c_allocatorSize = 1ull << 17;
+        auto treeallocator = std::make_unique<NativeJIT::Allocator>(c_allocatorSize);
+        auto codeAllocator = std::make_unique<NativeJIT::ExecutionBuffer>(c_allocatorSize);
+        auto code = std::make_unique<NativeJIT::FunctionBuffer>(*codeAllocator,
+            static_cast<unsigned>(c_allocatorSize));
 
-        MatchTreeCompiler compiler(resources,
+        MatchTreeCompiler compiler(*treeallocator,
+                                   *code,
                                    compileNodeTree,
                                    registers,
                                    m_initialRank);

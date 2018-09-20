@@ -4,6 +4,7 @@ set(CPPFILES
     AbstractRow.cpp
     AbstractRowEnumerator.cpp
     ByteCodeInterpreter.cpp
+    ByteCodeQueryEngine.cpp
     CacheLineRecorder.cpp
     CompileNode.cpp
     MachineCodeGenerator.cpp
@@ -11,11 +12,11 @@ set(CPPFILES
     MatchTreeRewriter.cpp
     MatchVerifier.cpp
     NativeCodeGenerator.cpp
+    NativeJITQueryEngine.cpp
     PlanRows.cpp
     QueryInstrumentation.cpp
     QueryParser.cpp
     QueryPlanner.cpp
-    QueryResources.cpp
     QueryRunner.cpp
     RankDownCompiler.cpp
     RankZeroCompiler.cpp
@@ -42,6 +43,7 @@ set(POSIX_CPPFILES
 set(PRIVATE_HFILES
     AbstractRow.h
     ByteCodeInterpreter.h
+    ByteCodeQueryEngine.h
     CacheLineRecorder.h
     CompileNode.h
     ICodeGenerator.h
@@ -52,9 +54,8 @@ set(PRIVATE_HFILES
     MatchTreeRewriter.h
     MatchVerifier.h
     NativeCodeGenerator.h
+    NativeJITQueryEngine.h
     QueryPlanner.h
-    QueryResources.h
-    ResultsBuffer.h
     RowMatchNode.h
     RowSet.h
     RankDownCompiler.h

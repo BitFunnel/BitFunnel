@@ -34,17 +34,17 @@ namespace BitFunnel
                                    size_t codeAllocatorBytes)
       : m_matchTreeAllocator(new BitFunnel::Allocator(treeAllocatorBytes)),
         m_expressionTreeAllocator(new NativeJIT::Allocator(treeAllocatorBytes)),
-        m_codeAllocator(new NativeJIT::ExecutionBuffer(codeAllocatorBytes))
+        m_codeAllocator(new NativeJIT::ExecutionBuffer(codeAllocatorBytes)),
+        m_countCacheLines(false)
     {
         m_code.reset(new NativeJIT::FunctionBuffer(*m_codeAllocator,
                                                    static_cast<unsigned>(codeAllocatorBytes)));
     }
 
 
-    void QueryResources::EnableCacheLineCounting(ISimpleIndex const & index)
+    void QueryResources::EnableCacheLineCounting()
     {
-        m_cacheLineRecorder.reset(
-            new CacheLineRecorder(index.GetIngestor().GetShard(0).GetSliceBufferSize()));
+        m_countCacheLines = true;
     }
 
 
@@ -54,9 +54,5 @@ namespace BitFunnel
         m_expressionTreeAllocator->Reset();
         // WARNING: Do not reset m_codeAllocator. It is used to provision m_code.
         m_code->Reset();
-        if (m_cacheLineRecorder != nullptr)
-        {
-            m_cacheLineRecorder->Reset();
-        }
     }
 }

@@ -190,9 +190,11 @@ set(MOCKS_HFILES
 set(PLAN_HFILES
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/Factories.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/IMatchVerifier.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/IQueryEngine.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryInstrumentation.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryParser.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/QueryRunner.h
+  ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/ResultsBuffer.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/TermMatchNode.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/VerifyOneQuery.h
   ${CMAKE_SOURCE_DIR}/inc/BitFunnel/Plan/VerifyOneQuerySynthetic.h
