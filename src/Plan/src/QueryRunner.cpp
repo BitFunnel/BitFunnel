@@ -182,7 +182,6 @@ namespace BitFunnel
         //
         // constructor parameters
         //
-        IStreamConfiguration const & m_config;
         std::vector<std::string> const & m_queries;
         std::vector<QueryInstrumentation::Data> & m_results;
         ThreadSynchronizer& m_synchronizer;
@@ -212,8 +211,7 @@ namespace BitFunnel
                                    bool useNativeCode,
                                    bool countCacheLines,
                                    ThreadSynchronizer& synchronizer)
-      : m_config(config),
-        m_queries(queries),
+      : m_queries(queries),
         m_results(results),
         m_synchronizer(synchronizer),
         m_matches(maxResultCount, {nullptr, 0}),
