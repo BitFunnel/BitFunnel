@@ -41,6 +41,7 @@ namespace BitFunnel
     {
     public:
         TaskFactory(Environment & environment);
+        virtual ~TaskFactory();
 
         virtual std::unique_ptr<ICommand> CreateTask(char const * line);
         virtual void Help(std::ostream& output, char const * command) const;

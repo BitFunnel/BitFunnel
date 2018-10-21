@@ -48,6 +48,11 @@ namespace BitFunnel
     }
 
 
+    TaskFactory::~TaskFactory()
+    {
+    }
+
+
     std::unique_ptr<ICommand> TaskFactory::CreateTask(char const * line)
     {
         auto name = GetNextToken(line);
