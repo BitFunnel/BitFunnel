@@ -42,7 +42,7 @@
 #include "TaskPool.h"
 #include "ThreadsCommand.h"
 #include "VerifyCommand.h"
-#include "WriteSlicesCommand.h"
+#include "SaveCommand.h"
 
 
 namespace BitFunnel

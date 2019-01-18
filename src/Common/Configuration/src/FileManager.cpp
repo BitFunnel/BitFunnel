@@ -77,6 +77,7 @@ namespace BitFunnel
                                                      statisticsDirectory,
                                                      "DocumentHistogram",
                                                      ".csv" )),
+          m_indexSliceMain(new ParameterizedFile0(fileSystem, indexDirectory, "IndexSliceMain", ".bin")),
           m_indexSlice(new ParameterizedFile2(fileSystem, indexDirectory, "IndexSlice", ".bin")),
           m_manifest(new ParameterizedFile0(fileSystem,
                                             indexDirectory,
@@ -190,6 +191,12 @@ namespace BitFunnel
     FileDescriptor0 FileManager::VerificationResults()
     {
         return FileDescriptor0(*m_verificationResults);
+    }
+
+
+    FileDescriptor0 FileManager::IndexSliceMain()
+    {
+        return FileDescriptor0(*m_indexSliceMain);
     }
 
 

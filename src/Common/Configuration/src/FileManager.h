@@ -85,6 +85,7 @@ namespace BitFunnel
         virtual FileDescriptor1 TermTable(size_t shard) override;
         virtual FileDescriptor1 TermTableStatistics(size_t shard) override;
 
+        virtual FileDescriptor0 IndexSliceMain() override;
         virtual FileDescriptor2 IndexSlice(size_t shard, size_t slice) override;
 
     private:
@@ -95,6 +96,7 @@ namespace BitFunnel
         std::unique_ptr<IParameterizedFile1> m_cumulativeTermCounts;
         std::unique_ptr<IParameterizedFile1> m_docFreqTable;
         std::unique_ptr<IParameterizedFile0> m_documentHistogram;
+        std::unique_ptr<IParameterizedFile0> m_indexSliceMain;
         std::unique_ptr<IParameterizedFile2> m_indexSlice;
         std::unique_ptr<IParameterizedFile0> m_manifest;
         std::unique_ptr<IParameterizedFile0> m_queryLog;

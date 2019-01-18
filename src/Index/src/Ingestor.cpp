@@ -31,6 +31,7 @@
 #include "BitFunnel/Index/ISliceBufferAllocator.h"
 #include "BitFunnel/Index/ITermTableCollection.h"
 #include "BitFunnel/Utilities/Factories.h"
+#include "BitFunnel/Utilities/StreamUtilities.h"
 #include "DocumentHandleInternal.h"
 #include "Ingestor.h"
 #include "LoggerInterfaces/Logging.h"
@@ -155,10 +156,46 @@ namespace BitFunnel
     }
 
 
-    void Ingestor::TemporaryWriteAllSlices(IFileManager& fileManager) const
+    void Ingestor::TemporaryReadAllSlices(IFileManager& fileManager)
     {
+        // Recover ingestor-wide values from IndexSliceMain file
+        // and make sure saved slices are formatted consistently with current index
+        // Note:  PostingCount is neither saved nor recovered
+        auto sliceFileMain = fileManager.IndexSliceMain();
+        auto input = sliceFileMain.OpenForRead();
+        m_documentCount = StreamUtilities::ReadField<size_t>(*input);
+        m_totalSourceByteSize = StreamUtilities::ReadField<size_t>(*input);
+        auto shardSize = StreamUtilities::ReadField<size_t>(*input);
+        auto sliceBufferSize = StreamUtilities::ReadField<size_t>(*input);
+        if (shardSize != m_shards.size() || sliceBufferSize != m_sliceBufferAllocator.GetSliceBufferSize())
+        {
+            RecoverableError error("Ingestor::TemporaryReadAllSlices(): Saved slices don't match index format.");
+            throw error;
+        }
+
+        // Load each shard's slices
         for (size_t i = 0; i < m_shards.size(); ++i)
         {
+            auto nbrSlices = StreamUtilities::ReadField<size_t>(*input);
+            m_shards[i]->TemporaryReadAllSlices(fileManager, nbrSlices);
+        }
+    }
+
+
+    void Ingestor::TemporaryWriteAllSlices(IFileManager& fileManager) const
+    {
+        // Write out IndexSliceMain file with ingestor-wide values
+        auto sliceFileMain = fileManager.IndexSliceMain();
+        auto output = sliceFileMain.OpenForWrite();
+        StreamUtilities::WriteField<size_t>(*output, m_documentCount);
+        StreamUtilities::WriteField<size_t>(*output, m_totalSourceByteSize);
+        StreamUtilities::WriteField<size_t>(*output, m_shards.size());
+        StreamUtilities::WriteField<size_t>(*output, m_sliceBufferAllocator.GetSliceBufferSize());
+
+        // Save each shard's slices
+        for (size_t i = 0; i < m_shards.size(); ++i)
+        {
+            StreamUtilities::WriteField<size_t>(*output, m_shards[i]->GetSliceBuffers().size());
             m_shards[i]->TemporaryWriteAllSlices(fileManager);
         }
     }

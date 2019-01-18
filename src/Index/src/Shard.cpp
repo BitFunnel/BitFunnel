@@ -486,6 +486,35 @@ namespace BitFunnel
     }
 
 
+    // Reload a shard's saved slices, completely replacing whatever slices are in the shard
+    // The last loaded slice will be the active slice
+    void Shard::TemporaryReadAllSlices(IFileManager& fileManager, size_t nbrSlices)
+    {
+        auto token = m_tokenManager.RequestToken();
+
+        std::vector<void*>* const newSlices = new std::vector<void*>();
+        for (size_t i = 0; i < nbrSlices; ++i)
+        {
+            auto sliceFile = fileManager.IndexSlice(m_shardId, i);
+            auto in = sliceFile.OpenForRead();
+            Slice* newSlice = new Slice(*this, *in);
+            newSlices->push_back(newSlice->GetSliceBuffer());
+            m_activeSlice = newSlice;
+        }
+
+        std::vector<void*>* oldSlices = m_sliceBuffers;
+        m_sliceBuffers = newSlices;
+
+        // TODO: think if this can be done outside of the lock.
+        std::unique_ptr<IRecyclable>
+            recyclableSliceList(new DeferredSliceListDelete(nullptr,
+                oldSlices,
+                m_tokenManager));
+
+        m_recycler.ScheduleRecyling(recyclableSliceList);
+    }
+
+
     void Shard::TemporaryWriteAllSlices(IFileManager& fileManager) const
     {
         auto token = m_tokenManager.RequestToken();

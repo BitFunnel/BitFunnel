@@ -112,6 +112,8 @@ namespace BitFunnel
             std::ostream& out,
             ITermToText const * termToText) const override;
 
+        virtual void TemporaryReadAllSlices(IFileManager& fileManager, size_t nbrSlices) override;
+
         virtual void TemporaryWriteAllSlices(IFileManager& fileManager) const override;
 
 
