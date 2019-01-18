@@ -80,6 +80,8 @@ namespace BitFunnel
                                      ITermToText const * termToText) const = 0;
 
 
+        virtual void TemporaryReadAllSlices(IFileManager& fileManager) = 0;
+
         virtual void TemporaryWriteAllSlices(IFileManager& fileManager) const = 0;
 
 

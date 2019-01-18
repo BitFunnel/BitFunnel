@@ -25,7 +25,7 @@
 
 #include "BitFunnel/Index/IIngestor.h"
 #include "Environment.h"
-#include "WriteSlicesCommand.h"
+#include "SaveCommand.h"
 
 
 namespace BitFunnel
@@ -46,7 +46,7 @@ namespace BitFunnel
     void WriteSlicesCommand::Execute()
     {
         std::cout
-            << "Writing slices . . ."
+            << "Saving all documents as slices. This may take a while . . ."
             << std::endl
             << std::endl;
         auto & fileManager = GetEnvironment().GetSimpleIndex().GetFileManager();
@@ -57,10 +57,10 @@ namespace BitFunnel
     ICommand::Documentation WriteSlicesCommand::GetDocumentation()
     {
         return Documentation(
-            "write",
-            "Write all slices to disk.",
-            "write\n"
-            "  Write all slices to disk."
+            "save",
+            "Save all ingested documents to disk as slices.",
+            "save <path>\n"
+            "  Save all ingested documents to disk as slices."
         );
     }
 }

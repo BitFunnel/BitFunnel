@@ -45,8 +45,8 @@ namespace BitFunnel
                    char const *argv[])
     {
         CmdLine::CmdLineParser parser(
-            "StatisticsBuilder",
-            "Ingest documents and compute statistics about them.");
+            "Repl",
+            "Interactively process user commands.");
 
         CmdLine::RequiredParameter<char const *> path(
             "config",
@@ -82,11 +82,20 @@ namespace BitFunnel
             "File with commands to execute.",
             nullptr);
 
+        // TODO: This parameter should be unsigned, but it doesn't seem to work
+        // with CmdLineParser.
+        CmdLine::OptionalParameter<int> restore(
+            "restore",
+            "Specify non-zero number to re-load saved slices.",
+            0u,
+            CmdLine::GreaterThan(0));
+
         parser.AddParameter(path);
         parser.AddParameter(gramSize);
         parser.AddParameter(threadCount);
         parser.AddParameter(memory);
         parser.AddParameter(scriptFile);
+        parser.AddParameter(restore);
 
         int returnCode = 1;
 
@@ -102,6 +111,7 @@ namespace BitFunnel
                    static_cast<size_t>(gramSize),
                    static_cast<size_t>(threadCount),
                    static_cast<size_t>(memory) * 1024ull,
+                   static_cast<size_t>(restore),
                    scriptFile);
                 returnCode = 0;
             }
@@ -159,6 +169,7 @@ namespace BitFunnel
                   size_t gramSize,
                   size_t threadCount,
                   size_t memory,
+                  size_t restore,
                   char const * scriptFile) const
     {
         output
@@ -184,6 +195,11 @@ namespace BitFunnel
 
         environment.StartIndex();
         environment.SetShards(0, environment.GetIngestor().GetShardCount() - 1);
+        if (restore)
+        {
+            auto & fileManager = environment.GetSimpleIndex().GetFileManager();
+            environment.GetIngestor().TemporaryReadAllSlices(fileManager);
+        }
 
         Loop(environment,
                 input,
