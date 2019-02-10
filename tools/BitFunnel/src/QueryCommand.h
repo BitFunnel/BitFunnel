@@ -40,7 +40,12 @@ namespace BitFunnel
         static ICommand::Documentation GetDocumentation();
 
     private:
-        bool m_isSingleQuery;
+        enum QueryCommand {
+            QueryOne,
+            QueryLog,
+            QueryDocs
+        };
+        QueryCommand m_queryCommand;
         std::string m_query;
     };
 }

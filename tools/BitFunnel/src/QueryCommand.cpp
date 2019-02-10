@@ -24,9 +24,14 @@
 
 #include "BitFunnel/Configuration/Factories.h"
 #include "BitFunnel/Configuration/IFileSystem.h"
+#include "BitFunnel/Configuration/IStreamConfiguration.h"
 #include "BitFunnel/Exceptions.h"
+#include "BitFunnel/Index/IIngestor.h"
+#include "BitFunnel/Plan/Factories.h"
+#include "BitFunnel/Plan/IQueryEngine.h"
 #include "BitFunnel/Plan/QueryInstrumentation.h"
 #include "BitFunnel/Plan/QueryRunner.h"
+#include "BitFunnel/Plan/ResultsBuffer.h"
 #include "BitFunnel/Utilities/ReadLines.h"
 #include "CsvTsv/Csv.h"
 #include "Environment.h"
@@ -49,12 +54,17 @@ namespace BitFunnel
         auto command = TaskFactory::GetNextToken(parameters);
         if (command.compare("one") == 0)
         {
-            m_isSingleQuery = true;
+            m_queryCommand = QueryOne;
+            m_query = parameters;
+        }
+        else if (command.compare("docs") == 0)
+        {
+            m_queryCommand = QueryDocs;
             m_query = parameters;
         }
         else
         {
-            m_isSingleQuery = false;
+            m_queryCommand = QueryLog;
             if (command.compare("log") != 0)
             {
                 std::stringstream message;
@@ -72,7 +82,7 @@ namespace BitFunnel
 
         try
         {
-            if (m_isSingleQuery)
+            if (m_queryCommand == QueryOne)
             {
                 output
                     << "Processing query \""
@@ -88,6 +98,36 @@ namespace BitFunnel
                 CsvTsv::CsvTableFormatter formatter(output);
                 QueryInstrumentation::Data::FormatHeader(formatter);
                 instrumentation.Format(formatter);
+            }
+            else if (m_queryCommand == QueryDocs)
+            {
+                output
+                    << "Processing query \""
+                    << m_query
+                    << "\"" << std::endl;
+
+                BitFunnel::QueryInstrumentation instrumentation;
+                auto resultsBuffer = BitFunnel::ResultsBuffer(GetEnvironment().GetSimpleIndex().GetIngestor().GetDocumentCount());
+                auto streammap = BitFunnel::Factories::CreateStreamConfiguration();
+                auto queryEngine = BitFunnel::Factories::CreateQueryEngine(GetEnvironment().GetSimpleIndex(), *streammap);
+                auto tree = queryEngine->Parse(m_query.c_str());
+                instrumentation.FinishParsing();
+                if (tree != nullptr)
+                {
+                    queryEngine->Run(tree, instrumentation, resultsBuffer);
+                }
+
+                output << "Results:" << std::endl;
+                CsvTsv::CsvTableFormatter formatter(output);
+                QueryInstrumentation::Data::FormatHeader(formatter);
+                instrumentation.GetData().Format(formatter);
+
+                output << std::endl << "Document Ids" << std::endl;
+                for (auto result : resultsBuffer)
+                {
+                    output << result.GetHandle().GetDocId() << std::endl;
+                }
+
             }
             else
             {
@@ -145,9 +185,10 @@ namespace BitFunnel
         return Documentation(
             "query",
             "Process a single query or list of queries.",
-            "query (one <expression>) | (log <file>)\n"
+            "query (one <query>) | (docs <query>) | (log <file>)\n"
             "  Processes a single query or a list of queries\n"
             "  specified by a file.\n"
+            "  'docs' lists all matching documents."
         );
     }
 }
