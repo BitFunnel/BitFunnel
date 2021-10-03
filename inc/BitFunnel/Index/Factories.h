@@ -25,6 +25,7 @@
 #include <iosfwd>               // std::istream parameter.
 #include <memory>               // std::unique_ptr return type.
 #include <vector>               // std::vector parameter.
+#include <string>
 
 #include "BitFunnel/Term.h"                 // Term::IdfX10 parameter.
 #include "BitFunnel/BitFunnelTypes.h"       // DocIndex parameter.
