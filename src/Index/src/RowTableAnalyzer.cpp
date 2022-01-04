@@ -64,6 +64,143 @@ namespace BitFunnel
     }
 
 
+    class StatisticsByRank
+    {
+    public:
+        StatisticsByRank(std::ostream& out)
+          : m_formatter(out)
+        {
+        }
+
+        void RecordDensity(Rank rank, double density)
+        {
+            m_accumulators.at(rank).Record(density);
+        }
+
+
+        void Reset()
+        {
+            for (auto it = m_accumulators.begin(); it != m_accumulators.end(); ++it)
+            {
+                it->Reset();
+            }
+        }
+
+    protected:
+        void WriteAccumulatorHeader()
+        {
+            m_formatter.WriteField("rank");
+            m_formatter.WriteField("mean");
+            m_formatter.WriteField("min");
+            m_formatter.WriteField("max");
+            m_formatter.WriteField("var");
+            m_formatter.WriteField("count");
+        }
+
+
+        size_t GetCount(Rank rank) const
+        {
+            return m_accumulators[rank].GetCount();
+        }
+
+
+        void WriteAccumulator(Rank rank)
+        {
+            Accumulator const & accumulator = m_accumulators[rank];
+            {
+                m_formatter.WriteField(rank);
+                m_formatter.WriteField(accumulator.GetMean());
+                m_formatter.WriteField(accumulator.GetMin());
+                m_formatter.WriteField(accumulator.GetMax());
+                m_formatter.WriteField(accumulator.GetVariance());
+                m_formatter.WriteField(accumulator.GetCount());
+            }
+        }
+
+        CsvTsv::CsvTableFormatter m_formatter;
+
+    private:
+        std::array<Accumulator, c_maxRankValue + 1> m_accumulators;
+    };
+
+
+    //*************************************************************************
+    //
+    // Row Statistics
+    //
+    //*************************************************************************
+    class RowStatistics2 : public StatisticsByRank
+    {
+    public:
+        RowStatistics2(std::ostream& out)
+            : StatisticsByRank(out)
+        {
+        }
+
+
+        void WriteHeader()
+        {
+            m_formatter.WriteField("shard");
+            m_formatter.WriteField("idfX10");
+            StatisticsByRank::WriteAccumulatorHeader();
+            m_formatter.WriteRowEnd();
+        }
+
+
+        void WriteSummary(ShardId const & shardId,
+                          Term::IdfX10 idfX10)
+        {
+            for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
+            {
+                if (GetCount(rank) > 0)
+                {
+                    m_formatter.WriteField(shardId);
+                    m_formatter.WriteField(idfX10);
+                    WriteAccumulator(rank);
+                    m_formatter.WriteRowEnd();
+                }
+            }
+        }
+    };
+
+
+    //*************************************************************************
+    //
+    // Column Statistics
+    //
+    //*************************************************************************
+    class ColumnStatistics : public StatisticsByRank
+    {
+    public:
+        ColumnStatistics(std::ostream& out)
+            : StatisticsByRank(out)
+        {
+        }
+
+
+        void WriteHeader()
+        {
+            m_formatter.WriteField("shard");
+            StatisticsByRank::WriteAccumulatorHeader();
+            m_formatter.WriteRowEnd();
+        }
+
+
+        void WriteSummary(ShardId const & shardId)
+        {
+            for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
+            {
+                if (GetCount(rank) > 0)
+                {
+                    m_formatter.WriteField(shardId);
+                    WriteAccumulator(rank);
+                    m_formatter.WriteRowEnd();
+                }
+            }
+        }
+    };
+
+
     //*************************************************************************
     //
     // Row Statistics
@@ -156,7 +293,9 @@ namespace BitFunnel
                 *fileSystem);
 
         auto summaryOut = outFileManager->RowDensitySummary().OpenForWrite();
-        RowStatistics::WriteHeader(*summaryOut);
+        RowStatistics2 statistics(*summaryOut);
+        statistics.WriteHeader();
+//        RowStatistics::WriteHeader(*summaryOut);
 
         for (ShardId shardId = 0; shardId < ingestor.GetShardCount(); ++shardId)
         {
@@ -182,7 +321,7 @@ namespace BitFunnel
             densities[rank] = shard.GetDensities(rank);
         }
 
-        RowStatistics statistics;
+        RowStatistics2 statistics(summaryOut);
         Term::IdfX10 curIdfX10 = 0;
 
         // Use CsvTableFormatter to escape terms that contain commas and quotes.
@@ -202,7 +341,7 @@ namespace BitFunnel
             if (idfX10 != curIdfX10)
             {
                 curIdfX10 = idfX10;
-                statistics.WriteSummary(summaryOut, shardId, curIdfX10);
+                statistics.WriteSummary(shardId, curIdfX10);
                 statistics.Reset();
             }
 
@@ -247,7 +386,7 @@ namespace BitFunnel
             }
             formatter.WriteRowEnd();
         }
-        statistics.WriteSummary(summaryOut, shardId, curIdfX10);
+        statistics.WriteSummary(shardId, curIdfX10);
     }
 
 
@@ -270,9 +409,11 @@ namespace BitFunnel
         auto summaryOut = outFileManager->ColumnDensitySummary().OpenForWrite();
 
         // TODO: Consider using CsvTsv::CsvTableFormatter::WritePrologue() here.
-        *summaryOut << "shard,rank,mean,min,max,var,count" << std::endl;
+        ColumnStatistics statistics(*summaryOut);
+        statistics.WriteHeader();
+//        *summaryOut << "shard,rank,mean,min,max,var,count" << std::endl;
 
-        std::array<Accumulator, c_maxRankValue + 1> accumulators;
+//        std::array<Accumulator, c_maxRankValue + 1> accumulators;
 
         for (ShardId shardId = 0; shardId < ingestor.GetShardCount(); ++shardId)
         {
@@ -318,7 +459,8 @@ namespace BitFunnel
                     double density =
                         (rowCount == 0) ? 0.0 : static_cast<double>(bitCount) / rowCount;
                     column.SetDensity(rank, density);
-                    accumulators[rank].Record(density);
+                    statistics.RecordDensity(rank, density);
+//                    accumulators[rank].Record(density);
                 }
 
                 column.Write(*out);
@@ -327,23 +469,24 @@ namespace BitFunnel
             //
             // Generate document summary by rank for shard
             //
-            for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
-            {
-                Accumulator accumulator = accumulators[rank];
-                if (accumulator.GetCount() == 0)
-                    continue;
+            statistics.WriteSummary(rank);
+            //for (Rank rank = 0; rank <= c_maxRankValue; ++rank)
+            //{
+                //Accumulator accumulator = accumulators[rank];
+                //if (accumulator.GetCount() == 0)
+                //    continue;
 
-                *summaryOut
-                    << shardId << ","
-                    << rank << ","
-                    << accumulator.GetMean() << ","
-                    << accumulator.GetMin() << ","
-                    << accumulator.GetMax() << ","
-                    << accumulator.GetVariance() << ","
-                    << accumulator.GetCount() << std::endl;
+                //*summaryOut
+                //    << shardId << ","
+                //    << rank << ","
+                //    << accumulator.GetMean() << ","
+                //    << accumulator.GetMin() << ","
+                //    << accumulator.GetMax() << ","
+                //    << accumulator.GetVariance() << ","
+                //    << accumulator.GetCount() << std::endl;
 
-                accumulators[rank].Reset();
-            }
+                //accumulators[rank].Reset();
+            //}
         }
     }
 
