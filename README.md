@@ -1,10 +1,14 @@
 # BitFunnel
 
-This is an experiment in text search/retrieval. It doesn't work (yet). We're making this available in the spirit of doing development out in the open, but nothing here has been cleaned up for public consumption. The documentation is non-existent and the code is in an incomplete state.
+This repo contains the code for the BitFunnel index used by [Bing's](http://www.bing.com) super-fresh, news, and media indexes. The algorithm is described in [BitFunnel: Revisiting Signatures for Search](https://dl.acm.org/doi/pdf/10.1145/3077136.3080789), a paper presented at SIGIR 2017. This [video](https://www.youtube.com/watch?v=1-Xoy5w5ydM) gives a good overview of the algorithm.
 
-If you really want to try things out, we have some instructions on [how to index Wikipedia](http://bitfunnel.org/index-build-tools/), and [how to play with our query parser](http://bitfunnel.org/a-small-query-language/). However, the system doesn't do anything useful to an end user -- these instructions are intended to allow contributors to build and run part of a system for the purpose of understand or debugging the system. If you're looking to play with an incomplete and likely buggy system, go ahead! If you want a working search index that you can use in production, check back later.
+The codebase here was published to allow the research community to replicate results from the SIGIR paper. The documentation is pretty thin, but we encourage you to look at the following :
 
-If you want a description of one of the core ideas, see [this StrangeLoop talk transcript](http://bitfunnel.org/strangeloop/). See our [engineering diary](http://bitfunnel.org/blog-archive/) for descriptions of other parts of the system. We seem to be adding new descriptions at least once a week, and we (sometimes) go back and update old descriptions as things change.
+* [How to index Wikipedia](http://bitfunnel.org/index-build-tools/)
+* [How to play with our query parser](http://bitfunnel.org/a-small-query-language/)
+* [BitFunnel engineering diary](http://bitfunnel.org/blog-archive/)
+
+
 
 [![Build status](https://ci.appveyor.com/api/projects/status/b65lb8wn2r7ux7d2/branch/master?svg=true)](https://ci.appveyor.com/project/MichaelHopcroft/bitfunnel)
 [![Build status](https://doozer.io/badge/mikehopcroft/BitFunnel/buildstatus/master)](https://doozer.io/user/mikehopcroft/BitFunnel/builds)
