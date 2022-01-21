@@ -77,7 +77,7 @@ If you use XCode, you'll have to either re-run `Configure_XCode` or run the `ZER
 You will need these tools:
 
 - CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
-- Visual Studio 2017 with C++ compiler ([the free version](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx))
+- Visual Studio 2019 with C++ compiler ([the free version](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx))
 
 **Note**: If you install Visual Studio for the first time and select the
 default install options, you won't get a C++ compiler. To force the install of
